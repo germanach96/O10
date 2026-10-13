@@ -1,0 +1,33 @@
+{
+  "_comentario": "Parámetros de Brújulas de Demand. Rejillas, tope y pesos aquí, no en el código.",
+  "rejilla_gruesa": {
+    "s": [0, 0.5, 1],
+    "w": [0, 0.5, 1],
+    "m": [0, 0.5, 1],
+    "N": [6, 9, 12],
+    "c": [0, 0.5, 1],
+    "p": [0, 0.5, 1]
+  },
+  "tope_trend": 0.30,
+  "meses_media_base": 12,
+  "horizonte": 9,
+  "tramos": [[1, 3], [4, 6], [7, 9]],
+  "peso_tramo": [4, 2, 1],
+  "peso_foto": {"tipo": "constante", "_alternativa": "exponencial: d = base^(meses_antiguedad / semivida)", "base": 0.5, "semivida_meses": 6},
+  "criterio_oraculo": "ponderado",
+  "_criterio_oraculo_opciones": "ponderado (4-2-1, igual que el score) | wape9m (WAPE plano de los tramos cerrados)",
+  "spp_signo": -1,
+  "_spp_signo": "-1 => SPP = Σ(A−F)/ΣA, negativo = sobre-forecast (convención del equipo). 1 => Σ(F−A)/ΣA",
+  "metas": {"wape_max": 0.40, "spp_abs_max": 0.05},
+  "tau_brujula_pp": 5,
+  "zona_indiferente_pp": 1,
+  "tolerancia_detector": {"inicio": 0.05, "fin": 0.05},
+  "fechas_disco_por_defecto": ["23/12/2030"],
+  "disco_por_defecto_si_cubre_mas_de": 0.5,
+  "_disco": "Una fecha que tienen más de esa fracción de códigos de la foto se trata también como valor por defecto (en 2026.M09, 21/06/2027 la tienen 430 de 524 códigos)",
+  "epos_historico_de_foto_mas_reciente": true,
+  "_epos": "La foto 2025.M11 viene sin EPOS. Si true, el EPOS de meses ANTERIORES a la foto se toma de la foto más reciente que lo tenga (es historia, no futuro)",
+  "historia_desde_consensus_pasado": true,
+  "_historia": "En meses pasados Consensus = Actuals. Si true, antes del primer mes con Actuals en el archivo se usa el Consensus pasado como historia",
+  "minimo_actividad": "actuals>0 en los últimos 12 meses o Consensus>0 en el horizonte"
+}
