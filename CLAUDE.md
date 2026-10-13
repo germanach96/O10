@@ -8,6 +8,8 @@ Fase 1 (esta especificación): encontrar, en cada foto, los parámetros que mini
 
 Idioma de la interfaz y de los comentarios: español.
 
+Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @SKILLS-DISENO.md
+
 ---
 
 ## 1. KPIs
