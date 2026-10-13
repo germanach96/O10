@@ -288,7 +288,7 @@ def score_multifoto(resultados: list[ResultadoFoto], cfg: dict, R: Rejilla):
     for e in den:
         r = elegir(num[e], sgn[e], val[e])
         elegida[e] = {"receta": r, "score": (float(np.where(val[e], num[e], np.inf)[r] / den[e]) if den[e] > 0 else None),
-                      "fotos": fotos_usadas[e]}
+                      "fotos": fotos_usadas[e], "txt": R.receta(r) if r >= 0 else None}
     return elegida, num, sgn, den
 
 
