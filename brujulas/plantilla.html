@@ -3,117 +3,494 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>Brújulas de Demand</title>
+<meta name="description" content="Brújulas de Demand: mejor receta de forecast por código y foto, y detector de desvíos del Consensus frente a la estrategia.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23141414'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Ccircle cx='19' cy='13' r='3' fill='%23ff8400'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f2f2f7;--panel:#fff;--txt:#1c1c1e;--sub:#6e6e73;--line:#d1d1d6;--azul:#0a84ff;--gris:#8e8e93;--verde:#34c759;--rojo:#ff3b30;--naranja:#ff9500;--meta:rgba(52,199,89,.14);--banda:rgba(10,132,255,.14)}
-@media (prefers-color-scheme:dark){:root{--bg:#000;--panel:#1c1c1e;--txt:#f2f2f7;--sub:#98989d;--line:#38383a;--meta:rgba(52,199,89,.2);--banda:rgba(10,132,255,.25)}}
+/* ============ Tokens (guía "Flim": lienzo de cuadrícula, tinta casi negra, tres radios) ============ */
+:root{
+  --ink:#141414; --paper:#ffffff; --canvas:#f5f5f5; --mist:#e9e9e9; --hairline:#d9d9d9;
+  --mute:#5c5c5c; --mute-2:#8a8a8a;
+  --green:#30a81d; --forest:#21935b; --ok:#16703f; --yellow:#fecc33; --ember:#ff8400; --ember-ink:#b45400;
+  --grid:#e4e4e4;
+  /* burbujas */
+  --b-casa:transparent; --b-brand:#ffffff; --b-pl:#f0f0f0;
+  --d0:#d6d6d6; --d1:#b3b3b3; --d2:#ffb366; --d3:#ff8400; --d4:#141414;
+  --t0:#141414; --t1:#141414; --t2:#141414; --t3:#141414; --t4:#ffffff;
+  --hueco:#b8b8b8; --sinrec:#e6e6e6;
+  /* gráficos del detalle */
+  --receta:var(--ink); --cons:#7a7a7a; --banda:rgba(20,20,20,.07); --meta:rgba(48,168,29,.12);
+  --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --font-display:"Schibsted Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --font-body:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  --r-btn:8px; --r-card:16px; --r-pill:160px; --r-link:4px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --ink:#f0f0ee; --paper:#1b1b1b; --canvas:#111111; --mist:#262626; --hairline:#333333;
+  --mute:#a9a9a9; --mute-2:#7d7d7d; --grid:#1c1c1c; --ember-ink:#ff9a33; --ok:#4cc985;
+  --b-brand:#1b1b1b; --b-pl:#232323;
+  --d0:#3a3a3a; --d1:#5e5e5e; --d2:#8f5011; --d3:#e07800; --d4:#f0f0ee;
+  --t0:#f0f0ee; --t1:#f0f0ee; --t2:#f0f0ee; --t3:#141414; --t4:#141414;
+  --hueco:#555555; --sinrec:#333333;
+  --cons:#9a9a9a; --banda:rgba(240,240,238,.08); --meta:rgba(48,168,29,.18);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#f0f0ee; --paper:#1b1b1b; --canvas:#111111; --mist:#262626; --hairline:#333333;
+    --mute:#a9a9a9; --mute-2:#7d7d7d; --grid:#1c1c1c; --ember-ink:#ff9a33; --ok:#4cc985;
+    --b-brand:#1b1b1b; --b-pl:#232323;
+    --d0:#3a3a3a; --d1:#5e5e5e; --d2:#8f5011; --d3:#e07800; --d4:#f0f0ee;
+  --t0:#f0f0ee; --t1:#f0f0ee; --t2:#f0f0ee; --t3:#141414; --t4:#141414;
+    --hueco:#555555; --sinrec:#333333;
+    --cons:#9a9a9a; --banda:rgba(240,240,238,.08); --meta:rgba(48,168,29,.18);
+    color-scheme:dark;
+  }
+}
+
+/* ============ Base ============ */
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-header{padding:16px 20px 8px}
-h1{font-size:22px;margin:0 0 4px}
-h2{font-size:18px;margin:24px 20px 8px}
-h3{font-size:15px;margin:0 0 6px}
-.controles{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:0 20px}
-select,input{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--txt)}
-#selCodigo{max-width:520px}
-.info{padding:6px 20px;color:var(--sub);font-size:13px}
-.aviso{color:#c77c00}
-.rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:16px;padding:0 20px}
-@media (max-width:780px){.rejilla{grid-template-columns:1fr}}
-.tarjeta{background:var(--panel);border-radius:20px;padding:14px;width:360px;height:470px;overflow:hidden}
-.tarjeta.res{height:400px}
-.tarjeta h3{height:22px;margin:0}
-.tarjeta .subt{color:var(--sub);font-size:12px;height:34px}
-.tarjeta .pie{font-size:12px;color:var(--sub);margin-top:4px}
-.ancho{background:var(--panel);border-radius:20px;padding:14px;margin:0 20px 16px;overflow-x:auto}
-svg text{font-size:10.5px;fill:var(--sub)}
-table{border-collapse:collapse;font-size:12.5px}
-td,th{padding:3px 7px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th{color:var(--sub);font-weight:600;cursor:default}
+html{scroll-behavior:smooth}
+.seccion{scroll-margin-top:16px}
+body{
+  margin:0; color:var(--ink); font:16px/1.4 var(--font-body);
+  background-color:var(--canvas);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:40px 40px; background-position:-1px -1px;
+  min-height:100dvh; caret-color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--yellow);color:#141414}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:var(--r-link)}
+*{scrollbar-color:var(--hairline) transparent;scrollbar-width:thin}
+button,input,select{font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit}
+button{cursor:pointer}
+.mono{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.num{font-variant-numeric:tabular-nums}
+.oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.saltar{position:absolute;left:16px;top:-40px;background:var(--ink);color:var(--paper);padding:8px 12px;border-radius:var(--r-btn);z-index:30}
+.saltar:focus{top:12px}
+
+/* ============ Barra superior ============ */
+.barra{display:flex;align-items:center;gap:24px;height:64px;padding:0 32px;position:relative;z-index:5}
+.marca{font-family:var(--font-display);font-weight:600;font-size:21px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.marca svg{flex:none}
+.nav{display:flex;gap:20px}
+.nav a{color:var(--ink);text-decoration:none;padding:6px 0;opacity:.55;transition:opacity 160ms ease}
+.nav a[aria-current="page"]{opacity:1;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+@media (hover:hover) and (pointer:fine){.nav a:hover{opacity:1}}
+.barra .der{margin-left:auto;display:flex;align-items:center;gap:12px}
+.sel-pill{appearance:none;border:1px solid var(--hairline);background:var(--paper);border-radius:var(--r-pill);padding:9px 34px 9px 16px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.tema{display:flex;border:1px solid var(--hairline);border-radius:var(--r-pill);padding:3px;background:var(--paper)}
+.tema button{border:0;background:transparent;border-radius:var(--r-pill);padding:7px 12px;transition:background-color 160ms ease,color 160ms ease}
+.tema button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* ============ Botones ============ */
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:var(--r-btn);background:var(--ink);color:var(--paper);padding:10px 16px;
+  transition:transform 160ms var(--ease-out),opacity 160ms ease;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.35;cursor:not-allowed;transform:none}
+.btn-fant{background:transparent;color:var(--ink);border:1px solid var(--hairline)}
+.enlace{background:none;border:0;padding:4px 0;color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--hairline);transition:text-decoration-color 160ms ease}
+@media (hover:hover) and (pointer:fine){.enlace:hover{text-decoration-color:var(--ink)}}
+
+/* ============ Vistas ============ */
+main{padding:0 32px 80px}
+main[hidden]{display:none}
+::view-transition-old(root){animation:vt-salir 160ms var(--ease-out) both}
+::view-transition-new(root){animation:vt-entrar 260ms var(--ease-out) both}
+@keyframes vt-salir{to{opacity:0}}
+@keyframes vt-entrar{from{opacity:0;transform:translateY(8px)}}
+
+/* ============ Inicio: cabecera ============ */
+.hero{display:grid;grid-template-columns:1fr auto;align-items:end;gap:32px;padding:20px 0 28px}
+.hero h1{font-family:var(--font-display);font-weight:500;font-size:clamp(44px,6.4vw,92px);line-height:.86;letter-spacing:-.02em;margin:0;white-space:nowrap}
+.hero .claim{text-align:right;font-size:20px;line-height:1.3;max-width:36ch;margin:0;text-wrap:balance}
+.hero .claim b{font-weight:700}
+.marcador{background:var(--yellow);color:#141414;border-radius:25px;padding:0 .25em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero .cifras{display:flex;gap:28px;justify-content:flex-end;margin-top:16px}
+.hero .cifras div{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.hero .cifras b{font-family:var(--font-display);font-weight:500;font-size:27px;letter-spacing:-.02em;line-height:1}
+.hero .cifras span{color:var(--mute)}
+
+/* ============ Buscador y filtros ============ */
+.buscador{display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-pill);padding:8px 8px 8px 22px;max-width:960px}
+.buscador svg{flex:none;color:var(--mute)}
+.buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;padding:10px 0;font-family:var(--font-mono);font-size:15px;letter-spacing:.06em}
+.buscador input::-webkit-search-cancel-button{appearance:none;display:none}
+.buscador input::placeholder{color:var(--mute);text-transform:uppercase}
+.buscador:focus-within{border-color:var(--ink)}
+.kbd{border:1px solid currentColor;border-radius:4px;padding:2px 5px;opacity:.7}
+.filtros{display:flex;flex-wrap:wrap;gap:20px 28px;align-items:center;margin:20px 0 0;max-width:1200px}
+.grupo-f{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.grupo-f > .mono{color:var(--mute);margin-right:4px}
+.chip{border:1px solid var(--hairline);background:var(--paper);border-radius:var(--r-pill);padding:8px 12px;
+  transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease,transform 160ms var(--ease-out)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.chip:hover{border-color:var(--ink)}}
+.tol{display:flex;align-items:center;gap:6px}
+.tol input{width:58px;border:1px solid var(--hairline);background:var(--paper);border-radius:var(--r-btn);padding:7px 8px;text-align:right;font-family:var(--font-mono);font-size:12px}
+.limpiar{margin-left:auto}
+
+/* ============ Inicio: mapa + resultados ============ */
+.mesa{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:32px;margin-top:24px;align-items:start}
+.mapa{position:relative}
+.migas{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:28px;margin:0 0 12px auto;max-width:min(880px,calc(100dvh - 96px))}
+.migas button{border:0;background:transparent;padding:6px 0;color:var(--mute);transition:color 160ms ease}
+.migas button[aria-current="true"]{color:var(--ink)}
+@media (hover:hover) and (pointer:fine){.migas button:hover{color:var(--ink)}}
+.migas .sep{color:var(--mute-2)}
+.lienzo{position:relative;width:100%;max-width:min(880px,calc(100dvh - 96px));aspect-ratio:1/1;margin:0 0 0 auto;overflow:hidden;border-radius:var(--r-card);border:1px solid var(--hairline);isolation:isolate}
+.lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;touch-action:manipulation}
+#mundo{transform-origin:0 0;transition:transform 560ms var(--ease-in-out)}
+#mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
+.n-casa{fill:var(--b-casa);stroke:none}
+.n-brand{fill:var(--b-brand);stroke:var(--hairline);stroke-width:1}
+.n-pl{fill:var(--b-pl);stroke:var(--hairline);stroke-width:1}
+.n-hoja{stroke:var(--paper);stroke-width:.75}
+.n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
+.n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
+.n-grupo,.n-hoja{cursor:pointer}
+#mundo circle.apagado{opacity:.12}
+#mundo circle.activo{stroke:var(--yellow);stroke-width:3}
+.entrando #mundo .n-hoja,.entrando #mundo .n-pl,.entrando #mundo .n-brand{opacity:0}
+/* entrada inicial: cada brand aparece en cascada (solo la primera vez) */
+.n-anim{transform-box:fill-box;transform-origin:center;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease,transform 380ms var(--ease-out)}
+.entrando .n-anim{transform:scale(.92)}
+.etiquetas{position:absolute;inset:0;pointer-events:none;transition:opacity 140ms ease}
+.etiquetas.fuera{opacity:0}
+.etq{position:absolute;transform:translate(-50%,-50%);text-align:center;color:var(--ink);white-space:nowrap}
+.etq.grupo{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-pill);padding:6px 10px;font-size:11px}
+.etq.grupo .c{color:var(--mute)}
+.etq.hoja{font-family:var(--font-body);text-transform:none;letter-spacing:0;font-size:12px;line-height:1.2}
+.etq.hoja .t{display:block;overflow:hidden;text-overflow:ellipsis}
+.leyenda{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:20px;color:var(--mute);max-width:min(880px,calc(100dvh - 96px));margin-left:auto;margin-right:0}
+.leyenda .it{display:flex;align-items:center;gap:6px}
+.leyenda .sw{width:12px;height:12px;border-radius:50%;display:inline-block}
+.leyenda .tam{display:flex;align-items:center;gap:8px;margin-right:6px}
+.leyenda .tam i{border:1px solid var(--mute);border-radius:50%;display:inline-block}
+
+.panel{background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-card);padding:20px;position:sticky;top:16px;max-height:calc(100dvh - 32px);display:flex;flex-direction:column}
+.panel h2{font-family:var(--font-display);font-weight:500;font-size:27px;line-height:1.05;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+.panel .resumen{color:var(--mute);font-size:15px;line-height:1.45;margin:0 0 16px}
+.panel .resumen b{color:var(--ink);font-weight:700}
+.panel .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ficha{border:1px solid var(--ink);border-radius:var(--r-card);padding:16px;margin-bottom:16px}
+.ficha .d{font-weight:700;font-size:15px;margin:0 0 6px}
+.ficha .m{color:var(--mute);margin-bottom:12px;line-height:1.5}
+.ficha .kpis{display:flex;gap:18px;margin-bottom:14px}
+.ficha .kpis div{display:flex;flex-direction:column;gap:6px}
+.ficha .kpis b{font-family:var(--font-display);font-weight:500;font-size:21px;letter-spacing:-.01em}
+.lista-cab{display:flex;justify-content:space-between;color:var(--mute);padding:10px 0;border-top:1px solid var(--hairline)}
+.lista{list-style:none;margin:0;padding:0 0 8px;overflow:auto;flex:1;min-height:120px}
+.lista li button{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:10px 8px;border-radius:var(--r-btn);transition:background-color 120ms ease}
+@media (hover:hover) and (pointer:fine){.lista li button:hover{background:var(--canvas)}}
+.lista li button[aria-current="true"]{background:var(--mist)}
+.lista .sw{width:10px;height:10px;border-radius:50%}
+.lista .d{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista .e{color:var(--mute);margin-top:5px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista .v{text-align:right;font-family:var(--font-mono);font-size:12px;font-variant-numeric:tabular-nums}
+.lista .v small{display:block;color:var(--mute);margin-top:5px}
+.vacio{padding:24px 4px;color:var(--mute);line-height:1.5}
+.vacio b{color:var(--ink)}
+.mas{color:var(--mute);padding:12px 8px 0}
+
+.tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--paper);border-radius:var(--r-btn);padding:10px 12px;font-size:13px;line-height:1.45;max-width:300px;opacity:0;transition:opacity 120ms ease}
+.tip.ver{opacity:1}
+.tip .mono{opacity:.7;display:block;margin-bottom:6px;font-size:11px}
+
+/* ============ Detalle ============ */
+.det-cab{padding:32px 0 8px}
+.volver{display:inline-flex;align-items:center;gap:8px;margin-bottom:24px}
+.det-migas{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:14px}
+.det-migas button{border:0;background:transparent;padding:6px 0;color:var(--mute)}
+.det-migas button[aria-current="true"]{color:var(--ink)}
+.det-cab h1{font-family:var(--font-display);font-weight:500;font-size:clamp(32px,4.4vw,47px);line-height:1;letter-spacing:-.02em;margin:0 0 14px;text-wrap:balance;max-width:24ch}
+.info{color:var(--mute);font-size:14px;line-height:1.6;max-width:110ch}
+.info b{color:var(--ink)}
+.aviso{color:var(--ember-ink)}
+.seccion{margin-top:56px}
+.seccion > h2{font-family:var(--font-display);font-weight:500;font-size:32px;letter-spacing:-.02em;line-height:1.1;margin:0 0 6px}
+.seccion > .sub{color:var(--mute);margin:0 0 20px;font-size:15px}
+.ancho{background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-card);padding:20px;overflow-x:auto;max-width:1200px}
+.controles{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-bottom:16px}
+.controles label{display:flex;align-items:center;gap:8px}
+.controles select,.controles input[type=number],.controles input[type=search]{border:1px solid var(--hairline);background:var(--paper);border-radius:var(--r-btn);padding:7px 10px;font-size:14px}
+.controles input[type=number]{width:70px;text-align:right;font-family:var(--font-mono);font-size:12px}
+.controles input[type=checkbox]{accent-color:var(--ink);width:16px;height:16px}
+.rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:24px}
+@media (max-width:820px){.rejilla{grid-template-columns:360px}}
+.tarjeta{background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-card);padding:16px;width:360px;height:480px;overflow:hidden}
+.tarjeta.res{height:410px}
+.tarjeta h3{height:24px;margin:0;font-family:var(--font-display);font-weight:500;font-size:17px;letter-spacing:-.01em;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tarjeta .subt{color:var(--mute);font-size:12.5px;height:36px;line-height:1.4;margin-top:2px}
+.tarjeta .pie{font-size:12.5px;color:var(--mute);margin-top:6px;line-height:1.5}
+.tarjeta .pie b:not(.bueno):not(.malo){color:var(--ink)}
+svg text{font-size:9.5px;fill:var(--mute);font-family:var(--font-mono);letter-spacing:.04em;text-transform:uppercase}
+table{border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+td,th{padding:7px 10px;border-bottom:1px solid var(--mist);text-align:right;white-space:nowrap}
+th{color:var(--mute);font-weight:400;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:default}
 th.ord{cursor:pointer}
+@media (hover:hover) and (pointer:fine){th.ord:hover{color:var(--ink)}}
 td.izq,th.izq{text-align:left}
-.matriz{table-layout:fixed;width:332px}
-.matriz td{text-align:center;height:40px;padding:2px;border:1px solid var(--bg);font-weight:600;cursor:default;position:relative}
-.matriz th{font-size:10.5px;padding:2px;white-space:normal}
-.matriz td.elegida{outline:3px solid var(--naranja);outline-offset:-3px;box-shadow:0 0 0 2px var(--naranja)}
-.matriz td.elegida::after{content:"✓";position:absolute;top:1px;right:3px;font-size:11px;color:var(--naranja)}
-.elegidaTxt{color:var(--naranja);font-weight:600}
-.bueno{color:var(--verde)} .malo{color:var(--rojo)}
-.pequeño{font-size:11.5px;color:var(--sub)}
-a.ean{color:var(--azul);cursor:pointer;text-decoration:none}
-tr.fuera td{color:var(--rojo)}
-details summary{cursor:pointer;color:var(--azul);margin:6px 0}
+.matriz{table-layout:fixed;width:326px;margin-top:4px}
+.matriz td{text-align:center;height:42px;padding:2px;border:2px solid var(--paper);font-family:var(--font-mono);font-size:12px;cursor:default;position:relative;border-radius:6px}
+.matriz th{font-size:9.5px;padding:2px;white-space:normal;letter-spacing:.04em;line-height:1.2;border:0}
+.matriz td.elegida{background:var(--yellow) !important;color:#141414 !important;box-shadow:inset 0 0 0 2px #141414}
+.elegidaTxt{background:var(--yellow);color:#141414;border-radius:25px;padding:1px 8px}
+.bueno{color:var(--ok)} .malo{color:var(--ember-ink)}
+.pequeño{font-size:12.5px;color:var(--mute)}
+a.ean{color:var(--ink);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--hairline)}
+tr.fuera td.dv{color:var(--ember-ink);font-weight:700}
+tr.fuera td:first-child{box-shadow:inset 2px 0 0 var(--ember)}
+details summary{cursor:pointer;margin:10px 0;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--hairline);width:max-content;list-style:none;display:flex;align-items:center;gap:8px}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform 160ms var(--ease-out)}
+details[open] summary::before{transform:rotate(45deg)}
+.flecha{vertical-align:-1px;margin-left:4px}
+.anteriores h3{font-family:var(--font-display);font-weight:500;font-size:21px;margin:8px 0 10px}
+.notas{color:var(--mute);font-size:13px;margin-top:40px}
+
+/* ============ Rail del detalle ============ */
+.det-cuerpo{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+.rail{order:-1;background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-card);padding:20px;margin-top:32px;align-self:start}
+.rail .lbl{color:var(--mute);display:block;margin-bottom:8px}
+.rail .grande{font-family:var(--font-display);font-weight:500;font-size:47px;line-height:1;letter-spacing:-.02em;display:inline-block}
+.rail .fila{display:flex;gap:24px;margin:16px 0}
+.rail .fila b{font-family:var(--font-display);font-weight:500;font-size:27px;letter-spacing:-.02em;display:block;margin-top:6px}
+.rail .rec{font-family:var(--font-mono);font-size:12px;line-height:1.6;color:var(--ink);border-top:1px solid var(--mist);padding-top:14px;margin:0 0 14px}
+.rail nav{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--mist);padding-top:10px}
+.rail nav a{color:var(--mute);text-decoration:none;padding:8px 0;transition:color 160ms ease}
+@media (hover:hover) and (pointer:fine){.rail nav a:hover{color:var(--ink)}}
+@media (min-width:1280px){
+  .det-cuerpo{grid-template-columns:minmax(0,1fr) 300px}
+  .rail{order:0;position:sticky;top:16px;margin-top:56px}
+}
+.ancho{max-width:none}
+
+/* ============ Responsive ============ */
+@media (max-width:1100px){.mesa{grid-template-columns:1fr}.panel{position:static;max-height:none}.lista{max-height:420px}}
+@media (max-width:700px){
+  .barra{padding:0 16px;gap:12px;height:auto;min-height:64px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .nav{display:none}
+  .barra .der{margin-left:0;width:100%;justify-content:space-between}
+  .lienzo,.leyenda,.migas{max-width:none;margin-left:0}
+  main{padding:0 16px 64px}
+  .hero{grid-template-columns:1fr;padding:24px 0}
+  .hero .claim{text-align:left;font-size:20px}
+  .hero h1{white-space:normal;font-size:44px}
+  .hero .cifras{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:20px}
+  .hero .cifras div{align-items:flex-start}
+  .hero .cifras span{font-size:10px;line-height:1.3}
+  .filtros{gap:12px;margin-right:-16px}
+  .grupo-f{flex-wrap:nowrap;overflow-x:auto;width:100%;padding-right:32px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+  .grupo-f::-webkit-scrollbar{display:none}
+  .grupo-f .chip{flex:none}
+  .tarjeta{width:100%;max-width:360px}
+  .buscador .kbd{display:none}
+  .rejilla{grid-template-columns:1fr;justify-items:center}
+  .limpiar{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  #mundo{transition:none}
+  .n-anim{transition:opacity 220ms ease,fill 220ms ease}
+  .entrando .n-anim{transform:none}
+  ::view-transition-new(root){animation:vt-salir 1ms reverse both}
+  ::view-transition-old(root){animation:none}
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>Brújulas de Demand <span class="pequeño">· ejemplo fase 1</span></h1>
-  <div class="pequeño">¿Qué inputs de forecast debí haber puesto en cada foto para tener los mejores KPIs? Todo precalculado por <code>python -m brujulas.pipeline</code>; la página solo lee.</div>
+<a class="saltar mono" href="#contenido">Saltar al contenido</a>
+<header class="barra">
+  <a class="marca" href="#inicio" aria-label="Brújulas de Demand, inicio">
+    <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="13.5" cy="8.5" r="2.6" fill="var(--ember)"/></svg>
+    Brújulas
+  </a>
+  <nav class="nav mono" aria-label="Vistas">
+    <a href="#inicio" id="navInicio" aria-current="page">Inicio</a>
+    <a href="#detalle" id="navDetalle">Detalle</a>
+  </nav>
+  <div class="der">
+    <label class="oculto" for="selCasa">Casa</label>
+    <select id="selCasa" class="sel-pill mono"></select>
+    <div class="tema mono" role="group" aria-label="Tema">
+      <button type="button" data-tema="light">Claro</button>
+      <button type="button" data-tema="dark">Oscuro</button>
+      <button type="button" data-tema="auto">Auto</button>
+    </div>
+  </div>
 </header>
-<div class="controles">
-  <label>Casa <select id="selCasa"></select></label>
-  <label>Ver <select id="selCodigo"></select></label>
-</div>
-<div class="info" id="info"></div>
 
-<h2 id="tituloActual">Foto actual · Consensus frente a la estrategia</h2>
-<div class="ancho">
-  <div class="controles" style="padding:0 0 8px">
-    <label>Tolerancia mes 1 <input id="tolIni" type="number" step="0.5" value="5" style="width:70px">%</label>
-    <label>mes 9 <input id="tolFin" type="number" step="0.5" value="5" style="width:70px">%</label>
-    <label>Receta <select id="selFuente">
-      <option value="codigo">elegida por código (score de las fotos anteriores)</option>
-      <option value="pl">regla de su Product Line</option>
-      <option value="brand">regla de su Brand</option>
-      <option value="casa">regla de la casa</option>
-    </select></label>
+<!-- ======================= INICIO ======================= -->
+<main id="vistaInicio">
+  <section class="hero" id="contenido">
+    <h1>Brújulas de Demand</h1>
+    <div>
+      <p class="claim"><b>¿Qué inputs debí poner en cada foto?</b> Busca un código, una brand o una línea y mira <span class="marcador">quién se sale</span> de su receta.</p>
+      <div class="cifras" id="cifras"></div>
+    </div>
+  </section>
+
+  <form class="buscador" id="formBuscar" role="search" onsubmit="return false">
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="7.5" cy="7.5" r="5.75" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11.8 11.8 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <label class="oculto" for="q">Buscar</label>
+    <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar EAN, descripción, brand o línea">
+    <button class="btn mono" type="submit" id="btnBuscar">Buscar <span class="kbd">⌘K</span></button>
+  </form>
+
+  <div class="filtros" id="filtros">
+    <div class="grupo-f" role="group" aria-label="Scope">
+      <span class="mono">Scope</span>
+      <button type="button" class="chip mono" data-f="scope" data-v="central" aria-pressed="true">Central</button>
+      <button type="button" class="chip mono" data-f="scope" data-v="todos" aria-pressed="false">Todos</button>
+    </div>
+    <div class="grupo-f" role="group" aria-label="Estado">
+      <span class="mono">Estado</span>
+      <button type="button" class="chip mono" data-f="fuera" data-v="1" aria-pressed="false">Fuera de estrategia</button>
+    </div>
+    <div class="grupo-f" role="group" aria-label="Segmento" id="fSeg"><span class="mono">Segmento</span></div>
+    <div class="grupo-f" role="group" aria-label="Edad" id="fEdad"><span class="mono">Edad</span></div>
+    <div class="grupo-f tol">
+      <span class="mono">Tolerancia</span>
+      <label class="oculto" for="tolIni0">Tolerancia mes 1</label><input id="tolIni0" type="number" step="0.5" min="0" value="5">
+      <span class="mono">a</span>
+      <label class="oculto" for="tolFin0">Tolerancia mes 9</label><input id="tolFin0" type="number" step="0.5" min="0" value="5">
+      <span class="mono">%</span>
+    </div>
+    <button type="button" class="enlace mono limpiar" id="limpiar">Limpiar filtros</button>
   </div>
-  <div id="actual"></div>
-</div>
 
-<h2>Decisiones <span class="pequeño" id="decSub"></span></h2>
-<div class="rejilla">
-  <div class="tarjeta"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s · Y: peso del trend w</div><svg id="b1" width="330" height="330"></svg><div class="pie" id="b1p"></div></div>
-  <div class="tarjeta"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in/sell-out m · Y: duración del trend N</div><svg id="b2" width="330" height="330"></svg><div class="pie" id="b2p"></div></div>
-  <div class="tarjeta"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c · Y: promos restadas p</div><svg id="b3" width="330" height="330"></svg><div class="pie" id="b3p"></div></div>
-  <div class="tarjeta"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">Nº de códigos del grupo (más oscuro = más grande). Tooltip: mejor WAPE con ese grupo.</div><div id="matriz"></div><div class="pie" id="matrizp"></div></div>
-</div>
-
-<h2>Resultados de las fotos anteriores</h2>
-<div class="rejilla">
-  <div class="tarjeta res"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1…F+3</div><svg id="r90" width="330" height="230"></svg><div class="pie" id="r90p"></div></div>
-  <div class="tarjeta res"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1…F+6</div><svg id="r180" width="330" height="230"></svg><div class="pie" id="r180p"></div></div>
-  <div class="tarjeta res"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1…F+9</div><svg id="r9M" width="330" height="230"></svg><div class="pie" id="r9Mp"></div></div>
-  <div class="tarjeta res"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
-</div>
-<div class="ancho" id="anteriores"></div>
-
-<h2>Detector · EANs fuera de su estrategia</h2>
-<div class="ancho">
-  <div class="controles" style="padding:0 0 8px">
-    <span class="pequeño">Usa la tolerancia y la receta de arriba.</span>
-    <label><input type="checkbox" id="soloGrupo" checked> solo el grupo seleccionado</label>
-    <label><input type="checkbox" id="verTodos"> ver también los que están dentro</label>
-    <input id="filtro" placeholder="filtrar EAN / descripción" style="width:200px">
+  <div class="mesa">
+    <section class="mapa" aria-label="Mapa de códigos agrupados por casa, brand y product line">
+      <div class="migas mono" id="migas" aria-label="Nivel del mapa"></div>
+      <div class="lienzo" id="lienzo">
+        <svg id="pack" role="img" aria-label="Burbujas anidadas: casa, brand, product line y EAN"><g id="mundo"></g></svg>
+        <div class="etiquetas mono" id="etiquetas"></div>
+      </div>
+      <div class="leyenda mono" id="leyenda"></div>
+    </section>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
   </div>
-  <div class="pequeño" id="detInfo"></div>
-  <div id="detector"></div>
-</div>
-<div class="info" id="notas"></div>
+</main>
 
+<!-- ======================= DETALLE ======================= -->
+<main id="vistaDetalle" hidden>
+  <div class="det-cab">
+    <button type="button" class="enlace mono volver" id="volver">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M8.5 2.5 4 7l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Volver al mapa
+    </button>
+    <div class="det-migas mono" id="detMigas"></div>
+    <h1 id="detTitulo"></h1>
+    <div class="info" id="info"></div>
+  </div>
+
+  <div class="det-cuerpo">
+  <div class="det-main">
+  <section class="seccion" id="sFoto">
+    <h2 id="tituloActual">Foto actual</h2>
+    <p class="sub">Consensus de la foto frente a la receta elegida, con su rango de tolerancia.</p>
+    <div class="ancho">
+      <div class="controles">
+        <label class="mono">Tolerancia mes 1 <input id="tolIni" type="number" step="0.5" min="0" value="5">%</label>
+        <label class="mono">Mes 9 <input id="tolFin" type="number" step="0.5" min="0" value="5">%</label>
+        <label class="mono">Receta <select id="selFuente">
+          <option value="codigo">Elegida por código (score de las fotos anteriores)</option>
+          <option value="pl">Regla de su Product Line</option>
+          <option value="brand">Regla de su Brand</option>
+          <option value="casa">Regla de la casa</option>
+        </select></label>
+      </div>
+      <div id="actual"></div>
+    </div>
+  </section>
+
+  <section class="seccion" id="sDecisiones">
+    <h2>Decisiones</h2>
+    <p class="sub" id="decSub"></p>
+    <div class="rejilla">
+      <div class="tarjeta"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s. Y: peso del trend w.</div><svg id="b1" width="326" height="326"></svg><div class="pie" id="b1p"></div></div>
+      <div class="tarjeta"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in / sell-out m. Y: duración del trend N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
+      <div class="tarjeta"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c. Y: promos restadas p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
+      <div class="tarjeta"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">Nº de códigos del grupo (más tinta, más grande). Al pasar: mejor WAPE con ese grupo.</div><div id="matriz"></div><div class="pie" id="matrizp"></div></div>
+    </div>
+  </section>
+
+  <section class="seccion" id="sResultados">
+    <h2>Resultados de las fotos anteriores</h2>
+    <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana.</p>
+    <div class="rejilla">
+      <div class="tarjeta res"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
+      <div class="tarjeta res"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
+      <div class="tarjeta res"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
+      <div class="tarjeta res"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
+    </div>
+    <div class="ancho anteriores" id="anteriores" style="margin-top:24px"></div>
+  </section>
+
+  <section class="seccion" id="sDetector">
+    <h2>Detector</h2>
+    <p class="sub">EANs fuera de su estrategia. Usa la tolerancia y la receta de la foto actual.</p>
+    <div class="ancho">
+      <div class="controles">
+        <label class="mono"><input type="checkbox" id="soloGrupo" checked> Solo el grupo seleccionado</label>
+        <label class="mono"><input type="checkbox" id="verTodos"> Ver también los que están dentro</label>
+        <label class="oculto" for="filtro">Filtrar</label><input id="filtro" type="search" placeholder="Filtrar EAN o descripción" style="width:220px">
+      </div>
+      <div class="pequeño" id="detInfo" style="margin-bottom:12px;line-height:1.5"></div>
+      <div id="detector"></div>
+    </div>
+  </section>
+  <div class="notas" id="notas"></div>
+  </div>
+  <aside class="rail" id="rail" aria-label="Resumen"></aside>
+  </div>
+</main>
+
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>/*__D3H__*/</script>
 <script>
 const D = /*__DATOS__*/null;
 const $ = id => document.getElementById(id);
-const pct = (x, d=1) => x == null || !isFinite(x) ? "—" : (x*100).toFixed(d) + "%";
-const num = x => x == null || !isFinite(x) ? "—" : Math.round(x).toLocaleString("es-ES");
+const pct = (x, d=1) => x == null || !isFinite(x) ? "-" : (x*100).toLocaleString("es-ES", {minimumFractionDigits: d, maximumFractionDigits: d}) + "%";
+const num = x => x == null || !isFinite(x) ? "-" : Math.round(x).toLocaleString("es-ES");
+const corto = s => (s || "").replace(/\s*\(\d+\)\s*$/, "");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const EJ = D.ejes, CELDAS = D.celdas, CFG = D.config;
 const AMPL = ["Propio","Product Line","Brand","House","Todo"], CRIT = ["Jerarquía","Segmento","Tamaño","Edad"];
 const vtxt = (k, v) => k === "N" ? v + "M" : Math.round(v*100) + "%";
+const reducir = matchMedia("(prefers-reduced-motion: reduce)");
 let estado = {casa: null, sel: null, orden: {col: "u", dir: -1}};
 
-function recetaTxt(r){ if(!r) return "—";
-  return `s ${vtxt("s",r.s)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · ${r.grupo}`; }
+// ================= Tema (claro / oscuro / auto) =================
+function aplicarTema(t){
+  if (t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  document.querySelectorAll(".tema button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tema === t)));
+}
+(function(){ let t = "auto"; try { t = localStorage.getItem("brujulas-tema") || "auto"; } catch(e) {} aplicarTema(t); })();
+document.querySelectorAll(".tema button").forEach(b => b.addEventListener("click", () => {
+  const t = b.dataset.tema;
+  const cambio = () => aplicarTema(t);
+  if (document.startViewTransition && !reducir.matches) document.startViewTransition(cambio); else cambio();
+  try { localStorage.setItem("brujulas-tema", t); } catch(e) {}
+}));
 
+// ================= Utilidades comunes =================
+function recetaTxt(r){ if(!r) return "-";
+  return `s ${vtxt("s",r.s)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · ${r.grupo}`; }
 function casa(){ return D.casas[estado.casa]; }
 function esRegla(){ return estado.sel.startsWith("R|"); }
 function entidad(foto){
@@ -122,8 +499,401 @@ function entidad(foto){
 }
 const fotosCerradas = () => casa().fotos.filter(f => f.hay_tramos_cerrados);
 const fotoUltCerrada = () => { const l = fotosCerradas(); return l[l.length - 1]; };
+const existeRegla = k => fotosCerradas().some(f => f.reglas[k]);
 
-// ---------- posición en un eje: hacia el valor ganador, distancia = tanh(ΔWAPE / τ) ----------
+function tolerancia(){
+  const ti = (parseFloat($("tolIni").value) || 0) / 100, tf = (parseFloat($("tolFin").value) || 0) / 100;
+  return h => ti + (tf - ti) * (h - 1) / 8;
+}
+function evaluar(fc, cons, tol){
+  // desvío de un mes = solo el exceso fuera de [R·(1−tol), R·(1+tol)], en valor absoluto
+  return fc.map((R, i) => {
+    const t = tol(i + 1), lo = R * (1 - t), hi = R * (1 + t), C = cons[i];
+    const dev = C > hi ? C - hi : (C < lo ? lo - C : 0);
+    return {R, C, lo, hi, dev, t};
+  });
+}
+
+// ================= INICIO: datos del mapa =================
+const BINS = [  // desvío % frente a la receta elegida (secuencial, un solo tono)
+  {max: 0.0005, v: "--d0", txt: "Dentro"},
+  {max: 0.05, v: "--d1", txt: "Hasta 5%"},
+  {max: 0.15, v: "--d2", txt: "5-15%"},
+  {max: 0.30, v: "--d3", txt: "15-30%"},
+  {max: Infinity, v: "--d4", txt: "Más de 30%"},
+];
+const binDe = p => BINS.findIndex(b => p <= b.max);
+let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
+
+function calcularHojas(){
+  const c = casa(), ini = c.inicio.codigos, tol = tolerancia(), det = c.detector;
+  const filas = {}; det.filas.forEach(r => filas[r.ean] = r);
+  return Object.keys(ini).map(ean => {
+    const a = c.atributos[ean] || {}, i = ini[ean], r = filas[ean];
+    let u = null, p = null, sR = null, sinrec = false, meses = [];
+    if (i.scope && r && r.recetas.codigo) {
+      const ev = evaluar(r.recetas.codigo.fc, r.consensus, tol);
+      u = ev.reduce((s, e) => s + e.dev, 0); sR = ev.reduce((s, e) => s + e.R, 0);
+      p = sR > 0 ? u / sR : (u > 0.5 ? Infinity : 0);
+      meses = ev.map((e, k) => e.dev > 0.5 ? det.meses[k] : null).filter(Boolean);
+    } else if (i.scope) sinrec = true;
+    const vol = i.vol12 > 0 ? i.vol12 : i.cons9 * 12 / 9;
+    return {ean, desc: a.desc || ean, brand: a.brand || "(sin brand)", pl: a.pl || "(sin línea)", seg: a.segmento || "", edad: i.edad,
+            scope: i.scope, motivo: i.motivo, vol12: i.vol12, cons9: i.cons9, vol, u, p, sR, sinrec, meses,
+            fuera: u != null && u > 0.5};
+  });
+}
+
+function construirArbol(hojas){
+  const minVis = Math.max(1, Math.max(0, ...hojas.map(h => h.vol)) * 0.0012);
+  const brands = new Map();
+  hojas.forEach(h => {
+    if (!brands.has(h.brand)) brands.set(h.brand, new Map());
+    const pls = brands.get(h.brand); if (!pls.has(h.pl)) pls.set(h.pl, []); pls.get(h.pl).push(h);
+  });
+  const raiz = {nombre: estado.casa, clave: "Casa: " + estado.casa, nivel: "casa", children: []};
+  brands.forEach((pls, b) => {
+    const nb = {nombre: b, clave: "Brand: " + b, nivel: "brand", children: []};
+    pls.forEach((hs, pl) => nb.children.push({nombre: pl, clave: "PL: " + pl, nivel: "pl", children: hs.map(h => ({nombre: h.desc, nivel: "hoja", hoja: h, valor: Math.max(h.vol, minVis)}))}));
+    raiz.children.push(nb);
+  });
+  return d3.hierarchy(raiz).sum(d => d.valor || 0).sort((a, b) => b.value - a.value);
+}
+
+function coincide(h){
+  const f = M.filtros;
+  if (f.scope === "central" && !h.scope) return false;
+  if (f.fuera && !h.fuera) return false;
+  if (f.seg.size && !f.seg.has(h.seg || "(vacío)")) return false;
+  if (f.edad.size && !f.edad.has(h.edad)) return false;
+  if (f.q) { const t = (h.ean + " " + h.desc + " " + h.brand + " " + h.pl).toLowerCase(); if (!f.q.split(/\s+/).every(w => t.includes(w))) return false; }
+  return true;
+}
+
+// ================= INICIO: dibujo =================
+function colorHoja(h){
+  if (!h.scope) return "transparent";
+  if (h.sinrec) return "var(--sinrec)";
+  return `var(${BINS[binDe(h.p)].v})`;
+}
+
+function dibujarMapa(){
+  const lz = $("lienzo"), W = Math.round(lz.getBoundingClientRect().width);
+  if (!W) return;
+  M.W = W;
+  const raiz = construirArbol(M.hojas);
+  d3.pack().size([W, W]).padding(n => n.depth === 0 ? 14 : n.depth === 1 ? 6 : 2)(raiz);
+  M.raiz = raiz; M.nodos = raiz.descendants();
+  const clave = M.foco && M.foco.data.clave;
+  M.foco = (clave && M.nodos.find(n => n.data.clave === clave)) || raiz;
+  const svg = $("pack");
+  svg.setAttribute("viewBox", `0 0 ${W} ${W}`);
+  // índice de brand para la entrada en cascada
+  const iBrand = new Map(); raiz.children.forEach((b, i) => iBrand.set(b, i));
+  let h = "";
+  M.nodos.forEach((n, i) => {
+    const d = n.data;
+    const brand = n.depth >= 1 ? n.ancestors().find(a => a.depth === 1) : null;
+    const delay = brand ? Math.min(iBrand.get(brand), 9) * 45 + (n.depth - 1) * 40 : 0;
+    const cls = d.nivel === "hoja"
+      ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.sinrec ? " sinrec" : ""}`
+      : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
+    const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
+    h += `<circle class="${cls}" data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
+  });
+  $("mundo").innerHTML = h;
+  if (M.primera) {
+    lz.classList.add("entrando");
+    requestAnimationFrame(() => requestAnimationFrame(() => lz.classList.remove("entrando")));
+    setTimeout(() => $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = ""), 900);
+    M.primera = false;
+  } else $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = "");
+  enfocar(M.foco, false);
+  aplicarFiltros();
+}
+
+function transformDe(n){
+  const k = M.W / (2 * n.r * 1.03);
+  return {k, tx: M.W / 2 - n.x * k, ty: M.W / 2 - n.y * k};
+}
+
+function enfocar(n, animar = true){
+  M.foco = n;
+  const t = transformDe(n), g = $("mundo"), et = $("etiquetas");
+  const final = () => { pintarEtiquetas(); et.classList.remove("fuera"); };
+  if (animar && !reducir.matches) {
+    et.classList.add("fuera");
+    g.style.transform = `translate(${t.tx}px,${t.ty}px) scale(${t.k})`;
+    clearTimeout(M.tz); M.tz = setTimeout(final, 560);
+  } else {
+    g.style.transition = "none";
+    g.style.transform = `translate(${t.tx}px,${t.ty}px) scale(${t.k})`;
+    g.getBoundingClientRect(); g.style.transition = "";
+    final();
+  }
+  pintarMigas(); pintarPanel();
+  if (animar) {
+    // el panel cambia con la cámara: entra corto y desde abajo para no despegarse del zoom
+    const pn = $("panel");
+    pn.animate(reducir.matches ? [{opacity: .4}, {opacity: 1}] : [{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}],
+      {duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)"});
+  }
+}
+
+function aEscala(n){ const t = transformDe(M.foco); return {x: n.x * t.k + t.tx, y: n.y * t.k + t.ty, r: n.r * t.k}; }
+
+function pintarEtiquetas(){
+  const f = M.foco, et = $("etiquetas");
+  const k = $("lienzo").getBoundingClientRect().width / M.W || 1;
+  const puestos = [];  // rectángulos ya ocupados: la etiqueta que choca no se pinta (queda en el tooltip)
+  const libre = r => !puestos.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
+  let h = "";
+  // prefijo de palabras que comparten todos los códigos de la línea (p. ej. "GUCCI GUILT H"): no distingue, se quita
+  const descs = (f.children || []).filter(n => n.data.nivel === "hoja").map(n => n.data.nombre.split(" "));
+  let pref = 0;
+  if (descs.length > 1) while (pref < descs[0].length - 1 && descs.every(d => d[pref] === descs[0][pref] && d.length > pref + 1)) pref++;
+  (f.children || []).slice().sort((a, b) => b.r - a.r).forEach(n => {
+    const p = aEscala(n);
+    if (n.data.nivel === "hoja") {
+      const x = n.data.hoja;
+      if (p.r < 34 || !x.scope || !coincide(x)) return;
+      const w = Math.min(p.r * 1.6, 170), rc = {x: p.x - w / 2, y: p.y - 9, w, h: 18};
+      if (!libre(rc)) return; puestos.push(rc);
+      // color del texto por tramo y tema, para pasar AA sobre el relleno de la burbuja
+      const col = x.sinrec ? "var(--ink)" : `var(--t${binDe(x.p)})`;
+      h += `<div class="etq hoja" style="left:${p.x * k}px;top:${p.y * k}px;max-width:${w}px;color:${col}"><span class="t">${esc(n.data.nombre.split(" ").slice(pref).join(" "))}</span></div>`;
+    } else {
+      if (p.r < 42) return;
+      const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
+      if (!vis) return;
+      const txt = corto(n.data.nombre), w = (txt.length + String(vis).length + String(hs.length).length + 3) * 7.4 + 32;
+      const y = p.y - p.r, rc = {x: p.x - w / 2, y: y - 14, w, h: 28};
+      if (!libre(rc)) return; puestos.push(rc);
+      h += `<div class="etq grupo" style="left:${p.x * k}px;top:${y * k}px"><span class="t">${esc(txt)}</span><span class="c">${vis}/${hs.length}</span></div>`;
+    }
+  });
+  et.innerHTML = h;
+}
+
+function aplicarFiltros(){
+  const cs = $("mundo").children;
+  M.nodos.forEach((n, i) => {
+    const c = cs[i]; if (!c || n.depth === 0) return;
+    const on = n.data.nivel === "hoja" ? coincide(n.data.hoja) : n.leaves().some(l => coincide(l.data.hoja));
+    c.classList.toggle("apagado", !on);
+  });
+  pintarEtiquetas(); pintarPanel(); pintarCifras();
+}
+
+// ================= INICIO: migas, panel, cifras, leyenda =================
+function pintarMigas(){
+  const camino = M.foco.ancestors().reverse();
+  $("migas").innerHTML = camino.map((n, i) => `${i ? '<span class="sep">/</span>' : ""}<button type="button" data-clave="${esc(n.data.clave)}" ${i === camino.length - 1 ? 'aria-current="true"' : ""}>${esc(corto(n.data.nombre))}</button>`).join("");
+}
+
+function resumenGrupo(n){
+  const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide);
+  const sc = hs.filter(h => h.scope), fuera = sc.filter(h => h.fuera);
+  const u = sc.reduce((s, h) => s + (h.u || 0), 0), sR = sc.reduce((s, h) => s + (h.sR || 0), 0);
+  return {hs, vis, sc, fuera, u, sR};
+}
+
+function pintarPanel(){
+  const n = M.foco, r = resumenGrupo(n), clave = n.data.clave, hayRegla = existeRegla(clave);
+  const tipo = {casa: "Casa", brand: "Brand", pl: "Product Line"}[n.data.nivel];
+  let h = `<h2>${esc(corto(n.data.nombre))}</h2>
+    <p class="resumen">${n.parent ? `${tipo}. <b>${r.hs.length}</b> códigos, <b>${r.sc.length}</b> en scope central, <b>${r.fuera.length}</b> fuera de su estrategia.<br>` : ""}
+    Desvío del Consensus: <b class="marcador">${num(r.u)} uds</b>, <b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b> del forecast de las recetas.</p>
+    <div class="acciones"><button type="button" class="btn mono" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>
+    ${n.parent ? `<button type="button" class="btn btn-fant mono" data-subir="1">Subir un nivel</button>` : ""}</div>`;
+  const s = M.sel && M.hojas.find(x => x.ean === M.sel);
+  if (s) {
+    h += `<div class="ficha"><p class="d">${esc(s.desc)}</p>
+      <div class="m mono">${s.ean}<br>${esc(corto(s.brand))} · ${esc(corto(s.pl))}</div>
+      <div class="kpis">
+        <div><span class="mono" style="color:var(--mute)">Desvío</span><b class="num">${s.u == null ? "-" : num(s.u)}</b></div>
+        <div><span class="mono" style="color:var(--mute)">%</span><b class="num">${s.p == null ? "-" : pct(s.p)}</b></div>
+        <div><span class="mono" style="color:var(--mute)">Actuals 12M</span><b class="num">${num(s.vol12)}</b></div>
+      </div>
+      ${s.scope ? (s.sinrec ? `<p class="m">En scope, pero sin receta elegida: no estaba en scope en ninguna foto medida.</p>` : (s.meses.length ? `<p class="m">Se sale en ${s.meses.length} de 9 meses: ${s.meses.join(", ")}.</p>` : `<p class="m">Dentro de su receta los 9 meses.</p>`)) : `<p class="m">Fuera de scope (${esc(s.motivo || "local")}). Cuenta en los volúmenes del grupo.</p>`}
+      <button type="button" class="btn mono" data-abrir="${s.ean}">Abrir brújulas del código</button></div>`;
+  }
+  const lista = r.vis.slice().sort((a, b) => (b.u ?? -1) - (a.u ?? -1) || b.vol - a.vol);
+  h += `<div class="lista-cab mono"><span>${lista.length} resultado${lista.length === 1 ? "" : "s"}</span><span>Desvío uds · %</span></div>`;
+  if (!lista.length) {
+    h += `<div class="vacio">Ningún código cumple los filtros en <b>${esc(corto(n.data.nombre))}</b>. Prueba con <button type="button" class="enlace" data-limpiar="1">limpiar los filtros</button>${n.parent ? ` o <button type="button" class="enlace" data-subir="1">subir un nivel</button>` : ""}.</div>`;
+  } else {
+    const max = 80;
+    h += `<ul class="lista">` + lista.slice(0, max).map(x => `<li><button type="button" data-ean="${x.ean}" ${x.ean === M.sel ? 'aria-current="true"' : ""}>
+        <span class="sw" style="background:${x.scope ? colorHoja(x) : "transparent"};border:1px solid ${x.scope ? "transparent" : "var(--hueco)"}"></span>
+        <span style="min-width:0"><div class="d">${esc(x.desc)}</div><div class="e mono">${x.ean} · ${esc(corto(x.brand))}</div></span>
+        <span class="v">${x.scope ? (x.sinrec ? "Sin receta" : num(x.u)) : "Local"}<small>${x.scope && !x.sinrec ? pct(x.p) : esc(x.scope ? "" : (x.motivo || ""))}</small></span>
+      </button></li>`).join("") + `</ul>`;
+    if (lista.length > max) h += `<div class="mas mono">y ${lista.length - max} más. Afina la búsqueda.</div>`;
+  }
+  $("panel").innerHTML = h;
+}
+
+function pintarCifras(){
+  const hs = M.hojas, sc = hs.filter(h => h.scope), fuera = sc.filter(h => h.fuera);
+  $("cifras").innerHTML = `<div><b class="num">${hs.length}</b><span class="mono">EANs en ${casa().inicio.foto}</span></div>
+    <div><b class="num">${sc.length}</b><span class="mono">En scope</span></div>
+    <div><b class="num">${fuera.length}</b><span class="mono">Fuera de estrategia</span></div>`;
+}
+
+function pintarLeyenda(){
+  $("leyenda").innerHTML = `<span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
+    + BINS.map(b => `<span class="it"><span class="sw" style="background:var(${b.v})"></span>${b.txt}</span>`).join("")
+    + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
+    + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Fuera de scope</span>`;
+}
+
+function pintarChips(){
+  const hs = M.hojas;
+  const segs = [...new Set(hs.map(h => h.seg || "(vacío)"))].sort();
+  const orden = ["A1 1-6", "A1 7-12", "Año 2", "Año 3+", "Pre-disco", "Sin ventas"];
+  const edades = orden.filter(e => hs.some(h => h.edad === e));
+  const chip = (f, v) => `<button type="button" class="chip mono" data-f="${f}" data-v="${esc(v)}" aria-pressed="${M.filtros[f].has(v)}">${esc(v)}</button>`;
+  $("fSeg").innerHTML = `<span class="mono">Segmento</span>` + segs.map(v => chip("seg", v)).join("");
+  $("fEdad").innerHTML = `<span class="mono">Edad</span>` + edades.map(v => chip("edad", v)).join("");
+}
+
+// ================= INICIO: interacción =================
+const tip = $("tip");
+function verTip(ev, html){ tip.innerHTML = html; tip.classList.add("ver");
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - 14;
+  if (y + h > innerHeight - 8) y = ev.clientY - h - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function ocultarTip(){ tip.classList.remove("ver"); }
+
+$("pack").addEventListener("pointermove", ev => {
+  const c = ev.target.closest("circle"); if (!c) { ocultarTip(); return; }
+  const n = M.nodos[+c.dataset.i]; if (!n || n.depth === 0) { ocultarTip(); return; }
+  const d = n.data;
+  if (d.nivel === "hoja") {
+    const x = d.hoja;
+    verTip(ev, `<span class="mono">${x.ean}</span><b>${esc(x.desc)}</b><br>Actuals 12M ${num(x.vol12)} · Consensus 9M ${num(x.cons9)}<br>`
+      + (x.scope ? (x.sinrec ? "Sin receta elegida" : `Desvío ${num(x.u)} uds · ${pct(x.p)}`) : `Fuera de scope: ${esc(x.motivo || "local")}`));
+  } else {
+    const r = resumenGrupo(n);
+    verTip(ev, `<span class="mono">${{brand: "Brand", pl: "Product Line"}[d.nivel]}</span><b>${esc(corto(d.nombre))}</b><br>${r.hs.length} códigos · ${r.sc.length} en scope · ${r.fuera.length} fuera<br>Desvío ${num(r.u)} uds · ${pct(r.sR > 0 ? r.u / r.sR : null)}`);
+  }
+});
+$("pack").addEventListener("pointerleave", ocultarTip);
+$("pack").addEventListener("click", ev => {
+  const c = ev.target.closest("circle");
+  const n = c ? M.nodos[+c.dataset.i] : null;
+  if (!n || n === M.foco || n.depth === 0) { if (M.foco.parent && (!n || n.depth === 0 || n === M.foco)) enfocar(M.foco.parent); return; }
+  // baja un nivel en dirección al nodo pulsado
+  const camino = n.ancestors().reverse();
+  const iF = camino.indexOf(M.foco);
+  if (iF < 0) { enfocar(camino[Math.max(1, camino.length - 2)]); return; }
+  const sig = camino[iF + 1];
+  if (sig.data.nivel === "hoja") seleccionar(sig.data.hoja.ean);
+  else enfocar(sig);
+});
+
+function seleccionar(ean){
+  M.sel = ean;
+  $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo"));
+  const i = M.nodos.findIndex(n => n.data.hoja && n.data.hoja.ean === ean);
+  if (i >= 0) $("mundo").children[i].classList.add("activo");
+  pintarPanel();
+}
+
+function focoComun(hs){
+  // el nodo más pequeño que contiene a todos los resultados
+  if (!hs.length) return M.raiz;
+  const set = new Set(hs.map(h => h.ean));
+  const hojas = M.raiz.leaves().filter(l => set.has(l.data.hoja.ean));
+  let a = hojas[0].parent;
+  while (a && !hojas.every(l => l.ancestors().includes(a))) a = a.parent;
+  return a || M.raiz;
+}
+
+const mqMovil = matchMedia("(max-width: 700px)");
+const textoBuscar = () => $("q").placeholder = mqMovil.matches ? "EAN, brand o línea" : "Buscar EAN, descripción, brand o línea";
+mqMovil.addEventListener("change", textoBuscar); textoBuscar();
+let tQ;
+$("q").addEventListener("input", () => { clearTimeout(tQ); tQ = setTimeout(() => { M.filtros.q = $("q").value.trim().toLowerCase(); aplicarFiltros(); }, 90); });
+$("formBuscar").addEventListener("submit", () => {
+  M.filtros.q = $("q").value.trim().toLowerCase(); aplicarFiltros();
+  const vis = M.hojas.filter(coincide);
+  if (!M.filtros.q || !vis.length) return;
+  const f = focoComun(vis); if (f !== M.foco) enfocar(f);
+  if (vis.length === 1) seleccionar(vis[0].ean);
+});
+document.addEventListener("keydown", ev => {
+  if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") { ev.preventDefault(); irA("inicio"); $("q").focus(); $("q").select(); }
+  if (ev.key === "Escape" && !$("vistaInicio").hidden && document.activeElement !== $("q") && M.foco && M.foco.parent) enfocar(M.foco.parent);
+});
+$("filtros").addEventListener("click", ev => {
+  const b = ev.target.closest(".chip"); if (!b) return;
+  const f = b.dataset.f, v = b.dataset.v;
+  if (f === "scope") { M.filtros.scope = v; document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === v))); }
+  else if (f === "fuera") { M.filtros.fuera = !M.filtros.fuera; b.setAttribute("aria-pressed", String(M.filtros.fuera)); }
+  else { const s = M.filtros[f]; s.has(v) ? s.delete(v) : s.add(v); b.setAttribute("aria-pressed", String(s.has(v))); }
+  aplicarFiltros();
+});
+function limpiarFiltros(){
+  M.filtros = {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""};
+  $("q").value = "";
+  document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === "central")));
+  document.querySelector('[data-f="fuera"]').setAttribute("aria-pressed", "false");
+  pintarChips(); aplicarFiltros();
+}
+$("limpiar").addEventListener("click", limpiarFiltros);
+function sincronizarTol(origen){
+  const [a, b] = origen === 0 ? ["tolIni0", "tolFin0"] : ["tolIni", "tolFin"], [c, d] = origen === 0 ? ["tolIni", "tolFin"] : ["tolIni0", "tolFin0"];
+  $(c).value = $(a).value; $(d).value = $(b).value;
+}
+["tolIni0", "tolFin0"].forEach(id => $(id).addEventListener("input", () => { sincronizarTol(0); M.hojas = calcularHojas(); recolorear(); aplicarFiltros(); }));
+function recolorear(){
+  const cs = $("mundo").children;
+  M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; cs[i].style.fill = colorHoja(x); });
+}
+$("migas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; const n = M.nodos.find(x => x.data.clave === b.dataset.clave); if (n && n !== M.foco) enfocar(n); });
+$("panel").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.abrir) abrirDetalle(b.dataset.abrir);
+  else if (b.dataset.subir) { if (M.foco.parent) enfocar(M.foco.parent); }
+  else if (b.dataset.limpiar) limpiarFiltros();
+  else if (b.dataset.ean) {
+    if (b.getAttribute("aria-current") === "true") { abrirDetalle(b.dataset.ean); return; }
+    const n = M.nodos.find(x => x.data.hoja && x.data.hoja.ean === b.dataset.ean);
+    if (n && !n.ancestors().includes(M.foco)) enfocar(n.parent);
+    else if (n && n.parent !== M.foco) enfocar(n.parent);
+    seleccionar(b.dataset.ean);
+  }
+});
+new ResizeObserver(() => { if (!$("vistaInicio").hidden && Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); }).observe($("lienzo"));
+
+// ================= Navegación entre vistas =================
+function irA(vista, sel){
+  const cambio = () => {
+    const ini = vista === "inicio";
+    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini;
+    $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
+    $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
+    if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false; pintar(); window.scrollTo({top: 0, behavior: "instant"}); }
+    else if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa();
+  };
+  const actual = $("vistaInicio").hidden ? "detalle" : "inicio";
+  if (actual === vista && !sel) return;
+  if (document.startViewTransition && !reducir.matches && actual !== vista) document.startViewTransition(cambio); else cambio();
+}
+function abrirDetalle(sel){ location.hash = "detalle/" + encodeURIComponent(sel); }
+function leerHash(){
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h.startsWith("detalle")) { const s = h.slice(8); irA("detalle", s || estado.sel || "R|Casa: " + estado.casa); }
+  else irA("inicio");
+}
+window.addEventListener("hashchange", leerHash);
+$("volver").addEventListener("click", () => { location.hash = "inicio"; });
+
+// ================= DETALLE =================
 function posEje(v){
   if (!v) return null;
   const vals = v.map(x => x == null ? Infinity : x);
@@ -140,16 +910,15 @@ function posEje(v){
   return 0.5 * Math.tanh((a - z) / tau);
 }
 
-// ---------- brújula cuadrada (sin objetivo: solo ejes) ----------
 function brujula(svgId, ex, ey, polos){
-  const svg = $(svgId), S = 330, c = S/2, R = 125;
-  let h = `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" fill="none" stroke="var(--line)"/>
-    <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--line)"/>
-    <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--line)"/>
-    <text x="${c-R}" y="${c-6}" text-anchor="start">${polos[0]}</text>
-    <text x="${c+R}" y="${c-6}" text-anchor="end">${polos[1]}</text>
-    <text x="${c+4}" y="${c+R-4}" text-anchor="start">${polos[2]}</text>
-    <text x="${c+4}" y="${c-R+12}" text-anchor="start">${polos[3]}</text>`;
+  const svg = $(svgId), S = 326, c = S/2, R = 124;
+  let h = `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--hairline)"/>
+    <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--hairline)"/>
+    <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--hairline)"/>
+    <text x="${c-R+6}" y="${c+15}" text-anchor="start">${polos[0]}</text>
+    <text x="${c+R-6}" y="${c+15}" text-anchor="end">${polos[1]}</text>
+    <text x="${c}" y="${c+R+16}" text-anchor="middle">${polos[2]}</text>
+    <text x="${c}" y="${c-R-8}" text-anchor="middle">${polos[3]}</text>`;
   const pts = [];
   casa().fotos.forEach(f => {
     const e = entidad(f); if (!e || !e.ejes) return;
@@ -157,66 +926,66 @@ function brujula(svgId, ex, ey, polos){
     if (x == null || y == null) return;
     pts.push({x: c + x*R, y: c - y*R, mes: f.foto, e});
   });
-  if (pts.length > 1) h += `<polyline points="${pts.map(p => p.x+","+p.y).join(" ")}" fill="none" stroke="var(--azul)" stroke-opacity=".5"/>`;
+  if (pts.length > 1) h += `<polyline points="${pts.map(p => p.x+","+p.y).join(" ")}" fill="none" stroke="var(--receta)" stroke-opacity=".45" stroke-width="1.5"/>`;
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
     const tt = `${p.mes}\n${ex}: ${EJ[ex].map((v,k)=>vtxt(ex,v)+" → "+pct(p.e.ejes[ex][k])).join(", ")}\n${ey}: ${EJ[ey].map((v,k)=>vtxt(ey,v)+" → "+pct(p.e.ejes[ey][k])).join(", ")}`;
-    h += `<circle cx="${p.x}" cy="${p.y}" r="${ult ? 8 : 5}" fill="var(--azul)" fill-opacity="${op}"><title>${tt}</title></circle>`;
-    if (i === 0 || ult) h += `<text x="${p.x > c ? p.x - 10 : p.x + 10}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--txt)">${p.mes}</text>`;
+    h += `<circle cx="${p.x}" cy="${p.y}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--paper)" stroke-width="2"><title>${tt}</title></circle>`;
+    if (i === 0 || ult) h += `<text x="${p.x > c ? p.x - 13 : p.x + 13}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--ink);font-family:var(--font-mono);font-size:10px">${p.mes}</text>`;
   });
-  if (!pts.length) h += `<text x="${c}" y="${c+40}" text-anchor="middle">sin fotos con tramos cerrados</text>`;
+  if (!pts.length) h += `<text x="${c}" y="${c+40}" text-anchor="middle">Sin fotos con tramos cerrados</text>`;
   svg.innerHTML = h;
   const p = pts.length ? pts[pts.length - 1].e : null;
   const linea = k => `<b>${k}</b> ${EJ[k].map((v,i)=>vtxt(k,v)+": "+pct(p.ejes[k][i])).join(" · ")}`;
   $(svgId + "p").innerHTML = p ? `Mejor WAPE alcanzable en cada valor del eje (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
 }
 
-// ---------- receta elegida (la que se aplica a la foto actual) ----------
 function recetaElegida(){
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); return e ? e.receta_txt : null; }
   const el = casa().elegida[estado.sel]; return el ? el.txt : null;
 }
 
-// ---------- selector de grupo ----------
 function selector(){
   const f = fotoUltCerrada(), e = f && entidad(f);
   if (!e) { $("matriz").innerHTML = "<p class='pequeño'>Sin datos en las fotos con tramos cerrados.</p>"; $("matrizp").innerHTML = ""; return; }
   const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos;
   const max = Math.max(...tam);
   const rec = recetaElegida(), gan = rec ? rec.g : -1;
-  let h = `<table class="matriz"><tr><th></th>${AMPL.map(a=>`<th>${a}</th>`).join("")}</tr>`;
+  const oscuro = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() !== "#ffffff";
+  let h = `<table class="matriz"><tr><th></th>${AMPL.map(a=>`<th class="mono">${a}</th>`).join("")}</tr>`;
   CRIT.forEach(cr => {
-    h += `<tr><th class="izq">${cr === "Jerarquía" ? "Solo jerarquía" : "+ " + cr}</th>`;
+    h += `<tr><th class="izq mono">${cr === "Jerarquía" ? "Solo jerarquía" : "+ " + cr}</th>`;
     AMPL.forEach(a => {
       const gi = CELDAS.findIndex(x => x[0] === a && x[1] === cr);
-      if (gi < 0) { h += `<td></td>`; return; }
+      if (gi < 0) { h += `<td style="background:transparent"></td>`; return; }
       const n = tam[gi], t = Math.log(1 + n) / Math.log(1 + max);
       const w = e.ejes ? e.ejes.g[gi] : null;
-      const fondo = `rgba(10,132,255,${0.08 + 0.75*t})`, col = t > 0.55 ? "#fff" : "var(--txt)";
-      h += `<td class="${gi === gan ? "elegida" : ""}" style="background:${fondo};color:${col}" title="${a} · ${cr}${gi === gan ? " (ELEGIDO)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}">${esRegla() ? n.toFixed(0) : n}</td>`;
+      const al = 0.06 + 0.8 * t;
+      const fondo = oscuro ? `rgba(240,240,238,${al})` : `rgba(20,20,20,${al})`;
+      const col = t > 0.5 ? "var(--paper)" : "var(--ink)";
+      h += `<td class="${gi === gan ? "elegida" : ""}" style="background:${fondo};color:${col}" title="${a} · ${cr}${gi === gan ? " (elegido)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}">${esRegla() ? n.toFixed(0) : n}</td>`;
     });
     h += "</tr>";
   });
   $("matriz").innerHTML = h + "</table>";
-  const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "—"}`; });
-  $("matrizp").innerHTML = rec ? `<span class="elegidaTxt">✓ Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida";
+  const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "-"}`; });
+  $("matrizp").innerHTML = rec ? `<span class="elegidaTxt">Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida";
 }
 
-// ---------- media brújula (resultados de fotos anteriores) ----------
 function mediaBrujula(id, ventana){
-  const svg = $(id), W = 330, cx = W/2, base = 205, R = 150;
+  const svg = $(id), W = 326, cx = W/2, base = 205, R = 148;
   const X = spp => cx + Math.max(-1, Math.min(1, spp / 0.30)) * R;
   const Y = w => base - Math.max(0, Math.min(1, w / 0.60)) * (base - 15);
   const fuera = (spp, w) => Math.abs(spp) > 0.30 || w > 0.60;
-  let h = `<path d="M ${cx-R} ${base} A ${R} ${base-15} 0 0 1 ${cx+R} ${base}" fill="none" stroke="var(--line)"/>
-    <line x1="${cx-R}" y1="${base}" x2="${cx+R}" y2="${base}" stroke="var(--line)"/>
+  let h = `<path d="M ${cx-R} ${base} A ${R} ${base-15} 0 0 1 ${cx+R} ${base}" fill="none" stroke="var(--hairline)"/>
+    <line x1="${cx-R}" y1="${base}" x2="${cx+R}" y2="${base}" stroke="var(--hairline)"/>
     <rect x="${X(-CFG.metas.spp_abs_max)}" y="${Y(CFG.metas.wape_max)}" width="${X(CFG.metas.spp_abs_max)-X(-CFG.metas.spp_abs_max)}" height="${base-Y(CFG.metas.wape_max)}" fill="var(--meta)"/>
-    <line x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--verde)" stroke-dasharray="4 3"/>
-    <line x1="${cx}" y1="${base}" x2="${cx}" y2="15" stroke="var(--line)"/>
-    <text x="${cx+R}" y="${Y(CFG.metas.wape_max)-3}" text-anchor="end">WAPE 40%</text>
-    <text x="${cx-R}" y="${base+14}">−30% sobre-forecast</text><text x="${cx+R}" y="${base+14}" text-anchor="end">+30% bajo-forecast</text>
-    <text x="${cx}" y="${base+14}" text-anchor="middle">SPP 0</text><text x="${cx+3}" y="24">WAPE 60%</text>`;
-  const series = [["kpi_consensus", "var(--gris)", "4 3", "Consensus real"], ["kpi_receta", "var(--azul)", "", esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
+    <line x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--forest)" stroke-dasharray="4 3"/>
+    <line x1="${cx}" y1="${base}" x2="${cx}" y2="15" stroke="var(--hairline)"/>
+    <text x="${cx-R+40}" y="${Y(CFG.metas.wape_max)-4}" text-anchor="start" style="fill:var(--ok)">WAPE 40%</text>
+    <text x="${cx-R}" y="${base+15}">-30% sobre-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+30% bajo-forecast</text>
+    <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx+4}" y="24">WAPE 60%</text>`;
+  const series = [["kpi_consensus", "var(--cons)", "4 3", "Consensus real"], ["kpi_receta", "var(--receta)", "", esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
   const ult = {};
   series.forEach(([k, col, dash, nom]) => {
     const pts = [];
@@ -224,36 +993,24 @@ function mediaBrujula(id, ventana){
       const e = entidad(f); const v = e && e[k] && e[k][ventana];
       if (v) pts.push({x: X(v.spp), y: Y(v.wape), v, mes: f.foto, out: fuera(v.spp, v.wape)});
     });
-    if (pts.length > 1) h += `<polyline points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}"/>`;
+    if (pts.length > 1) h += `<polyline points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
     pts.forEach((p, i) => {
       const u = i === pts.length - 1;
-      h += p.out ? `<path d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala — SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
-                 : `<circle cx="${p.x}" cy="${p.y}" r="${u ? 6 : 4}" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
+      h += p.out ? `<path d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala. SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
+                 : `<circle cx="${p.x}" cy="${p.y}" r="${u ? 7 : 4}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--paper)" stroke-width="2"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
       if (u) ult[k] = p;
     });
   });
   svg.innerHTML = h;
-  const lin = (k, nom) => { const p = ult[k]; if (!p) return `${nom}: —`;
-    return `${nom} (${p.mes}): WAPE <b class="${p.v.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.v.wape)}</b> · SPP <b class="${Math.abs(p.v.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.v.spp)}</b>${p.out ? " ▲fuera de escala" : ""}`; };
+  const lin = (k, nom) => { const p = ult[k]; if (!p) return `${nom}: -`;
+    return `${nom} (${p.mes}): WAPE <b class="${p.v.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.v.wape)}</b> · SPP <b class="${Math.abs(p.v.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.v.spp)}</b>${p.out ? " (fuera de escala)" : ""}`; };
   let extra = "";
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); const v = e && e.kpi_oraculo && e.kpi_oraculo[ventana];
     if (v) extra = `<br>Suma de oráculos por código: WAPE ${pct(v.wape)} · SPP ${pct(v.spp)}`; }
-  $(id + "p").innerHTML = `<span style="color:var(--gris)">┅</span> ${lin("kpi_consensus","Consensus")}<br><span style="color:var(--azul)">●</span> ${lin("kpi_receta", esRegla() ? "Regla" : "Receta")}${extra}`;
+  const sw = (col, dash) => `<svg width="18" height="8" style="vertical-align:middle"><line x1="0" x2="18" y1="4" y2="4" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/></svg>`;
+  $(id + "p").innerHTML = `${sw("var(--cons)", "4 3")} ${lin("kpi_consensus","Consensus")}<br>${sw("var(--receta)", "")} ${lin("kpi_receta", esRegla() ? "Regla" : "Receta")}${extra}`;
 }
 
-// ---------- tolerancias y desvío ----------
-function tolerancia(){
-  const ti = parseFloat($("tolIni").value) / 100, tf = parseFloat($("tolFin").value) / 100;
-  return h => ti + (tf - ti) * (h - 1) / 8;
-}
-function evaluar(fc, cons, tol){
-  // desvío de un mes = solo el exceso fuera de [R·(1−tol), R·(1+tol)], en valor absoluto
-  return fc.map((R, i) => {
-    const t = tol(i + 1), lo = R * (1 - t), hi = R * (1 + t), C = cons[i];
-    const dev = C > hi ? C - hi : (C < lo ? lo - C : 0);
-    return {R, C, lo, hi, dev, t};
-  });
-}
 function filasGrupo(){
   const det = casa().detector;
   if (!esRegla()) return det.filas.filter(r => r.ean === estado.sel);
@@ -264,38 +1021,46 @@ function filasGrupo(){
   return [];
 }
 
-// ---------- foto actual: Consensus vs receta elegida con su banda ----------
 function grafico(meses, ev){
-  const W = 760, H = 270, L = 60, Rm = 20, T = 15, B = 40;
+  const W = 1000, H = 290, L = 64, Rm = 20, T = 28, B = 42;
   const max = Math.max(1, ...ev.map(e => Math.max(e.hi, e.C))) * 1.08;
   const x = i => L + (W - L - Rm) * (i + 0.5) / meses.length, y = v => T + (H - T - B) * (1 - v / max);
   let h = "";
   for (let k = 0; k <= 4; k++) { const v = max * k / 4;
-    h += `<line x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width=".5"/><text x="${L-6}" y="${y(v)+3}" text-anchor="end">${num(v)}</text>`; }
-  meses.forEach((m, i) => h += `<text x="${x(i)}" y="${H-B+16}" text-anchor="middle">${m}</text><text x="${x(i)}" y="${H-B+29}" text-anchor="middle">±${pct(ev[i].t,1)}</text>`);
+    h += `<line x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}" stroke="var(--mist)"/><text x="${L-8}" y="${y(v)+3}" text-anchor="end">${num(v)}</text>`; }
+  meses.forEach((m, i) => h += `<text x="${x(i)}" y="${H-B+17}" text-anchor="middle" style="font-family:var(--font-mono);font-size:10px">${m}</text><text x="${x(i)}" y="${H-B+31}" text-anchor="middle">±${pct(ev[i].t,1)}</text>`);
   h += `<polygon points="${ev.map((e,i)=>x(i)+","+y(e.hi)).join(" ")} ${ev.map((e,i)=>x(i)+","+y(e.lo)).reverse().join(" ")}" fill="var(--banda)"/>`;
-  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--azul)" stroke-width="2"/>`;
-  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--txt)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
+  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
   ev.forEach((e, i) => {
     const out = e.dev > 0.5;
-    h += `<circle cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5.5 : 4}" fill="${out ? "var(--rojo)" : "var(--txt)"}"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)}–${num(e.hi)}${out ? " · desvío " + num(e.dev) : ""}</title></circle>`;
-    if (out) h += `<text x="${x(i)}" y="${y(e.C) - 9}" text-anchor="middle" style="fill:var(--rojo)">${e.C > e.hi ? "+" : "−"}${num(e.dev)}</text>`;
+    h += `<circle cx="${x(i)}" cy="${y(e.C)}" r="${out ? 6 : 4}" fill="${out ? "var(--ember)" : "var(--cons)"}" stroke="var(--paper)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)} a ${num(e.hi)}${out ? " · desvío " + num(e.dev) : ""}</title></circle>`;
+    if (out) h += `<text x="${x(i)}" y="${y(e.C) - 11}" text-anchor="middle" style="fill:var(--ember-ink);font-family:var(--font-mono);font-size:10px">${e.C > e.hi ? "+" : "-"}${num(e.dev)}</text>`;
   });
-  h += `<rect x="${L}" y="2" width="12" height="8" fill="var(--banda)"/><text x="${L+16}" y="10">rango de tolerancia</text>
-        <line x1="${L+130}" x2="${L+152}" y1="6" y2="6" stroke="var(--azul)" stroke-width="2"/><text x="${L+156}" y="10">receta elegida</text>
-        <line x1="${L+250}" x2="${L+272}" y1="6" y2="6" stroke="var(--txt)" stroke-dasharray="4 3"/><text x="${L+276}" y="10">Consensus de la foto</text>
-        <circle cx="${L+400}" cy="6" r="4" fill="var(--rojo)"/><text x="${L+408}" y="10">mes fuera del rango (desvío en uds)</text>`;
-  return `<svg width="${W}" height="${H}">${h}</svg>`;
+  h += `<rect x="${L}" y="4" width="14" height="10" rx="2" fill="var(--banda)" stroke="var(--hairline)"/><text x="${L+20}" y="13">Rango de tolerancia</text>
+        <line x1="${L+150}" x2="${L+174}" y1="9" y2="9" stroke="var(--receta)" stroke-width="2"/><text x="${L+180}" y="13">Receta elegida</text>
+        <line x1="${L+282}" x2="${L+306}" y1="9" y2="9" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${L+312}" y="13">Consensus de la foto</text>
+        <circle cx="${L+446}" cy="9" r="5" fill="var(--ember)"/><text x="${L+456}" y="13">Mes fuera del rango (desvío en uds)</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;min-width:640px;display:block">${h}</svg>`;
+}
+
+function rail(r){
+  const nav = `<nav class="mono" aria-label="Secciones"><a href="#sFoto">Foto actual</a><a href="#sDecisiones">Decisiones</a><a href="#sResultados">Resultados</a><a href="#sDetector">Detector</a></nav>`;
+  if (!r) { $("rail").innerHTML = `<span class="mono lbl">Foto actual</span><p class="pequeño" style="margin:0 0 14px">Sin receta con la que comparar.</p>` + nav; return; }
+  $("rail").innerHTML = `<span class="mono lbl">Desvío ${r.foto}</span><span class="grande num marcador">${num(r.totDev)}</span> <span class="mono" style="color:var(--mute)">uds</span>
+    <div class="fila"><div><span class="mono lbl" style="margin:0">% receta</span><b class="num">${pct(r.totR > 0 ? r.totDev / r.totR : null)}</b></div>
+    <div><span class="mono lbl" style="margin:0">${esRegla() ? "Fuera" : "Meses fuera"}</span><b class="num">${esRegla() ? r.nFuera + "/" + r.n : r.meses + "/9"}</b></div></div>
+    ${r.rec ? `<p class="rec">${recetaTxt(r.rec)}</p>` : `<p class="rec">Cada código usa su propia receta.</p>`}` + nav;
 }
 
 function fotoActual(){
   const det = casa().detector, fuente = $("selFuente").value, tol = tolerancia();
-  $("tituloActual").textContent = `Foto actual ${det.foto} · Consensus frente a la estrategia`;
+  $("tituloActual").textContent = `Foto actual ${det.foto}`;
   const filas = filasGrupo();
   let h = "";
-  if (!filas.length) { $("actual").innerHTML = `<p>Este código no está en scope en la foto ${det.foto}.</p>`; return; }
+  if (!filas.length) { $("actual").innerHTML = `<p>Este código no está en scope en la foto ${det.foto}.</p>`; rail(null); return; }
   const conRec = filas.filter(r => r.recetas[fuente]);
-  if (!conRec.length) { $("actual").innerHTML = `<p>Sin receta elegida: no estaba en scope en ninguna foto con tramos cerrados.</p>`; return; }
+  if (!conRec.length) { $("actual").innerHTML = `<p>Sin receta elegida: no estaba en scope en ninguna foto con tramos cerrados.</p>`; rail(null); return; }
   const n = det.meses.length;
   let fc = Array(n).fill(0), cons = Array(n).fill(0), devCod = Array(n).fill(0), lo = Array(n).fill(0), hi = Array(n).fill(0);
   let nFuera = 0;
@@ -310,18 +1075,18 @@ function fotoActual(){
     dev: esRegla() ? devCod[i] : (cons[i] > hi[i] ? cons[i] - hi[i] : (cons[i] < lo[i] ? lo[i] - cons[i] : 0))}));
   const totDev = ev.reduce((a, e) => a + e.dev, 0), totR = fc.reduce((a, b) => a + b, 0);
   if (!esRegla()) { const r = conRec[0].recetas[fuente];
-    h += `<p>Receta aplicada: <b>${recetaTxt(r.txt)}</b>${r.sin_trend ? " <span class='aviso'>(trend no calculable hoy para este código: se aplica sin trend)</span>" : ""}</p>`; }
-  else h += `<p>${conRec.length} códigos con receta (${filas.length - conRec.length} sin receta). <b class="${nFuera ? "malo" : "bueno"}">${nFuera} fuera de su estrategia.</b> Totales del grupo; cada código usa su propia receta y su propio rango.</p>`;
+    h += `<p style="margin:0 0 12px">Receta aplicada: <b>${recetaTxt(r.txt)}</b>${r.sin_trend ? " <span class='aviso'>(trend no calculable hoy para este código: se aplica sin trend)</span>" : ""}</p>`; }
+  else h += `<p style="margin:0 0 12px">${conRec.length} códigos con receta (${filas.length - conRec.length} sin receta). <b class="${nFuera ? "malo" : "bueno"}">${nFuera} fuera de su estrategia.</b> Totales del grupo; cada código usa su propia receta y su propio rango.</p>`;
   h += grafico(det.meses, ev);
-  h += `<p>Desvío total: <b>${num(totDev)} uds</b> · <b>${pct(totR > 0 ? totDev / totR : null)}</b> del forecast de la receta (${num(totR)} uds).</p>`;
+  h += `<p>Desvío total: <b class="marcador">${num(totDev)} uds</b> · <b>${pct(totR > 0 ? totDev / totR : null)}</b> del forecast de la receta (${num(totR)} uds).</p>`;
+  rail({totDev, totR, meses: ev.filter(e => e.dev > 0.5).length, rec: esRegla() ? null : conRec[0].recetas[fuente].txt, nFuera, n: conRec.length, foto: det.foto});
   h += `<table><tr><th class="izq">Mes</th><th>h</th><th>Tolerancia</th><th>Receta</th><th>Rango mín</th><th>Rango máx</th><th>Consensus</th><th>Cons / Receta</th><th>Desvío uds</th></tr>`;
   ev.forEach((e, i) => {
-    h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td>${i+1}</td><td>±${pct(e.t)}</td><td>${num(e.R)}</td><td>${num(e.lo)}</td><td>${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td>${e.R > 0 ? pct(e.C / e.R - 1) : "—"}</td><td>${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
+    h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td>${i+1}</td><td>±${pct(e.t)}</td><td>${num(e.R)}</td><td>${num(e.lo)}</td><td>${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td>${e.R > 0 ? pct(e.C / e.R - 1) : "-"}</td><td class="dv">${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
   });
   $("actual").innerHTML = h + "</table>";
 }
 
-// ---------- resultados anteriores: tabla y detalle mes a mes ----------
 function anteriores(){
   let h = "";
   fotosCerradas().forEach(f => {
@@ -340,23 +1105,22 @@ function anteriores(){
         <table><tr><th class="izq">Mes</th><th>h</th><th>Actual</th><th>Consensus</th><th>Receta</th><th>H(t−12)</th><th>DA</th><th>|Cons−A|</th><th>|Rec−A|</th></tr>`;
       f.meses_fut.forEach((m, i) => {
         const A = e.actual_fut[i], C = e.consensus_fut[i], Rr = e.fc_oraculo[i];
-        h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null ? "—" : num(Math.abs(C - A))}</td><td>${A == null ? "—" : num(Math.abs(Rr - A))}</td></tr>`;
-        if (i === 2 || i === 5) h += `<tr><td colspan="9" style="border-bottom:2px solid var(--line);padding:0"></td></tr>`;
+        h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null ? "-" : num(Math.abs(C - A))}</td><td>${A == null ? "-" : num(Math.abs(Rr - A))}</td></tr>`;
+        if (i === 2 || i === 5) h += `<tr><td colspan="9" style="border-bottom:2px solid var(--hairline);padding:0"></td></tr>`;
       });
-      h += `</table><p class="pequeño">* sin año anterior para ese mes: se usa la media. H = Actuals + c·Supply Cuts − p·Total Demand Assumption.</p></details>`;
+      h += `</table><p class="pequeño">* Sin año anterior para ese mes: se usa la media. H = Actuals + c·Supply Cuts − p·Total Demand Assumption.</p></details>`;
     }
     if (esRegla()) {
       h += `<details><summary>Ver los ${e.n_codigos} códigos del grupo</summary><table><tr><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Edad</th><th>Actuals 9M</th><th>WAPE Cons 9M</th><th>WAPE oráculo 9M</th><th class="izq">Receta oráculo</th></tr>`;
       e.eans.map(ean => ({ean, c: f.codigos[ean]})).sort((a, b) => ((b.c.kpi_consensus?.["9M"]?.act)||0) - ((a.c.kpi_consensus?.["9M"]?.act)||0))
         .forEach(({ean, c}) => { const a = casa().atributos[ean];
-          h += `<tr><td class="izq"><a class="ean" data-ean="${ean}">${ean}</a></td><td class="izq">${a.desc}</td><td class="izq">${c.tramo_edad}</td><td>${num(c.kpi_consensus?.["9M"]?.act)}</td><td>${pct(c.kpi_consensus?.["9M"]?.wape)}</td><td>${pct(c.kpi_receta?.["9M"]?.wape)}</td><td class="izq pequeño">${recetaTxt(c.oraculo_receta)}</td></tr>`; });
+          h += `<tr><td class="izq"><a class="ean" data-ean="${ean}">${ean}</a></td><td class="izq">${esc(a.desc)}</td><td class="izq">${c.tramo_edad}</td><td>${num(c.kpi_consensus?.["9M"]?.act)}</td><td>${pct(c.kpi_consensus?.["9M"]?.wape)}</td><td>${pct(c.kpi_receta?.["9M"]?.wape)}</td><td class="izq pequeño">${recetaTxt(c.oraculo_receta)}</td></tr>`; });
       h += "</table></details>";
     }
   });
   $("anteriores").innerHTML = h || "<p>No hay fotos con tramos cerrados.</p>";
 }
 
-// ---------- detector ----------
 function detector(){
   const det = casa().detector, fuente = $("selFuente").value, tol = tolerancia();
   const filtro = $("filtro").value.toLowerCase();
@@ -368,55 +1132,53 @@ function detector(){
     if (!rec) { sinReceta++; return; }
     const ev = evaluar(rec.fc, r.consensus, tol);
     const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + e.R, 0);
-    const meses = ev.map((e, i) => e.dev > 0.5 ? det.meses[i].slice(2) + (e.C > e.hi ? "↑" : "↓") : null).filter(Boolean);
+    const meses = ev.map((e, i) => e.dev > 0.5 ? det.meses[i].slice(2) + (e.C > e.hi ? " alto" : " bajo") : null).filter(Boolean);
     filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
   const fuera = filas.filter(x => x.u > 0.5).length;
   let vis = filas.filter(x => ($("verTodos").checked || x.u > 0.5) && (!filtro || (x.r.ean + " " + x.r.desc).toLowerCase().includes(filtro)));
   const {col, dir} = estado.orden;
   vis.sort((a, b) => dir * ((a[col] > b[col]) - (a[col] < b[col])));
-  $("detInfo").innerHTML = `Foto ${det.foto} (meses ${det.meses[0]}…${det.meses[8]}). <b>${fuera} de ${filas.length} EANs fuera de su estrategia.</b>
+  $("detInfo").innerHTML = `Foto ${det.foto} (meses ${det.meses[0]} a ${det.meses[8]}). <b style="color:var(--ink)">${fuera} de ${filas.length} EANs fuera de su estrategia.</b>
      ${sinReceta ? sinReceta + " EANs sin receta (no estaban en scope en ninguna foto con tramos cerrados)." : ""}
      Desvío de un mes = solo el exceso fuera del rango, en valor absoluto (un mes arriba y otro abajo no se compensan). Desvío % = desvío / Σ forecast de la receta.`;
-  const th = (k, t) => `<th class="ord" data-col="${k}">${t}${col === k ? (dir > 0 ? " ▲" : " ▼") : ""}</th>`;
+  const th = (k, t) => `<th class="ord" data-col="${k}" aria-sort="${col === k ? (dir > 0 ? "ascending" : "descending") : "none"}">${t}${col === k ? `<svg class="flecha" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="${dir > 0 ? "M2 6.5 5 3.5l3 3" : "M2 3.5 5 6.5l3-3"}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ""}</th>`;
   let h = `<table><tr><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Brand</th><th class="izq">Edad</th>${th("sR","Σ Receta")}${th("sC","Σ Consensus")}${th("u","Desvío uds")}${th("p","Desvío %")}<th class="izq">Meses fuera</th><th class="izq">Grupo del trend</th></tr>`;
-  vis.forEach(x => {
-    h += `<tr><td class="izq"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq">${x.r.desc}</td><td class="izq">${x.r.brand.replace(/ \(\d+\)/,"")}</td><td class="izq">${x.r.edad}</td>
+  const tope = estado.detTodos ? vis.length : 30;
+  vis.slice(0, tope).forEach(x => {
+    h += `<tr><td class="izq"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq">${esc(x.r.desc)}</td><td class="izq">${esc(corto(x.r.brand))}</td><td class="izq">${x.r.edad}</td>
       <td>${num(x.sR)}</td><td>${num(x.sC)}</td><td><b>${num(x.u)}</b></td><td>${pct(x.p)}</td><td class="izq pequeño">${x.meses.join(" ")}</td>
       <td class="izq pequeño" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
   });
-  $("detector").innerHTML = h + "</table>";
-}
-
-// ---------- controles ----------
-function llenarCodigos(){
-  const c = casa();
-  const reglas = new Set(); c.fotos.forEach(f => Object.keys(f.reglas).forEach(k => reglas.add(k)));
-  let h = `<optgroup label="Reglas (todos los códigos del grupo)">${[...reglas].map(k => `<option value="R|${k}">${k}</option>`).join("")}</optgroup>`;
-  const eans = new Set(); c.fotos.forEach(f => Object.keys(f.codigos).forEach(e => eans.add(e)));
-  const lista = [...eans].map(e => ({e, a: c.atributos[e]})).sort((x, y) => (x.a.brand + x.a.desc).localeCompare(y.a.brand + y.a.desc));
-  let brand = null;
-  lista.forEach(({e, a}) => {
-    if (a.brand !== brand) { if (brand) h += "</optgroup>"; brand = a.brand; h += `<optgroup label="${brand}">`; }
-    h += `<option value="${e}">${e} · ${a.desc}</option>`;
-  });
-  $("selCodigo").innerHTML = h + "</optgroup>";
-  estado.sel = "R|Casa: " + estado.casa;
-  $("selCodigo").value = estado.sel;
+  if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--mute)">Ningún EAN se sale de su estrategia con esta tolerancia.</td></tr>`;
+  $("detector").innerHTML = h + "</table>" + (vis.length > tope ? `<p><button type="button" class="btn btn-fant mono" id="detMas">Ver los ${vis.length} EANs</button></p>` : "");
 }
 
 function info(){
   const c = casa(), fAct = c.fotos[c.fotos.length - 1];
-  let h = "";
+  let h = "", titulo, migas = [["R|Casa: " + estado.casa, estado.casa]];
   if (!esRegla()) {
     const a = c.atributos[estado.sel], e = fAct.codigos[estado.sel];
-    h += `<b>${a.desc}</b> · ${a.brand} · ${a.pl} · segmento ${a.segmento || "(vacío)"} · tamaño ${a.tamano} · flag sistema ${a.flag || "—"} · responsable ${a.fr || "(vacío)"}`;
+    titulo = a.desc;
+    migas.push(["R|Brand: " + a.brand, corto(a.brand)], ["R|PL: " + a.pl, corto(a.pl)], [estado.sel, estado.sel]);
+    h += `<b class="mono" style="font-size:12px">${estado.sel}</b> · ${esc(a.brand)} · ${esc(a.pl)} · segmento ${a.segmento || "(vacío)"} · tamaño ${a.tamano} · flag sistema ${a.flag || "-"} · responsable ${a.fr || "(vacío)"}`;
     h += e ? ` · edad hoy: ${e.tramo_edad}` : ` · <span class="aviso">fuera de scope en ${fAct.foto}</span>`;
+  } else {
+    const k = estado.sel.slice(2);
+    titulo = corto(k.replace(/^(Casa|Brand|PL): /, ""));
+    const tipo = k.split(":")[0];
+    if (tipo !== "Casa") {
+      const ej = c.detector.filas.find(r => (tipo === "Brand" ? r.brand : r.pl) === k.replace(/^(Brand|PL): /, ""));
+      if (ej) { migas.push(["R|Brand: " + ej.brand, corto(ej.brand)]); if (tipo === "PL") migas.push(["R|PL: " + ej.pl, corto(ej.pl)]); }
+    }
+    h += `Regla de ${{Casa: "la casa", Brand: "la brand", PL: "la product line"}[tipo]}: mejor receta común a todos sus códigos. `;
   }
   h += `<br>Fotos: ${c.fotos.map(f => f.foto + (f.hay_tramos_cerrados ? " (medida)" : " (actual)")).join(" · ")}. ` +
-       c.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${a}</span>`)).join(" · ");
+       c.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${esc(a)}</span>`)).join(" · ");
   $("info").innerHTML = h;
-  $("decSub").textContent = `· inputs ganadores en cada foto medida (${fotosCerradas().map(f => f.foto).join(", ")})`;
+  $("detTitulo").textContent = titulo;
+  $("detMigas").innerHTML = migas.map((m, i) => `${i ? '<span style="color:var(--mute-2)">/</span>' : ""}<button type="button" data-sel="${esc(m[0])}" ${i === migas.length - 1 ? 'aria-current="true"' : ""} ${m[0].startsWith("R|") && !existeRegla(m[0].slice(2)) ? "disabled" : ""}>${esc(m[1])}</button>`).join("");
+  $("decSub").textContent = `Inputs ganadores en cada foto medida (${fotosCerradas().map(f => f.foto).join(", ")}).`;
 }
 
 function pintar(){
@@ -424,7 +1186,7 @@ function pintar(){
   fotoActual();
   brujula("b1", "s", "w", ["Media plana", "Mismo mes año pasado", "Sin trend", "Trend completo"]);
   brujula("b2", "m", "N", ["100% sell-in", "100% sell-out", "Trend 6M", "Trend 12M"]);
-  brujula("b3", "c", "p", ["Sin sumar cortes", "+100% cortes", "Sin restar promos", "−100% promos"]);
+  brujula("b3", "c", "p", ["Sin sumar cortes", "+100% cortes", "Sin restar promos", "-100% promos"]);
   selector();
   ["90", "180", "9M"].forEach(v => mediaBrujula("r" + v, v));
   anteriores();
@@ -433,25 +1195,35 @@ function pintar(){
 
 $("leer").innerHTML = `<p><b>X = SPP</b> (bias, ${CFG.spp_signo < 0 ? "Σ(A−F)/ΣA" : "Σ(F−A)/ΣA"}): a la izquierda sobre-forecast, a la derecha bajo-forecast. <b>Y = WAPE</b> = Σ|F−A|/ΣA, 0 abajo, 60% arriba.</p>
   <p>Zona verde = meta: WAPE ≤ ${pct(CFG.metas.wape_max,0)} y SPP entre ±${pct(CFG.metas.spp_abs_max,0)}. Línea verde = WAPE 40%.</p>
-  <p><span style="color:var(--gris)">Gris discontinuo</span> = lo que pasó (Consensus - Final de la foto). <span style="color:var(--azul)">Azul</span> = mejor receta en esa foto (para un código, el oráculo; para un grupo, la regla del grupo). La distancia entre los dos es lo que se habría ganado.</p>
-  <p>Un punto por foto medida; el último más grande. ▲ = fuera de escala, pegado al borde.</p>
-  <p>Solo se miden fotos con actuals posteriores. La foto actual no se mide: se compara su Consensus con la receta elegida (arriba).</p>`;
-$("notas").innerHTML = `Rejilla gruesa: ${D.ejes.s.length**5 * D.ejes.N.length * CELDAS.length} recetas por código y foto. Pesos por tramo ${CFG.peso_tramo.join("-")}. Tope del trend ±${pct(CFG.tope_trend,0)}. Parámetros en brujulas/config.json.`;
+  <p>Gris discontinuo = lo que pasó (Consensus - Final de la foto). Tinta = mejor receta en esa foto (para un código, el oráculo; para un grupo, la regla del grupo). La distancia entre los dos es lo que se habría ganado.</p>
+  <p>Un punto por foto medida; el último más grande. Triángulo = fuera de escala, pegado al borde.</p>
+  <p>Solo se miden fotos con actuals posteriores. La foto actual no se mide: se compara su Consensus con la receta elegida.</p>`;
+$("notas").innerHTML = `Rejilla gruesa: ${(D.ejes.s.length**5 * D.ejes.N.length * CELDAS.length).toLocaleString("es-ES")} recetas por código y foto. Pesos por tramo ${CFG.peso_tramo.join("-")}. Tope del trend ±${pct(CFG.tope_trend,0)}. Parámetros en brujulas/config.json.`;
 
-$("selCasa").innerHTML = Object.keys(D.casas).map(k => `<option>${k}</option>`).join("");
-estado.casa = $("selCasa").value;
-llenarCodigos();
-$("selCasa").onchange = () => { estado.casa = $("selCasa").value; llenarCodigos(); pintar(); };
-$("selCodigo").onchange = () => { estado.sel = $("selCodigo").value; pintar(); };
-["tolIni", "tolFin", "selFuente"].forEach(id => $(id).addEventListener("input", () => { fotoActual(); detector(); }));
+$("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
+["tolIni", "tolFin"].forEach(id => $(id).addEventListener("input", () => { sincronizarTol(1); M.hojas = calcularHojas(); recolorear(); aplicarFiltros(); fotoActual(); detector(); }));
+$("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
 ["soloGrupo", "verTodos", "filtro"].forEach(id => $(id).addEventListener("input", detector));
 document.addEventListener("click", ev => {
   const a = ev.target.closest("a.ean");
-  if (a) { estado.sel = a.dataset.ean; $("selCodigo").value = estado.sel; pintar(); window.scrollTo({top: 0, behavior: "smooth"}); return; }
+  if (a) { abrirDetalle(a.dataset.ean); return; }
+  if (ev.target.closest("#detMas")) { estado.detTodos = true; detector(); return; }
   const t = ev.target.closest("th.ord");
   if (t) { const k = t.dataset.col; estado.orden = {col: k, dir: estado.orden.col === k ? -estado.orden.dir : -1}; detector(); }
 });
-pintar();
+
+// ================= Arranque =================
+function cargarCasa(){
+  estado.sel = "R|Casa: " + estado.casa;
+  M.foco = null; M.sel = null; M.primera = true;
+  M.hojas = calcularHojas();
+  pintarChips(); pintarLeyenda(); dibujarMapa();
+}
+$("selCasa").innerHTML = Object.keys(D.casas).map(k => `<option>${esc(k)}</option>`).join("");
+estado.casa = $("selCasa").value;
+$("selCasa").onchange = () => { estado.casa = $("selCasa").value; cargarCasa(); location.hash = "inicio"; };
+cargarCasa();
+leerHash();
 </script>
 </body>
 </html>
