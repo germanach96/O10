@@ -250,7 +250,7 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.
 - **Las cuatro tarjetas exactamente del mismo tamaño y alineadas.** Los prototipos fallaron aquí: usar un tamaño fijo en px para el lienzo de cada brújula y una altura fija para los títulos.
 - **Cada etiqueta en su extremo:** polos del eje X a izquierda y derecha, polos del eje Y arriba y abajo.
-- **Trayectoria del código:** un punto por foto, unidos en orden; el último punto más grande, los antiguos más tenues; etiqueta del mes en el primero y en el último.
+- **Trayectoria del código:** un punto por foto, unidos en orden con una curva suave (Catmull-Rom al 60% de tensión: redondea las esquinas sin salirse de los puntos); el último punto más grande, los antiguos más tenues; etiqueta del mes en el primero y en el último.
 - **Posición en un eje:**
   - Hacia el valor ganador, normalizado a −1…+1.
   - Distancia al centro proporcional a cuánto mejora frente al extremo contrario: `tanh(ΔWAPE / 5 pp)`, ajustable.

@@ -376,11 +376,11 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 .matriz tr:first-child th{vertical-align:bottom}
 .matriz td.elegida{box-shadow:0 0 0 2px var(--fondo),0 0 0 4px var(--blue)}
 /* capas de la selección en brújulas y selector: códigos pequeños debajo, promedio grande encima */
-.cods .cod polyline{fill:none;stroke:var(--receta);stroke-opacity:.16;stroke-width:.8;transition:stroke-opacity 150ms ease,stroke-width 150ms ease}
+.cods .cod path{fill:none;stroke:var(--receta);stroke-opacity:.16;stroke-width:.8;transition:stroke-opacity 150ms ease,stroke-width 150ms ease}
 .cods .cod circle{fill:var(--receta);fill-opacity:.32;transition:fill-opacity 150ms ease}
 @media (hover:hover) and (pointer:fine){
   .cods:hover .cod circle{fill-opacity:.14}
-  .cods .cod:hover polyline{stroke-opacity:.9;stroke-width:1.5}
+  .cods .cod:hover path{stroke-opacity:.9;stroke-width:1.5}
   .cods .cod:hover circle{fill-opacity:1}
 }
 /* sobre las celdas azules del selector, los códigos llevan un halo para no perderse */
@@ -1528,13 +1528,27 @@ function trayectorias(pos){
   });
   return {media, cods};
 }
+// Trayectoria suavizada: Catmull-Rom convertida a Bézier cúbicas con el 60% de la tensión estándar, para que
+// las esquinas se redondeen sin hacer bucles ni salirse de los puntos. Mismo nº de puntos → misma estructura de
+// comandos, así que la transición entre selecciones interpola la curva tramo a tramo.
+function curva(P){
+  if (P.length < 2) return "";
+  P = P.map(([x, y]) => [+x, +y]);   // las coordenadas llegan como texto (toFixed)
+  const f = n => (+n).toFixed(1), k = 0.6 / 6;
+  let d = `M ${f(P[0][0])} ${f(P[0][1])}`;
+  for (let i = 0; i < P.length - 1; i++) {
+    const a = P[Math.max(0, i - 1)], b = P[i], c = P[i + 1], e = P[Math.min(P.length - 1, i + 2)];
+    d += ` C ${f(b[0] + (c[0] - a[0]) * k)} ${f(b[1] + (c[1] - a[1]) * k)} ${f(c[0] - (e[0] - b[0]) * k)} ${f(c[1] - (e[1] - b[1]) * k)} ${f(c[0])} ${f(c[1])}`;
+  }
+  return d;
+}
 // capa de códigos del grupo: puntos y líneas pequeñas; al pasar por un código se resalta su línea
 function capaCodigos(cods, X, Y){
   let h = `<g class="cods">`;
   cods.forEach((l, ean) => {
     const a = casa().atributos[ean] || {}, tt = `${esc(a.desc || ean)}\n${ean}`;
     h += `<g class="cod"><title>${tt}</title>`;
-    if (l.length > 1) h += `<polyline points="${l.map(q => X(q) + "," + Y(q)).join(" ")}"/>`;
+    if (l.length > 1) h += `<path class="tray" d="${curva(l.map(q => [X(q), Y(q)]))}"/>`;
     l.forEach((q, i) => { h += `<circle cx="${X(q)}" cy="${Y(q)}" r="${i === l.length - 1 ? 3 : 2.2}"/>`; });
     h += `</g>`;
   });
@@ -1542,7 +1556,7 @@ function capaCodigos(cods, X, Y){
 }
 function capaMedia(pts, X, Y, etiqueta){
   let h = "";
-  if (pts.length > 1) h += `<polyline data-k="m-linea" points="${pts.map(p => X(p)+","+Y(p)).join(" ")}" fill="none" stroke="var(--receta)" stroke-opacity=".55" stroke-width="2"/>`;
+  if (pts.length > 1) h += `<path data-k="m-linea" class="tray" d="${curva(pts.map(p => [X(p), Y(p)]))}" fill="none" stroke="var(--receta)" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>`;
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
     h += `<circle class="media" data-k="m-${p.mes}" cx="${X(p)}" cy="${Y(p)}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${esc(etiqueta(p))}</title></circle>`;
@@ -1660,7 +1674,7 @@ function construir(svg){
   svg.querySelectorAll(".calor-img").forEach(im => im.animate([{opacity: 0, transform: "scale(.97)"}, {opacity: 1, transform: "none"}], {duration: 520, easing: MOV.curva, fill: "backwards"}));
   svg.querySelectorAll(".cods, .en-celda").forEach(g => g.animate([{opacity: 0}, {opacity: 1}], {duration: 420, delay: 120, easing: "ease", fill: "backwards"}));
   // trayectorias: la línea se dibuja de la primera foto a la última; las discontinuas aparecen con un fundido
-  svg.querySelectorAll(":scope > polyline[data-k]").forEach(l => {
+  svg.querySelectorAll(":scope > polyline[data-k], :scope > path.tray[data-k]").forEach(l => {
     if (l.getAttribute("stroke-dasharray")) { l.animate([{opacity: 0}, {opacity: 1}], {duration: 500, delay: 200, easing: "ease", fill: "backwards"}); return; }
     const L = l.getTotalLength ? l.getTotalLength() : 0; if (!L) return;
     l.animate([{strokeDasharray: `${L} ${L}`, strokeDashoffset: L}, {strokeDasharray: `${L} ${L}`, strokeDashoffset: 0}], {duration: 700, easing: io});
@@ -1843,7 +1857,7 @@ function selector(){
     h += `<text data-k="l-${i === 0 ? "ini" : "fin"}" x="${der ? x + 13 : x - 13}" y="${y + 4}" text-anchor="${der ? "start" : "end"}" class="et-mes et-halo">${p.mes}</text>`;
   });
   // el calor va sobre las celdas y bajo la trayectoria
-  if (capaCal) { const k = h.search(/<g class="en-celda">|<polyline data-k="m-linea"|<circle class="media"/); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
+  if (capaCal) { const k = h.search(/<g class="en-celda">|<path data-k="m-linea"|<circle class="media"/); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
   pintarSVG(svg, h);
   const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "-"}`; });
   $("matrizp").innerHTML = (rec ? `<span class="elegidaTxt">Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida");
