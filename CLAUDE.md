@@ -253,7 +253,8 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Hacia el valor ganador, normalizado a −1…+1.
   - Distancia al centro proporcional a cuánto mejora frente al extremo contrario: `tanh(ΔWAPE / 5 pp)`, ajustable.
   - Diferencia menor de ~1 pp → zona indiferente, cerca del centro.
-- **Selector:** matriz de 17 celdas con el nº de códigos del grupo (más oscuro = grupo más grande), la celda elegida con recuadro, y debajo el ganador de cada foto. Tooltip con el WAPE del grupo.
+- **Selector:** rejilla del mismo tamaño que una brújula (X = amplitud, Y = criterio) con 17 celdas que muestran el nº de códigos del grupo (más oscuro = grupo más grande). La celda elegida lleva recuadro. Encima va la trayectoria del grupo ganador foto a foto, igual que en las brújulas. Debajo, el ganador de cada foto. Tooltip con el WAPE del grupo.
+- **Selección de un grupo (casa, brand, product line):** en las tres brújulas y en el selector, el **punto grande es el promedio simple de las posiciones de todos los códigos del grupo** en cada foto, y su trayectoria se mueve foto a foto. Debajo, cada código del grupo se dibuja con un punto y una línea pequeños; al pasar el puntero por un código se resalta su línea. En el selector, los códigos se reparten dentro de la celda de su grupo ganador. Los valores del pie siguen siendo los de la regla del grupo.
 
 ### Sección "Resultados" — rejilla 2 × 2
 - Tres **medias brújulas**: SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE(9M).
