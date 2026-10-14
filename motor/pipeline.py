@@ -2,7 +2,7 @@
 
 Uso:  python -m motor.pipeline [carpeta_datos] [carpeta_salida] [--sin-cubo]
 
-Por defecto lee data/<Casa>/Consensus/<Casa>_AAAA_MM.csv y escribe el HTML en diseno/ejemplos/.
+Por defecto lee data/<Casa>/Consensus/<Casa>_AAAA_MM.csv (Promos/ aún no se usa) y escribe el HTML en diseno/ejemplos/.
 """
 from __future__ import annotations
 
@@ -425,7 +425,9 @@ def main(argv=None):
     cfg = cargar_config()
     R = Rejilla(cfg)
     t0 = time.time()
-    archivos = sorted(carpeta.rglob("*_[0-9][0-9][0-9][0-9]_[0-9][0-9].csv"))
+    # data/<Casa>/Consensus/<Casa>_AAAA_MM.csv; data/<Casa>/Promos/ todavía no se lee (2ª etapa)
+    patron = "*_[0-9][0-9][0-9][0-9]_[0-9][0-9].csv"
+    archivos = sorted(carpeta.glob("*/Consensus/" + patron)) or sorted(carpeta.glob(patron))
     casas = {}
     for a in archivos:
         f = leer_foto(a, cfg)

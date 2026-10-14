@@ -31,10 +31,18 @@ O10/
 │   ├── SKILLS-DISENO.md      skills de diseño obligatorias (lo importa CLAUDE.md)
 │   ├── referencia/           guías antiguas, ya no se aplican
 │   └── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
-├── data/                     datos de entrada: data/<Casa>/Consensus/<Casa>_AAAA_MM.csv
-│   └── Gucci/Consensus/      fotos de Gucci
+├── data/                     datos de entrada, una carpeta por casa
+│   ├── Gucci/
+│   │   ├── Consensus/        fotos mensuales: Gucci_2025_11.csv, Gucci_2026_09.csv
+│   │   └── Promos/           (vacía) promos, para la 2ª etapa
+│   ├── Gucci MU/             Consensus/ y Promos/ (vacías)
+│   ├── Kylie MU/             ídem
+│   ├── Kylie Frag/           ídem
+│   ├── Burberry/             ídem
+│   ├── Burberry MU/          ídem
+│   └── Marc Jacobs MU/       ídem
 ├── tests/                    tests del lector, el motor y los KPIs
 └── salida/                   (no versionada) cubo Parquet, resúmenes JSON, logs
 ```
 
-Una foto nueva se añade dejando su CSV en `data/<Casa>/Consensus/` con el nombre `<Casa>_AAAA_MM.csv` y volviendo a ejecutar el pipeline. La casa sale del nombre del archivo.
+Una foto nueva se añade dejando su CSV en `data/<Casa>/Consensus/` con el nombre `<Casa>_AAAA_MM.csv` y volviendo a ejecutar el pipeline. La casa sale del nombre del archivo. El pipeline solo lee las carpetas `Consensus/`; `Promos/` queda preparada para cuando se diferencien los tipos de promo.

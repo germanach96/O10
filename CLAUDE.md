@@ -8,7 +8,7 @@ Fase 1 (esta especificación): encontrar, en cada foto, los parámetros que mini
 
 Idioma de la interfaz y de los comentarios: español.
 
-Mapa del repo: `README.md`. Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/`.
+Mapa del repo: `README.md`. Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/` (y `data/<Casa>/Promos/`, aún sin usar).
 
 Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @diseno/SKILLS-DISENO.md
 
@@ -37,7 +37,7 @@ Visto desde una foto F: forecast de los meses F+1 … F+9. SPP3/WAPE90 = meses F
 
 ## 2. Datos de entrada
 
-Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucci, foto S&OP 2026.M04). Se guardan en `data/<Casa>/Consensus/` (por ejemplo `data/Gucci/Consensus/Gucci_2026_04.csv`).
+Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucci, foto S&OP 2026.M04). Se guardan en `data/<Casa>/Consensus/` (por ejemplo `data/Gucci/Consensus/Gucci_2026_04.csv`). Hay una carpeta por casa (Gucci, Gucci MU, Kylie MU, Kylie Frag, Burberry, Burberry MU, Marc Jacobs MU), cada una con `Consensus/` y `Promos/`; `Promos/` aún no se lee.
 
 ### Formato
 - Separador `;`, codificación UTF-8 con BOM.
