@@ -241,6 +241,9 @@ El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el 
 - **Página de inicio = burbujas anidadas** casa → brand → product line → EAN (no un grafo de fuerza, demasiado sucio con ~500 códigos). Tamaño = actuals 12M (si no hay, Consensus 9M anualizado). Color = desvío del Consensus frente a la receta elegida, escala ordinal gris (dentro) → amarillo → naranja → rojo → rojo oscuro; huecos = fuera de scope.
 - **Burbujas como lentes de cristal** (tinte translúcido, borde de luz, reflejo superior). Flotan muy despacio (≈2–3 px, ciclos de 9–16 s); al entrar el puntero en el mapa **todas frenan** con un muelle sin rebote y la burbuja señalada crece y muestra una tarjeta de cristal con su detalle. Con movimiento reducido no flotan.
 - **Sin recorte al hacer zoom:** las burbujas nunca se cortan con un círculo ni con el borde del lienzo; siempre están visibles y, si pasan por debajo de la barra, la barra lateral o el inspector, se ven a través del cristal (desenfoque tipo iOS 26).
+- **Cámara libre en el mapa:** arrastrar con el botón pulsado (o el dedo) mueve el mapa 1:1 y al soltar sigue con inercia (deceleración 0,998/ms, como el scroll de iOS); en los bordes resiste con goma y vuelve con un muelle sin rebote. La rueda (o el pellizco) hace zoom alrededor del puntero. Un clic sigue entrando un nivel (casa → brand → product line → EAN); si el nivel ya se ve entero y grande, la cámara no se mueve. Las etiquetas se ocultan mientras la cámara se mueve y se recolocan al parar, para todo lo que se vea a ese zoom.
+- **Modo acumulado** (interruptor arriba del inspector): en cada nivel (casa, brand, product line o EAN) aparece "Agregar a la selección" y se forma una lista (bandeja con quitar y vaciar; se guarda en el navegador por casa). Los elementos de la lista llevan un anillo azul en el mapa. "Ver brújulas de la selección" abre el detalle de la selección.
+- **Detalle de una selección:** se dibuja como un grupo (punto grande = promedio de los códigos, cada código pequeño), pero **no tiene receta común**: cada código conserva su propia receta y copia el trend de su propio grupo (un Gucci Flora y un Guilty usan trends de brands distintas). Los KPIs suman los numeradores de cada código (WAPE = Σ|F−A| / ΣA). El selector muestra el grupo de trend más copiado.
 - **Fondo:** gris difuminado y quieto (en oscuro, grises puros).
 - **Colores del sistema de Apple con un significado fijo:** azul = receta y acciones, gris discontinuo = Consensus, verde = meta. Fuente del sistema.
 - **Movimiento** según la skill de Emil Kowalski: muelles críticamente amortiguados para zoom y controles, curvas ease-out fuertes para pulsaciones y popovers, nada animado en acciones de teclado.
@@ -253,6 +256,10 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - Arrastre 1:1 con captura del puntero; el recálculo pesado se hace al soltar, fuera del fotograma del gesto; al soltar se proyecta la inercia y encaja en la foto más cercana con un muelle sin rebote. Con teclado: flechas, Inicio y Fin, sin animación.
 - **Todo cambia con el rango:** solo las fotos medidas del rango eligen la receta de cada código y de cada grupo (y, con ella, el detector y el color de las burbujas); brújulas, mapa de calor, selector y resultados muestran solo esas fotos. El detector sigue comparando el Consensus de la foto más reciente.
 - La página no calcula: el pipeline precalcula cada rango contiguo de fotos medidas (n·(n+1)/2; 55 con 10 fotos) guardando solo índices de receta, y el forecast de la foto actual una vez por (código, receta) usada. El rango se recuerda en el navegador.
+
+### Detalle en 4 grupos
+- El detalle se agrupa en **cuatro grupos, y solo cuatro**: Foto actual, Decisiones, Resultados y Detector. No se parten en subsectores.
+- **Al abrir la página los cuatro empiezan plegados:** cada grupo deja su título y una tira de cristal con lo esencial (Foto actual: desvío, % sobre la receta, meses o códigos fuera; Decisiones: la receta elegida; Resultados: WAPE90 y WAPE 9M de la receta frente al Consensus y la mejora; Detector: EANs fuera, desvío total y el mayor). Al pulsar el título o la tira, el grupo se expande (la tira crece hasta ser el contenido, View Transition con curva de cajón de iOS) y su cabecera no se mueve en pantalla. Botón "Expandir todo" / "Plegar todo" junto al título. El índice lateral abre el grupo antes de ir a él.
 
 ### Sección "Decisiones" — rejilla 2 × 2
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.
@@ -276,7 +283,6 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Dos trayectorias por foto: gris discontinua = lo que pasó (Consensus real), azul = mejor receta. La distancia entre ambas es lo que se habría ganado.
   - Debajo, los valores de la última foto.
 - Cuarto cuadro: cómo leerlas.
-- **Sectores minimizables:** cada sector (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M, Cómo leerlas, Detalle por foto) se minimiza por separado. **Al abrir la página todos empiezan minimizados**: solo quedan recuadros pequeños con los highlights (WAPE y SPP de la receta y del Consensus en la última foto del rango con esa ventana cerrada, y los pp ganados). Al pulsar un recuadro se expande su sector. Botón "Expandir todo" / "Minimizar todo" en la cabecera. Abrir o cerrar no desplaza la cabecera de Resultados en pantalla (transición de vista con muelle).
 - Escalas fijas para comparar códigos. Si un valor sale del rango, dibujarlo pegado al borde con un indicador.
 
 ### Sección "Detector"

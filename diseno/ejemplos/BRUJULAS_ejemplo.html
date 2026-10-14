@@ -184,7 +184,7 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .migas > span{overflow:hidden;text-overflow:ellipsis}
 .migas button{border:0;background:transparent;padding:0;color:var(--blue-txt);font-weight:500;white-space:nowrap}
 .migas .sep{color:var(--label-3)}
-.barra .titulo{transition:opacity 180ms ease}
+.barra .titulo{transition:opacity 180ms ease;text-shadow:0 0 2px var(--fondo),0 0 10px var(--fondo),0 0 18px var(--fondo)}
 .barra.titulo-oculto .titulo{opacity:0}
 .capsulas{display:flex;align-items:center;gap:10px}
 #segVista{border:1px solid var(--borde-cristal)}
@@ -260,27 +260,32 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 /* al saltar a una sección (enlaces del panel, scrollIntoView) su cabecera queda debajo de la barra fija, no tapada */
 .seccion{scroll-margin-top:calc(var(--alto-barra, 154px) + 12px)}
 /* resultados por sectores */
-.sec-cab{display:flex;align-items:center;justify-content:space-between;gap:12px}
+/* ---- Detalle en 4 grupos (Foto actual, Decisiones, Resultados, Detector). Al abrir, todos plegados: cada grupo
+   deja su título y una tira de cristal con lo esencial; la tira se convierte en el contenido al expandir. ---- */
+.det-tit{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.det-tit .plegar{flex:none;margin-top:6px}
+.sec-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.seccion > .sec-cab h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.025em;line-height:1.2;margin:0 0 2px}
 .plegar{display:inline-flex;align-items:center;gap:6px;font-size:13px}
 .plegar .ico{width:14px;height:14px;transition:transform 220ms var(--ease-out)}
-.plegar.plegado .ico{transform:rotate(180deg)}
-.minis{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 18px}
-.mini{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:208px;min-height:84px;padding:11px 13px 10px;border:0;border-radius:16px;text-align:left;color:var(--label);font:inherit;cursor:pointer;transition:transform 160ms var(--ease-out)}
-.mini:active{transform:scale(.97)}
-.mini .mn-t{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:12px;font-weight:600;color:var(--label-2)}
-.mini .mn-t .ico{width:13px;height:13px;color:var(--label-3)}
-.mini .mn-v{display:inline-flex;align-items:baseline;gap:5px;margin-right:10px}
-.mini .mn-v b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.mini .mn-v small{font-size:11px;color:var(--label-2)}
-.mini .mn-s{font-size:11.5px;color:var(--label-2);font-variant-numeric:tabular-nums}
-.mini .mn-v + .mn-v{margin-top:-2px}
-@media (hover:hover) and (pointer:fine){.mini:hover .mn-t .ico{color:var(--blue)}}
-.min-sec{float:right;width:24px;height:24px;margin:-1px -4px 0 0;padding:0;border:0;border-radius:50%;background:var(--fill);color:var(--label-2);display:inline-grid;place-items:center;cursor:pointer;transition:background-color 140ms ease,transform 140ms var(--ease-out)}
-.min-sec .ico{width:13px;height:13px}
-.min-sec:active{transform:scale(.92)}
-@media (hover:hover) and (pointer:fine){.min-sec:hover{background:var(--fill-2);color:var(--label)}}
-.ant-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.ant-cab h3{margin:0;font-size:14.5px}
+.plegar[aria-expanded="true"] .ico{transform:rotate(180deg)}
+.sec-tog{flex:none;width:30px;height:30px;padding:0;border:0;border-radius:50%;background:var(--fill);color:var(--label-2);display:grid;place-items:center;cursor:pointer;transition:background-color 140ms ease,color 140ms ease,transform 140ms var(--ease-out)}
+.sec-tog .ico{width:14px;height:14px;transition:transform 260ms var(--ease-out)}
+.sec-tog[aria-expanded="true"] .ico{transform:rotate(180deg)}
+.sec-tog:active{transform:scale(.92)}
+@media (hover:hover) and (pointer:fine){.sec-cab:hover .sec-tog{background:var(--fill-2);color:var(--label)}}
+.seccion.plegada{margin-top:22px}
+.seccion.plegada .sec-cuerpo{display:none}
+.seccion:not(.plegada) .sec-mini{display:none}
+.sec-mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 18px;align-items:end;width:100%;margin-top:10px;padding:13px 18px 12px;border:0;border-radius:var(--r-l);text-align:left;color:var(--label);font:inherit;cursor:pointer;transition:transform 160ms var(--ease-out)}
+.sec-mini:active{transform:scale(.985)}
+.sec-mini .mn{display:flex;flex-direction:column;gap:1px;min-width:0}
+.sec-mini .mn > span{font-size:11.5px;font-weight:600;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-mini .mn b{font-size:18px;font-weight:700;letter-spacing:-.015em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-mini .mn b small{font-size:12px;font-weight:600;color:var(--label-2);margin-left:4px;letter-spacing:0}
+.sec-mini .mn.txt b{font-size:14px;font-weight:600;letter-spacing:-.005em}
+.sec-mini .nota{grid-column:1/-1;font-size:11.5px;color:var(--label-2);margin-top:4px}
+.anteriores > h3{margin:0 0 6px;font-size:14.5px}
 .anteriores[data-sec]{margin-top:20px}
 /* transición recuadro ↔ tarjeta: solo se mueven los sectores, sin fundido de toda la página */
 html.vt-res::view-transition-old(root),html.vt-res::view-transition-new(root){animation:none}
@@ -306,7 +311,10 @@ main[hidden]{display:none}
 .mapa{position:absolute;top:84px;left:0;right:344px;bottom:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:0}
 /* sin recorte: al hacer zoom las burbujas siguen visibles en toda la ventana y pasan por debajo de las piezas de cristal */
 .lienzo{position:relative;width:min(100%,calc(100dvh - 150px));aspect-ratio:1/1;overflow:visible;isolation:isolate}
-.lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;touch-action:manipulation}
+.lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;touch-action:none}
+#vistaInicio .mapa{cursor:grab;-webkit-user-select:none;user-select:none}
+#vistaInicio .mapa.arrastrando,#vistaInicio .mapa.arrastrando *{cursor:grabbing !important}
+#vistaInicio .mapa .leyenda{cursor:auto}
 #mundo{transform-origin:0 0;transition:transform 640ms var(--muelle)}
 #mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
 .n-casa{fill:var(--b-casa);stroke:none}
@@ -341,9 +349,29 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
 .leyenda .it{display:flex;align-items:center;gap:5px}
 .leyenda .sw{width:10px;height:10px;border-radius:50%;display:inline-block}
 .leyenda .tam{display:none}
+.leyenda .pista-gesto{color:var(--label-3);padding-right:6px;border-right:1px solid var(--sep)}
 
 .hoja-ins{position:absolute;z-index:12;top:84px;right:0;bottom:12px;width:332px;border-radius:var(--r-xl);display:flex;flex-direction:column;overflow:hidden}
 .agarre{display:none}
+/* modo acumulado: interruptor fijo arriba del inspector y bandeja con la lista elegida */
+.acum-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 0}
+.acum-n{font-size:11.5px;font-weight:600;color:var(--on-blue);background:var(--blue);border-radius:999px;padding:2px 8px;font-variant-numeric:tabular-nums}
+.bandeja{background:color-mix(in srgb,var(--blue) 9%,var(--card-2));border:1px solid color-mix(in srgb,var(--blue) 26%,transparent);border-radius:var(--r-l);padding:12px 12px 10px;margin-bottom:14px}
+.bandeja .bj-cab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:13px}
+.bandeja .bj-cab span{color:var(--label-2);font-size:12px;font-variant-numeric:tabular-nums}
+.bandeja ul{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:4px;max-height:148px;overflow:auto}
+.bandeja li{display:grid;grid-template-columns:auto minmax(0,1fr) 24px;gap:8px;align-items:center;background:var(--card);border-radius:10px;padding:5px 4px 5px 9px}
+.bandeja li .niv{font-size:10.5px;font-weight:600;color:var(--blue-txt);text-transform:none}
+.bandeja li .t{font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bandeja li button{width:24px;height:24px;border:0;padding:0;border-radius:50%;background:transparent;color:var(--label-2);display:grid;place-items:center;cursor:pointer}
+.bandeja li button:active{transform:scale(.9)}
+@media (hover:hover) and (pointer:fine){.bandeja li button:hover{background:var(--fill);color:var(--label)}}
+.bandeja .vacio-bj{font-size:12px;color:var(--label-2);line-height:1.45;margin:0 0 10px}
+.bandeja .acciones{margin:0}
+.btn.agregar{background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue-txt);box-shadow:none}
+.btn.agregar[aria-pressed="true"]{background:var(--fill);color:var(--label)}
+#mundo circle.en-sel{stroke:var(--blue);stroke-width:2.5}
+#mundo circle.n-grupo.en-sel{stroke-dasharray:5 4}
 .panel{padding:18px 16px 0;display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden}
 .panel h2{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin:0 0 6px;text-wrap:balance}
 .panel .resumen{color:var(--label-2);font-size:13px;line-height:1.5;margin:0 0 14px}
@@ -401,7 +429,7 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .aviso{color:var(--orange)}}
 .seccion{margin-top:40px}
 .seccion > h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.025em;line-height:1.2;margin:0 0 2px}
-.seccion > .sub{color:var(--label-2);margin:0 0 14px;font-size:13px}
+.seccion > .sub,.sec-cuerpo > .sub{color:var(--label-2);margin:0 0 14px;font-size:13px}
 .ancho{border-radius:var(--r-l);padding:16px 18px;overflow-x:auto}
 .controles{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:14px;font-size:12.5px}
 .controles label{display:flex;align-items:center;gap:6px;color:var(--label-2);font-weight:500}
@@ -520,7 +548,9 @@ details[open] summary::before{transform:rotate(45deg)}
   .velo.ver{opacity:1;pointer-events:auto}
   .barra{position:sticky;top:0;right:0;padding:max(12px,env(safe-area-inset-top)) 12px 8px;flex-wrap:wrap;align-items:center}
   .barra.titulo-oculto .titulo{display:none}
-  .minis{gap:8px}.mini{width:calc(50% - 4px);padding:10px 11px 9px}
+  .sec-mini{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:12px 14px}
+  .det-tit{flex-direction:column;gap:4px}
+  .det-tit .plegar{margin:0 0 6px}
   .barra.compacta .capsulas,.barra.compacta .rango .presets,.barra.compacta .rango .t,.barra.compacta .rango .r small{display:none}
   .barra.compacta h1{font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .barra.compacta .titulo{min-width:0;flex:1}
@@ -733,6 +763,7 @@ details[open] summary::before{transform:rotate(45deg)}
     </section>
     <aside class="hoja-ins vidrio" id="hojaIns">
       <button type="button" class="agarre" id="agarre" aria-label="Mostrar u ocultar el panel"></button>
+      <div class="acum-fila"><label class="interruptor"><input type="checkbox" id="modoAcum" role="switch"><span class="pista" aria-hidden="true"></span>Modo acumulado</label><span class="acum-n" id="acumN" hidden></span></div>
       <div class="panel" id="panel" aria-live="polite"></div>
     </aside>
   </div>
@@ -743,14 +774,17 @@ details[open] summary::before{transform:rotate(45deg)}
   <div class="det-cab">
     <button type="button" class="enlace volver" id="volver">Mapa</button>
     <div class="det-migas" id="detMigas"></div>
-    <h1 id="detTitulo"></h1>
+    <div class="det-tit"><h1 id="detTitulo"></h1>
+      <button type="button" class="btn btn-fant plegar" id="plegarTodo" aria-expanded="false"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg><span>Expandir todo</span></button></div>
     <div class="info" id="info"></div>
   </div>
 
   <div class="det-cuerpo">
   <div class="det-main">
   <section class="seccion" id="sFoto">
-    <h2 id="tituloActual">Foto actual</h2>
+    <div class="sec-cab"><h2 id="tituloActual">Foto actual</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expandir Foto actual"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+    <button type="button" class="sec-mini vidrio" aria-label="Expandir Foto actual"></button>
+    <div class="sec-cuerpo">
     <p class="sub">Consensus de la foto frente a la receta elegida, con su rango de tolerancia.</p>
     <div class="ancho vidrio">
       <div class="controles">
@@ -764,10 +798,13 @@ details[open] summary::before{transform:rotate(45deg)}
       </div>
       <div id="actual"></div>
     </div>
+    </div>
   </section>
 
   <section class="seccion" id="sDecisiones">
-    <h2>Decisiones</h2>
+    <div class="sec-cab"><h2>Decisiones</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expandir Decisiones"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+    <button type="button" class="sec-mini vidrio" aria-label="Expandir Decisiones"></button>
+    <div class="sec-cuerpo">
     <div class="dec-cab">
       <p class="sub" id="decSub"></p>
       <label class="interruptor"><input type="checkbox" id="calor" role="switch"><span class="pista" aria-hidden="true"></span>Mapa de calor</label>
@@ -778,24 +815,28 @@ details[open] summary::before{transform:rotate(45deg)}
       <div class="tarjeta vidrio"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c. Y: promos restadas p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
       <div class="tarjeta vidrio"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt" id="selSubt">X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).</div><svg id="bsel" width="326" height="326"></svg><div class="pie" id="matrizp"></div></div>
     </div>
+    </div>
   </section>
 
   <section class="seccion" id="sResultados">
-    <div class="sec-cab"><h2>Resultados de las fotos anteriores</h2>
-      <button type="button" class="btn btn-fant plegar" id="plegarRes"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg><span>Expandir todo</span></button></div>
-    <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana. Cada sector se abre o se minimiza por separado.</p>
-    <div class="minis" id="resMinis"></div>
+    <div class="sec-cab"><h2>Resultados de las fotos anteriores</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expandir Resultados"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+    <button type="button" class="sec-mini vidrio" aria-label="Expandir Resultados"></button>
+    <div class="sec-cuerpo">
+    <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana.</p>
     <div class="rejilla" id="resRejilla">
-      <div class="tarjeta res vidrio" data-sec="r90"><h3>SPP3 · WAPE90<button type="button" class="min-sec" data-min="r90" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
-      <div class="tarjeta res vidrio" data-sec="r180"><h3>SPP6 · WAPE180<button type="button" class="min-sec" data-min="r180" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
-      <div class="tarjeta res vidrio" data-sec="r9M"><h3>SPP · WAPE (9M)<button type="button" class="min-sec" data-min="r9M" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
-      <div class="tarjeta res vidrio" data-sec="leer"><h3>Cómo leerlas<button type="button" class="min-sec" data-min="leer" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
+      <div class="tarjeta res vidrio"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
     </div>
-    <div class="ancho anteriores vidrio" data-sec="ant"><div class="ant-cab"><h3>Detalle por foto</h3><button type="button" class="min-sec" data-min="ant" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></div><div id="anteriores"></div></div>
+    <div class="ancho anteriores vidrio"><h3>Detalle por foto</h3><div id="anteriores"></div></div>
+    </div>
   </section>
 
   <section class="seccion" id="sDetector">
-    <h2>Detector</h2>
+    <div class="sec-cab"><h2>Detector</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expandir Detector"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+    <button type="button" class="sec-mini vidrio" aria-label="Expandir Detector"></button>
+    <div class="sec-cuerpo">
     <p class="sub">EANs fuera de su estrategia. Usa la tolerancia y la receta de la foto actual.</p>
     <div class="ancho vidrio">
       <div class="controles">
@@ -805,6 +846,7 @@ details[open] summary::before{transform:rotate(45deg)}
       </div>
       <div class="pequeño" id="detInfo" style="margin-bottom:10px;line-height:1.5"></div>
       <div id="detector"></div>
+    </div>
     </div>
   </section>
   <div class="notas" id="notas"></div>
@@ -867,14 +909,73 @@ document.querySelectorAll(".tema button").forEach(b => b.addEventListener("click
 function recetaTxt(r){ if(!r) return "-";
   return `s ${vtxt("s",r.s)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · ${r.grupo}`; }
 function casa(){ return D.casas[estado.casa]; }
-function esRegla(){ return estado.sel.startsWith("R|"); }
+function esRegla(){ return estado.sel.startsWith("R|") || estado.sel.startsWith("S|"); }
 function entidad(foto){
+  if (esSel()) return entidadSel(foto);
   if (esRegla()) return foto.reglas[estado.sel.slice(2)] || null;
   return foto.codigos[estado.sel] || null;
 }
 const fotosCerradas = () => V().fotos.filter(f => f.hay_tramos_cerrados);
 const fotoUltCerrada = () => { const l = fotosCerradas(); return l[l.length - 1]; };
 const existeRegla = k => fotosCerradas().some(f => f.reglas[k]);
+
+// ---- Selección acumulada (modo acumulado del mapa) ----
+// Una lista de casas, brands, product lines y EANs elegidos a mano. En el detalle se dibuja como un grupo, pero NO
+// tiene receta común: cada código conserva su propia receta, con el trend de SU grupo (un Gucci Flora y un Guilty
+// copian trends de brands distintas). Los KPIs de la selección suman los numeradores de cada código.
+const SEL = {modo: false, items: []};   // items: {clave, nombre, nivel}
+function leerSeleccion(){
+  try { const g = JSON.parse(localStorage.getItem("o10-sel-" + estado.casa) || "null"); SEL.items = Array.isArray(g) ? g : []; } catch(e) { SEL.items = []; }
+  try { SEL.modo = localStorage.getItem("o10-modo-acum") === "1"; } catch(e) {}
+}
+function guardarSeleccion(){ try { localStorage.setItem("o10-sel-" + estado.casa, JSON.stringify(SEL.items)); localStorage.setItem("o10-modo-acum", SEL.modo ? "1" : "0"); } catch(e) {} }
+const esSel = () => estado.sel.startsWith("S|");
+const claveSel = () => "S|" + SEL.items.map(i => i.clave).join("¦");
+function eansDeClave(k){
+  const at = casa().atributos, todos = Object.keys(casa().inicio.codigos);
+  if (k.startsWith("Casa: ")) return todos;
+  if (k.startsWith("Brand: ")) return todos.filter(e => ((at[e] || {}).brand || "(sin brand)") === k.slice(7));
+  if (k.startsWith("PL: ")) return todos.filter(e => ((at[e] || {}).pl || "(sin línea)") === k.slice(4));
+  return todos.includes(k) ? [k] : [];
+}
+const cacheMiembros = new Map();
+function miembros(sel = estado.sel){
+  const clave = estado.casa + "|" + [...AJ.ignorar].sort().join(",") + "|" + sel;
+  if (!cacheMiembros.has(clave)) {
+    const ini = casa().inicio.codigos, set = new Set();
+    sel.slice(2).split("¦").filter(Boolean).forEach(k => eansDeClave(k).forEach(e => { if (!ini[e] || cuenta(ini[e])) set.add(e); }));
+    cacheMiembros.set(clave, [...set]);
+  }
+  return cacheMiembros.get(clave);
+}
+const cacheSel = new WeakMap();
+function entidadSel(f){
+  let m = cacheSel.get(f); if (!m) { m = new Map(); cacheSel.set(f, m); }
+  const clave = estado.sel + "|" + [...AJ.ignorar].sort().join(",");
+  if (m.has(clave)) return m.get(clave);
+  const cods = miembros().filter(e => f.codigos[e]);
+  let ent = null;
+  if (cods.length) {
+    // suma de numeradores: WAPE = Σ|F−A| / ΣA y SPP = Σ(signo) / ΣA de todos los códigos, cada uno con su receta
+    const suma = k => Object.fromEntries(["90", "180", "9M"].map(v => {
+      let act = 0, ab = 0, sg = 0, n = 0;
+      cods.forEach(e => { const q = f.codigos[e][k] && f.codigos[e][k][v]; if (!q || !(q.act > 0)) return; act += q.act; ab += q.wape * q.act; sg += q.spp * q.act; n++; });
+      return [v, n ? {wape: ab / act, spp: sg / act, act} : null];
+    }));
+    const nG = (f.codigos[cods[0]].tam_grupos || []).length;
+    ent = {eans: cods, n_codigos: cods.length, kpi_receta: suma("kpi_receta"), kpi_consensus: suma("kpi_consensus"), kpi_oraculo: null, receta_txt: null, ejes: null,
+           tam_grupos_medio: Array.from({length: nG}, (_, g) => cods.reduce((a, e) => a + ((f.codigos[e].tam_grupos || [])[g] || 0), 0) / cods.length)};
+  }
+  m.set(clave, ent);
+  return ent;
+}
+// grupo de trend más repetido entre los códigos: en las recetas elegidas (futuro) o en el oráculo de una foto
+function grupoComun(f){
+  const cnt = {};
+  miembros().forEach(e => { const r = f ? (f.codigos[e] && f.codigos[e].oraculo_receta) : (V().elegida[e] && V().elegida[e].txt); if (r && r.grupo) cnt[r.grupo] = (cnt[r.grupo] || 0) + 1; });
+  const g = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+  return g ? g[0] : null;
+}
 
 // ---- Ajustes generales (barra lateral de inicio): tipos que cuentan y tolerancia; la tolerancia se puede afinar por EAN
 const AJ = (function(){
@@ -1009,6 +1110,7 @@ function dibujarMapa(){
   const raiz = construirArbol(M.hojas);
   d3.pack().size([W, W]).padding(n => n.depth === 0 ? 14 : n.depth === 1 ? 6 : 2)(raiz);
   M.raiz = raiz; M.nodos = raiz.descendants();
+  M.minR = Math.min(...raiz.leaves().map(l => l.r).filter(r => r > 0.6), 4);
   const clave = M.foco && M.foco.data.clave;
   M.foco = (clave && M.nodos.find(n => n.data.clave === clave)) || raiz;
   const svg = $("pack");
@@ -1050,6 +1152,7 @@ function dibujarMapa(){
       c.animate([{opacity: 1}, {opacity: 0, transform: "scale(.94)"}], {duration: 180, easing: "ease", fill: "forwards"}).onfinish = () => c.remove(); });
   }
   M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
+  marcarSeleccion();
   prepararFlotacion();
   if (M.primera) {
     lz.classList.add("entrando");
@@ -1091,7 +1194,7 @@ function pasoFlotacion(ahora){
     F.lista.forEach(e => e.g.removeAttribute("transform"));
     return;
   }
-  const t = (ahora - F.t0) / 1000, k = transformDe(M.foco).k;
+  const t = (ahora - F.t0) / 1000, k = (M.cam || transformDe(M.foco)).k;
   const tope = 2.6 / k;  // unos 2,6 px en pantalla a cualquier zoom
   for (const e of F.lista) {
     const a = Math.min(e.holgura * 0.7, tope) * F.amp;
@@ -1117,20 +1220,25 @@ function transformDe(n){
   return {k, tx: M.W / 2 - n.x * k, ty: M.W / 2 - n.y * k};
 }
 
-function enfocar(n, animar = true){
-  M.foco = n;
-  const t = transformDe(n), g = $("mundo"), et = $("etiquetas");
+// Cámara del mapa: M.cam = {k, tx, ty}. enfocar() la lleva a un nodo con el muelle de CSS; arrastrar y la rueda la
+// mueven libremente (ver "Cámara libre"). El foco (migas, panel) es el nivel elegido; la cámara puede ir por libre.
+function aplicarCam(){ $("mundo").style.transform = `translate(${M.cam.tx}px,${M.cam.ty}px) scale(${M.cam.k})`; }
+function camara(t, animar){
+  pararInercia();
+  M.cam = {k: t.k, tx: t.tx, ty: t.ty};
+  const g = $("mundo"), et = $("etiquetas");
   const final = () => { pintarEtiquetas(); et.classList.remove("fuera"); };
   if (animar && !reducir.matches) {
-    et.classList.add("fuera");
-    g.style.transform = `translate(${t.tx}px,${t.ty}px) scale(${t.k})`;
+    et.classList.add("fuera"); g.style.transition = ""; aplicarCam();
     clearTimeout(M.tz); M.tz = setTimeout(final, 560);
   } else {
-    g.style.transition = "none";
-    g.style.transform = `translate(${t.tx}px,${t.ty}px) scale(${t.k})`;
-    g.getBoundingClientRect(); g.style.transition = "";
-    final();
+    g.style.transition = "none"; aplicarCam(); g.getBoundingClientRect(); g.style.transition = "";
+    clearTimeout(M.tz); final();
   }
+}
+function enfocar(n, animar = true, mover = true){
+  M.foco = n;
+  if (mover) camara(transformDe(n), animar); else pintarEtiquetas();
   pintarMigas(); pintarPanel();
   if (animar) {
     // el panel cambia con la cámara: entra corto y desde abajo para no despegarse del zoom
@@ -1139,45 +1247,166 @@ function enfocar(n, animar = true){
       {duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)"});
   }
 }
+// ¿el nodo ya se ve entero y grande? Entonces entrar en él no mueve la cámara (no se pierde el sitio al que se llegó a mano)
+function encuadrado(n){ const p = aEscala(n), W = M.W; return 2 * p.r >= 0.5 * W && p.x - p.r >= -0.04 * W && p.x + p.r <= 1.04 * W && p.y - p.r >= -0.04 * W && p.y + p.r <= 1.04 * W; }
+function aEscala(n){ const t = M.cam || transformDe(M.foco); return {x: n.x * t.k + t.tx, y: n.y * t.k + t.ty, r: n.r * t.k}; }
 
-function aEscala(n){ const t = transformDe(M.foco); return {x: n.x * t.k + t.tx, y: n.y * t.k + t.ty, r: n.r * t.k}; }
+// ================= Cámara libre: arrastrar con el botón pulsado, zoom con la rueda (skill apple-design) =================
+// Arrastre 1:1 con captura del puntero; al soltar sigue con la inercia del gesto (deceleración 0,998 por ms, como el
+// scroll de iOS). En los bordes no hay tope duro: resiste con goma y vuelve con un muelle sin rebote. La rueda (o el
+// gesto de pellizco del trackpad) hace zoom alrededor del puntero; con dos dedos, pellizco. Las etiquetas se ocultan
+// mientras la cámara se mueve y se recolocan al parar.
+const G = {ptrs: new Map(), arr: false, hist: [], raf: 0, supr: false};
+function pararInercia(){ cancelAnimationFrame(G.raf); G.raf = 0; }
+const escalaLienzo = () => M.W / ($("lienzo").getBoundingClientRect().width || M.W);
+function lienzoPt(cx, cy){ const r = $("lienzo").getBoundingClientRect(), s = M.W / (r.width || M.W); return {x: (cx - r.left) * s, y: (cy - r.top) * s}; }
+function camViva(){
+  // si la cámara venía animándose (CSS), se parte del valor que se ve en pantalla, no del destino
+  const m = getComputedStyle($("mundo")).transform, v = m && m.match(/matrix\(([^)]+)\)/);
+  if (v) { const q = v[1].split(",").map(Number); M.cam = {k: q[0], tx: q[4], ty: q[5]}; }
+  $("mundo").style.transition = "none"; aplicarCam(); clearTimeout(M.tz);
+}
+function limitesK(){ const k0 = transformDe(M.raiz).k; return [k0 * 0.6, Math.min(k0 * 600, Math.max(k0 * 12, M.W / (2 * Math.max(0.6, M.minR || 1) * 1.15)))]; }
+// el círculo de la casa nunca sale del todo: su centro queda dentro de [15% − r, 85% + r] del lienzo
+function limites(){ const r = M.raiz, W = M.W, rs = r.r * M.cam.k;
+  return {x0: 0.15 * W - rs - r.x * M.cam.k, x1: 0.85 * W + rs - r.x * M.cam.k, y0: 0.15 * W - rs - r.y * M.cam.k, y1: 0.85 * W + rs - r.y * M.cam.k}; }
+const goma = (o, d) => o * d * 0.55 / (d + 0.55 * Math.abs(o));
+function suave(v, lo, hi){ return v < lo ? lo - goma(lo - v, M.W) : v > hi ? hi + goma(v - hi, M.W) : v; }
+function tocarCam(){
+  $("etiquetas").classList.add("fuera");
+  clearTimeout(G.te); G.te = setTimeout(() => { pintarEtiquetas(); $("etiquetas").classList.remove("fuera"); }, 140);
+}
+function volverDentro(){
+  // muelle críticamente amortiguado (respuesta 0,4 s) hasta el borde permitido, sin rebote
+  const L = limites(), dest = {tx: Math.min(L.x1, Math.max(L.x0, M.cam.tx)), ty: Math.min(L.y1, Math.max(L.y0, M.cam.ty))};
+  if (Math.abs(dest.tx - M.cam.tx) < .5 && Math.abs(dest.ty - M.cam.ty) < .5) { tocarCam(); return; }
+  if (reducir.matches) { M.cam.tx = dest.tx; M.cam.ty = dest.ty; aplicarCam(); tocarCam(); return; }
+  const w = 2 * Math.PI / 0.4; let vx = 0, vy = 0, t0 = performance.now();
+  const paso = ahora => {
+    const dt = Math.min(0.032, (ahora - t0) / 1000); t0 = ahora;
+    vx += (-w * w * (M.cam.tx - dest.tx) - 2 * w * vx) * dt; M.cam.tx += vx * dt;
+    vy += (-w * w * (M.cam.ty - dest.ty) - 2 * w * vy) * dt; M.cam.ty += vy * dt;
+    aplicarCam();
+    if (Math.abs(M.cam.tx - dest.tx) < .3 && Math.abs(M.cam.ty - dest.ty) < .3 && Math.hypot(vx, vy) < 5) { M.cam.tx = dest.tx; M.cam.ty = dest.ty; aplicarCam(); G.raf = 0; tocarCam(); return; }
+    G.raf = requestAnimationFrame(paso);
+  };
+  G.raf = requestAnimationFrame(paso);
+}
+function inercia(vx, vy){
+  // vx, vy en unidades del lienzo por ms; se proyecta como el scroll de iOS y se para al tocar el borde
+  if (reducir.matches || Math.hypot(vx, vy) < 0.05) { volverDentro(); return; }
+  let t0 = performance.now();
+  const paso = ahora => {
+    const dt = Math.min(32, ahora - t0); t0 = ahora;
+    M.cam.tx += vx * dt; M.cam.ty += vy * dt;
+    const f = Math.pow(0.998, dt); vx *= f; vy *= f;
+    const L = limites(), fuera = M.cam.tx < L.x0 || M.cam.tx > L.x1 || M.cam.ty < L.y0 || M.cam.ty > L.y1;
+    aplicarCam();
+    if (fuera || Math.hypot(vx, vy) < 0.02) { G.raf = 0; volverDentro(); return; }
+    G.raf = requestAnimationFrame(paso);
+  };
+  G.raf = requestAnimationFrame(paso);
+}
+function zoomEn(p, k){
+  const [k0, k1] = limitesK(); k = Math.min(k1, Math.max(k0, k));
+  const f = k / M.cam.k; M.cam = {k, tx: p.x - (p.x - M.cam.tx) * f, ty: p.y - (p.y - M.cam.ty) * f};
+}
+(function(){
+  const mapa = document.querySelector("#vistaInicio .mapa");
+  const fuera = ev => ev.target.closest(".leyenda, .etq");
+  mapa.addEventListener("wheel", ev => {
+    if (fuera(ev) || !M.raiz) return;
+    ev.preventDefault(); pararInercia(); camViva(); ocultarTip();
+    const d = ev.deltaMode === 1 ? ev.deltaY * 16 : ev.deltaMode === 2 ? ev.deltaY * 400 : ev.deltaY;
+    zoomEn(lienzoPt(ev.clientX, ev.clientY), M.cam.k * Math.exp(-d * (ev.ctrlKey ? 0.01 : 0.0022)));
+    const L = limites(); M.cam.tx = Math.min(L.x1, Math.max(L.x0, M.cam.tx)); M.cam.ty = Math.min(L.y1, Math.max(L.y0, M.cam.ty));
+    aplicarCam(); tocarCam();
+  }, {passive: false});
+  const centro = () => { const v = [...G.ptrs.values()]; return v.length > 1 ? {x: (v[0].x + v[1].x) / 2, y: (v[0].y + v[1].y) / 2, d: Math.hypot(v[0].x - v[1].x, v[0].y - v[1].y)} : {...v[0], d: 0}; };
+  mapa.addEventListener("pointerdown", ev => {
+    if ((ev.pointerType === "mouse" && ev.button !== 0) || fuera(ev) || !M.raiz) return;
+    G.ptrs.set(ev.pointerId, {x: ev.clientX, y: ev.clientY});
+    if (G.ptrs.size === 1) { G.ini = {x: ev.clientX, y: ev.clientY}; G.arr = false; }
+    if (G.arr || G.ptrs.size > 1 || G.raf) { pararInercia(); camViva(); G.arr = true; mapa.classList.add("arrastrando"); try { mapa.setPointerCapture(ev.pointerId); } catch(e) {} }
+    G.c = centro(); G.raw = {tx: M.cam.tx, ty: M.cam.ty}; G.hist = [{t: ev.timeStamp, x: G.c.x, y: G.c.y}];
+  });
+  mapa.addEventListener("pointermove", ev => {
+    if (!G.ptrs.has(ev.pointerId)) return;
+    G.ptrs.set(ev.pointerId, {x: ev.clientX, y: ev.clientY});
+    if (!G.arr) {
+      if (Math.hypot(ev.clientX - G.ini.x, ev.clientY - G.ini.y) < 5) return;   // umbral: un clic con temblor sigue siendo un clic
+      G.arr = true; pararInercia(); camViva(); ocultarTip(); mapa.classList.add("arrastrando"); try { mapa.setPointerCapture(ev.pointerId); } catch(e) {}
+      G.raw = {tx: M.cam.tx, ty: M.cam.ty};
+    }
+    const c = centro(), s = escalaLienzo();
+    if (G.ptrs.size > 1 && G.c.d > 0) { zoomEn(lienzoPt(c.x, c.y), M.cam.k * c.d / G.c.d); G.raw = {tx: M.cam.tx, ty: M.cam.ty}; }
+    G.raw.tx += (c.x - G.c.x) * s; G.raw.ty += (c.y - G.c.y) * s; G.c = c;
+    const L = limites(); M.cam.tx = suave(G.raw.tx, L.x0, L.x1); M.cam.ty = suave(G.raw.ty, L.y0, L.y1);
+    aplicarCam(); $("etiquetas").classList.add("fuera"); clearTimeout(G.te);
+    G.hist.push({t: ev.timeStamp, x: c.x, y: c.y}); while (G.hist.length > 2 && ev.timeStamp - G.hist[0].t > 90) G.hist.shift();
+  });
+  const soltar = ev => {
+    if (!G.ptrs.has(ev.pointerId)) return;
+    G.ptrs.delete(ev.pointerId);
+    if (G.ptrs.size) { G.c = centro(); G.raw = {tx: M.cam.tx, ty: M.cam.ty}; G.hist = [{t: ev.timeStamp, x: G.c.x, y: G.c.y}]; return; }
+    mapa.classList.remove("arrastrando");
+    if (!G.arr) return;
+    G.arr = false; G.supr = true; setTimeout(() => G.supr = false, 0);
+    const a = G.hist[0], b = G.hist[G.hist.length - 1], dt = b.t - a.t, s = escalaLienzo();
+    const quieto = ev.timeStamp - b.t > 60;   // si el dedo se paró antes de soltar, no hay inercia
+    if (ev.type === "pointerup" && dt > 0 && !quieto) inercia((b.x - a.x) / dt * s, (b.y - a.y) / dt * s); else volverDentro();
+  };
+  mapa.addEventListener("pointerup", soltar); mapa.addEventListener("pointercancel", soltar);
+  // tras arrastrar, el clic que dispara el navegador al soltar no selecciona nada
+  mapa.addEventListener("click", ev => { if (G.supr) { ev.stopPropagation(); ev.preventDefault(); } }, true);
+})();
 
 function pintarEtiquetas(){
-  const f = M.foco, et = $("etiquetas");
-  const k = $("lienzo").getBoundingClientRect().width / M.W || 1;
+  const et = $("etiquetas");
+  if (!M.raiz || !M.cam) return;
+  const lr = $("lienzo").getBoundingClientRect(), k = lr.width / M.W || 1;
+  // zona visible (la sección del mapa) en unidades del lienzo: con la cámara libre hay burbujas fuera del cuadrado
+  const mr = document.querySelector("#vistaInicio .mapa").getBoundingClientRect();
+  const vis = {x0: (mr.left - lr.left) / k, x1: (mr.right - lr.left) / k, y0: (mr.top - lr.top) / k, y1: (mr.bottom - lr.top) / k};
+  const dentro = (x, y) => x > vis.x0 + 20 && x < vis.x1 - 20 && y > vis.y0 + 12 && y < vis.y1 - 12;
   const puestos = [];  // rectángulos ya ocupados: la etiqueta que choca no se pinta (queda en el tooltip)
   const libre = r => !puestos.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
+  // palabras iniciales que repite la mayoría de una línea (p. ej. "GUCCI GUILT H"): no distinguen, se quitan
+  const comunesDe = new Map();
+  const comunes = pl => {
+    if (comunesDe.has(pl)) return comunesDe.get(pl);
+    const descs = (pl.children || []).filter(n => n.data.nivel === "hoja").map(n => n.data.nombre.split(" ")), c = new Set();
+    for (let i = 0; i < 4 && descs.length > 1; i++) {
+      const cnt = {}; descs.forEach(d => { if (d[i]) cnt[d[i]] = (cnt[d[i]] || 0) + 1; });
+      const [w, n] = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0] || [];
+      if (!w || n < descs.length * 0.5) break;
+      c.add(i + "|" + w);
+    }
+    comunesDe.set(pl, c); return c;
+  };
+  const limpio = n => { const c = comunes(n.parent), ws = n.data.nombre.split(" "); let i = 0; while (i < ws.length - 1 && c.has(i + "|" + ws[i])) i++; return ws.slice(i).join(" "); };
+  // primero los grupos (de fuera hacia dentro), después los códigos; dentro de cada nivel, los más grandes
+  const cand = M.nodos.filter(n => n.depth > 0).map(n => ({n, p: aEscala(n)}))
+    .filter(({n, p}) => n.data.nivel === "hoja" ? p.r >= 34 : p.r >= 42)
+    .sort((a, b) => (a.n.data.nivel === "hoja") - (b.n.data.nivel === "hoja") || a.n.depth - b.n.depth || b.p.r - a.p.r);
   let h = "";
-  // prefijo de palabras que comparten todos los códigos de la línea (p. ej. "GUCCI GUILT H"): no distingue, se quita
-  const descs = (f.children || []).filter(n => n.data.nivel === "hoja").map(n => n.data.nombre.split(" "));
-  // palabras iniciales que repite la mayoría de la línea (p. ej. "GUCCI GUILT H"): no distinguen, se quitan
-  const comunes = new Set();
-  for (let i = 0; i < 4 && descs.length > 1; i++) {
-    const cnt = {}; descs.forEach(d => { if (d[i]) cnt[d[i]] = (cnt[d[i]] || 0) + 1; });
-    const [w, c] = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0] || [];
-    if (!w || c < descs.length * 0.5) break;
-    comunes.add(i + "|" + w);
-  }
-  const limpio = d => { const ws = d.split(" "); let i = 0; while (i < ws.length - 1 && comunes.has(i + "|" + ws[i])) i++; return ws.slice(i).join(" "); };
-  (f.children || []).slice().sort((a, b) => (b.children ? b.leaves().length : 0) - (a.children ? a.leaves().length : 0) || b.r - a.r).forEach(n => {
-    const p = aEscala(n);
+  cand.forEach(({n, p}) => {
     if (n.data.nivel === "hoja") {
       const x = n.data.hoja;
-      if (p.r < 34 || !x.scope || !coincide(x)) return;
+      if (!x.scope || !coincide(x) || !dentro(p.x, p.y)) return;
       const w = Math.min(p.r * 1.6, 170), rc = {x: p.x - w / 2, y: p.y - 9, w, h: 18};
       if (!libre(rc)) return; puestos.push(rc);
       // color del texto por tramo y tema, para pasar AA sobre el relleno de la burbuja
       const col = x.sinrec ? "var(--label)" : `var(--t${binDe(x.p)})`;
-      h += `<div class="etq hoja" style="left:${p.x * k}px;top:${p.y * k}px;max-width:${w}px;color:${col}"><span class="t">${esc(limpio(n.data.nombre))}</span></div>`;
+      h += `<div class="etq hoja" style="left:${p.x * k}px;top:${p.y * k}px;max-width:${w}px;color:${col}"><span class="t">${esc(limpio(n))}</span></div>`;
     } else {
-      if (p.r < 42) return;
-      const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
-      if (!vis) return;
-      const txt = corto(n.data.nombre), w = (txt.length + String(vis).length + String(hs.length).length + 3) * 7.4 + 32;
+      const hs = n.leaves().map(l => l.data.hoja), nv = hs.filter(coincide).length;
+      if (!nv) return;
+      const txt = corto(n.data.nombre), w = (txt.length + String(nv).length + String(hs.length).length + 3) * 7.4 + 32;
       let y = p.y - p.r, rc = {x: p.x - w / 2, y: y - 14, w, h: 28};
-      if (!libre(rc)) { y = p.y + p.r; rc = {x: p.x - w / 2, y: y - 14, w, h: 28}; if (!libre(rc)) return; }
+      if (!dentro(p.x, y) || !libre(rc)) { y = p.y + p.r; rc = {x: p.x - w / 2, y: y - 14, w, h: 28}; if (!dentro(p.x, y) || !libre(rc)) return; }
       puestos.push(rc);
-      h += `<div class="etq grupo" style="left:${p.x * k}px;top:${y * k}px"><span class="t">${esc(txt)}</span><span class="c">${vis}/${hs.length}</span></div>`;
+      h += `<div class="etq grupo" style="left:${p.x * k}px;top:${y * k}px"><span class="t">${esc(txt)}</span><span class="c">${nv}/${hs.length}</span></div>`;
     }
   });
   et.innerHTML = h;
@@ -1215,8 +1444,9 @@ function pintarPanel(){
   let h = `<h2>${esc(corto(n.data.nombre))}</h2>
     <p class="resumen">${n.parent ? `${tipo}. <b>${r.hs.length}</b> códigos, <b>${r.sc.length}</b> en scope central, <b>${r.fuera.length}</b> fuera de su estrategia.<br>` : ""}
     Desvío del Consensus: <b class="marcador">${num(r.u)} uds</b>, <b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b> del forecast de las recetas.</p>
-    <div class="acciones"><button type="button" class="btn" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>
+    <div class="acciones">${SEL.modo ? botonAgregar(clave, n.data.nombre, n.data.nivel) : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>
     ${n.parent ? `<button type="button" class="btn btn-fant" data-subir="1">Subir un nivel</button>` : ""}</div>`;
+  if (SEL.modo) h += bandeja();
   const s = M.sel && M.hojas.find(x => x.ean === M.sel);
   if (s) {
     h += `<div class="ficha"><p class="d">${esc(s.desc)}</p>
@@ -1227,7 +1457,7 @@ function pintarPanel(){
         <div><span class="mono" style="color:var(--label-2)">Actuals 12M</span><b class="num">${num(s.vol12)}</b></div>
       </div>
       ${s.scope ? (s.sinrec ? `<p class="m">En scope, pero sin receta elegida: no estaba en scope en ninguna foto medida.</p>` : (s.meses.length ? `<p class="m">Se sale en ${s.meses.length} de 9 meses: ${s.meses.join(", ")}.</p>` : `<p class="m">Dentro de su receta los 9 meses.</p>`)) : `<p class="m">Fuera de scope (${esc(s.motivo || "local")}). Cuenta en los volúmenes del grupo.</p>`}
-      <button type="button" class="btn" data-abrir="${s.ean}">Abrir brújulas del código</button></div>`;
+      <div class="acciones" style="margin:0">${SEL.modo ? botonAgregar(s.ean, s.desc, "hoja") : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="${s.ean}">Abrir brújulas del código</button></div></div>`;
   }
   const lista = r.vis.slice().sort((a, b) => (b.u ?? -1) - (a.u ?? -1) || b.vol - a.vol);
   h += `<div class="lista-cab mono"><span>${lista.length} resultado${lista.length === 1 ? "" : "s"}</span><span>Desvío uds · %</span></div>`;
@@ -1245,6 +1475,27 @@ function pintarPanel(){
   $("panel").innerHTML = h;
 }
 
+const NIVEL = {casa: "Casa", brand: "Brand", pl: "Línea", hoja: "EAN"};
+const enSeleccion = k => SEL.items.some(i => i.clave === k);
+function botonAgregar(clave, nombre, nivel){
+  const ya = enSeleccion(clave);
+  return `<button type="button" class="btn agregar" aria-pressed="${ya}" data-agregar="${esc(clave)}" data-nombre="${esc(nombre)}" data-nivel="${nivel}">${ya ? "Quitar de la selección" : `Agregar ${nivel === "hoja" ? "EAN" : NIVEL[nivel].toLowerCase()} a la selección`}</button>`;
+}
+function bandeja(){
+  const n = SEL.items.length ? miembros(claveSel()).length : 0;
+  return `<div class="bandeja"><div class="bj-cab"><b>Selección</b><span>${SEL.items.length ? `${SEL.items.length} elemento${SEL.items.length === 1 ? "" : "s"} · ${n} códigos` : "vacía"}</span></div>`
+    + (SEL.items.length ? `<ul>${SEL.items.map(i => `<li><span class="niv">${NIVEL[i.nivel] || ""}</span><span class="t" title="${esc(i.nombre)}">${esc(corto(i.nombre))}</span><button type="button" data-quitar="${esc(i.clave)}" aria-label="Quitar ${esc(corto(i.nombre))}"><svg class="ico" viewBox="0 0 16 16" style="width:12px;height:12px" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg></button></li>`).join("")}</ul>`
+      : `<p class="vacio-bj">Entra en la casa, una brand, una línea o un EAN y pulsa <b>Agregar</b> cuando estés en el nivel que quieres.</p>`)
+    + `<div class="acciones"><button type="button" class="btn" data-versel="1" ${n ? "" : "disabled"}>Ver brújulas de la selección</button>${SEL.items.length ? `<button type="button" class="btn btn-fant" data-vaciar="1">Vaciar</button>` : ""}</div></div>`;
+}
+// burbujas de la selección: anillo azul (los grupos, discontinuo)
+function marcarSeleccion(){
+  if (!M.els) return;
+  const set = SEL.modo && SEL.items.length ? new Set(miembros(claveSel())) : new Set(), grupos = new Set(SEL.modo ? SEL.items.map(i => i.clave) : []);
+  M.nodos.forEach((n, i) => { const c = M.els[i]; if (!c || !n.depth) return;
+    c.classList.toggle("en-sel", n.data.nivel === "hoja" ? set.has(n.data.hoja.ean) : grupos.has(n.data.clave)); });
+  $("acumN").hidden = !SEL.modo || !SEL.items.length; $("acumN").textContent = SEL.items.length;
+}
 const ICO = {
   todos: '<svg class="ico" viewBox="0 0 16 16"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><circle cx="5" cy="11" r="2.5"/><circle cx="11" cy="11" r="2.5"/></svg>',
   scope: '<svg class="ico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2.5"/></svg>',
@@ -1299,7 +1550,7 @@ $("ladoBrands").addEventListener("click", ev => {
 $("ladoBrands").addEventListener("keydown", ev => { if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains("fila")) { ev.preventDefault(); ev.target.click(); } });
 
 function pintarLeyenda(){
-  $("leyenda").innerHTML = `<span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
+  $("leyenda").innerHTML = `<span class="it pista-gesto">${matchMedia("(pointer: coarse)").matches ? "Arrastra para moverte · pellizca para acercar" : "Arrastra para moverte · rueda para acercar"}</span><span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
     + BINS.map((b, k) => `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(${b.v}) 62%,transparent);box-shadow:inset 0 0 0 1.25px var(--r${k})"></span>${b.txt}</span>`).join("")
     + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
     + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Fuera de scope</span>`;
@@ -1395,7 +1646,7 @@ function ocultarTip(){
   tipActual = -1; tip.classList.remove("ver", "instant");
 }
 $("pack").addEventListener("pointerover", ev => {
-  if (ev.pointerType === "touch") return;
+  if (ev.pointerType === "touch" || G.arr) return;
   const c = ev.target.closest("circle[data-i]"); const i = c ? +c.dataset.i : -1;
   const n = M.nodos[i];
   clearTimeout(tipFuera);
@@ -1417,7 +1668,7 @@ $("pack").addEventListener("click", ev => {
   if (iF < 0) { enfocar(camino[Math.max(1, camino.length - 2)]); return; }
   const sig = camino[iF + 1];
   if (sig.data.nivel === "hoja") seleccionar(sig.data.hoja.ean);
-  else enfocar(sig);
+  else enfocar(sig, true, !encuadrado(sig));
 });
 
 
@@ -1528,8 +1779,17 @@ function recolorear(){
   M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; M.els[i].style.fill = colorHoja(x); if (x.scope && !x.sinrec) M.els[i].dataset.bin = binDe(x.p); });
 }
 $("migas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; const n = M.nodos.find(x => x.data.clave === b.dataset.clave); if (n && n !== M.foco) enfocar(n); });
+$("modoAcum").addEventListener("change", () => { SEL.modo = $("modoAcum").checked; guardarSeleccion(); pintarPanel(); marcarSeleccion(); });
 $("panel").addEventListener("click", ev => {
   const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.agregar) {
+    const k = b.dataset.agregar;
+    if (enSeleccion(k)) SEL.items = SEL.items.filter(i => i.clave !== k); else SEL.items.push({clave: k, nombre: b.dataset.nombre, nivel: b.dataset.nivel});
+    guardarSeleccion(); pintarPanel(); marcarSeleccion(); return;
+  }
+  if (b.dataset.quitar) { SEL.items = SEL.items.filter(i => i.clave !== b.dataset.quitar); guardarSeleccion(); pintarPanel(); marcarSeleccion(); return; }
+  if (b.dataset.vaciar) { SEL.items = []; guardarSeleccion(); pintarPanel(); marcarSeleccion(); return; }
+  if (b.dataset.versel) { abrirDetalle(claveSel()); return; }
   if (b.dataset.abrir) abrirDetalle(b.dataset.abrir);
   else if (b.dataset.subir) { if (M.foco.parent) enfocar(M.foco.parent); }
   else if (b.dataset.limpiar) limpiarFiltros();
@@ -1597,7 +1857,7 @@ function irA(vista, sel){
       // al llegar desde el mapa no se vio el detalle anterior: todos los gráficos se construyen de cero
       if (actual !== "detalle") document.querySelectorAll("#vistaDetalle [data-dibujado]").forEach(e => delete e.dataset.dibujado);
       $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"});
-      pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
+      pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esSel() ? "Selección de " + miembros().length + " códigos" : esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
     else { $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
     bordeBarra();
   };
@@ -1926,7 +2186,7 @@ function brujula(svgId, ex, ey, polos){
   pintarSVG(svg, h);
   const p = pts.length ? pts[pts.length - 1].e : null;
   const linea = k => `<b>${k}</b> ${EJ[k].map((v,i)=>vtxt(k,v)+": "+pct(p.ejes[k][i])).join(" · ")}`;
-  $(svgId + "p").innerHTML = p && p.ejes ? `Mejor WAPE alcanzable en cada valor del eje${esRegla() ? ", regla del grupo" : ""} (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
+  $(svgId + "p").innerHTML = esSel() && pts.length ? `Punto grande: promedio de las posiciones de los ${pts[pts.length - 1].n} códigos (${pts[pts.length - 1].mes}); cada uno con su propia receta.` : p && p.ejes ? `Mejor WAPE alcanzable en cada valor del eje${esRegla() ? ", regla del grupo" : ""} (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
 }
 
 function recetaElegida(){
@@ -1989,6 +2249,8 @@ function selector(){
   // el calor va sobre las celdas y bajo la trayectoria
   if (capaCal) { const k = h.search(/<g class="en-celda">|<path data-k="m-linea"|<circle class="media"/); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
   pintarSVG(svg, h);
+  if (esSel()) { const g = grupoComun();
+    $("matrizp").innerHTML = `<span class="elegidaTxt">Cada código copia el trend de su propio grupo${g ? ` · más copiado: ${esc(g)}` : ""}</span><br>Más copiado por foto: ${fotosCerradas().map(ff => `${ff.foto}: ${esc(grupoComun(ff) || "-")}`).join(" · ")}`; return; }
   const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "-"}`; });
   $("matrizp").innerHTML = (rec ? `<span class="elegidaTxt">Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida");
 }
@@ -2007,7 +2269,7 @@ function mediaBrujula(id, ventana){
     <text x="${cx-R}" y="${Y(CFG.metas.wape_max)+13}" text-anchor="start" style="fill:var(--green-txt)">WAPE 40%</text>
     <text x="${cx-R}" y="${base+15}">-30% sobre-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+30% bajo-forecast</text>
     <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx-R+8}" y="30">WAPE 60%</text>`;
-  const series = [["kpi_consensus", "var(--cons)", "4 3", "Consensus real"], ["kpi_receta", "var(--receta)", "", esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
+  const series = [["kpi_consensus", "var(--cons)", "4 3", "Consensus real"], ["kpi_receta", "var(--receta)", "", esSel() ? "Receta de cada código (oráculo)" : esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
   const ult = {};
   series.forEach(([k, col, dash, nom]) => {
     const pts = [];
@@ -2030,12 +2292,13 @@ function mediaBrujula(id, ventana){
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); const v = e && e.kpi_oraculo && e.kpi_oraculo[ventana];
     if (v) extra = `<br>Suma de oráculos por código: WAPE ${pct(v.wape)} · SPP ${pct(v.spp)}`; }
   const sw = (col, dash) => `<svg width="18" height="8" style="vertical-align:middle"><line x1="0" x2="18" y1="4" y2="4" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/></svg>`;
-  $(id + "p").innerHTML = `${sw("var(--cons)", "4 3")} ${lin("kpi_consensus","Consensus")}<br>${sw("var(--receta)", "")} ${lin("kpi_receta", esRegla() ? "Regla" : "Receta")}${extra}`;
+  $(id + "p").innerHTML = `${sw("var(--cons)", "4 3")} ${lin("kpi_consensus","Consensus")}<br>${sw("var(--receta)", "")} ${lin("kpi_receta", esSel() ? "Recetas" : esRegla() ? "Regla" : "Receta")}${extra}`;
 }
 
 function filasGrupo(){
   const det = V().detector;
   if (!esRegla()) return det.filas.filter(r => r.ean === estado.sel);
+  if (esSel()) { const set = new Set(miembros()); return det.filas.filter(r => set.has(r.ean)); }
   const k = estado.sel.slice(2);
   if (k.startsWith("Casa: ")) return det.filas;
   if (k.startsWith("Brand: ")) return det.filas.filter(r => r.brand === k.slice(7));
@@ -2065,7 +2328,7 @@ function grafico(meses, ev){
   ev.forEach((e, i) => {
     const out = e.dev > 0.5;
     h += `<circle data-k="g-c${i}" cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5 : 3.5}" fill="${out ? "var(--red)" : "var(--cons)"}" stroke="var(--card)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)} a ${num(e.hi)}${out ? " · desvío " + num(e.dev) + (e.C > e.hi ? " por encima" : " por debajo") : ""}</title></circle>`;
-    if (out && !estrecho) h += `<text x="${x(i)}" y="${y(e.C) + (e.C < e.lo ? 18 : -10)}" text-anchor="middle" style="fill:var(--red-txt);font-weight:600">${num(e.dev)}</text>`;
+    if (out && !estrecho) h += `<text x="${x(i)}" y="${e.C < e.lo && y(e.C) + 18 < H - B - 4 ? y(e.C) + 18 : y(e.C) - 10}" text-anchor="middle" style="fill:var(--red-txt);font-weight:600">${num(e.dev)}</text>`;
   });
   h += `</g>`;
   const sw = (c) => `<span class="ley-it">${c}</span>`;
@@ -2074,6 +2337,7 @@ function grafico(meses, ev){
 }
 
 function rail(r){
+  RES.foto = r;
   const nav = `<nav aria-label="Secciones">${[["sFoto","Foto actual"],["sDecisiones","Decisiones"],["sResultados","Resultados"],["sDetector","Detector"]].map(([id, t]) => `<a href="javascript:void 0" data-ir="${id}">${t}</a>`).join("")}</nav>`;
   if (!r) { $("rail").innerHTML = `<h2 class="rail-t">Foto actual</h2><p class="pequeño" style="margin:0 0 14px">Sin receta con la que comparar.</p>` + nav; return; }
   const fila = (k, v, cls = "") => `<div class="rail-f"><span>${k}</span><b class="num ${cls}">${v}</b></div>`;
@@ -2130,9 +2394,9 @@ function anteriores(){
     const kc = e.kpi_consensus, kr = e.kpi_receta;
     h += `<h3>Foto ${f.foto}</h3><table><tr><th class="izq"></th><th>WAPE90</th><th>SPP3</th><th>WAPE180</th><th>SPP6</th><th>WAPE 9M</th><th>SPP 9M</th></tr>`;
     const fila = (nom, k) => `<tr><td class="izq">${nom}</td>${["90","180","9M"].map(v => `<td>${pct(k?.[v]?.wape)}</td><td>${pct(k?.[v]?.spp)}</td>`).join("")}</tr>`;
-    h += fila("Consensus real", kc) + fila(esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)", kr);
-    if (esRegla()) h += fila("Suma de oráculos por código", e.kpi_oraculo);
-    h += `</table><p class="pequeño">${esRegla() ? "Regla" : "Mejor receta"}: ${recetaTxt(esRegla() ? e.receta_txt : e.oraculo_receta)}</p>`;
+    h += fila("Consensus real", kc) + fila(esSel() ? "Receta de cada código (oráculo)" : esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)", kr);
+    if (esRegla() && !esSel()) h += fila("Suma de oráculos por código", e.kpi_oraculo);
+    h += `</table><p class="pequeño">${esSel() ? `Sin receta común: cada código usa la suya. Trend más copiado en esta foto: ${esc(grupoComun(f) || "-")}.` : `${esRegla() ? "Regla" : "Mejor receta"}: ${recetaTxt(esRegla() ? e.receta_txt : e.oraculo_receta)}`}</p>`;
     if (!esRegla() && e.desglose) {
       const d = e.desglose;
       h += `<details><summary>Ver mes a mes (actuals de fotos posteriores)</summary>
@@ -2173,6 +2437,8 @@ function detector(){
     filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
   const fuera = filas.filter(x => x.u > 0.5).length;
+  const top = filas.reduce((m, x) => !m || x.u > m.u ? x : m, null);
+  RES.det = {fuera, total: filas.length, u: filas.reduce((a, x) => a + x.u, 0), top: top && top.u > 0.5 ? top.r.desc : null};
   let vis = filas.filter(x => ($("verTodos").checked || x.u > 0.5) && (!filtro || (x.r.ean + " " + x.r.desc).toLowerCase().includes(filtro)));
   const {col, dir} = estado.orden;
   vis.sort((a, b) => dir * ((a[col] > b[col]) - (a[col] < b[col])));
@@ -2201,6 +2467,12 @@ function info(){
     migas.push(["R|Brand: " + a.brand, corto(a.brand)], ["R|PL: " + a.pl, corto(a.pl)], [estado.sel, estado.sel]);
     h += `<b class="mono" style="font-size:12px">${estado.sel}</b> · ${esc(a.brand)} · ${esc(a.pl)} · segmento ${a.segmento || "(vacío)"} · tamaño ${a.tamano} · ${a.flag ? "Ignore System Forecast Flag " + a.flag : "sin flag de sistema"} · responsable ${a.fr || "(vacío)"}`;
     h += e ? ` · edad hoy: ${e.tramo_edad}` : ` · <span class="aviso">fuera de scope en ${fAct.foto}</span>`;
+  } else if (esSel()) {
+    const its = estado.sel.slice(2).split("¦").filter(Boolean), n = miembros().length;
+    titulo = its.length === 1 ? "Selección: " + corto(its[0].replace(/^(Casa|Brand|PL): /, "")) : `Selección de ${its.length} elementos`;
+    migas.push([estado.sel, "Selección"]);
+    h += `Selección acumulada: ${its.map(k => `<b>${esc(corto(k.replace(/^(Casa|Brand|PL): /, "")))}</b>${/^(Brand|PL|Casa): /.test(k) ? ` (${k.split(":")[0] === "PL" ? "product line" : k.split(":")[0].toLowerCase()})` : ""}`).join(", ")} · ${n} códigos. `
+       + `Sin receta común: cada código usa su propia receta y copia el trend de su propio grupo; los KPIs suman los errores de todos. `;
   } else {
     const k = estado.sel.slice(2);
     titulo = corto(k.replace(/^(Casa|Brand|PL): /, ""));
@@ -2351,12 +2623,13 @@ $("rangoPresets").addEventListener("click", ev => {
   new ResizeObserver(() => { if (!RG.arrastre && Math.abs((pista.clientWidth || 0) - (RG.W || 0)) > 0.5) construirPista(); }).observe(pista);
 })();
 
-// ================= Resultados por sectores =================
-// Al abrir la página todos los sectores están minimizados: solo se ve una fila de recuadros pequeños con lo esencial.
-// Cada uno se expande por separado (el recuadro crece hasta convertirse en su tarjeta: View Transition con el mismo
-// nombre, curva de cajón de iOS) y hay un botón para expandir o minimizar todo.
-const SECTORES = ["r90", "r180", "r9M", "leer", "ant"];
+// ================= Detalle en 4 grupos =================
+// Al abrir la página los cuatro grupos (Foto actual, Decisiones, Resultados, Detector) están plegados: cada uno
+// deja su título y una tira con lo esencial. La tira se convierte en el contenido (View Transition con el mismo
+// nombre, curva de cajón de iOS) y la cabecera del grupo pulsado se queda quieta en pantalla.
+const GRUPOS = ["sFoto", "sDecisiones", "sResultados", "sDetector"];
 const ABIERTOS = new Set();
+const RES = {};   // resúmenes que dejan fotoActual() y detector() para las tiras
 // la última foto del rango en la que TODA la ventana está cerrada (si no, WAPE180 y 9M serían solo los meses cerrados)
 function kpiVentana(v){
   const nt = {"90": 1, "180": 2, "9M": 3}[v];
@@ -2365,46 +2638,75 @@ function kpiVentana(v){
     if (e && e.kpi_receta && e.kpi_receta[v] && e.kpi_consensus && e.kpi_consensus[v]) return {f, r: e.kpi_receta[v], c: e.kpi_consensus[v]}; }
   return null;
 }
-function miniSector(k){
-  const T = {r90: "SPP3 · WAPE90", r180: "SPP6 · WAPE180", r9M: "SPP · WAPE 9M", leer: "Cómo leerlas", ant: "Detalle por foto"}[k];
-  let cuerpo;
-  if (k === "leer") cuerpo = `<span class="mn-s">Ejes, zona meta y colores</span>`;
-  else if (k === "ant") { const n = fotosCerradas().length; cuerpo = `<span class="mn-s">${n} foto${n === 1 ? "" : "s"} medida${n === 1 ? "" : "s"} en el rango</span>`; }
-  else {
-    const d = kpiVentana(k.slice(1));
-    if (!d) cuerpo = `<span class="mn-s">Ninguna foto del rango tiene esta ventana cerrada</span>`;
-    else { const g = (d.c.wape - d.r.wape) * 100, ok = w => w <= CFG.metas.wape_max ? "bueno" : "malo";
-      cuerpo = `<span class="mn-v"><b class="${ok(d.r.wape)}">${pct(d.r.wape)}</b><small>${esRegla() ? "regla" : "receta"}</small></span>
-        <span class="mn-v"><b class="${ok(d.c.wape)}">${pct(d.c.wape)}</b><small>Consensus</small></span>
-        <span class="mn-s">${Math.abs(g) < 0.05 ? "Empatan" : (g > 0 ? "−" : "+") + Math.abs(g).toLocaleString("es-ES", {maximumFractionDigits: 1}) + " pp con la receta"} · ${d.f.foto}</span>`; }
+const mn = (t, v, cls = "") => `<span class="mn ${cls}"><span>${t}</span><b>${v}</b></span>`;
+const okW = w => w <= CFG.metas.wape_max ? "bueno" : "malo";
+function miniGrupo(id){
+  if (id === "sFoto") {
+    const r = RES.foto; if (!r) return mn("Foto actual", "Sin receta con la que comparar", "txt");
+    return mn("Desvío", `<span class="${r.totDev > 0.5 ? "malo" : "bueno"}">${num(r.totDev)}</span><small>uds</small>`) + mn("Sobre la receta", pct(r.totR > 0 ? r.totDev / r.totR : null))
+      + (esRegla() ? mn("Códigos fuera", `${r.nFuera}<small>de ${r.n}</small>`) : mn("Meses fuera", `${r.meses}<small>de 9</small>`))
+      + mn("Foto", r.foto, "txt");
   }
-  return `<button type="button" class="mini vidrio" data-sec="${k}" style="view-transition-name:res-${k}" aria-label="Expandir ${T}"><span class="mn-t">${T}<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>${cuerpo}</button>`;
+  if (id === "sDecisiones") {
+    const rec = recetaElegida(), n = fotosCerradas().length;
+    if (esSel()) { const g = grupoComun(); return mn("Selección", `${miembros().length}<small>códigos</small>`) + mn("Receta", "La de cada código", "txt") + mn("Trend más copiado", g || "-", "txt") + mn("Fotos medidas", n); }
+    if (!rec) return mn("Receta elegida", "Sin receta elegida", "txt") + mn("Fotos medidas", n);
+    return mn("Estacional · trend", `s ${vtxt("s", rec.s)} · w ${vtxt("w", rec.w)}`, "txt") + mn("Señal · duración", `m ${vtxt("m", rec.m)} · ${rec.N}M`, "txt")
+      + mn("Cortes · promos", `c ${vtxt("c", rec.c)} · p ${vtxt("p", rec.p)}`, "txt") + mn("Trend de", rec.grupo, "txt");
+  }
+  if (id === "sResultados") {
+    const a = kpiVentana("90"), b = kpiVentana("9M"), nom = esSel() ? "recetas" : (esRegla() ? "regla" : "receta");
+    if (!a && !b) return mn("Resultados", "Ninguna foto del rango tiene ventanas cerradas", "txt");
+    const par = (t, d) => d ? mn(t + " · " + nom, `<span class="${okW(d.r.wape)}">${pct(d.r.wape)}</span><small>Cons. ${pct(d.c.wape)}</small>`) : mn(t, "-");
+    const d = b || a, g = (d.c.wape - d.r.wape) * 100;
+    const gtxt = Math.abs(g) < 0.05 ? "Empatan" : `<span class="${g > 0 ? "bueno" : "malo"}">${Math.abs(g).toLocaleString("es-ES", {maximumFractionDigits: 1})}</span><small>pp de WAPE</small>`;
+    return par("WAPE90", a) + par("WAPE 9M", b) + mn((g >= 0 ? "Mejora" : "Empeora") + " con la receta · " + (b ? "9M" : "90"), gtxt) + mn("Última foto medida", d.f.foto, "txt");
+  }
+  const r = RES.det; if (!r) return mn("Detector", "-", "txt");
+  return mn("Fuera de su estrategia", `<span class="${r.fuera ? "malo" : "bueno"}">${r.fuera}</span><small>de ${r.total}</small>`) + mn("Desvío total", `${num(r.u)}<small>uds</small>`)
+    + mn("Mayor desvío", r.top ? esc(r.top) : "-", "txt") + mn("Tolerancia", txtTol(AJ.tol), "txt");
 }
-function pintarSectores(){
-  $("resMinis").innerHTML = SECTORES.filter(k => !ABIERTOS.has(k)).map(miniSector).join("");
-  $("resMinis").hidden = ABIERTOS.size === SECTORES.length;
-  document.querySelectorAll("#sResultados [data-sec]:not(.mini)").forEach(el => {
-    const k = el.dataset.sec, ab = ABIERTOS.has(k);
-    el.hidden = !ab; el.style.viewTransitionName = ab ? "res-" + k : "";
+function pintarGrupos(){
+  GRUPOS.forEach(id => {
+    const sec = $(id), ab = ABIERTOS.has(id);
+    sec.classList.toggle("plegada", !ab);
+    sec.querySelector(".sec-tog").setAttribute("aria-expanded", String(ab));
+    sec.querySelector(".sec-tog").setAttribute("aria-label", (ab ? "Plegar " : "Expandir ") + sec.querySelector("h2").textContent);
+    if (!ab) sec.querySelector(".sec-mini").innerHTML = miniGrupo(id);
+    // la tira y el contenido comparten nombre: la tira crece hasta ser el contenido
+    sec.querySelector(".sec-cab").style.viewTransitionName = "cab-" + id;
+    sec.querySelector(".sec-mini").style.viewTransitionName = ab ? "" : "cu-" + id;
+    sec.querySelector(".sec-cuerpo").style.viewTransitionName = ab ? "cu-" + id : "";
   });
-  $("resRejilla").hidden = !["r90", "r180", "r9M", "leer"].some(k => ABIERTOS.has(k));
-  const todo = ABIERTOS.size === SECTORES.length;
-  $("plegarRes").querySelector("span").textContent = todo ? "Minimizar todo" : "Expandir todo";
-  $("plegarRes").classList.toggle("plegado", todo);
+  const todo = ABIERTOS.size === GRUPOS.length;
+  $("plegarTodo").querySelector("span").textContent = todo ? "Plegar todo" : "Expandir todo";
+  $("plegarTodo").setAttribute("aria-expanded", String(todo));
 }
-function cambiarSectores(f){
-  // la cabecera de Resultados se queda donde estaba en pantalla: abrir o cerrar no desplaza la página
-  const cab = document.querySelector("#sResultados .sec-cab"), y0 = cab.getBoundingClientRect().top;
-  const hecho = () => { f(); pintarSectores(); const dy = cab.getBoundingClientRect().top - y0; $("vistaDetalle").scrollBy({top: dy, behavior: "instant"});
-    const dy2 = cab.getBoundingClientRect().top - y0; if (Math.abs(dy2) > 1) window.scrollBy({top: dy2, behavior: "instant"}); requestAnimationFrame(revisarPendientes); };
-  if (!document.startViewTransition || reducir.matches) { hecho(); return; }
+function cambiarGrupos(f, ancla){
+  // la cabecera pulsada se queda donde estaba en pantalla: abrir o cerrar no desplaza la página
+  const cab = (ancla || $(GRUPOS.find(id => $(id).getBoundingClientRect().bottom > 0) || "sFoto")).querySelector(".sec-cab"), y0 = cab.getBoundingClientRect().top;
+  const antes = new Set(ABIERTOS);
+  const hecho = () => {
+    f(); pintarGrupos();
+    // el gráfico de la foto actual mide su ancho: se repinta al hacerse visible
+    if (ABIERTOS.has("sFoto") && !antes.has("sFoto")) fotoActual();
+    const dy = cab.getBoundingClientRect().top - y0; $("vistaDetalle").scrollBy({top: dy, behavior: "instant"});
+    const dy2 = cab.getBoundingClientRect().top - y0; if (Math.abs(dy2) > 1) window.scrollBy({top: dy2, behavior: "instant"});
+    requestAnimationFrame(revisarPendientes);
+  };
+  if (!document.startViewTransition || reducir.matches) { hecho(); return Promise.resolve(); }
   document.documentElement.classList.add("vt-res");
   const vt = document.startViewTransition(hecho);
   vt.finished.finally(() => document.documentElement.classList.remove("vt-res"));
+  return vt.updateCallbackDone;
 }
-$("resMinis").addEventListener("click", ev => { const b = ev.target.closest(".mini"); if (b) cambiarSectores(() => ABIERTOS.add(b.dataset.sec)); });
-$("sResultados").addEventListener("click", ev => { const b = ev.target.closest(".min-sec"); if (b) cambiarSectores(() => ABIERTOS.delete(b.dataset.min)); });
-$("plegarRes").addEventListener("click", () => cambiarSectores(() => { if (ABIERTOS.size === SECTORES.length) ABIERTOS.clear(); else SECTORES.forEach(k => ABIERTOS.add(k)); }));
+$("vistaDetalle").addEventListener("click", ev => {
+  const t = ev.target.closest(".sec-cab, .sec-mini"); if (!t) return;
+  if (ev.target.closest("a, input, select, label")) return;
+  const sec = t.closest(".seccion"), id = sec.id;
+  cambiarGrupos(() => { ABIERTOS.has(id) ? ABIERTOS.delete(id) : ABIERTOS.add(id); }, sec);
+});
+$("plegarTodo").addEventListener("click", () => cambiarGrupos(() => { if (ABIERTOS.size === GRUPOS.length) ABIERTOS.clear(); else GRUPOS.forEach(k => ABIERTOS.add(k)); }));
 
 function pintarDecisiones(){
   brujula("b1", "s", "w", ["Media plana", "Mismo mes año pasado", "Sin trend", "Trend completo"]);
@@ -2418,9 +2720,9 @@ function pintar(){
   fotoActual();
   pintarDecisiones();
   ["90", "180", "9M"].forEach(v => mediaBrujula("r" + v, v));
-  pintarSectores();
   anteriores();
   detector();
+  pintarGrupos();
 }
 
 $("leer").innerHTML = `<p><b>X = SPP</b> (bias, ${CFG.spp_signo < 0 ? "Σ(A−F)/ΣA" : "Σ(F−A)/ΣA"}): a la izquierda sobre-forecast, a la derecha bajo-forecast. <b>Y = WAPE</b> = Σ|F−A|/ΣA, 0 abajo, 60% arriba.</p>
@@ -2433,7 +2735,9 @@ $("notas").innerHTML = `Rejilla gruesa: ${(D.ejes.s.length**5 * D.ejes.N.length 
 $("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-ir]"); if (!a) return; ev.preventDefault();
   // la barra compacta mide menos: se compacta antes de medir, así la sección queda justo debajo de ella
   if (a.dataset.ir !== "sFoto") $("barra").classList.add("compacta");
-  requestAnimationFrame(() => requestAnimationFrame(() => $(a.dataset.ir).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"}))); });
+  const id = a.dataset.ir, ir = () => requestAnimationFrame(() => requestAnimationFrame(() => $(id).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"})));
+  if (!ABIERTOS.has(id)) { ABIERTOS.add(id); pintarGrupos(); if (id === "sFoto") fotoActual(); requestAnimationFrame(revisarPendientes); }
+  ir(); });
 $("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
 $("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
 ["soloGrupo", "verTodos", "filtro"].forEach(id => $(id).addEventListener("input", detector));
@@ -2451,6 +2755,7 @@ function cargarCasa(){
   pintarAjustes();
   RG.W = 0; requestAnimationFrame(() => construirPista());
   estado.sel = "R|Casa: " + estado.casa;
+  leerSeleccion(); $("modoAcum").checked = SEL.modo;
   M.foco = null; M.sel = null; M.primera = true;
   M.hojas = calcularHojas();
   pintarChips(); pintarLeyenda(); dibujarMapa();
