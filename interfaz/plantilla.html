@@ -135,6 +135,7 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .lado-cab span{color:var(--label-2);font-size:11.5px}
 .lado-scroll{flex:1;overflow:auto;min-height:0;margin:0 -4px;padding:0 4px}
 .lado h2{font-size:11px;font-weight:600;color:var(--label-2);margin:16px 10px 4px;letter-spacing:.01em}
+.niv-casa .t{font-weight:600}
 .fila{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:6px 10px;border-radius:12px;min-height:32px;color:var(--label);transition:background-color 140ms ease,transform 140ms var(--ease-out)}
 @media (hover:hover) and (pointer:fine){.fila:hover{background:var(--fill)}}
 .fila:active{transform:scale(.98)}
@@ -343,6 +344,18 @@ main[hidden]{display:none}
 #vistaInicio .mapa{cursor:grab;-webkit-user-select:none;user-select:none}
 #vistaInicio .mapa.arrastrando,#vistaInicio .mapa.arrastrando *{cursor:grabbing !important}
 #vistaInicio .mapa .leyenda{cursor:auto}
+/* Indicador de nivel: dónde estoy (cápsula segmentada, el pulgar se desliza con el muelle de los controles) y qué hará el
+   clic (debajo, cambia al pasar el puntero por una burbuja). Los niveles por encima se pueden pulsar para subir. */
+.nivel{position:absolute;z-index:3;top:6px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.nivel > *{pointer-events:auto}
+.niv-seg button{padding:5px 12px;font-size:12px}
+.niv-seg button[aria-disabled="true"]{color:var(--label-3);cursor:default}
+.niv-seg button[aria-pressed="true"]{color:var(--label)}
+@media (hover:hover) and (pointer:fine){.niv-seg button:not([aria-disabled="true"]):not([aria-pressed="true"]):hover{color:var(--blue-txt)}}
+.niv-clic{display:inline-flex;align-items:center;gap:6px;max-width:min(520px,70vw);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:500;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.niv-clic b{color:var(--label);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.niv-clic .tecla{font-size:10.5px;font-weight:700;color:var(--blue-txt);letter-spacing:.02em}
+#mundo circle.n-grupo.objetivo{stroke:var(--blue);stroke-width:2;stroke-opacity:.9}
 /* "Ver todo": vuelve al encuadre completo con el muelle de la cámara */
 .ver-todo{position:absolute;z-index:3;top:6px;right:12px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 12px;border:0;border-radius:999px;color:var(--label);font:600 13px/1 var(--font);cursor:pointer;transition:transform 140ms var(--ease-out),opacity 200ms ease}
 .ver-todo .ico{width:14px;height:14px}
@@ -410,6 +423,10 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 @media (hover:hover) and (pointer:fine){.bandeja li button:hover{background:var(--fill);color:var(--label)}}
 .bandeja .vacio-bj{font-size:12px;color:var(--label-2);line-height:1.45;margin:0 0 10px}
 .bandeja .acciones{margin:0}
+.filtro-sel{display:flex;flex-direction:column;gap:2px;margin:0 0 12px;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--blue) 9%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--blue) 22%,transparent)}
+.filtro-sel .fs-t{font-size:11px;font-weight:600;color:var(--blue-txt);letter-spacing:.01em}
+.filtro-sel b{font-size:13.5px;font-weight:600;color:var(--label)}
+.filtro-sel .fs-n{font-size:11.5px;color:var(--label-2);font-variant-numeric:tabular-nums}
 .btn.agregar{background:color-mix(in srgb,var(--blue) 14%,transparent);color:var(--blue-txt);box-shadow:none}
 .btn.agregar[aria-pressed="true"]{background:var(--fill);color:var(--label)}
 #mundo circle.en-sel{stroke:var(--blue);stroke-width:2.5}
@@ -612,7 +629,11 @@ details[open] summary::before{transform:rotate(45deg)}
   .pop[data-cerrado]{transform:translateY(100%);filter:none}
   .pop{transition:opacity 200ms ease,transform 420ms var(--ease-drawer),visibility 0s linear 0s}
   .mapa,#vistaInicio .mapa{position:relative;top:auto;padding:4px 12px 0}
-  .ver-todo{top:10px;right:20px;height:32px}
+  .ver-todo{top:10px;right:20px;height:32px;padding:0 9px}
+  .ver-todo span{display:none}
+  .nivel{left:16px;top:10px;transform:none;align-items:flex-start}
+  .niv-seg button{padding:5px 9px;font-size:11.5px}
+  .niv-clic{max-width:calc(100vw - 40px)}
   #vistaInicio{overflow-x:clip}
   .lienzo{width:100%}
   .leyenda{max-width:none;border-radius:var(--r-l)}
@@ -694,8 +715,6 @@ details[open] summary::before{transform:rotate(45deg)}
   <label class="oculto" for="selCasa">Casa</label>
   <select id="selCasa" class="popup"></select>
   <div class="lado-scroll">
-    <h2>Códigos</h2>
-    <ul class="lista-lado" id="cifras"></ul>
     <h2 id="lblAj">Ajustes generales</h2>
     <div class="ajustes" aria-labelledby="lblAj">
       <div class="aj-fila" id="ajTipos">
@@ -719,7 +738,7 @@ details[open] summary::before{transform:rotate(45deg)}
         <p class="aj-nota" id="tolNota"></p>
       </div>
     </div>
-    <h2>Brands</h2>
+    <h2>Casas y brands</h2>
     <ul class="lista-lado" id="ladoBrands"></ul>
   </div>
   <div class="lado-pie">
@@ -806,6 +825,13 @@ details[open] summary::before{transform:rotate(45deg)}
         <div class="etiquetas" id="etiquetas"></div>
       </div>
       <div class="leyenda vidrio" id="leyenda"></div>
+      <div class="nivel" id="nivelMapa">
+        <div class="seg vidrio niv-seg" id="nivSeg" role="group" aria-label="Nivel del mapa: dónde estás y a qué niveles puedes subir">
+          <span class="pulgar" aria-hidden="true"></span>
+          <button type="button" data-nv="todo">Todas</button><button type="button" data-nv="casa">Casa</button><button type="button" data-nv="brand">Brand</button><button type="button" data-nv="pl">Línea</button><button type="button" data-nv="hoja">EAN</button>
+        </div>
+        <span class="niv-clic vidrio" id="nivClic" aria-live="polite"></span>
+      </div>
       <button type="button" class="ver-todo vidrio" id="verTodo" aria-label="Ver todo el mapa"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg><span>Ver todo</span></button>
     </section>
     <aside class="hoja-ins vidrio" id="hojaIns">
@@ -891,7 +917,6 @@ details[open] summary::before{transform:rotate(45deg)}
     <p class="sub">EANs fuera de su estrategia. Usa la tolerancia y la receta de la foto actual.</p>
     <div class="ancho vidrio">
       <div class="controles">
-        <label><input type="checkbox" id="soloGrupo" checked> Solo el grupo seleccionado</label>
         <label><input type="checkbox" id="verTodos"> Ver también los que están dentro</label>
         <label class="oculto" for="filtro">Filtrar</label><input id="filtro" type="search" placeholder="Filtrar EAN o descripción" style="width:220px">
       </div>
@@ -984,6 +1009,11 @@ function guardarSeleccion(){ try { localStorage.setItem("o10-sel-" + estado.casa
 const esSel = () => estado.sel.startsWith("S|");
 const claveSel = () => "S|" + SEL.items.map(i => i.clave).join("¦");
 function eansDeClave(k){
+  if (k.includes("~")) {
+    // grupo filtrado: los códigos del grupo que cumplen el filtro guardado (con su estado actual en el mapa)
+    const {base, f} = partirClave(k), ff = comoFiltros(f || {}), hoja = new Map((M.hojas || []).map(h => [h.ean, h]));
+    return eansDeClave(base).filter(e => hoja.has(e) && coincideCon(hoja.get(e), ff));
+  }
   const at = casa().atributos, todos = Object.keys(casa().inicio.codigos);
   if (k.startsWith("Casa: ")) return todos;
   if (k.startsWith("Brand: ")) return todos.filter(e => ((at[e] || {}).brand || "(sin brand)") === k.slice(7));
@@ -993,6 +1023,8 @@ function eansDeClave(k){
 const cacheMiembros = new Map();
 function miembros(sel = estado.sel){
   const clave = estado.casa + "|" + [...AJ.ignorar].sort().join(",") + "|" + sel;
+  // con filtro guardado depende del estado del mapa (fuera de estrategia cambia con la tolerancia y el rango): sin caché
+  if (sel.includes("~")) cacheMiembros.delete(clave);
   if (!cacheMiembros.has(clave)) {
     const ini = casa().inicio.codigos, set = new Set();
     sel.slice(2).split("¦").filter(Boolean).forEach(k => eansDeClave(k).forEach(e => { if (!ini[e] || cuenta(ini[e])) set.add(e); }));
@@ -1143,8 +1175,26 @@ function construirArbol(hojas){
   return d3.hierarchy(raiz).sum(d => d.valor || 0).sort((a, b) => b.value - a.value);
 }
 
-function coincide(h){
+// ---- Filtros del popover = selección de resultados ----
+// Los filtros de tipo (barra lateral, "Cuentan en los cálculos") sacan códigos de TODO, también de los trends. Los del
+// popover (segmento, edad, fuera de estrategia, búsqueda) solo eligen QUÉ códigos se miran: al abrir las brújulas de un
+// grupo con filtros, el detalle es una selección (cada código con su receta y el trend de su grupo, como el modo
+// acumulado), con los resultados solo de los filtrados. Se codifica en la clave: "Brand: X~{json del filtro}".
+function filtroSel(){
   const f = M.filtros;
+  if (!f.seg.size && !f.edad.size && !f.fuera && !f.q) return null;
+  return {seg: [...f.seg], edad: [...f.edad], fuera: f.fuera ? 1 : 0, q: f.q || ""};
+}
+const comoFiltros = o => ({scope: "central", fuera: !!o.fuera, seg: new Set(o.seg || []), edad: new Set(o.edad || []), q: o.q || ""});
+function txtFiltro(o){
+  if (!o) return "";
+  return [...(o.seg || []), ...(o.edad || []), o.fuera ? "fuera de estrategia" : "", o.q ? `“${o.q}”` : ""].filter(Boolean).join(" · ");
+}
+function partirClave(k){ const i = k.indexOf("~"); if (i < 0) return {base: k, f: null}; let f = null; try { f = JSON.parse(k.slice(i + 1)); } catch(e) {} return {base: k.slice(0, i), f}; }
+const nombreItem = k => { const {base, f} = partirClave(k); return corto(base.replace(/^(Casa|Brand|PL): /, "")) + (f ? " · " + txtFiltro(f) : ""); };
+// coincide(h) se usa en .filter(coincide): no puede tener un segundo parámetro (filter pasa el índice)
+function coincide(h){ return coincideCon(h, M.filtros); }
+function coincideCon(h, f){
   if (f.scope === "central" && !h.scope) return false;
   if (f.fuera && !h.fuera) return false;
   if (f.seg.size && !f.seg.has(h.seg || "(vacío)")) return false;
@@ -1494,6 +1544,9 @@ function pintarEtiquetas(){
   const vis = {x0: (mr.left - lr.left) / k, x1: (mr.right - lr.left) / k, y0: (mr.top - lr.top) / k, y1: (mr.bottom - lr.top) / k};
   const dentro = (x, y) => x > vis.x0 + 20 && x < vis.x1 - 20 && y > vis.y0 + 12 && y < vis.y1 - 12;
   const puestos = [];  // rectángulos ya ocupados: la etiqueta que choca no se pinta (queda en el tooltip)
+  // el indicador de nivel y "Ver todo" flotan encima del mapa: ninguna etiqueta se esconde debajo de su cristal
+  ["nivSeg", "nivClic", "verTodo"].forEach(id => { const b = $(id) && $(id).getBoundingClientRect(); if (b && b.width)
+    puestos.push({x: (b.left - lr.left) / k - 6, y: (b.top - lr.top) / k - 6, w: b.width / k + 12, h: b.height / k + 12}); });
   const libre = r => !puestos.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
   // palabras iniciales que repite la mayoría de una línea (p. ej. "GUCCI GUILT H"): no distinguen, se quitan
   const comunesDe = new Map();
@@ -1548,6 +1601,9 @@ function aplicarFiltros(){
 // ================= INICIO: migas, panel, cifras, leyenda =================
 function pintarMigas(){
   const camino = M.foco.ancestors().reverse();
+  // al cambiar de nivel, el EAN elegido deja de valer si ya no está dentro del foco
+  if (M.sel && !(M.foco.children || []).some(l => l.data.hoja && l.data.hoja.ean === M.sel)) { M.sel = null; $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo")); }
+  pintarNivel();
   if (!$("vistaInicio").hidden) $("barraTitulo").textContent = corto(M.foco.data.nombre);
   if (camino.length === 1) { $("migas").innerHTML = `<span>${M.raiz.children.length} casa${M.raiz.children.length === 1 ? "" : "s"} · ${M.hojas.length} códigos</span>`; pintarLado(); return; }
   if (camino.length === 2) { $("migas").innerHTML = `<button type="button" data-clave="Todas">Todas las casas</button><span class="sep">›</span><span>Foto ${casa().inicio.foto} · ${M.hojas.length} códigos</span>`; pintarLado(); return; }
@@ -1565,11 +1621,15 @@ function resumenGrupo(n){
 
 function pintarPanel(){
   const n = M.foco, r = resumenGrupo(n), clave = n.data.clave, hayRegla = existeRegla(clave);
+  const fs = filtroSel(), nFil = fs ? r.vis.filter(h => h.scope).length : 0;
   const tipo = {todo: "Todas las casas", casa: "Casa", brand: "Brand", pl: "Product Line"}[n.data.nivel];
   let h = `<h2>${esc(corto(n.data.nombre))}</h2>
     <p class="resumen">${n.parent ? `${tipo}. <b>${r.hs.length}</b> códigos, <b>${r.sc.length}</b> en scope central, <b>${r.fuera.length}</b> fuera de su estrategia.<br>` : ""}
     Desvío del Consensus: <b class="marcador">${num(r.u)} uds</b>, <b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b> del forecast de las recetas.</p>
-    <div class="acciones">${!n.parent ? `<p class="resumen" style="margin:0">Entra en una casa para ver sus brújulas.</p>` : `${SEL.modo ? botonAgregar(clave, n.data.nombre, n.data.nivel) : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>`}
+    ${fs && n.parent ? `<div class="filtro-sel"><span class="fs-t">Selección filtrada</span><b>${esc(txtFiltro(fs))}</b><span class="fs-n">${nFil} de ${r.sc.length} en scope · los trends se calculan con todos</span></div>` : ""}
+    <div class="acciones">${!n.parent ? `<p class="resumen" style="margin:0">Entra en una casa para ver sus brújulas.</p>` : fs
+      ? `${SEL.modo ? botonAgregar(clave + "~" + JSON.stringify(fs), n.data.nombre + " · " + txtFiltro(fs), n.data.nivel) : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="${esc("S|" + clave + "~" + JSON.stringify(fs))}" ${nFil ? "" : 'disabled title="Ningún código en scope cumple el filtro"'}>Ver brújulas de los ${nFil} filtrados</button>`
+      : `${SEL.modo ? botonAgregar(clave, n.data.nombre, n.data.nivel) : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>`}
     ${n.parent ? `<button type="button" class="btn btn-fant" data-subir="1">Subir un nivel</button>` : ""}</div>`;
   if (SEL.modo) h += bandeja();
   const s = M.sel && M.hojas.find(x => x.ean === M.sel);
@@ -1616,7 +1676,7 @@ function bandeja(){
 // burbujas de la selección: anillo azul (los grupos, discontinuo)
 function marcarSeleccion(){
   if (!M.els) return;
-  const set = SEL.modo && SEL.items.length ? new Set(miembros(claveSel())) : new Set(), grupos = new Set(SEL.modo ? SEL.items.map(i => i.clave) : []);
+  const set = SEL.modo && SEL.items.length ? new Set(miembros(claveSel())) : new Set(), grupos = new Set(SEL.modo ? SEL.items.map(i => partirClave(i.clave).base) : []);
   M.nodos.forEach((n, i) => { const c = M.els[i]; if (!c || !n.depth) return;
     c.classList.toggle("en-sel", n.data.nivel === "hoja" ? set.has(n.data.hoja.ean) : grupos.has(n.data.clave)); });
   $("acumN").hidden = !SEL.modo || !SEL.items.length; $("acumN").textContent = SEL.items.length;
@@ -1630,43 +1690,34 @@ function pintarCifras(){
   const hs = M.hojas, sc = hs.filter(h => h.scope), fuera = sc.filter(h => h.fuera), f = M.filtros;
   const act = f.fuera ? "fuera" : (f.scope === "todos" ? "todos" : "scope");
   const fila = (k, t, n) => `<li><button type="button" class="fila" data-vista="${k}" ${act === k ? 'aria-current="true"' : ""}>${ICO[k]}<span class="t">${t}</span><span class="badge">${n}</span></button></li>`;
-  $("cifras").innerHTML = fila("todos", "Todos los códigos", hs.length) + fila("scope", "En scope central", sc.length) + fila("fuera", "Fuera de estrategia", fuera.length);
+  if ($("cifras")) $("cifras").innerHTML = fila("todos", "Todos los códigos", hs.length) + fila("scope", "En scope central", sc.length) + fila("fuera", "Fuera de estrategia", fuera.length);
   $("ladoFoto").textContent = `Foto ${casa().inicio.foto}`;
   const n = (f.seg.size ? 1 : 0) + (f.edad.size ? 1 : 0) + (f.fuera ? 1 : 0) + (f.scope !== "central" ? 1 : 0) + (f.q ? 1 : 0);
   $("nFiltros").hidden = !n; $("nFiltros").textContent = n;
 }
 
-// lista de brands con sus product lines (desplegables), como el panel de Finder
-const abiertas = new Set();
+// lista Casas > brands > product lines (desplegables), como el panel de Finder. Cada fila se abre por defecto si es una casa
+// o si está en el camino del foco; lo que el usuario abre o cierra a mano manda sobre eso.
+const plegadoLado = new Map();
 function pintarLado(){
   if (!M.raiz) return;
   const foco = M.foco, enCamino = new Set(foco.ancestors());
-  const fila = (n, nivel) => {
-    const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
-    const actual = n === foco, tieneHijos = nivel === "brand" && n.children && n.children.length;
-    const abierta = abiertas.has(n.data.clave) || (enCamino.has(n) && !actual);
-    let h = `<li><div class="fila" role="button" tabindex="0" data-clave="${esc(n.data.clave)}" ${actual ? 'aria-current="true"' : ""} style="${vis ? "" : "opacity:.45"}">`
-      + (tieneHijos ? `<button type="button" class="disc" data-disc="${esc(n.data.clave)}" aria-expanded="${abierta}" aria-label="Mostrar líneas"><svg class="ico" viewBox="0 0 16 16" style="width:10px;height:10px;stroke-width:2.2"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>` : (nivel === "brand" ? `<span class="disc"></span>` : ""))
+  const fila = n => {
+    const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length, nivel = n.data.nivel;
+    const actual = n === foco, tieneHijos = nivel !== "pl" && n.children && n.children.length;
+    const k = n.data.clave, abierta = plegadoLado.has(k) ? plegadoLado.get(k) : (nivel === "casa" || (enCamino.has(n) && !actual));
+    let h = `<li><div class="fila niv-${nivel}" role="button" tabindex="0" data-clave="${esc(k)}" ${actual ? 'aria-current="true"' : ""} style="${vis ? "" : "opacity:.45"}">`
+      + (tieneHijos ? `<button type="button" class="disc" data-disc="${esc(k)}" aria-expanded="${abierta}" aria-label="${abierta ? "Ocultar" : "Mostrar"} ${nivel === "casa" ? "brands" : "líneas"}"><svg class="ico" viewBox="0 0 16 16" style="width:10px;height:10px;stroke-width:2.2"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>` : `<span class="disc"></span>`)
       + `<span class="t">${esc(corto(n.data.nombre))}</span><span class="badge">${vis}</span></div>`;
-    if (tieneHijos) h += `<ul class="sub-lista" ${abierta ? "" : "hidden"}>` + n.children.map(c => fila(c, "pl")).join("") + `</ul>`;
+    if (tieneHijos) h += `<ul class="sub-lista" ${abierta ? "" : "hidden"}>` + n.children.map(fila).join("") + `</ul>`;
     return h + `</li>`;
   };
-  $("ladoBrands").innerHTML = (M.casaN.children || []).map(b => fila(b, "brand")).join("");
+  $("ladoBrands").innerHTML = (M.raiz.children || []).map(fila).join("");
 }
-$("cifras").addEventListener("click", ev => {
-  const b = ev.target.closest(".fila"); if (!b) return;
-  const v = b.dataset.vista;
-  M.filtros.scope = v === "todos" ? "todos" : "central"; M.filtros.fuera = v === "fuera";
-  document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === M.filtros.scope)));
-  document.querySelector('[data-f="fuera"]').setAttribute("aria-pressed", String(M.filtros.fuera));
-  cerrarLado(); if ($("vistaInicio").hidden) location.hash = "inicio";
-  aplicarFiltros();
-});
 $("ladoBrands").addEventListener("click", ev => {
   const d = ev.target.closest(".disc[data-disc]");
-  if (d) { const k = d.dataset.disc; abiertas.has(k) ? abiertas.delete(k) : abiertas.add(k);
-    const ul = d.closest("li").querySelector(".sub-lista"), ab = !ul.hidden ? false : true;
-    ul.hidden = !ab; d.setAttribute("aria-expanded", String(ab)); if (!ab) abiertas.delete(k); else abiertas.add(k); return; }
+  if (d) { const ul = d.closest("li").querySelector(".sub-lista"), ab = ul.hidden;
+    plegadoLado.set(d.dataset.disc, ab); ul.hidden = !ab; d.setAttribute("aria-expanded", String(ab)); return; }
   const f = ev.target.closest(".fila"); if (!f) return;
   const n = M.nodos.find(x => x.data.clave === f.dataset.clave); if (!n) return;
   cerrarLado();
@@ -1772,39 +1823,77 @@ function ocultarTip(){
   if (tipActual >= 0 && M.els && M.els[tipActual]) M.els[tipActual].classList.remove("encima");
   tipActual = -1; tip.classList.remove("ver", "instant");
 }
+// Qué hará un clic sobre la burbuja n: se baja UN nivel desde el foco hacia ella (o se sube, si se pulsa el propio foco o
+// fuera de las burbujas). La misma función decide el clic, el resaltado al pasar el puntero y el texto del indicador.
+function destinoClic(n){
+  if (!n || n === M.foco || n.depth === 0) return M.foco.parent ? {tipo: "subir", nodo: M.foco.parent} : null;
+  const camino = n.ancestors().reverse(), iF = camino.indexOf(M.foco);
+  if (iF < 0) return {tipo: "entrar", nodo: camino[Math.max(1, camino.length - 2)]};
+  const sig = camino[iF + 1];
+  return {tipo: sig.data.nivel === "hoja" ? "elegir" : "entrar", nodo: sig};
+}
+const TECLA = () => matchMedia("(pointer: coarse)").matches ? "TOCA" : "CLIC";
+const NOMBRE_NIVEL = {todo: "Todas las casas", casa: "Casa", brand: "Brand", pl: "Línea", hoja: "EAN"};
+const HIJO = {todo: "una casa", casa: "una brand", brand: "una línea", pl: "un EAN"};
+function textoClic(d){
+  if (!d) return `<span class="tecla">${TECLA()}</span> en ${HIJO[M.foco.data.nivel] || "una burbuja"} para entrar`;
+  if (d.tipo === "subir") return `<span class="tecla">${TECLA()}</span> fuera de las burbujas: subir a <b>${esc(corto(d.nodo.data.nombre))}</b>`;
+  const nom = d.nodo.data.nivel === "hoja" ? d.nodo.data.hoja.desc : d.nodo.data.nombre;
+  return `<span class="tecla">${TECLA()}</span> ${d.tipo === "elegir" ? "elegir EAN" : "entrar en " + NOMBRE_NIVEL[d.nodo.data.nivel].toLowerCase()} <b>${esc(corto(nom))}</b>`;
+}
+// indicador: nivel actual (el EAN si hay uno elegido), niveles de arriba pulsables, de abajo apagados
+function pintarNivel(d){
+  if (!M.foco) return;
+  const orden = ["todo", "casa", "brand", "pl", "hoja"], act = M.sel ? "hoja" : M.foco.data.nivel, ia = orden.indexOf(act);
+  $("nivSeg").querySelectorAll("button").forEach(b => { const i = orden.indexOf(b.dataset.nv);
+    b.setAttribute("aria-pressed", String(i === ia)); b.setAttribute("aria-disabled", String(i > ia));
+    b.title = i < ia ? "Subir a " + NOMBRE_NIVEL[b.dataset.nv].toLowerCase() : i === ia ? "Estás aquí" : ""; });
+  moverPulgar($("nivSeg"));
+  $("nivClic").innerHTML = d === undefined ? textoClic(null) : textoClic(d);
+}
+$("nivSeg").addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-nv]"); if (!b || b.getAttribute("aria-disabled") === "true" || b.getAttribute("aria-pressed") === "true") return;
+  const n = M.foco.ancestors().find(a => a.data.nivel === b.dataset.nv) || (b.dataset.nv === "pl" && M.sel ? M.foco : null);
+  if (b.dataset.nv === "pl" && M.sel && M.foco.data.nivel === "pl") { M.sel = null; seleccionar(null); return; }
+  if (n) enfocar(n);
+});
+let objetivo = null;
+function marcarObjetivo(n){
+  if (objetivo && objetivo !== n) { const c = M.els[M.nodos.indexOf(objetivo)]; if (c) c.classList.remove("objetivo"); }
+  objetivo = n;
+  if (n && n.data.nivel !== "hoja") { const c = M.els[M.nodos.indexOf(n)]; if (c) c.classList.add("objetivo"); }
+}
 $("pack").addEventListener("pointerover", ev => {
   if (ev.pointerType === "touch" || G.arr) return;
-  const c = ev.target.closest("circle[data-i]"); const i = c ? +c.dataset.i : -1;
-  const n = M.nodos[i];
+  const c = ev.target.closest("circle[data-i]"), n = c ? M.nodos[+c.dataset.i] : null, d = destinoClic(n);
   clearTimeout(tipFuera);
-  if (!n || n.depth === 0 || n === M.foco) { tipFuera = setTimeout(ocultarTip, 120); return; }
+  pintarNivel(d);
+  // la tarjeta y el aro van en lo que se elegiría con el clic, no en la burbuja más pequeña bajo el puntero
+  if (!d || d.tipo === "subir") { marcarObjetivo(null); tipFuera = setTimeout(ocultarTip, 120); return; }
+  marcarObjetivo(d.nodo);
+  const i = M.nodos.indexOf(d.nodo);
   if (i === tipActual) return;
   clearTimeout(tipT);
   if (tip.classList.contains("ver")) verTipNodo(i);
   else tipT = setTimeout(() => verTipNodo(i), 120);
 });
-$("pack").addEventListener("pointerleave", () => { tipFuera = setTimeout(ocultarTip, 80); });
+$("pack").addEventListener("pointerleave", () => { tipFuera = setTimeout(ocultarTip, 80); marcarObjetivo(null); pintarNivel(); });
 $("pack").addEventListener("click", ev => {
-  ocultarTip();
-  const c = ev.target.closest("circle");
-  const n = c ? M.nodos[+c.dataset.i] : null;
-  if (!n || n === M.foco || n.depth === 0) { if (M.foco.parent && (!n || n.depth === 0 || n === M.foco)) enfocar(M.foco.parent); return; }
-  // baja un nivel en dirección al nodo pulsado
-  const camino = n.ancestors().reverse();
-  const iF = camino.indexOf(M.foco);
-  if (iF < 0) { enfocar(camino[Math.max(1, camino.length - 2)]); return; }
-  const sig = camino[iF + 1];
-  if (sig.data.nivel === "hoja") seleccionar(sig.data.hoja.ean);
-  else enfocar(sig, true, !encuadrado(sig));
+  ocultarTip(); marcarObjetivo(null);
+  const c = ev.target.closest("circle"), n = c ? M.nodos[+c.dataset.i] : null, d = destinoClic(n);
+  if (!d) return;
+  if (d.tipo === "subir") enfocar(d.nodo);
+  else if (d.tipo === "elegir") seleccionar(d.nodo.data.hoja.ean);
+  else enfocar(d.nodo, true, !encuadrado(d.nodo));
 });
 
 
 function seleccionar(ean){
   M.sel = ean;
   $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo"));
-  const i = M.nodos.findIndex(n => n.data.hoja && n.data.hoja.ean === ean);
+  const i = ean ? M.nodos.findIndex(n => n.data.hoja && n.data.hoja.ean === ean) : -1;
   if (i >= 0) M.els[i].classList.add("activo");
-  pintarPanel();
+  pintarPanel(); pintarNivel();
 }
 
 function focoComun(hs){
@@ -2552,7 +2641,8 @@ function anteriores(){
 function detector(){
   const det = V().detector, fuente = $("selFuente").value;
   const filtro = $("filtro").value.toLowerCase();
-  const base = $("soloGrupo").checked && esRegla() ? filasGrupo() : det.filas;
+  // solo los códigos de la selección: los cálculos usan toda la casa, pero aquí se ven sus resultados
+  const base = filasGrupo();
   let sinReceta = 0;
   const filas = [];
   base.filter(r => !casa().inicio.codigos[r.ean] || cuenta(casa().inicio.codigos[r.ean])).forEach(r => {
@@ -2598,9 +2688,11 @@ function info(){
     h += e ? ` · edad hoy: ${e.tramo_edad}` : ` · <span class="aviso">fuera de scope en ${fAct.foto}</span>`;
   } else if (esSel()) {
     const its = estado.sel.slice(2).split("¦").filter(Boolean), n = miembros().length;
-    titulo = its.length === 1 ? "Selección: " + corto(its[0].replace(/^(Casa|Brand|PL): /, "")) : `Selección de ${its.length} elementos`;
-    migas.push([estado.sel, "Selección"]);
-    h += `Selección acumulada: ${its.map(k => `<b>${esc(corto(k.replace(/^(Casa|Brand|PL): /, "")))}</b>${/^(Brand|PL|Casa): /.test(k) ? ` (${k.split(":")[0] === "PL" ? "product line" : k.split(":")[0].toLowerCase()})` : ""}`).join(", ")} · ${n} códigos. `
+    const filtrada = its.length === 1 && its[0].includes("~");
+    titulo = its.length === 1 ? (filtrada ? nombreItem(its[0]) : "Selección: " + nombreItem(its[0])) : `Selección de ${its.length} elementos`;
+    migas.push([estado.sel, filtrada ? "Filtrado" : "Selección"]);
+    const tipoDe = k => { const b = partirClave(k).base; return /^(Brand|PL|Casa): /.test(b) ? ` (${b.split(":")[0] === "PL" ? "product line" : b.split(":")[0].toLowerCase()})` : ""; };
+    h += `${filtrada ? "Selección filtrada" : "Selección acumulada"}: ${its.map(k => `<b>${esc(nombreItem(k))}</b>${tipoDe(k)}`).join(", ")} · ${n} códigos. `
        + `Sin receta común: cada código usa su propia receta y copia el trend de su propio grupo; los KPIs suman los errores de todos. `;
   } else {
     const k = estado.sel.slice(2);
@@ -2632,7 +2724,7 @@ function pintarMiniMapa(){
   const svg = $("miniSvg");
   if (!M.raiz) { $("miniMapa").hidden = true; return; }
   $("miniMapa").hidden = false;
-  const set = new Set(eansDelReporte()), claves = new Set(esSel() ? estado.sel.slice(2).split("¦") : esRegla() ? [estado.sel.slice(2)] : []);
+  const set = new Set(eansDelReporte()), claves = new Set(esSel() ? estado.sel.slice(2).split("¦").map(k => partirClave(k).base) : esRegla() ? [estado.sel.slice(2)] : []);
   const t = transformDe(M.raiz), S = M.W;
   let h = "", n = 0, mar = [];
   M.nodos.forEach(nd => {
@@ -2924,7 +3016,7 @@ $("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-i
   ir(); });
 $("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
 $("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
-["soloGrupo", "verTodos", "filtro"].forEach(id => $(id).addEventListener("input", detector));
+["verTodos", "filtro"].forEach(id => $(id).addEventListener("input", detector));
 document.addEventListener("click", ev => {
   const a = ev.target.closest("a.ean");
   if (a) { abrirDetalle(a.dataset.ean); return; }
