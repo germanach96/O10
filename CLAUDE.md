@@ -97,6 +97,7 @@ Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucc
   - One Shot/Promo, aunque el responsable esté vacío.
   - Innovaciones en sus meses 1–6.
 - **Pero los volúmenes de los códigos local sí cuentan** en los trends de grupo y en los cálculos agregados (puede haber canibalismo o efecto halo).
+- **Filtro general de tipos** (barra lateral de inicio, "Cuentan en los cálculos"): Regular / One Shot (Article Type) y Central (o vacío) / Local (Final Responsibility). Por defecto cuentan todos. Un tipo apagado no suma en los trends de grupo ni en el tamaño de los grupos, y desaparece del mapa y del detector. Al menos un tipo de cada pareja queda encendido. Se precalcula cada combinación de One Shot y Local (`filtro_tipos` en la configuración); apagar Regular o Central deja el scope vacío y no necesita cálculo. El cubo, los logs y los resúmenes en disco son los de la variante base (no se ignora nada).
 
 El scope se evalúa en cada foto: un código puede entrar en la foto de octubre porque ya cumplió 7 meses.
 
@@ -195,7 +196,7 @@ Score(receta) = Σ_fotos dₓ · Σ_tramos cerrados wₕ · abs_err
 
 Compara el **Consensus - Final de la foto más actual** con el forecast de la **receta elegida** para cada código, mes a mes, en los 9 meses futuros.
 
-- **Tolerancia** definida por el usuario. Por defecto 5% en todo el horizonte. Opción gradual lineal:
+- **Tolerancia** definida por el usuario. Por defecto 5% en todo el horizonte. **Primero se fija una tolerancia general en la pantalla de inicio** (barra lateral, "Ajustes generales") y después, en el detalle de un EAN, se le puede poner una **tolerancia propia** que sustituye a la general solo para ese EAN (se marca con ● en el detector). En un grupo, cada código usa la suya. Se guarda en el navegador del usuario. Opción gradual lineal:
   `tol(h) = inicio + (fin − inicio) · (h − 1) / 8`, h = 1…9. Ejemplo: 5% → 10% da 7,5% en el mes 5.
 - **Desvío de un mes:** solo el exceso fuera del rango. Tolerancia 5% y Consensus 8% por encima de la receta → desvío 3%. Dentro del rango → 0.
 - **Resultado por EAN, como el WAPE:** suma en **valor absoluto** de los desvíos de todos los meses. No es bias: un mes por encima y otro por debajo no se compensan.

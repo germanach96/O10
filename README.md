@@ -9,7 +9,7 @@ python -m brujulas.pipeline --sin-cubo # igual, sin escribir el cubo Parquet
 python -m pytest tests
 ```
 
-- `brujulas/config.json`: rejillas, tope del trend, pesos por tramo, tolerancias y decisiones abiertas.
+- `brujulas/config.json`: rejillas, tope del trend, pesos por tramo, tolerancia inicial, filtro de tipos (variantes que se precalculan) y decisiones abiertas.
 - `brujulas/lector.py`: lectura y validación de fotos (EAN, mes, scope, edad, tamaño).
 - `brujulas/motor.py`: forecast de las 12.393 recetas por código y foto.
 - `brujulas/pipeline.py`: actuals posteriores, tramos, cubo Parquet (`salida/cubo`), resúmenes, score multi-foto y detector.

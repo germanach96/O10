@@ -210,6 +210,20 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .chip[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
 @media (hover:hover) and (pointer:fine){.chip:not([aria-pressed="true"]):hover{background:var(--fill-2)}}
 .tol input{width:58px;border:0;background:var(--fill);border-radius:9px;padding:4px 7px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+/* ajustes generales de la barra lateral: tipos que cuentan y tolerancia general */
+.ajustes{display:flex;flex-direction:column;gap:14px;padding:4px 10px 6px}
+.aj-fila{display:flex;flex-direction:column;gap:6px}
+.aj-t{font-size:12.5px;font-weight:600;color:var(--label)}
+.aj-par{display:flex;gap:5px;flex-wrap:wrap}
+.aj-par .chip{flex:1}
+.aj-tol{display:flex;gap:10px}
+.aj-tol label,.tol-det label{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--label-2);white-space:nowrap}
+.aj-tol input{width:52px}
+.aj-nota{margin:0;font-size:11.5px;line-height:1.4;color:var(--label-2);text-wrap:pretty}
+.tol-det{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tol-txt{font-size:13px;color:var(--label-2)}
+.tol-txt b{color:var(--label);font-variant-numeric:tabular-nums}
+.tol-propia{color:var(--blue);font-size:9px;margin-left:5px;vertical-align:2px}
 .pop-pie{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--sep);margin-top:14px;padding-top:12px}
 
 /* ============ Vistas ============ */
@@ -498,6 +512,29 @@ details[open] summary::before{transform:rotate(45deg)}
   <div class="lado-scroll">
     <h2>Códigos</h2>
     <ul class="lista-lado" id="cifras"></ul>
+    <h2 id="lblAj">Ajustes generales</h2>
+    <div class="ajustes" aria-labelledby="lblAj">
+      <div class="aj-fila" id="ajTipos">
+        <span class="aj-t">Cuentan en los cálculos</span>
+        <div class="aj-par" role="group" aria-label="Tipo de artículo" data-par="art">
+          <button type="button" class="chip" data-t="Regular" aria-pressed="true">Regular</button>
+          <button type="button" class="chip" data-t="One Shot" aria-pressed="true">One Shot</button>
+        </div>
+        <div class="aj-par" role="group" aria-label="Responsable" data-par="resp">
+          <button type="button" class="chip" data-t="Central" aria-pressed="true">Central</button>
+          <button type="button" class="chip" data-t="Local" aria-pressed="true">Local</button>
+        </div>
+        <p class="aj-nota">Un tipo apagado no suma en los trends de grupo y desaparece del mapa y del detector.</p>
+      </div>
+      <div class="aj-fila tol">
+        <span class="aj-t">Tolerancia del detector</span>
+        <div class="aj-tol">
+          <label>Mes 1 <input id="tolGIni" type="number" step="0.5" min="0" inputmode="decimal">%</label>
+          <label>Mes 9 <input id="tolGFin" type="number" step="0.5" min="0" inputmode="decimal">%</label>
+        </div>
+        <p class="aj-nota" id="tolNota"></p>
+      </div>
+    </div>
     <h2>Brands</h2>
     <ul class="lista-lado" id="ladoBrands"></ul>
   </div>
@@ -552,13 +589,6 @@ details[open] summary::before{transform:rotate(45deg)}
         </div>
         <div class="grupo-f" role="group" aria-label="Segmento" id="fSeg"><span class="mono">Segmento</span></div>
         <div class="grupo-f" role="group" aria-label="Edad" id="fEdad"><span class="mono">Edad</span></div>
-        <div class="grupo-f tol">
-          <span class="mono">Tolerancia</span>
-          <label class="oculto" for="tolIni0">Tolerancia mes 1</label><input id="tolIni0" type="number" step="0.5" min="0" value="5">
-          <span class="pequeño">% en el mes 1 y</span>
-          <label class="oculto" for="tolFin0">Tolerancia mes 9</label><input id="tolFin0" type="number" step="0.5" min="0" value="5">
-          <span class="pequeño">% en el 9</span>
-        </div>
       </div>
       <div class="pop-pie">
         <button type="button" class="enlace" id="limpiar">Restablecer</button>
@@ -601,8 +631,7 @@ details[open] summary::before{transform:rotate(45deg)}
     <p class="sub">Consensus de la foto frente a la receta elegida, con su rango de tolerancia.</p>
     <div class="ancho vidrio">
       <div class="controles">
-        <label>Tolerancia mes 1 <input id="tolIni" type="number" step="0.5" min="0" value="5">%</label>
-        <label>Mes 9 <input id="tolFin" type="number" step="0.5" min="0" value="5">%</label>
+        <div class="tol-det tol" id="tolDet"></div>
         <label>Receta <select id="selFuente">
           <option value="codigo">Elegida por código (score de las fotos anteriores)</option>
           <option value="pl">Regla de su Product Line</option>
@@ -642,7 +671,6 @@ details[open] summary::before{transform:rotate(45deg)}
     <p class="sub">EANs fuera de su estrategia. Usa la tolerancia y la receta de la foto actual.</p>
     <div class="ancho vidrio">
       <div class="controles">
-        <label>Tolerancia <input id="tolIni2" type="number" step="0.5" min="0" value="5">% a <input id="tolFin2" type="number" step="0.5" min="0" value="5">%</label>
         <label><input type="checkbox" id="soloGrupo" checked> Solo el grupo seleccionado</label>
         <label><input type="checkbox" id="verTodos"> Ver también los que están dentro</label>
         <label class="oculto" for="filtro">Filtrar</label><input id="filtro" type="search" placeholder="Filtrar EAN o descripción" style="width:220px">
@@ -714,14 +742,34 @@ function entidad(foto){
   if (esRegla()) return foto.reglas[estado.sel.slice(2)] || null;
   return foto.codigos[estado.sel] || null;
 }
-const fotosCerradas = () => casa().fotos.filter(f => f.hay_tramos_cerrados);
+const fotosCerradas = () => V().fotos.filter(f => f.hay_tramos_cerrados);
 const fotoUltCerrada = () => { const l = fotosCerradas(); return l[l.length - 1]; };
 const existeRegla = k => fotosCerradas().some(f => f.reglas[k]);
 
-function tolerancia(){
-  const ti = (parseFloat($("tolIni").value) || 0) / 100, tf = (parseFloat($("tolFin").value) || 0) / 100;
+// ---- Ajustes generales (barra lateral de inicio): tipos que cuentan y tolerancia; la tolerancia se puede afinar por EAN
+const AJ = (function(){
+  const t = CFG.tolerancia_detector || {inicio: 0.05, fin: 0.05};
+  let a = {ignorar: (CFG.filtro_tipos && CFG.filtro_tipos.ignorados_por_defecto) || [], tol: {ini: t.inicio * 100, fin: t.fin * 100}, tolEan: {}};
+  try { const g = JSON.parse(localStorage.getItem("o10-ajustes") || "null"); if (g) a = {...a, ...g}; } catch(e) {}
+  a.ignorar = new Set(a.ignorar);
+  return a;
+})();
+function guardarAjustes(){
+  try { localStorage.setItem("o10-ajustes", JSON.stringify({ignorar: [...AJ.ignorar], tol: AJ.tol, tolEan: AJ.tolEan})); } catch(e) {}
+}
+// datos precalculados de la combinación de tipos ignorados (solo One Shot y Local cambian los cálculos)
+function V(){
+  const c = casa(), k = ["Local", "One Shot"].filter(t => AJ.ignorar.has(t)).join(",");
+  return k && c.variantes && c.variantes[k] ? c.variantes[k] : c;
+}
+const cuenta = i => !AJ.ignorar.has(i.art) && !AJ.ignorar.has(i.resp);
+const tolPropia = ean => AJ.tolEan[ean] || null;
+function tolerancia(ean){
+  const t = (ean && AJ.tolEan[ean]) || AJ.tol, ti = (+t.ini || 0) / 100, tf = (+t.fin || 0) / 100;
   return h => ti + (tf - ti) * (h - 1) / 8;
 }
+const txtTol = t => (+t.ini === +t.fin) ? `±${fmtN(t.ini)}%` : `±${fmtN(t.ini)}% → ${fmtN(t.fin)}%`;
+const fmtN = x => (+x).toLocaleString("es-ES", {maximumFractionDigits: 1});
 function evaluar(fc, cons, tol){
   // desvío de un mes = solo el exceso fuera de [R·(1−tol), R·(1+tol)], en valor absoluto
   return fc.map((R, i) => {
@@ -743,13 +791,14 @@ const binDe = p => BINS.findIndex(b => p <= b.max);
 let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
 
 function calcularHojas(){
-  const c = casa(), ini = c.inicio.codigos, tol = tolerancia(), det = c.detector;
+  const c = casa(), ini = c.inicio.codigos, det = V().detector;
   const filas = {}; det.filas.forEach(r => filas[r.ean] = r);
-  return Object.keys(ini).map(ean => {
+  // los tipos ignorados no salen en el mapa (ni suman en los trends: lo resuelve la variante precalculada)
+  return Object.keys(ini).filter(ean => cuenta(ini[ean])).map(ean => {
     const a = c.atributos[ean] || {}, i = ini[ean], r = filas[ean];
     let u = null, p = null, sR = null, sinrec = false, meses = [];
     if (i.scope && r && r.recetas.codigo) {
-      const ev = evaluar(r.recetas.codigo.fc, r.consensus, tol);
+      const ev = evaluar(r.recetas.codigo.fc, r.consensus, tolerancia(ean));
       u = ev.reduce((s, e) => s + e.dev, 0); sR = ev.reduce((s, e) => s + e.R, 0);
       p = sR > 0 ? u / sR : (u > 0.5 ? Infinity : 0);
       meses = ev.map((e, k) => e.dev > 0.5 ? det.meses[k] : null).filter(Boolean);
@@ -1245,16 +1294,55 @@ function limpiarFiltros(){
   pintarChips(); aplicarFiltros();
 }
 $("limpiar").addEventListener("click", limpiarFiltros);
-// las tres parejas de tolerancia (filtros, foto actual, detector) son el mismo valor
-const TOL = [["tolIni0", "tolFin0"], ["tolIni", "tolFin"], ["tolIni2", "tolFin2"]];
-function sincronizarTol(id){
-  const par = TOL.find(t => t.includes(id)), k = par.indexOf(id), v = $(id).value;
-  TOL.forEach(t => { if (t !== par) $(t[k]).value = v; });
+// ---- Ajustes generales: tipos que cuentan y tolerancia general (barra lateral de inicio)
+const nPropias = () => Object.keys(AJ.tolEan).length;
+function pintarAjustes(){
+  document.querySelectorAll("#ajTipos .chip").forEach(b => b.setAttribute("aria-pressed", String(!AJ.ignorar.has(b.dataset.t))));
+  $("tolGIni").value = AJ.tol.ini; $("tolGFin").value = AJ.tol.fin;
+  const n = nPropias();
+  $("tolNota").innerHTML = n ? `${n} EAN${n === 1 ? "" : "s"} con tolerancia propia. <button type="button" class="enlace" id="tolBorrar">Quitarlas</button>` : "Se puede afinar después en el detalle de cada EAN.";
 }
-TOL.flat().forEach(id => $(id).addEventListener("input", () => {
-  sincronizarTol(id); M.hojas = calcularHojas(); recolorear(); aplicarFiltros();
-  if (!$("vistaDetalle").hidden) { fotoActual(); detector(); }
+function refrescarTodo(redibujar){
+  M.hojas = calcularHojas();
+  if (redibujar) { pintarChips(); dibujarMapa(); } else { recolorear(); aplicarFiltros(); }
+  if (!$("vistaDetalle").hidden) pintar();
+}
+$("ajTipos").addEventListener("click", ev => {
+  const b = ev.target.closest(".chip"); if (!b) return;
+  const t = b.dataset.t, par = b.closest("[data-par]").querySelectorAll(".chip");
+  // al menos un tipo de cada pareja tiene que contar
+  const quedan = [...par].filter(x => x !== b && !AJ.ignorar.has(x.dataset.t)).length;
+  if (!AJ.ignorar.has(t) && !quedan) return;
+  AJ.ignorar.has(t) ? AJ.ignorar.delete(t) : AJ.ignorar.add(t);
+  guardarAjustes(); pintarAjustes(); refrescarTodo(true);
+});
+["tolGIni", "tolGFin"].forEach(id => $(id).addEventListener("input", () => {
+  AJ.tol = {ini: parseFloat($("tolGIni").value) || 0, fin: parseFloat($("tolGFin").value) || 0};
+  guardarAjustes(); refrescarTodo(false);
 }));
+$("lado").addEventListener("click", ev => { if (ev.target.id === "tolBorrar") { AJ.tolEan = {}; guardarAjustes(); pintarAjustes(); refrescarTodo(false); } });
+// tolerancia propia del EAN abierto en el detalle
+function pintarTolDet(){
+  const el = $("tolDet");
+  if (esRegla()) { el.innerHTML = `<span class="tol-txt">Tolerancia general <b>${txtTol(AJ.tol)}</b>${nPropias() ? ` · los EANs con tolerancia propia usan la suya` : ""}</span>`; return; }
+  const p = tolPropia(estado.sel);
+  if (!p) { el.innerHTML = `<span class="tol-txt">Tolerancia general <b>${txtTol(AJ.tol)}</b></span><button type="button" class="btn btn-fant" id="tolPropiaSi">Usar una propia para este EAN</button>`; return; }
+  el.innerHTML = `<span class="tol-txt">Tolerancia propia</span>
+    <label>Mes 1 <input id="tolEIni" type="number" step="0.5" min="0" value="${p.ini}">%</label>
+    <label>Mes 9 <input id="tolEFin" type="number" step="0.5" min="0" value="${p.fin}">%</label>
+    <button type="button" class="enlace" id="tolPropiaNo">Volver a la general (${txtTol(AJ.tol)})</button>`;
+}
+$("tolDet").addEventListener("click", ev => {
+  if (ev.target.id === "tolPropiaSi") { AJ.tolEan[estado.sel] = {...AJ.tol}; guardarAjustes(); pintarAjustes(); refrescarTodo(false); $("tolEIni") && $("tolEIni").focus(); }
+  else if (ev.target.id === "tolPropiaNo") { delete AJ.tolEan[estado.sel]; guardarAjustes(); pintarAjustes(); refrescarTodo(false); }
+});
+$("tolDet").addEventListener("input", ev => {
+  if (!AJ.tolEan[estado.sel]) return;
+  AJ.tolEan[estado.sel] = {ini: parseFloat($("tolEIni").value) || 0, fin: parseFloat($("tolEFin").value) || 0};
+  guardarAjustes(); pintarAjustes();
+  M.hojas = calcularHojas(); recolorear(); aplicarFiltros();
+  fotoActual(); detector();   // sin repintar los campos: se sigue escribiendo
+});
 function recolorear(){
   M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; M.els[i].style.fill = colorHoja(x); if (x.scope && !x.sinrec) M.els[i].dataset.bin = binDe(x.p); });
 }
@@ -1369,7 +1457,7 @@ function brujula(svgId, ex, ey, polos){
     <text x="${c}" y="${c+R+16}" text-anchor="middle">${polos[2]}</text>
     <text x="${c}" y="${c-R-8}" text-anchor="middle">${polos[3]}</text>`;
   const pts = [];
-  casa().fotos.forEach(f => {
+  V().fotos.forEach(f => {
     const e = entidad(f); if (!e || !e.ejes) return;
     const x = posEje(e.ejes[ex]), y = posEje(e.ejes[ey]);
     if (x == null || y == null) return;
@@ -1400,7 +1488,7 @@ function brujula(svgId, ex, ey, polos){
 
 function recetaElegida(){
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); return e ? e.receta_txt : null; }
-  const el = casa().elegida[estado.sel]; return el ? el.txt : null;
+  const el = V().elegida[estado.sel]; return el ? el.txt : null;
 }
 
 function selector(){
@@ -1475,7 +1563,7 @@ function mediaBrujula(id, ventana){
 }
 
 function filasGrupo(){
-  const det = casa().detector;
+  const det = V().detector;
   if (!esRegla()) return det.filas.filter(r => r.ean === estado.sel);
   const k = estado.sel.slice(2);
   if (k.startsWith("Casa: ")) return det.filas;
@@ -1525,7 +1613,7 @@ function rail(r){
 }
 
 function fotoActual(){
-  const det = casa().detector, fuente = $("selFuente").value, tol = tolerancia();
+  const det = V().detector, fuente = $("selFuente").value, tol = tolerancia(esRegla() ? null : estado.sel);
   $("tituloActual").textContent = `Foto actual ${det.foto}`;
   const filas = filasGrupo();
   let h = "";
@@ -1536,7 +1624,7 @@ function fotoActual(){
   let fc = Array(n).fill(0), cons = Array(n).fill(0), devCod = Array(n).fill(0), lo = Array(n).fill(0), hi = Array(n).fill(0);
   let nFuera = 0;
   conRec.forEach(r => {
-    const ev = evaluar(r.recetas[fuente].fc, r.consensus, tol);
+    const ev = evaluar(r.recetas[fuente].fc, r.consensus, tolerancia(r.ean));
     let u = 0;
     ev.forEach((e, i) => { fc[i] += e.R; cons[i] += e.C; lo[i] += e.lo; hi[i] += e.hi; devCod[i] += e.dev; u += e.dev; });
     if (u > 0.5) nFuera++;
@@ -1593,15 +1681,15 @@ function anteriores(){
 }
 
 function detector(){
-  const det = casa().detector, fuente = $("selFuente").value, tol = tolerancia();
+  const det = V().detector, fuente = $("selFuente").value;
   const filtro = $("filtro").value.toLowerCase();
   const base = $("soloGrupo").checked && esRegla() ? filasGrupo() : det.filas;
   let sinReceta = 0;
   const filas = [];
-  base.forEach(r => {
+  base.filter(r => !casa().inicio.codigos[r.ean] || cuenta(casa().inicio.codigos[r.ean])).forEach(r => {
     const rec = r.recetas[fuente];
     if (!rec) { sinReceta++; return; }
-    const ev = evaluar(rec.fc, r.consensus, tol);
+    const ev = evaluar(rec.fc, r.consensus, tolerancia(r.ean));
     const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + e.R, 0);
     const fm = (f) => ev.map((e, i) => e.dev > 0.5 && f(e) ? det.meses[i].slice(5) : null).filter(Boolean);
     const bajo = fm(e => e.C < e.lo), alto = fm(e => e.C > e.hi);
@@ -1613,22 +1701,23 @@ function detector(){
   const {col, dir} = estado.orden;
   vis.sort((a, b) => dir * ((a[col] > b[col]) - (a[col] < b[col])));
   $("detInfo").innerHTML = `Foto ${det.foto} (meses ${det.meses[0]} a ${det.meses[8]}). <b style="color:var(--label)">${fuera} de ${filas.length} EANs fuera de su estrategia.</b>
+     Tolerancia general ${txtTol(AJ.tol)}${nPropias() ? `; ${nPropias()} EAN${nPropias() === 1 ? "" : "s"} con tolerancia propia (marcados con ●)` : ""}. Se cambia en el mapa, en la barra lateral.
      ${sinReceta ? sinReceta + " EANs sin receta (no estaban en scope en ninguna foto con tramos cerrados)." : ""}
      Desvío de un mes = solo el exceso fuera del rango, en valor absoluto (un mes arriba y otro abajo no se compensan). Desvío % = desvío / Σ forecast de la receta.`;
   const th = (k, t) => `<th class="ord" data-col="${k}" aria-sort="${col === k ? (dir > 0 ? "ascending" : "descending") : "none"}">${t}${col === k ? `<svg class="flecha" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="${dir > 0 ? "M2 6.5 5 3.5l3 3" : "M2 3.5 5 6.5l3-3"}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ""}</th>`;
   let h = `<table class="t-det"><tr class="cab"><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Brand</th><th class="izq">Edad</th>${th("sR","Σ Receta")}${th("sC","Σ Consensus")}${th("u","Desvío uds")}${th("p","Desvío %")}<th class="izq">Meses fuera</th><th class="izq">Grupo del trend</th></tr>`;
   const tope = estado.detTodos ? vis.length : 30;
   vis.slice(0, tope).forEach(x => {
-    h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq desc" title="${esc(x.r.desc)} · ${x.r.edad} · grupo del trend: ${esc(x.rec.txt.grupo)}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}</td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${x.r.edad}</td>
+    h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a>${tolPropia(x.r.ean) ? `<span class="tol-propia" title="Tolerancia propia ${txtTol(tolPropia(x.r.ean))}">●</span>` : ""}</td><td class="izq desc" title="${esc(x.r.desc)} · ${x.r.edad} · grupo del trend: ${esc(x.rec.txt.grupo)}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}</td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${x.r.edad}</td>
       <td class="c-sr">${num(x.sR)}</td><td class="c-sc">${num(x.sC)}</td><td class="c-u"><b>${num(x.u)}</b></td><td class="c-p">${pct(x.p)}</td><td class="izq pequeño meses c-mes">${x.meses}</td>
       <td class="izq pequeño meses c-grupo" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
   });
-  if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--label-2)">Ningún EAN se sale de su estrategia con esta tolerancia.</td></tr>`;
+  if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--label-2)">Ningún EAN se sale de su estrategia con estas tolerancias.</td></tr>`;
   $("detector").innerHTML = h + "</table>" + (vis.length > tope ? `<p><button type="button" class="btn btn-fant" id="detMas">Ver los ${vis.length} EANs</button></p>` : "");
 }
 
 function info(){
-  const c = casa(), fAct = c.fotos[c.fotos.length - 1];
+  const c = casa(), v = V(), fAct = v.fotos[v.fotos.length - 1];
   let h = "", titulo, migas = [["R|Casa: " + estado.casa, estado.casa]];
   if (!esRegla()) {
     const a = c.atributos[estado.sel], e = fAct.codigos[estado.sel];
@@ -1641,13 +1730,13 @@ function info(){
     titulo = corto(k.replace(/^(Casa|Brand|PL): /, ""));
     const tipo = k.split(":")[0];
     if (tipo !== "Casa") {
-      const ej = c.detector.filas.find(r => (tipo === "Brand" ? r.brand : r.pl) === k.replace(/^(Brand|PL): /, ""));
+      const ej = v.detector.filas.find(r => (tipo === "Brand" ? r.brand : r.pl) === k.replace(/^(Brand|PL): /, ""));
       if (ej) { migas.push(["R|Brand: " + ej.brand, corto(ej.brand)]); if (tipo === "PL") migas.push(["R|PL: " + ej.pl, corto(ej.pl)]); }
     }
     h += `Regla de ${{Casa: "la casa", Brand: "la brand", PL: "la product line"}[tipo]}: mejor receta común a todos sus códigos. `;
   }
-  h += `<br>Fotos: ${c.fotos.map(f => f.foto + (f.hay_tramos_cerrados ? " (medida)" : " (actual)")).join(" · ")}. ` +
-       c.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${esc(a)}</span>`)).join(" · ");
+  h += `<br>Fotos: ${v.fotos.map(f => f.foto + (f.hay_tramos_cerrados ? " (medida)" : " (actual)")).join(" · ")}. ` +
+       v.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${esc(a)}</span>`)).join(" · ");
   $("info").innerHTML = h;
   $("detTitulo").textContent = titulo;
   $("detMigas").innerHTML = migas.map((m, i) => `${i ? '<span style="color:var(--label-3)">/</span>' : ""}<button type="button" data-sel="${esc(m[0])}" ${i === migas.length - 1 ? 'aria-current="true"' : ""} ${m[0].startsWith("R|") && !existeRegla(m[0].slice(2)) ? "disabled" : ""}>${esc(m[1])}</button>`).join("");
@@ -1656,6 +1745,7 @@ function info(){
 
 function pintar(){
   info();
+  pintarTolDet();
   fotoActual();
   brujula("b1", "s", "w", ["Media plana", "Mismo mes año pasado", "Sin trend", "Trend completo"]);
   brujula("b2", "m", "N", ["100% sell-in", "100% sell-out", "Trend 6M", "Trend 12M"]);
@@ -1687,6 +1777,7 @@ document.addEventListener("click", ev => {
 
 // ================= Arranque =================
 function cargarCasa(){
+  pintarAjustes();
   estado.sel = "R|Casa: " + estado.casa;
   M.foco = null; M.sel = null; M.primera = true;
   M.hojas = calcularHojas();

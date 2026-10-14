@@ -6,7 +6,7 @@ import pytest
 
 from brujulas.lector import ErrorFoto, extraer_tamano, leer_foto
 from brujulas.motor import CELDAS, EJES, MotorFoto, Rejilla
-from brujulas.pipeline import cargar_config, kpis
+from brujulas.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
 
 RAIZ = Path(__file__).resolve().parent.parent
 COLS = ("Sub-Division;House;Brand;Product Line;Article Type;Article Sub Type;EAN;Planning Item Description;"
@@ -118,6 +118,24 @@ def test_forecast_a_mano(foto_simple, cfg):
     # sin EPOS: m>0 con trend no es válida; con w=0 sí
     assert not val[indice(R, s=0, w=1, m=0.5, N=12, c=0, p=0, g=("Propio", "Jerarquía"))]
     assert val[indice(R, s=0, w=0, m=0.5, N=12, c=0, p=0, g=("Propio", "Jerarquía"))]
+
+
+def test_filtro_tipos(foto_simple, cfg):
+    """Un tipo ignorado no suma en el trend de grupo: sin el código 2 (Local), la PL vale lo mismo que el propio."""
+    f = foto_simple
+    f.codigos.loc["2000000000030", "Final Responsibility"] = "Local"
+    assert mascara_cuenta(f.codigos).all()
+    cuenta = mascara_cuenta(f.codigos, ["Local"])
+    assert cuenta.tolist() == [f.eans[k] != "2000000000030" for k in range(2)]
+    assert not mascara_cuenta(f.codigos, ["Regular"]).any()
+    R = Rejilla(cfg)
+    M = MotorFoto(f, cfg, R, cuenta=cuenta)
+    i = f.eans.index("1000000000050")
+    Fc, _ = M.forecasts(i)
+    r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Product Line", "Jerarquía"))
+    np.testing.assert_allclose(Fc[r][1], 110 * 1.10)
+    assert M.tam_grupo[CELDAS.index(("Product Line", "Jerarquía")), i] == 1
+    assert len(variantes_tipos(cfg)) == 4
 
 
 def test_tope_trend(tmp_path, cfg):
