@@ -330,6 +330,89 @@ def score_multifoto(resultados: list[ResultadoFoto], cfg: dict, R: Rejilla):
     return elegida, num, sgn, den
 
 
+# ------------------------------------------------------------------ rangos de fotos
+def rangos(resultados: list[ResultadoFoto], cfg: dict, R: Rejilla) -> dict:
+    """Receta elegida (por código y por grupo) para cada rango contiguo de fotos medidas [i, j].
+
+    La página tiene una barra para elegir el rango de cálculo y no recalcula nada: aquí se precalculan los
+    n·(n+1)/2 rangos. Cada foto aporta su contribución ponderada una sola vez y los rangos se acumulan
+    de forma incremental. Por rango solo se guardan índices de receta; los forecasts de la foto actual se
+    guardan una vez por (código, receta) usada.
+    """
+    ultima = max(r.foto.mes for r in resultados)
+    medidas = [r for r in resultados if r.cerrado.any()]
+    # contribución de cada foto medida, por código (float32 para acotar memoria)
+    contrib = []
+    for res in medidas:
+        d = peso_foto(res, ultima, cfg)
+        W = pesos_tramo(res, cfg, "ponderado") * d
+        absR = con_respaldo(res.abs, res.valido, R)
+        sgnR = con_respaldo(res.sgn, res.valido, R)
+        c = {}
+        for a, i in enumerate(res.scope):
+            if not res.cerrado[a].any():
+                continue
+            c[res.foto.eans[i]] = ((res.abs[a] * W[a]).sum(1).astype(np.float32), (res.sgn[a] * W[a]).sum(1).astype(np.float32),
+                                   float((res.act[a] * W[a]).sum()), res.valido[a],
+                                   (absR[a] * W[a]).sum(1).astype(np.float32), (sgnR[a] * W[a]).sum(1).astype(np.float32))
+        contrib.append(c)
+    # grupos de la foto actual para las reglas (como en el detector)
+    ult = resultados[-1]
+    cod = ult.foto.codigos
+    sc = cod.iloc[ult.scope]
+    eans_ult = [ult.foto.eans[i] for i in ult.scope]
+    grupos = {("pl", v): list(sc.index[sc["Product Line"] == v]) for v in sc["Product Line"].unique()}
+    grupos.update({("brand", v): list(sc.index[sc["Brand"] == v]) for v in sc["Brand"].unique()})
+    grupos[("casa", None)] = list(sc.index)
+    salida, usadas = {}, {}
+    todos = np.ones(R.n, bool)
+    for i in range(len(medidas)):
+        acc = {}
+        for j in range(i, len(medidas)):
+            for e, (n_, s_, d_, v_, nR, sR) in contrib[j].items():
+                if e in acc:
+                    a = acc[e]; a[0] += n_; a[1] += s_; a[2] += d_; a[3] = a[3] & v_; a[4] += nR; a[5] += sR
+                else:
+                    acc[e] = [n_.copy(), s_.copy(), d_, v_.copy(), nR.copy(), sR.copy()]
+            el = {}
+            for e, a in acc.items():
+                r = elegir(a[0], a[1], a[3])
+                el[e] = [r, round(float(a[0][r] / a[2]), 4) if r >= 0 and a[2] > 0 else None]
+            reg = {}
+            for g, eans in grupos.items():
+                es = [e for e in eans if e in acc]
+                reg[g] = elegir(sum(acc[e][4] for e in es), sum(acc[e][5] for e in es), todos) if es else -1
+            det = {}
+            for k, i_ in enumerate(ult.scope):
+                e = eans_ult[k]
+                fila = [el[e][0] if e in el else -1, reg[("pl", cod["Product Line"].iat[i_])],
+                        reg[("brand", cod["Brand"].iat[i_])], reg[("casa", None)]]
+                det[e] = fila
+                for r in fila:
+                    if r >= 0:
+                        usadas.setdefault(e, set()).add(r)
+            salida[f"{i}-{j}"] = {"el": {e: v for e, v in el.items()}, "det": det}
+    # forecast de la foto actual para cada (código, receta) usada; inválida hoy -> la misma sin trend
+    M = ult.motor
+    fc, st, txt = {}, {}, {}
+    for k, i_ in enumerate(ult.scope):
+        e = eans_ult[k]
+        if e not in usadas:
+            continue
+        Fc, val = M.forecasts(i_)
+        fc[e] = {}
+        for r in sorted(usadas[e]):
+            rr = r
+            if not val[r]:
+                ix = {k2: R.idx[k2][r] for k2 in EJES}
+                ix["w"], ix["m"], ix["N"], ix["g"] = 0, 0, 0, 0
+                rr = int(np.ravel_multi_index(tuple(ix[k2] for k2 in EJES), R.forma))
+                st.setdefault(e, []).append(r)
+            fc[e][str(r)] = [round(float(x)) for x in Fc[rr]]
+            txt[str(r)] = R.receta(r)
+    return {"medidas": [r.foto.etiqueta for r in medidas], "r": salida, "fc": fc, "st": st, "txt": txt}
+
+
 # ------------------------------------------------------------------ detector
 def detector(res_ult: ResultadoFoto, elegida: dict, num: dict, sgn: dict, den: dict, cfg: dict, R: Rejilla) -> dict:
     foto, M = res_ult.foto, res_ult.motor
@@ -457,7 +540,8 @@ def main(argv=None):
             resumenes = [resumen_foto(r, cfg, R) for r in resultados]
             elegida, num, sgn, den = score_multifoto(resultados, cfg, R)
             det = detector(resultados[-1], elegida, num, sgn, den, cfg, R)
-            variantes[clave_variante(ignorar)] = {"fotos": resumenes, "elegida": elegida, "detector": det}
+            variantes[clave_variante(ignorar)] = {"fotos": resumenes, "elegida": elegida, "detector": det,
+                                                 "rangos": rangos(resultados, cfg, R)}
             if base:
                 for rsm in resumenes:
                     (salida / f"resumen_{casa}_{rsm['foto']}.json").write_text(
