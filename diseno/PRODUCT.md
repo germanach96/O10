@@ -17,7 +17,7 @@ Brújulas de Demand responde, foto a foto, a "¿qué inputs de forecast debí ha
 No es un forecast nuevo: es un oráculo retrospectivo sobre los propios datos del equipo (Actuals, EPOS, Supply Cuts, Total Demand Assumption) que traduce 12.393 recetas por código y foto a tres brújulas y un selector de grupo, más un detector frente a la receta elegida.
 
 ## Operating Context
-- Un CSV por casa y foto mensual (export S&OP). Todo se precalcula con `python -m brujulas.pipeline`; la página es un HTML autocontenido que solo lee y se abre sin servidor.
+- Un CSV por casa y foto mensual (export S&OP). Todo se precalcula con `python -m motor.pipeline`; la página es un HTML autocontenido que solo lee y se abre sin servidor.
 - Jerarquía: House → Brand → Product Line → EAN. Scope central: Regular Item con responsable Central o vacío; los códigos local cuentan en los agregados.
 - Interfaz y comentarios en español.
 
@@ -27,7 +27,7 @@ No es un forecast nuevo: es un oráculo retrospectivo sobre los propios datos de
 - Las especificaciones completas viven en `CLAUDE.md`.
 
 ## Evidence on Hand
-- Datos reales de Gucci: `Gucci_2025_11.csv`, `Gucci_2026_09.csv` (524 EANs, 10 brands, 58 product lines en la foto 2026.M09).
+- Datos reales de Gucci: `data/Gucci/Consensus/Gucci_2025_11.csv` y `Gucci_2026_09.csv` (524 EANs, 10 brands, 58 product lines en la foto 2026.M09).
 - No hay logos, fotografías ni testimonios: no inventarlos.
 
 ## Product Principles

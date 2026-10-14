@@ -1,6 +1,8 @@
 """Pipeline: lee todas las fotos de una casa, calcula recetas, cubo, resúmenes, score y detector.
 
-Uso:  python -m brujulas.pipeline [carpeta_csv] [carpeta_salida] [--sin-cubo]
+Uso:  python -m motor.pipeline [carpeta_datos] [carpeta_salida] [--sin-cubo]
+
+Por defecto lee data/<Casa>/Consensus/<Casa>_AAAA_MM.csv y escribe el HTML en diseno/ejemplos/.
 """
 from __future__ import annotations
 
@@ -13,9 +15,11 @@ import numpy as np
 import pandas as pd
 
 from .lector import Foto, int_a_mes, leer_foto
-from .motor import CELDAS, EJES, MotorFoto, Rejilla
+from .recetas import CELDAS, EJES, MotorFoto, Rejilla
 
 RAIZ = Path(__file__).resolve().parent.parent
+DATOS = RAIZ / "data"                                   # data/<Casa>/Consensus/*.csv
+HTML_EJEMPLO = RAIZ / "diseno" / "ejemplos" / "BRUJULAS_ejemplo.html"
 
 
 def cargar_config(ruta: Path | None = None) -> dict:
@@ -415,13 +419,13 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     sin_cubo = "--sin-cubo" in argv
     argv = [a for a in argv if not a.startswith("--")]
-    carpeta = Path(argv[0]) if argv else RAIZ
+    carpeta = Path(argv[0]) if argv else DATOS
     salida = Path(argv[1]) if len(argv) > 1 else RAIZ / "salida"
     salida.mkdir(parents=True, exist_ok=True)
     cfg = cargar_config()
     R = Rejilla(cfg)
     t0 = time.time()
-    archivos = sorted(carpeta.glob("*_[0-9][0-9][0-9][0-9]_[0-9][0-9].csv"))
+    archivos = sorted(carpeta.rglob("*_[0-9][0-9][0-9][0-9]_[0-9][0-9].csv"))
     casas = {}
     for a in archivos:
         f = leer_foto(a, cfg)
@@ -484,8 +488,9 @@ def main(argv=None):
               f"{len(variantes)} variantes de tipos ({time.time()-t0:.1f}s)")
     tabla_recetas(R).to_csv(salida / "recetas.csv")
     (salida / "datos.json").write_text(json.dumps(datos, ensure_ascii=False), encoding="utf-8")
-    from .html import generar_html
-    ruta = generar_html(datos, RAIZ / "BRUJULAS_ejemplo.html")
+    from interfaz.html import generar_html
+    HTML_EJEMPLO.parent.mkdir(parents=True, exist_ok=True)
+    ruta = generar_html(datos, HTML_EJEMPLO)
     print(f"HTML: {ruta} ({time.time()-t0:.1f}s)")
 
 

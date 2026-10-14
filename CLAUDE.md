@@ -8,7 +8,9 @@ Fase 1 (esta especificación): encontrar, en cada foto, los parámetros que mini
 
 Idioma de la interfaz y de los comentarios: español.
 
-Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @SKILLS-DISENO.md
+Mapa del repo: `README.md`. Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/`.
+
+Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @diseno/SKILLS-DISENO.md
 
 ---
 
@@ -35,7 +37,7 @@ Visto desde una foto F: forecast de los meses F+1 … F+9. SPP3/WAPE90 = meses F
 
 ## 2. Datos de entrada
 
-Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucci, foto S&OP 2026.M04).
+Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucci, foto S&OP 2026.M04). Se guardan en `data/<Casa>/Consensus/` (por ejemplo `data/Gucci/Consensus/Gucci_2026_04.csv`).
 
 ### Formato
 - Separador `;`, codificación UTF-8 con BOM.
@@ -231,7 +233,7 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `DESIGN.md` (la guía `DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.

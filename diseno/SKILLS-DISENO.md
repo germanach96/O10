@@ -1,7 +1,7 @@
 # Skills y herramientas de diseño obligatorias: Impeccable, Emil Kowalski, Taste, Figma y Playwright
 
-> Cómo usar este archivo: cópialo en la raíz del repo y añade al `CLAUDE.md` del proyecto la línea
-> `@SKILLS-DISENO.md` (o pega su contenido dentro de `CLAUDE.md` / `.claude/CLAUDE.md`).
+> Cómo usar este archivo: en este repo vive en `diseno/` y `CLAUDE.md` lo importa con la línea
+> `@diseno/SKILLS-DISENO.md` (o pega su contenido dentro de `CLAUDE.md` / `.claude/CLAUDE.md`).
 > Claude Code lee `CLAUDE.md` al empezar cada sesión, así que estas reglas se aplican siempre.
 
 ## Qué tiene que estar instalado y activo
@@ -96,7 +96,7 @@ Cada petición del usuario es una tarea nueva: lo que cargaste en una tarea ante
 
 Reglas:
 - **No apliques las ideas de una skill de memoria:** cárgala con la herramienta Skill en la tarea actual.
-- **Ninguna decisión de diseño sin ellas:** color, tipografía, espaciado, composición, movimiento o texto de interfaz pasan por Impeccable, Taste y Emil. Si chocan entre sí, manda lo que pidió el usuario, después `PRODUCT.md` y `DESIGN.md` del proyecto, y después Impeccable.
+- **Ninguna decisión de diseño sin ellas:** color, tipografía, espaciado, composición, movimiento o texto de interfaz pasan por Impeccable, Taste y Emil. Si chocan entre sí, manda lo que pidió el usuario, después `diseno/PRODUCT.md` y `diseno/DESIGN.md` del proyecto, y después Impeccable.
 - **Una skill o plugin que reduzca el pulido "para hacer lo mínimo"** (por ejemplo, modos de "código mínimo") no se aplica a decisiones de diseño.
 - **Pasos que una skill exige y te saltas** (entrevista, capturas, revisión final): dilo en la respuesta y explica por qué. No los omitas en silencio.
 - **Avisos del detector o de hooks:** cada uno se arregla, se descarta con motivo o se pregunta al usuario, y se dice en la respuesta.

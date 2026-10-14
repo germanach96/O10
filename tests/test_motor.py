@@ -4,9 +4,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from brujulas.lector import ErrorFoto, extraer_tamano, leer_foto
-from brujulas.motor import CELDAS, EJES, MotorFoto, Rejilla
-from brujulas.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
+from motor.lector import ErrorFoto, extraer_tamano, leer_foto
+from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
+from motor.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
 
 RAIZ = Path(__file__).resolve().parent.parent
 COLS = ("Sub-Division;House;Brand;Product Line;Article Type;Article Sub Type;EAN;Planning Item Description;"
@@ -162,9 +162,12 @@ def test_kpis_grupo(cfg):
     assert k["90"]["spp"] == pytest.approx(-0.2)
 
 
-@pytest.mark.skipif(not (RAIZ / "Gucci_2025_11.csv").exists(), reason="sin CSV de ejemplo")
+CSV_GUCCI = RAIZ / "data" / "Gucci" / "Consensus" / "Gucci_2025_11.csv"
+
+
+@pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")
 def test_csv_gucci(cfg):
-    f = leer_foto(RAIZ / "Gucci_2025_11.csv", cfg)
+    f = leer_foto(CSV_GUCCI, cfg)
     assert f.etiqueta == "2025.M11"
     assert f.codigos["scope"].sum() > 100
     assert not f.codigos.loc[f.codigos["Article Type"] == "One Shot/Promo", "scope"].any()
