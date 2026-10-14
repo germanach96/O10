@@ -4,87 +4,104 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>Brújulas de Demand</title>
-<meta name="description" content="Brújulas de Demand: mejor receta de forecast por código y foto, y detector de desvíos del Consensus frente a la estrategia.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23409cff'/%3E%3Cstop offset='1' stop-color='%230062d9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7.2' fill='url(%23g)'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M16 9.5 18.6 16 16 22.5 13.4 16Z' fill='%23fff'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#e9ebee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0e10" media="(prefers-color-scheme: dark)">
+<title>O10 · Brújulas de Demand</title>
+<meta name="description" content="O10: mejor receta de forecast por código y foto, y detector de desvíos del Consensus frente a la estrategia.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fafafa'/%3E%3Cstop offset='1' stop-color='%23c9ccd1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7.5' fill='url(%23g)'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='-apple-system,Helvetica,Arial' font-weight='700' font-size='13' fill='%231d1d1f'%3EO10%3C/text%3E%3C/svg%3E">
 <style>
 /* =====================================================================
-   Brújulas de Demand · estilo app de Mac
-   Fuente del sistema, colores del sistema de Apple (claro y oscuro),
-   materiales translúcidos solo donde el contenido pasa por debajo.
+   O10 · estilo iOS / iPadOS 26 (cristal líquido)
+   El contenido ocupa toda la ventana; la navegación y los paneles flotan
+   encima como piezas de cristal. El fondo es un gris difuminado y quieto.
    ===================================================================== */
 :root{
-  --bg:#f5f5f7;            /* fondo de la ventana */
-  --card:#ffffff;          /* superficies agrupadas */
-  --card-2:#f5f5f7;        /* relleno secundario dentro de tarjetas */
-  --sidebar:#ececef;       /* barra lateral */
-  --fill:rgba(118,118,128,.12);   /* relleno de controles */
-  --fill-2:rgba(118,118,128,.20);
-  --sep:rgba(60,60,67,.16);
-  --sep-fuerte:rgba(60,60,67,.29);
-  --label:#1d1d1f; --label-2:#6e6e73; --label-3:#76767b;
-  --blue:#0071e3; --blue-txt:#0066cc; --on-blue:#ffffff;
-  --green:#34c759; --green-txt:#248a3d;
-  --orange:#ff9500; --red:#ff3b30; --red-txt:#d70015; --yellow:#ffcc00;
-  /* desvío: ordinal amarillo → naranja → rojo; dentro = gris */
-  --d0:#d1d1d6; --d1:#ffcc00; --d2:#ff9500; --d3:#ff3b30; --d4:#b3001b;
+  --fondo:#e9ebee;
+  --mancha-1:#ffffff; --mancha-2:#c6cad1; --mancha-3:#fafbfc; --mancha-4:#babfc7;
+  /* cristal */
+  --cristal:rgba(255,255,255,.46); --cristal-fuerte:rgba(255,255,255,.72);
+  --borde-cristal:rgba(255,255,255,.66); --brillo-cristal:rgba(255,255,255,.9);
+  --sombra-cristal:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);
+  --blur:28px;
+  /* superficies sólidas (bordes de puntos, celdas) */
+  --card:#ffffff; --card-2:rgba(255,255,255,.55); --bg:#eceef1;
+  --fill:rgba(120,120,128,.14); --fill-2:rgba(120,120,128,.24);
+  --sep:rgba(60,60,67,.14); --sep-fuerte:rgba(60,60,67,.26);
+  --label:#1c1c1e; --label-2:#5d5d63; --label-3:#6e6e74;
+  --blue:#0071e3; --blue-txt:#0062c4; --on-blue:#ffffff;
+  --green:#34c759; --green-txt:#1f7a35;
+  --orange:#ff9500; --red:#ff3b30; --red-txt:#c9001a; --yellow:#ffcc00;
+  --d0:#c7c9ce; --d1:#ffcc00; --d2:#ff9500; --d3:#ff3b30; --d4:#b3001b;
   --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#ffffff;
-  --hueco:#aeaeb2; --sinrec:#e5e5ea;
-  --b-brand:#ffffff; --b-pl:#f2f2f5; --b-casa:transparent;
-  /* gráficos */
-  --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.10); --meta:rgba(52,199,89,.14);
-  --mat:rgba(245,245,247,.72);     /* barra de herramientas sobre el contenido */
-  --sombra-s:0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04);
-  --sombra-m:0 4px 14px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.06);
-  --sombra-l:0 12px 40px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08);
+  --hueco:rgba(60,60,67,.38); --sinrec:rgba(255,255,255,.6);
+  --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:transparent;
+  --borde-burbuja:rgba(255,255,255,.85);
+  --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
-  /* muelle críticamente amortiguado (respuesta ≈ 0,4 s), sin rebote */
+  /* movimiento (skill de Emil): muelle críticamente amortiguado y curvas fuertes */
   --muelle:linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1);
   --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-drawer:cubic-bezier(0.32,0.72,0,1);
-  --r-s:6px; --r-m:10px; --r-l:16px;
+  --r-s:10px; --r-m:14px; --r-l:22px; --r-xl:28px;
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#1c1c1e; --card:#2c2c2e; --card-2:#3a3a3c; --sidebar:#252527;
+  --fondo:#0d0e10; --mancha-1:#2e3036; --mancha-2:#141518; --mancha-3:#383b41; --mancha-4:#1b1d21;
+  --cristal:rgba(38,39,44,.46); --cristal-fuerte:rgba(44,45,50,.78);
+  --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
+  --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+  --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141518;
   --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
-  --sep:rgba(84,84,88,.6); --sep-fuerte:rgba(120,120,128,.7);
-  --label:#f5f5f7; --label-2:#aeaeb2; --label-3:#a1a1a6;
-  --blue:#0a72e8; --blue-txt:#4ea1ff; --green:#30d158; --green-txt:#30d158;
+  --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
+  --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+  --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
   --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
-  --d0:#48484a; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+  --d0:#4a4b50; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
   --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
-  --hueco:#636366; --sinrec:#3a3a3c; --b-brand:#2c2c2e; --b-pl:#3a3a3c;
-  --cons:#98989d; --banda:rgba(10,132,255,.18); --meta:rgba(48,209,88,.16);
-  --mat:rgba(28,28,30,.72);
-  --sombra-s:0 1px 2px rgba(0,0,0,.4); --sombra-m:0 4px 14px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.3); --sombra-l:0 12px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.35);
+  --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
+  --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
+  --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
   color-scheme:dark;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#1c1c1e; --card:#2c2c2e; --card-2:#3a3a3c; --sidebar:#252527;
+    --fondo:#0d0e10; --mancha-1:#2e3036; --mancha-2:#141518; --mancha-3:#383b41; --mancha-4:#1b1d21;
+    --cristal:rgba(38,39,44,.46); --cristal-fuerte:rgba(44,45,50,.78);
+    --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
+    --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+    --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141518;
     --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
-    --sep:rgba(84,84,88,.6); --sep-fuerte:rgba(120,120,128,.7);
-    --label:#f5f5f7; --label-2:#aeaeb2; --label-3:#a1a1a6;
-    --blue:#0a72e8; --blue-txt:#4ea1ff; --green:#30d158; --green-txt:#30d158;
+    --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
+    --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+    --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
     --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
-    --d0:#48484a; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+    --d0:#4a4b50; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
     --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
-    --hueco:#636366; --sinrec:#3a3a3c; --b-brand:#2c2c2e; --b-pl:#3a3a3c;
-    --cons:#98989d; --banda:rgba(10,132,255,.18); --meta:rgba(48,209,88,.16);
-    --mat:rgba(28,28,30,.72);
-    --sombra-s:0 1px 2px rgba(0,0,0,.4); --sombra-m:0 4px 14px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.3); --sombra-l:0 12px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.35);
+    --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
+    --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
+    --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
     color-scheme:dark;
   }
 }
 
-/* ============ Base ============ */
+/* ============ Base y fondo difuminado ============ */
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--label);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;overflow:hidden;caret-color:var(--blue);-webkit-tap-highlight-color:transparent}
-::selection{background:color-mix(in srgb,var(--blue) 30%,transparent)}
-:focus-visible{outline:3px solid color-mix(in srgb,var(--blue) 55%,transparent);outline-offset:1px;border-radius:var(--r-s)}
+body{margin:0;background:var(--fondo);color:var(--label);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;overflow:hidden;caret-color:var(--blue);-webkit-tap-highlight-color:transparent}
+/* el "papel tapiz": manchas grises muy suaves, difuminadas y quietas (nada de fondos en movimiento) */
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 14% 18%,var(--mancha-1) 0,transparent 70%),
+    radial-gradient(34% 40% at 88% 12%,var(--mancha-2) 0,transparent 72%),
+    radial-gradient(40% 46% at 72% 88%,var(--mancha-3) 0,transparent 70%),
+    radial-gradient(36% 40% at 20% 92%,var(--mancha-4) 0,transparent 72%),
+    var(--fondo);
+  filter:blur(48px) saturate(110%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:color-mix(in srgb,var(--blue) 28%,transparent)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--blue) 55%,transparent);outline-offset:2px;border-radius:var(--r-s)}
 *{scrollbar-color:var(--fill-2) transparent;scrollbar-width:thin}
 button,input,select{font:inherit;color:inherit;letter-spacing:inherit}
 button{cursor:default}
@@ -92,199 +109,220 @@ button{cursor:default}
 .ean,.codigo{font-family:var(--font-code);font-size:11.5px;letter-spacing:0}
 .num{font-variant-numeric:tabular-nums}
 .oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.saltar{position:absolute;left:16px;top:-40px;background:var(--blue);color:var(--on-blue);padding:8px 12px;border-radius:var(--r-m);z-index:40}
+.saltar{position:absolute;left:16px;top:-48px;background:var(--blue);color:var(--on-blue);padding:8px 12px;border-radius:var(--r-s);z-index:60}
 .saltar:focus{top:12px}
-svg.ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ Material de cristal ============ */
+.vidrio{position:relative;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);
+  border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),inset 0 -1px 1px rgba(255,255,255,.08),var(--sombra-cristal)}
+/* reflejo especular en el borde superior, como el cristal líquido */
+.vidrio::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.12) 100%);mix-blend-mode:soft-light}
 
 /* ============ Ventana ============ */
-.app{display:grid;grid-template-columns:260px minmax(0,1fr);height:100dvh}
-.lado{background:var(--sidebar);border-right:1px solid var(--sep);display:flex;flex-direction:column;min-height:0;padding:12px 10px 10px}
-.contenido{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0}
-
-/* barra lateral */
-.lado-cab{display:flex;align-items:center;gap:10px;padding:6px 8px 14px}
-.lado-cab .icono{width:28px;height:28px;border-radius:7px;flex:none;box-shadow:var(--sombra-s)}
-.lado-cab b{font-size:14px;font-weight:600;letter-spacing:-.01em;display:block;line-height:1.2}
+.lado{position:fixed;z-index:20;top:12px;left:12px;bottom:12px;width:264px;border-radius:var(--r-xl);display:flex;flex-direction:column;min-height:0;padding:14px 10px 10px}
+.contenido{position:fixed;inset:0;left:288px}
+.lado-cab{display:flex;align-items:center;gap:11px;padding:4px 8px 14px}
+.lado-cab .icono{width:34px;height:34px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.14))}
+.lado-cab b{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.02em;display:block;line-height:1.1}
 .lado-cab span{color:var(--label-2);font-size:11.5px}
 .lado-scroll{flex:1;overflow:auto;min-height:0;margin:0 -4px;padding:0 4px}
-.lado h2{font-size:11px;font-weight:600;color:var(--label-2);margin:16px 8px 4px;letter-spacing:.01em}
-.fila{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;text-align:left;padding:5px 8px;border-radius:var(--r-s);min-height:28px;color:var(--label);transition:background-color 120ms ease}
+.lado h2{font-size:11px;font-weight:600;color:var(--label-2);margin:16px 10px 4px;letter-spacing:.01em}
+.fila{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:6px 10px;border-radius:12px;min-height:32px;color:var(--label);transition:background-color 140ms ease,transform 140ms var(--ease-out)}
 @media (hover:hover) and (pointer:fine){.fila:hover{background:var(--fill)}}
-.fila[aria-current="true"]{background:var(--blue);color:var(--on-blue)}
-.fila[aria-current="true"] .badge{color:var(--on-blue);background:rgba(255,255,255,.22)}
-.fila[aria-current="true"] .ico{color:var(--on-blue)}
+.fila:active{transform:scale(.98)}
+.fila[aria-current="true"]{background:color-mix(in srgb,var(--blue) 16%,transparent);color:var(--blue-txt);font-weight:600}
+.fila[aria-current="true"] .badge{color:var(--blue-txt);background:color-mix(in srgb,var(--blue) 14%,transparent)}
 .fila .ico{color:var(--blue)}
 .fila .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.badge{font-size:11px;font-variant-numeric:tabular-nums;color:var(--label-2);background:var(--fill);border-radius:999px;padding:1px 7px;min-width:22px;text-align:center}
-.disc{width:16px;height:16px;flex:none;display:grid;place-items:center;border:0;background:transparent;padding:0;color:var(--label-3);border-radius:4px;transition:transform 200ms var(--ease-out)}
+.badge{font-size:11px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--label-2);background:var(--fill);border-radius:999px;padding:1px 7px;min-width:22px;text-align:center}
+.disc{width:16px;height:16px;flex:none;display:grid;place-items:center;border:0;background:transparent;padding:0;color:var(--label-3);border-radius:5px;transition:transform 220ms var(--ease-out)}
 .disc[aria-expanded="true"]{transform:rotate(90deg)}
-.fila[aria-current="true"] .disc{color:var(--on-blue)}
-.sub-lista{list-style:none;margin:0;padding:0 0 0 18px}
+.sub-lista{list-style:none;margin:0;padding:0 0 0 16px}
 .sub-lista[hidden]{display:none}
 .lista-lado{list-style:none;margin:0;padding:0}
-.lado-pie{border-top:1px solid var(--sep);padding:10px 4px 2px;display:flex;flex-direction:column;gap:8px}
-.lado-pie label{color:var(--label-2);font-size:11.5px}
+.lado-pie{padding:10px 4px 2px;display:flex;flex-direction:column;gap:8px}
+.lado-pie label{color:var(--label-2);font-size:11.5px;padding-left:4px}
 
-/* controles nativos */
-.popup{appearance:none;border:0;background:var(--card);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep-fuerte);border-radius:var(--r-s);padding:4px 26px 4px 9px;font-size:13px;width:100%;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M2 5l3-3 3 3M2 9l3 3 3-3' fill='none' stroke='%238e8e93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
-.seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--fill);border-radius:8px;padding:2px;isolation:isolate}
-.seg button{position:relative;z-index:1;border:0;background:transparent;padding:3px 12px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(--label);white-space:nowrap;transition:color 150ms ease}
-.seg .pulgar{position:absolute;z-index:0;top:2px;bottom:2px;left:2px;border-radius:6px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);transition:transform 320ms var(--muelle),width 320ms var(--muelle)}
-:root[data-theme="dark"] .seg .pulgar{background:#636366}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg .pulgar{background:#636366}}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:var(--r-s);background:var(--blue);color:var(--on-blue);padding:5px 12px;font-size:13px;font-weight:500;white-space:nowrap;box-shadow:var(--sombra-s);transition:transform 120ms var(--ease-out),filter 120ms ease}
-.btn:active{transform:scale(.97);filter:brightness(.92)}
-.btn[disabled]{opacity:.4;transform:none;filter:none}
-.btn-fant{background:var(--card);color:var(--label);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep-fuerte)}
-.btn-ico{display:inline-grid;place-items:center;width:30px;height:28px;border:0;border-radius:var(--r-s);background:transparent;color:var(--label-2);position:relative;transition:background-color 120ms ease,transform 120ms var(--ease-out)}
-@media (hover:hover) and (pointer:fine){.btn-ico:hover{background:var(--fill);color:var(--label)}}
-.btn-ico:active{transform:scale(.94)}
-.btn-ico[aria-expanded="true"]{background:var(--fill-2);color:var(--label)}
-.btn-ico .punto{position:absolute;top:3px;right:3px;min-width:15px;height:15px;border-radius:8px;background:var(--blue);color:var(--on-blue);font-size:10px;font-weight:600;display:grid;place-items:center;padding:0 3px}
-.btn-ico .punto[hidden]{display:none}
-.enlace{background:none;border:0;padding:0;color:var(--blue-txt);cursor:pointer}
+/* controles */
+.popup{appearance:none;border:0;background:var(--fill);border-radius:12px;padding:7px 28px 7px 12px;font-size:13px;font-weight:500;width:100%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M2 5l3-3 3 3M2 9l3 3 3-3' fill='none' stroke='%238e8e93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;border-radius:999px;padding:3px;isolation:isolate}
+.lado-pie .seg{background:var(--fill)}
+.seg button{position:relative;z-index:1;border:0;background:transparent;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--label);white-space:nowrap;transition:color 160ms ease}
+.seg .pulgar{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;border-radius:999px;background:var(--cristal-fuerte);box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 var(--brillo-cristal),0 0 0 .5px var(--borde-cristal);transition:transform 360ms var(--muelle),width 360ms var(--muelle)}
+:root[data-theme="dark"] .seg .pulgar{background:rgba(255,255,255,.16)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg .pulgar{background:rgba(255,255,255,.16)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;background:var(--blue);color:var(--on-blue);padding:8px 16px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 4px 14px color-mix(in srgb,var(--blue) 35%,transparent),inset 0 1px 0 rgba(255,255,255,.3);transition:transform 140ms var(--ease-out),filter 140ms ease}
+.btn:active{transform:scale(.96);filter:brightness(.92)}
+.btn[disabled]{opacity:.4;transform:none;filter:none;box-shadow:none}
+.btn-fant{background:var(--fill);color:var(--label);box-shadow:none}
+:root[data-theme="dark"] .btn:not(.btn-fant){box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.btn-fant){box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}}
+.redondo{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:999px;color:var(--label);position:relative;border:1px solid var(--borde-cristal);transition:transform 140ms var(--ease-out)}
+.redondo:active{transform:scale(.93)}
+.redondo[aria-expanded="true"]{color:var(--blue-txt)}
+.redondo .punto{position:absolute;top:-2px;right:-2px;min-width:17px;height:17px;border-radius:9px;background:var(--blue);color:var(--on-blue);font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 0 2px var(--fondo)}
+.redondo .punto[hidden]{display:none}
+.enlace{background:none;border:0;padding:0;color:var(--blue-txt);font-weight:500;cursor:pointer}
 @media (hover:hover) and (pointer:fine){.enlace:hover{text-decoration:underline;text-underline-offset:3px}}
 
-/* ============ Barra de herramientas (material translúcido sobre el contenido) ============ */
-.barra{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 16px;background:var(--mat);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid transparent;transition:border-color 160ms ease}
-.barra.borde{border-bottom-color:var(--sep)}
-.barra .titulo{min-width:0;flex:1}
-.barra h1{font-size:15px;font-weight:600;margin:0;letter-spacing:-.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.migas{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;overflow:hidden;color:var(--label-2);font-size:11.5px;margin-top:1px;white-space:nowrap}
+/* ============ Barra superior: título grande + cápsulas de cristal ============ */
+.barra{position:absolute;z-index:15;top:0;left:0;right:12px;display:flex;align-items:flex-start;gap:10px;padding:18px 0 0 12px;pointer-events:none}
+.barra > *{pointer-events:auto}
+.barra .titulo{min-width:0;flex:1;padding-top:2px;pointer-events:none}
+.barra h1{font-family:var(--font-display);font-size:30px;font-weight:700;margin:0;letter-spacing:-.025em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 12px var(--fondo)}
+.migas{display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow:hidden;color:var(--label-2);font-size:12.5px;font-weight:500;margin-top:3px;white-space:nowrap;pointer-events:auto}
 .migas > span{overflow:hidden;text-overflow:ellipsis}
-.barra .titulo{transition:opacity 160ms ease}
-.barra.titulo-oculto .titulo{opacity:0}
-.migas button{border:0;background:transparent;padding:0;color:var(--label-2);white-space:nowrap}
-@media (hover:hover) and (pointer:fine){.migas button:hover{color:var(--blue-txt)}}
-.migas button[aria-current="true"]{color:var(--label)}
+.migas button{border:0;background:transparent;padding:0;color:var(--blue-txt);font-weight:500;white-space:nowrap}
 .migas .sep{color:var(--label-3)}
-.buscador{display:flex;align-items:center;gap:6px;background:var(--fill);border-radius:7px;padding:0 8px;width:240px;height:28px;color:var(--label-2);transition:box-shadow 150ms ease,background-color 150ms ease}
-.buscador:focus-within{background:var(--card);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 45%,transparent)}
-.buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:13px;color:var(--label)}
+.barra .titulo{transition:opacity 180ms ease}
+.barra.titulo-oculto .titulo{opacity:0}
+.capsulas{display:flex;align-items:center;gap:10px}
+#segVista{border:1px solid var(--borde-cristal)}
+.buscador{display:flex;align-items:center;gap:7px;border-radius:999px;padding:0 14px;width:250px;height:42px;color:var(--label-2);transition:box-shadow 160ms ease}
+.buscador:focus-within{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 0 0 4px color-mix(in srgb,var(--blue) 35%,transparent),var(--sombra-cristal)}
+.buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:14px;color:var(--label)}
 .buscador input::placeholder{color:var(--label-2)}
 .buscador input::-webkit-search-cancel-button{appearance:none}
-.kbd{font-size:11px;color:var(--label-2)}
+.kbd{font-size:11px;font-weight:600;color:var(--label-2)}
 #btnBuscar{display:none}
 .solo-movil{display:none}
 
-/* popover de filtros: nace del botón que lo abre */
-.pop{position:absolute;z-index:30;top:48px;right:12px;width:min(440px,calc(100vw - 24px));background:color-mix(in srgb,var(--card) 92%,transparent);-webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);border-radius:var(--r-l);box-shadow:var(--sombra-l),inset 0 0 0 .5px var(--sep);padding:14px 16px 16px;transform-origin:var(--origen,top right);
-  transition:opacity 180ms var(--ease-out),transform 220ms var(--ease-out),filter 180ms var(--ease-out),visibility 0s linear 0s}
-.pop[data-cerrado]{opacity:0;transform:scale(.96) translateY(-4px);filter:blur(4px);visibility:hidden;pointer-events:none;transition:opacity 140ms ease,transform 140ms ease,filter 140ms ease,visibility 0s linear 140ms}
-.pop h2{font-size:13px;font-weight:600;margin:0 0 10px}
+/* popover de filtros: cristal que nace del botón que lo abre */
+.pop{position:absolute;z-index:40;top:70px;right:0;width:min(450px,calc(100vw - 24px));border-radius:var(--r-l);padding:16px 18px 16px;background:var(--cristal-fuerte);--blur:40px;transform-origin:var(--origen,top right);
+  transition:opacity 180ms var(--ease-out),transform 240ms var(--ease-out),filter 200ms var(--ease-out),visibility 0s linear 0s}
+.pop[data-cerrado]{opacity:0;transform:scale(.94) translateY(-6px);filter:blur(6px);visibility:hidden;pointer-events:none;transition:opacity 140ms ease,transform 140ms ease,filter 140ms ease,visibility 0s linear 140ms}
+.pop h2{font-size:15px;font-weight:700;margin:0 0 12px;letter-spacing:-.01em}
 .filtros{display:flex;flex-direction:column;gap:12px}
-.grupo-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;position:relative;padding-left:92px;min-height:24px}
-.grupo-f > span.mono{color:var(--label-2);position:absolute;left:0;top:3px;font-size:12px}
-.chip{border:0;background:var(--fill);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--label);transition:background-color 120ms ease,color 120ms ease,transform 120ms var(--ease-out)}
-.chip:active{transform:scale(.96)}
+.grupo-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;position:relative;padding-left:92px;min-height:26px}
+.grupo-f > span.mono{color:var(--label-2);position:absolute;left:0;top:4px;font-size:12px;font-weight:500}
+.chip{border:0;background:var(--fill);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--label);transition:background-color 140ms ease,color 140ms ease,transform 140ms var(--ease-out)}
+.chip:active{transform:scale(.95)}
 .chip[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
 @media (hover:hover) and (pointer:fine){.chip:not([aria-pressed="true"]):hover{background:var(--fill-2)}}
-.tol input{width:56px;border:0;background:var(--card);box-shadow:inset 0 0 0 .5px var(--sep-fuerte);border-radius:var(--r-s);padding:3px 6px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+.tol input{width:58px;border:0;background:var(--fill);border-radius:9px;padding:4px 7px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
 .pop-pie{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--sep);margin-top:14px;padding-top:12px}
 
 /* ============ Vistas ============ */
-.vistas{flex:1;min-height:0;position:relative}
+.vistas{position:absolute;inset:0}
 main{position:absolute;inset:0;overflow:auto}
 main[hidden]{display:none}
 #vistaInicio{overflow:hidden}
-::view-transition-old(root){animation:vt-salir 150ms var(--ease-out) both}
-::view-transition-new(root){animation:vt-entrar 240ms var(--ease-out) both}
-@keyframes vt-salir{to{opacity:0}}
-@keyframes vt-entrar{from{opacity:0;transform:scale(.995)}}
+::view-transition-old(root){animation:vt-salir 160ms var(--ease-out) both}
+::view-transition-new(root){animation:vt-entrar 260ms var(--ease-out) both}
+@keyframes vt-salir{to{opacity:0;filter:blur(4px)}}
+@keyframes vt-entrar{from{opacity:0;filter:blur(6px);transform:scale(.99)}}
 
-/* ============ Mapa + inspector ============ */
-.mesa{display:grid;grid-template-columns:minmax(0,1fr) 320px;height:100%}
-.mapa{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px 18px;min-width:0;min-height:0}
-.lienzo{position:relative;width:min(100%,calc(100dvh - 150px));aspect-ratio:1/1;overflow:hidden;border-radius:22px;background:var(--card);box-shadow:var(--sombra-m),inset 0 0 0 .5px var(--sep);isolation:isolate}
+/* ============ Mapa sobre el fondo + inspector de cristal ============ */
+.mesa{position:absolute;inset:0}
+.mapa{position:absolute;top:84px;left:0;right:344px;bottom:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:0}
+.lienzo{position:relative;width:min(100%,calc(100dvh - 150px));aspect-ratio:1/1;overflow:hidden;border-radius:50%;isolation:isolate}
 .lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;touch-action:manipulation}
-#mundo{transform-origin:0 0;transition:transform 620ms var(--muelle)}
-#mundo circle{vector-effect:non-scaling-stroke;transition:opacity 200ms ease,fill 200ms ease,stroke 140ms ease}
+#mundo{transform-origin:0 0;transition:transform 640ms var(--muelle)}
+#mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
 .n-casa{fill:var(--b-casa);stroke:none}
-.n-brand{fill:var(--b-brand);stroke:var(--sep-fuerte);stroke-width:.75}
-.n-pl{fill:var(--b-pl);stroke:var(--sep);stroke-width:.75}
-.n-hoja{stroke:var(--card);stroke-width:.75}
+.n-brand{fill:var(--b-brand);stroke:var(--borde-burbuja);stroke-width:1}
+.n-pl{fill:var(--b-pl);stroke:var(--borde-burbuja);stroke-width:.75}
+.n-hoja{stroke:var(--borde-burbuja);stroke-width:.75;transform-box:fill-box;transform-origin:center}
 .n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
 .n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
 .n-grupo,.n-hoja{cursor:pointer}
+/* brillo de burbuja de cristal sobre cada código */
+.brillo{fill:url(#gBrillo);pointer-events:none;transition:opacity 220ms ease}
+g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
 #mundo circle.apagado{opacity:.16}
 #mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important}
 #mundo circle.activo{stroke:var(--blue);stroke-width:3}
-.entrando #mundo .n-hoja,.entrando #mundo .n-pl,.entrando #mundo .n-brand{opacity:0}
-.n-anim{transform-box:fill-box;transform-origin:center;transition:opacity 220ms ease,fill 200ms ease,stroke 140ms ease,transform 420ms var(--muelle)}
-.entrando .n-anim{transform:scale(.9)}
-.etiquetas{position:absolute;inset:0;pointer-events:none;transition:opacity 140ms ease,filter 140ms ease}
-.etiquetas.fuera{opacity:0;filter:blur(3px)}
+/* la burbuja señalada crece un poco (respuesta al puntero, 200 ms ease-out) */
+@media (hover:hover) and (pointer:fine){#mundo circle.n-hoja.encima{transform:scale(1.07);stroke:#ffffff;stroke-width:2.5;transition:transform 200ms var(--ease-out),stroke 140ms ease,opacity 220ms ease,fill 220ms ease}}
+.entrando #mundo .n-hoja,.entrando #mundo .n-pl,.entrando #mundo .n-brand,.entrando #mundo .brillo{opacity:0}
+.n-anim{transform-box:fill-box;transform-origin:center;transition:opacity 260ms ease,fill 220ms ease,stroke 160ms ease,transform 460ms var(--muelle)}
+.entrando .n-anim{transform:scale(.88)}
+.etiquetas{position:absolute;inset:0;pointer-events:none;transition:opacity 160ms ease,filter 160ms ease}
+.etiquetas.fuera{opacity:0;filter:blur(4px)}
 .etq{position:absolute;transform:translate(-50%,-50%);text-align:center;white-space:nowrap}
-.etq.grupo{display:flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep);border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:600;color:var(--label)}
-.etq.grupo .c{color:var(--label-2);font-weight:400;font-variant-numeric:tabular-nums}
-.etq.hoja{font-size:11.5px;font-weight:500;line-height:1.2}
+.etq.grupo{display:flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--label);background:var(--cristal-fuerte);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),0 4px 14px rgba(0,0,0,.1)}
+.etq.grupo .c{color:var(--label-2);font-weight:500;font-variant-numeric:tabular-nums}
+.etq.hoja{font-size:11.5px;font-weight:600;line-height:1.2}
 .etq.hoja .t{display:block;overflow:hidden;text-overflow:ellipsis}
-.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;margin-top:14px;color:var(--label-2);font-size:11.5px;max-width:min(100%,calc(100dvh - 150px))}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;margin-top:12px;color:var(--label-2);font-size:11.5px;font-weight:500;max-width:min(100%,calc(100dvh - 150px));padding:7px 14px;border-radius:999px}
 .leyenda .it{display:flex;align-items:center;gap:5px}
 .leyenda .sw{width:10px;height:10px;border-radius:50%;display:inline-block}
-.leyenda .tam{display:flex;align-items:center;gap:6px;width:100%;justify-content:center}
-.leyenda .tam i{border:1px solid var(--label-3);border-radius:50%;display:inline-block}
+.leyenda .tam{display:none}
 
-.panel{border-left:1px solid var(--sep);background:var(--bg);padding:18px 16px 0;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.panel h2{font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-.022em;line-height:1.15;margin:0 0 6px;text-wrap:balance}
+.hoja-ins{position:absolute;z-index:12;top:84px;right:0;bottom:12px;width:332px;border-radius:var(--r-xl);display:flex;flex-direction:column;overflow:hidden}
+.agarre{display:none}
+.panel{padding:18px 16px 0;display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden}
+.panel h2{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin:0 0 6px;text-wrap:balance}
 .panel .resumen{color:var(--label-2);font-size:13px;line-height:1.5;margin:0 0 14px}
 .panel .resumen b{color:var(--label);font-weight:600}
 .panel .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .marcador{color:var(--label);font-weight:600}
-.ficha{background:var(--card);border-radius:var(--r-m);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep);padding:14px;margin-bottom:14px}
-.ficha .d{font-weight:600;font-size:13px;margin:0 0 4px}
+.ficha{background:var(--card-2);border:1px solid var(--borde-cristal);border-radius:var(--r-l);padding:14px;margin-bottom:14px}
+.ficha .d{font-weight:700;font-size:13.5px;margin:0 0 4px}
 .ficha .m{color:var(--label-2);margin-bottom:10px;line-height:1.5;font-size:12px}
-.ficha .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;background:var(--card-2);border-radius:8px;padding:10px}
-.ficha .kpis div{display:flex;flex-direction:column;gap:2px}
-.ficha .kpis .mono{font-size:11px}
-.ficha .kpis b{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.lista-cab{display:flex;justify-content:space-between;color:var(--label-3);font-size:11px;font-weight:600;padding:6px 6px;border-bottom:1px solid var(--sep)}
-.lista{list-style:none;margin:0 -8px;padding:4px 0 20px;overflow:auto;flex:1;min-height:120px;-webkit-mask-image:linear-gradient(#000 calc(100% - 24px),transparent);mask-image:linear-gradient(#000 calc(100% - 24px),transparent)}
-.lista li button{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:7px 8px;border-radius:var(--r-s);transition:background-color 100ms ease}
+.ficha .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.ficha .kpis div{display:flex;flex-direction:column;gap:2px;background:var(--fill);border-radius:12px;padding:8px 9px}
+.ficha .kpis .mono{font-size:11px;color:var(--label-2)}
+.ficha .kpis b{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.lista-cab{display:flex;justify-content:space-between;color:var(--label-2);font-size:11px;font-weight:600;padding:6px 6px;border-bottom:1px solid var(--sep)}
+.lista{list-style:none;margin:0 -8px;padding:4px 0 24px;overflow:auto;flex:1;min-height:120px;-webkit-mask-image:linear-gradient(#000 calc(100% - 28px),transparent);mask-image:linear-gradient(#000 calc(100% - 28px),transparent)}
+.lista li button{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:12px;transition:background-color 120ms ease}
 @media (hover:hover) and (pointer:fine){.lista li button:hover{background:var(--fill)}}
-.lista li button[aria-current="true"]{background:var(--blue);color:var(--on-blue)}
-.lista li button[aria-current="true"] .e,.lista li button[aria-current="true"] .v small{color:rgba(255,255,255,.8)}
-.lista .sw{width:9px;height:9px;border-radius:50%}
-.lista .d{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista li button[aria-current="true"]{background:color-mix(in srgb,var(--blue) 16%,transparent)}
+.lista .sw{width:10px;height:10px;border-radius:50%;box-shadow:inset 0 1px 1px rgba(255,255,255,.5)}
+.lista .d{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lista .e{color:var(--label-2);margin-top:1px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lista .v{text-align:right;font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums}
-.lista .v small{display:block;color:var(--label-2);font-weight:400;font-size:11px}
+.lista .v{text-align:right;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.lista .v small{display:block;color:var(--label-2);font-weight:500;font-size:11px}
 .vacio{padding:24px 4px;color:var(--label-2);line-height:1.5;text-align:center}
 .vacio b{color:var(--label)}
-.mas{color:var(--label-3);padding:10px 8px 0;font-size:11.5px;text-align:center}
+.mas{color:var(--label-2);padding:10px 8px 0;font-size:11.5px;text-align:center}
 
-.tip{position:fixed;z-index:50;pointer-events:none;background:color-mix(in srgb,var(--card) 90%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);color:var(--label);border-radius:var(--r-m);box-shadow:var(--sombra-l),inset 0 0 0 .5px var(--sep);padding:9px 11px;font-size:12px;line-height:1.45;max-width:300px;opacity:0;transform:scale(.97);transition:opacity 120ms ease,transform 120ms var(--ease-out)}
-.tip.ver{opacity:1;transform:none}
+/* tarjeta de detalle al pasar sobre una burbuja: cristal anclado a la burbuja */
+.tip{position:fixed;left:0;top:0;z-index:50;pointer-events:none;border-radius:var(--r-l);padding:12px 14px;font-size:12.5px;line-height:1.45;width:260px;color:var(--label);background:color-mix(in srgb,var(--card) 88%,transparent) !important;--blur:36px;
+  opacity:0;transform:translate3d(var(--tx,0),var(--ty,0),0) scale(.96);transform-origin:var(--to,left center);filter:blur(4px);
+  transition:opacity 150ms var(--ease-out),filter 150ms var(--ease-out),transform 150ms var(--ease-out)}
+.tip.ver{opacity:1;filter:none;transform:translate3d(var(--tx,0),var(--ty,0),0)}
+.tip.instant{transition:opacity 150ms var(--ease-out),filter 150ms var(--ease-out)}
 .tip .mono{color:var(--label-2);display:block;margin-bottom:2px;font-size:11px}
+.tip .tt{font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:8px;letter-spacing:-.01em}
+.tip .kk{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.tip .kk div{background:var(--fill);border-radius:10px;padding:6px 8px}
+.tip .kk span{display:block;font-size:10.5px;color:var(--label-2)}
+.tip .kk b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.tip .nota{color:var(--label-2);font-size:11.5px}
 
-/* ============ Detalle ============ */
-#vistaDetalle{padding:0 28px 60px}
-.det-cab{padding:26px 0 4px}
-.volver{display:inline-flex;align-items:center;gap:4px;margin-bottom:14px;font-size:13px}
-.det-migas{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:6px;font-size:12px;color:var(--label-2)}
-.det-migas button{border:0;background:transparent;padding:0;color:var(--blue-txt)}
+/* ============ Detalle: tarjetas de cristal sobre el fondo ============ */
+#vistaDetalle{padding:96px 12px 60px 12px}
+.det-cab{padding:4px 0 4px}
+.volver{display:none}
+.det-migas{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px;font-size:12.5px;color:var(--label-2);font-weight:500}
+.det-migas button{border:0;background:transparent;padding:0;color:var(--blue-txt);font-weight:500}
 .det-migas button[aria-current="true"]{color:var(--label-2)}
 .det-migas button[disabled]{color:var(--label-3)}
-.det-cab h1{font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1.1;letter-spacing:-.025em;margin:0 0 10px;text-wrap:balance;max-width:26ch}
+.det-cab h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.028em;margin:0 0 10px;text-wrap:balance;max-width:26ch}
 .info{color:var(--label-2);font-size:12.5px;line-height:1.6;max-width:110ch}
 .info b{color:var(--label)}
-.aviso{color:var(--orange)}
-:root:not([data-theme="dark"]) .aviso{color:#c25e00}
-.seccion{margin-top:40px;scroll-margin-top:64px}
-.seccion > h2{font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:-.022em;line-height:1.2;margin:0 0 2px}
+.aviso{color:#b85700}
+:root[data-theme="dark"] .aviso{color:var(--orange)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .aviso{color:var(--orange)}}
+.seccion{margin-top:40px;scroll-margin-top:90px}
+.seccion > h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.025em;line-height:1.2;margin:0 0 2px}
 .seccion > .sub{color:var(--label-2);margin:0 0 14px;font-size:13px}
-.ancho{background:var(--card);border-radius:var(--r-l);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep);padding:16px 18px;overflow-x:auto}
+.ancho{border-radius:var(--r-l);padding:16px 18px;overflow-x:auto}
 .controles{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:14px;font-size:12.5px}
-.controles label{display:flex;align-items:center;gap:6px;color:var(--label-2)}
-.controles select,.controles input[type=number],.controles input[type=search]{border:0;background:var(--card);box-shadow:inset 0 0 0 .5px var(--sep-fuerte),var(--sombra-s);border-radius:var(--r-s);padding:4px 8px;font-size:12.5px;color:var(--label)}
+.controles label{display:flex;align-items:center;gap:6px;color:var(--label-2);font-weight:500}
+.controles select,.controles input[type=number],.controles input[type=search]{border:0;background:var(--fill);border-radius:10px;padding:5px 9px;font-size:12.5px;color:var(--label)}
 .controles input[type=number]{width:64px;text-align:right;font-variant-numeric:tabular-nums}
-.controles input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px}
+.controles input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px}
 .rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:20px}
 @media (max-width:820px){.rejilla{grid-template-columns:360px}}
-.tarjeta{background:var(--card);border-radius:var(--r-l);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep);padding:16px;width:360px;height:480px;overflow:hidden}
+.tarjeta{border-radius:var(--r-l);padding:16px;width:360px;height:480px;overflow:hidden}
 .tarjeta.res{height:410px}
-.tarjeta h3{height:22px;margin:0;font-size:14px;font-weight:600;letter-spacing:-.01em;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tarjeta h3{height:22px;margin:0;font-size:14.5px;font-weight:700;letter-spacing:-.01em;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tarjeta .subt{color:var(--label-2);font-size:12px;height:36px;line-height:1.4;margin-top:1px}
 .tarjeta .pie{font-size:12px;color:var(--label-2);margin-top:6px;line-height:1.5}
 .tarjeta .pie b:not(.bueno):not(.malo){color:var(--label);font-weight:600}
@@ -307,74 +345,83 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 #detector td,#detector th{padding:6px 8px}
 @media (max-width:1700px){.t-det .c-grupo,.t-det .c-edad,.t-det th:nth-child(4),.t-det th:last-child{display:none}}
 @media (max-width:1240px) and (min-width:901px){.t-det .c-brand,.t-det th:nth-child(3){display:none}}
-#detector td.meses{white-space:normal;max-width:190px;font-size:11.5px;line-height:1.35}
 .matriz{table-layout:fixed;width:326px;margin-top:4px;border-collapse:separate;border-spacing:3px}
-.matriz td{text-align:center;height:40px;padding:2px;border:0;font-size:12px;font-weight:600;cursor:default;position:relative;border-radius:7px}
+.matriz td{text-align:center;height:40px;padding:2px;border:0;font-size:12px;font-weight:700;cursor:default;position:relative;border-radius:10px}
 .matriz th{font-size:11px;padding:2px;white-space:normal;line-height:1.15;border:0;font-weight:500}
 .matriz th.izq{width:70px;white-space:nowrap}
 .matriz tr:first-child th{vertical-align:bottom}
-.matriz td.elegida{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--blue)}
+.matriz td.elegida{box-shadow:0 0 0 2px var(--fondo),0 0 0 4px var(--blue)}
 .elegidaTxt{color:var(--blue-txt);font-weight:600}
 .bueno{color:var(--green-txt)} .malo{color:var(--red-txt)}
 .pequeño{font-size:12px;color:var(--label-2)}
 a.ean{color:var(--blue-txt);cursor:pointer;text-decoration:none}
 @media (hover:hover) and (pointer:fine){a.ean:hover{text-decoration:underline}}
 tr.fuera td.dv{color:var(--red-txt);font-weight:600}
-details summary{cursor:pointer;margin:10px 0;color:var(--blue-txt);width:max-content;list-style:none;display:flex;align-items:center;gap:6px}
+details summary{cursor:pointer;margin:10px 0;color:var(--blue-txt);font-weight:500;width:max-content;list-style:none;display:flex;align-items:center;gap:6px}
 details summary::-webkit-details-marker{display:none}
-details summary::before{content:"";width:6px;height:6px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform 200ms var(--ease-out)}
+details summary::before{content:"";width:6px;height:6px;border-right:1.7px solid currentColor;border-bottom:1.7px solid currentColor;transform:rotate(-45deg);transition:transform 220ms var(--ease-out)}
 details[open] summary::before{transform:rotate(45deg)}
 .flecha{vertical-align:-1px;margin-left:3px}
-.anteriores h3{font-size:15px;font-weight:600;margin:6px 0 8px}
-.notas{color:var(--label-3);font-size:12px;margin-top:32px}
-
-/* columna de resumen del detalle (inspector) */
-.det-cuerpo{display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
-.rail{order:-1;background:var(--card);border-radius:var(--r-l);box-shadow:var(--sombra-s),inset 0 0 0 .5px var(--sep);padding:16px;margin-top:24px;align-self:start}
+.anteriores h3{font-size:15px;font-weight:700;margin:6px 0 8px}
+.notas{color:var(--label-2);font-size:12px;margin-top:32px}
+.det-cuerpo{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.rail{order:-1;border-radius:var(--r-l);padding:16px;margin-top:24px;align-self:start}
 .rail-t{font-size:11px;font-weight:600;color:var(--label-2);margin:0 0 6px}
-.rail-g{background:var(--card-2);border-radius:var(--r-m);margin-bottom:14px}
+.rail-g{background:var(--fill);border-radius:var(--r-m);margin-bottom:14px}
 .rail-f{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 12px;font-size:13px}
 .rail-f + .rail-f{border-top:1px solid var(--sep)}
-.rail-f b{font-weight:600}
-.rail .lbl{color:var(--label-2);display:block;margin-bottom:2px;font-size:12px}
-.rail .grande{font-family:var(--font-display);font-weight:700;font-size:40px;line-height:1.05;letter-spacing:-.03em;display:inline-block;color:var(--red-txt)}
-.rail .fila-k{display:flex;gap:24px;margin:14px 0}
-.rail .fila-k b{font-family:var(--font-display);font-weight:600;font-size:20px;letter-spacing:-.015em;display:block}
-.rail .rec{font-size:12px;line-height:1.55;color:var(--label);background:var(--card-2);border-radius:8px;padding:9px 10px;margin:0 0 12px}
+.rail-f b{font-weight:700}
+.rail .rec{font-size:12px;line-height:1.55;color:var(--label);background:var(--fill);border-radius:12px;padding:9px 10px;margin:0 0 12px}
 .rail nav{display:flex;flex-direction:column;border-top:1px solid var(--sep);padding-top:6px}
-.rail nav a{color:var(--blue-txt);text-decoration:none;padding:6px 0;font-size:13px}
-@media (min-width:1360px){.det-cuerpo{grid-template-columns:minmax(0,1fr) 280px}.rail{order:0;position:sticky;top:64px;margin-top:40px}}
+.rail nav a{color:var(--blue-txt);font-weight:500;text-decoration:none;padding:6px 0;font-size:13px}
+@media (min-width:1360px){.det-cuerpo{grid-template-columns:minmax(0,1fr) 280px}.rail{order:0;position:sticky;top:90px;margin-top:40px}}
 
-/* ============ Ventanas estrechas: la barra lateral pasa a hoja deslizante ============ */
+/* barra de pestañas flotante (iPhone) */
+.pestanas{display:none}
+
+/* ============ iPhone: una columna, pestañas abajo, inspector como hoja ============ */
 .velo{display:none}
 @media (max-width:900px){
   body{overflow:auto}
-  .app{display:block;height:auto}
-  .lado{position:fixed;inset:0 auto 0 0;width:min(300px,86vw);z-index:35;transform:translateX(-102%);transition:transform 380ms var(--ease-drawer);box-shadow:var(--sombra-l);padding-top:max(12px,env(safe-area-inset-top))}
-  .lado.abierto{transform:none}
-  .velo{display:block;position:fixed;inset:0;z-index:34;background:rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity 300ms ease}
-  .velo.ver{opacity:1;pointer-events:auto}
-  .solo-movil{display:inline-grid}
-  .barra{padding-top:max(8px,env(safe-area-inset-top));flex-wrap:wrap}
-  .buscador{order:5;width:100%}
-  .buscador input{font-size:16px}
-  .vistas{position:static}
-  main{position:static;overflow:visible}
+  .contenido{position:static;left:auto}
+  .vistas,.mesa,main{position:static}
+  main{overflow:visible;padding-bottom:110px}
   #vistaInicio{overflow:visible}
-  .mesa{display:block;height:auto}
-  .mapa{padding:12px}
+  .lado{top:auto;bottom:0;left:0;right:0;width:auto;height:min(78dvh,620px);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:45;transform:translateY(102%);transition:transform 420ms var(--ease-drawer);padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  .lado.abierto{transform:none}
+  .lado.vidrio{background:color-mix(in srgb,var(--card) 92%,transparent);--blur:44px}
+  .velo{display:block;position:fixed;inset:0;z-index:44;background:rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity 320ms ease}
+  .velo.ver{opacity:1;pointer-events:auto}
+  .barra{position:sticky;top:0;right:0;padding:max(12px,env(safe-area-inset-top)) 12px 8px;flex-wrap:wrap;align-items:center}
+  .barra.titulo-oculto .titulo{display:none}
+  .barra h1{font-size:28px}
+  .capsulas{width:100%;order:3}
+  #segVista,#btnFiltros{display:none}
+  .buscador{width:100%;height:40px}
+  .buscador input{font-size:16px}
+  .kbd{display:none}
+  .pop{position:fixed;top:auto;bottom:0;right:0;left:0;width:auto;border-radius:var(--r-xl) var(--r-xl) 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));transform-origin:bottom center}
+  .pop[data-cerrado]{transform:translateY(100%);filter:none}
+  .pop{transition:opacity 200ms ease,transform 420ms var(--ease-drawer),visibility 0s linear 0s}
+  .mapa{position:static;padding:4px 12px 0}
   .lienzo{width:100%}
-  .leyenda{max-width:none}
-  .panel{border-left:0;border-top:1px solid var(--sep);overflow:visible}
-  .lista{max-height:460px}
-  #vistaDetalle{padding:0 16px 48px}
+  .leyenda{max-width:none;border-radius:var(--r-l)}
+  /* inspector: hoja inferior con dos posiciones (asomada / abierta), se arrastra */
+  .hoja-ins{position:fixed;top:auto;left:8px;right:8px;bottom:0;width:auto;height:min(76dvh,640px);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:30;
+    transform:translateY(calc(100% - 270px - env(safe-area-inset-bottom)));transition:transform 420ms var(--ease-drawer);touch-action:none}
+  .hoja-ins.abierta{transform:translateY(0)}
+  .agarre{display:block;flex:none;height:22px;cursor:grab;position:relative;border:0;background:transparent;width:100%}
+  .agarre::after{content:"";position:absolute;left:50%;top:8px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--fill-2)}
+  .panel{padding-top:2px;padding-bottom:92px;overflow:hidden}
+  .lista{max-height:none}
+  #vistaDetalle{padding:12px 12px 120px}
   .rejilla{grid-template-columns:1fr;justify-items:center}
+  .tarjeta{width:100%;max-width:360px}
   .ancho{padding:12px 14px;overflow-x:visible}
   .controles select{width:100%}
   .controles label:has(select){width:100%;flex-wrap:wrap}
   .t-foto{width:100%}
   .t-foto .c-x{display:none}
-  /* detector como lista: descripción y EAN a la izquierda, desvío a la derecha */
   .t-det,.t-det tbody{display:block}
   .t-det tr.cab{display:none}
   .t-det tr{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;padding:9px 0;border-bottom:1px solid var(--sep)}
@@ -387,112 +434,124 @@ details[open] summary::before{transform:rotate(45deg)}
   .t-det .sub-mes{display:none}
   .t-det .c-mes{display:block;grid-column:1 / -1;grid-row:3;max-width:none;margin-top:3px;color:var(--label-2)}
   .anteriores table{display:block;overflow-x:auto;max-width:100%}
-  .tarjeta{width:100%;max-width:360px}
-  .pop{position:fixed;top:auto;bottom:0;right:0;left:0;width:auto;border-radius:16px 16px 0 0;padding-bottom:max(16px,env(safe-area-inset-bottom));transform-origin:bottom center}
-  .pop[data-cerrado]{transform:translateY(100%);filter:none}
-  .pop{transition:opacity 200ms ease,transform 380ms var(--ease-drawer),visibility 0s linear 0s}
+  .pestanas{display:flex;position:fixed;z-index:35;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);border-radius:999px;padding:5px;gap:2px}
+  .pestanas button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:600;color:var(--label);min-width:64px;transition:background-color 160ms ease,color 160ms ease,transform 140ms var(--ease-out)}
+  .pestanas button:active{transform:scale(.94)}
+  .pestanas button[aria-current="page"]{background:var(--fill);color:var(--blue-txt)}
+  .pestanas .ico{width:20px;height:20px}
 }
 @media (prefers-reduced-motion:reduce){
   #mundo{transition:none}
-  .n-anim{transition:opacity 200ms ease,fill 200ms ease}
+  .n-anim{transition:opacity 220ms ease,fill 220ms ease}
   .entrando .n-anim{transform:none}
-  .seg .pulgar,.lado,.disc{transition:none}
+  .seg .pulgar,.lado,.disc,.hoja-ins{transition:none}
+  #mundo circle.n-hoja.encima{transform:none}
   .pop,.pop[data-cerrado]{transform:none !important;filter:none !important;transition:opacity 160ms ease,visibility 0s linear 160ms}
+  .tip,.tip.ver{transform:translate3d(var(--tx,0),var(--ty,0),0);filter:none}
   ::view-transition-new(root){animation:vt-salir 1ms reverse both}
   ::view-transition-old(root){animation:none}
 }
 @media (prefers-reduced-transparency:reduce){
-  .barra{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
-  .pop,.tip,.etq.grupo{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .vidrio,.pop,.tip,.etq.grupo{background:var(--card) !important;-webkit-backdrop-filter:none;backdrop-filter:none}
+  body::before{filter:none}
 }
 @media (prefers-contrast:more){
-  :root{--sep:rgba(60,60,67,.45);--label-2:#3a3a3c}
+  :root{--borde-cristal:rgba(60,60,67,.5);--label-2:#3a3a3c;--cristal:rgba(255,255,255,.86)}
 }
 </style>
 </head>
 <body>
 <a class="saltar" href="#vistas">Saltar al contenido</a>
-<div class="app">
-  <aside class="lado" id="lado" aria-label="Barra lateral">
-    <div class="lado-cab">
-      <svg class="icono" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="gi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#409cff"/><stop offset="1" stop-color="#0062d9"/></linearGradient></defs><rect width="32" height="32" rx="7.2" fill="url(#gi)"/><circle cx="16" cy="16" r="9" fill="none" stroke="#fff" stroke-width="2"/><path d="M16 9.5 18.6 16 16 22.5 13.4 16Z" fill="#fff"/></svg>
-      <div><b>Brújulas</b><span id="ladoFoto">Demand Planning</span></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gBrillo" cx="34%" cy="26%" r="70%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".62"/>
+      <stop offset=".38" stop-color="#ffffff" stop-opacity=".12"/>
+      <stop offset=".75" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".16"/>
+    </radialGradient>
+  </defs>
+</svg>
+<aside class="lado vidrio" id="lado" aria-label="Barra lateral">
+  <div class="lado-cab">
+    <svg class="icono" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfdfd"/><stop offset="1" stop-color="#c3c7cd"/></linearGradient></defs><rect width="34" height="34" rx="8" fill="url(#gi)"/><rect x=".5" y=".5" width="33" height="33" rx="7.5" fill="none" stroke="#fff" stroke-opacity=".9"/><text x="17" y="22" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Helvetica,Arial" font-weight="800" font-size="13" letter-spacing="-.5" fill="#1d1d1f">O10</text></svg>
+    <div><b>O10</b><span id="ladoFoto">Brújulas de Demand</span></div>
+  </div>
+  <label class="oculto" for="selCasa">Casa</label>
+  <select id="selCasa" class="popup"></select>
+  <div class="lado-scroll">
+    <h2>Códigos</h2>
+    <ul class="lista-lado" id="cifras"></ul>
+    <h2>Brands</h2>
+    <ul class="lista-lado" id="ladoBrands"></ul>
+  </div>
+  <div class="lado-pie">
+    <label id="lblTema">Apariencia</label>
+    <div class="seg tema" role="group" aria-labelledby="lblTema" id="segTema">
+      <span class="pulgar" aria-hidden="true"></span>
+      <button type="button" data-tema="light">Claro</button>
+      <button type="button" data-tema="dark">Oscuro</button>
+      <button type="button" data-tema="auto">Auto</button>
     </div>
-    <label class="oculto" for="selCasa">Casa</label>
-    <select id="selCasa" class="popup"></select>
-    <div class="lado-scroll">
-      <h2>Códigos</h2>
-      <ul class="lista-lado" id="cifras"></ul>
-      <h2>Brands</h2>
-      <ul class="lista-lado" id="ladoBrands"></ul>
-    </div>
-    <div class="lado-pie">
-      <label id="lblTema">Apariencia</label>
-      <div class="seg tema" role="group" aria-labelledby="lblTema" id="segTema">
-        <span class="pulgar" aria-hidden="true"></span>
-        <button type="button" data-tema="light">Claro</button>
-        <button type="button" data-tema="dark">Oscuro</button>
-        <button type="button" data-tema="auto">Auto</button>
-      </div>
-    </div>
-  </aside>
-  <div class="velo" id="velo"></div>
+  </div>
+</aside>
+<div class="velo" id="velo"></div>
 
-  <div class="contenido" id="contenido">
-    <header class="barra" id="barra">
-      <button type="button" class="btn-ico solo-movil" id="btnLado" aria-label="Mostrar barra lateral" aria-controls="lado" aria-expanded="false">
-        <svg class="ico" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2.5"/><path d="M6 2.5v11"/></svg>
-      </button>
-      <div class="titulo">
-        <h1 id="barraTitulo">Gucci</h1>
-        <div class="migas" id="migas" aria-label="Nivel del mapa"></div>
-      </div>
-      <div class="seg" role="group" aria-label="Vista" id="segVista">
+<div class="contenido" id="contenido">
+  <header class="barra" id="barra">
+    <button type="button" class="redondo vidrio solo-movil" id="btnLado" aria-label="Brands y vistas" aria-controls="lado" aria-expanded="false" hidden></button>
+    <div class="titulo">
+      <h1 id="barraTitulo">Gucci</h1>
+      <div class="migas" id="migas" aria-label="Nivel del mapa"></div>
+    </div>
+    <div class="capsulas">
+      <div class="seg vidrio" role="group" aria-label="Vista" id="segVista">
         <span class="pulgar" aria-hidden="true"></span>
         <button type="button" id="navInicio" aria-current="page">Mapa</button>
         <button type="button" id="navDetalle">Detalle</button>
       </div>
-      <button type="button" class="btn-ico" id="btnFiltros" aria-label="Filtros" aria-expanded="false" aria-controls="pop">
+      <button type="button" class="redondo vidrio" id="btnFiltros" aria-label="Filtros" aria-expanded="false" aria-controls="pop">
         <svg class="ico" viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
         <span class="punto" id="nFiltros" hidden></span>
       </button>
-      <form class="buscador" id="formBuscar" role="search" onsubmit="return false">
-        <svg class="ico" viewBox="0 0 16 16" style="width:14px;height:14px"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5 14 14"/></svg>
+      <form class="buscador vidrio" id="formBuscar" role="search" onsubmit="return false">
+        <svg class="ico" viewBox="0 0 16 16" style="width:15px;height:15px"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5 14 14"/></svg>
         <label class="oculto" for="q">Buscar</label>
         <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar">
         <span class="kbd" aria-hidden="true">⌘K</span>
         <button type="submit" id="btnBuscar">Buscar</button>
       </form>
-      <div class="pop" id="pop" role="dialog" aria-label="Filtros" data-cerrado>
-        <h2>Filtros</h2>
-        <div class="filtros" id="filtros">
-          <div class="grupo-f" role="group" aria-label="Scope">
-            <span class="mono">Scope</span>
-            <button type="button" class="chip" data-f="scope" data-v="central" aria-pressed="true">Central</button>
-            <button type="button" class="chip" data-f="scope" data-v="todos" aria-pressed="false">Todos</button>
-          </div>
-          <div class="grupo-f" role="group" aria-label="Estado">
-            <span class="mono">Estado</span>
-            <button type="button" class="chip" data-f="fuera" data-v="1" aria-pressed="false">Fuera de estrategia</button>
-          </div>
-          <div class="grupo-f" role="group" aria-label="Segmento" id="fSeg"><span class="mono">Segmento</span></div>
-          <div class="grupo-f" role="group" aria-label="Edad" id="fEdad"><span class="mono">Edad</span></div>
-          <div class="grupo-f tol">
-            <span class="mono">Tolerancia</span>
-            <label class="oculto" for="tolIni0">Tolerancia mes 1</label><input id="tolIni0" type="number" step="0.5" min="0" value="5">
-            <span class="pequeño">% en el mes 1 y</span>
-            <label class="oculto" for="tolFin0">Tolerancia mes 9</label><input id="tolFin0" type="number" step="0.5" min="0" value="5">
-            <span class="pequeño">% en el 9</span>
-          </div>
+    </div>
+    <div class="pop vidrio" id="pop" role="dialog" aria-label="Filtros" data-cerrado>
+      <h2>Filtros</h2>
+      <div class="filtros" id="filtros">
+        <div class="grupo-f" role="group" aria-label="Scope">
+          <span class="mono">Scope</span>
+          <button type="button" class="chip" data-f="scope" data-v="central" aria-pressed="true">Central</button>
+          <button type="button" class="chip" data-f="scope" data-v="todos" aria-pressed="false">Todos</button>
         </div>
-        <div class="pop-pie">
-          <button type="button" class="enlace" id="limpiar">Restablecer</button>
-          <button type="button" class="btn" id="cerrarPop">Hecho</button>
+        <div class="grupo-f" role="group" aria-label="Estado">
+          <span class="mono">Estado</span>
+          <button type="button" class="chip" data-f="fuera" data-v="1" aria-pressed="false">Fuera de estrategia</button>
+        </div>
+        <div class="grupo-f" role="group" aria-label="Segmento" id="fSeg"><span class="mono">Segmento</span></div>
+        <div class="grupo-f" role="group" aria-label="Edad" id="fEdad"><span class="mono">Edad</span></div>
+        <div class="grupo-f tol">
+          <span class="mono">Tolerancia</span>
+          <label class="oculto" for="tolIni0">Tolerancia mes 1</label><input id="tolIni0" type="number" step="0.5" min="0" value="5">
+          <span class="pequeño">% en el mes 1 y</span>
+          <label class="oculto" for="tolFin0">Tolerancia mes 9</label><input id="tolFin0" type="number" step="0.5" min="0" value="5">
+          <span class="pequeño">% en el 9</span>
         </div>
       </div>
-    </header>
+      <div class="pop-pie">
+        <button type="button" class="enlace" id="limpiar">Restablecer</button>
+        <button type="button" class="btn" id="cerrarPop">Hecho</button>
+      </div>
+    </div>
+  </header>
 
-    <div class="vistas" id="vistas">
+  <div class="vistas" id="vistas">
 <!-- ======================= MAPA ======================= -->
 <main id="vistaInicio" tabindex="-1">
   <div class="mesa">
@@ -501,19 +560,19 @@ details[open] summary::before{transform:rotate(45deg)}
         <svg id="pack" role="img" aria-label="Burbujas anidadas: casa, brand, product line y EAN"><g id="mundo"></g></svg>
         <div class="etiquetas" id="etiquetas"></div>
       </div>
-      <div class="leyenda" id="leyenda"></div>
+      <div class="leyenda vidrio" id="leyenda"></div>
     </section>
-    <aside class="panel" id="panel" aria-live="polite"></aside>
+    <aside class="hoja-ins vidrio" id="hojaIns">
+      <button type="button" class="agarre" id="agarre" aria-label="Mostrar u ocultar el panel"></button>
+      <div class="panel" id="panel" aria-live="polite"></div>
+    </aside>
   </div>
 </main>
 
 <!-- ======================= DETALLE ======================= -->
 <main id="vistaDetalle" hidden tabindex="-1">
   <div class="det-cab">
-    <button type="button" class="enlace volver" id="volver">
-      <svg class="ico" viewBox="0 0 16 16" style="width:14px;height:14px"><path d="M10 3 5 8l5 5"/></svg>
-      Mapa
-    </button>
+    <button type="button" class="enlace volver" id="volver">Mapa</button>
     <div class="det-migas" id="detMigas"></div>
     <h1 id="detTitulo"></h1>
     <div class="info" id="info"></div>
@@ -524,7 +583,7 @@ details[open] summary::before{transform:rotate(45deg)}
   <section class="seccion" id="sFoto">
     <h2 id="tituloActual">Foto actual</h2>
     <p class="sub">Consensus de la foto frente a la receta elegida, con su rango de tolerancia.</p>
-    <div class="ancho">
+    <div class="ancho vidrio">
       <div class="controles">
         <label>Tolerancia mes 1 <input id="tolIni" type="number" step="0.5" min="0" value="5">%</label>
         <label>Mes 9 <input id="tolFin" type="number" step="0.5" min="0" value="5">%</label>
@@ -543,10 +602,10 @@ details[open] summary::before{transform:rotate(45deg)}
     <h2>Decisiones</h2>
     <p class="sub" id="decSub"></p>
     <div class="rejilla">
-      <div class="tarjeta"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s. Y: peso del trend w.</div><svg id="b1" width="326" height="326"></svg><div class="pie" id="b1p"></div></div>
-      <div class="tarjeta"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in / sell-out m. Y: duración del trend N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
-      <div class="tarjeta"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c. Y: promos restadas p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
-      <div class="tarjeta"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">Nº de códigos del grupo (más intenso, más grande). Al pasar: mejor WAPE con ese grupo.</div><div id="matriz"></div><div class="pie" id="matrizp"></div></div>
+      <div class="tarjeta vidrio"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s. Y: peso del trend w.</div><svg id="b1" width="326" height="326"></svg><div class="pie" id="b1p"></div></div>
+      <div class="tarjeta vidrio"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in / sell-out m. Y: duración del trend N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
+      <div class="tarjeta vidrio"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c. Y: promos restadas p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
+      <div class="tarjeta vidrio"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">Nº de códigos del grupo (más intenso, más grande). Al pasar: mejor WAPE con ese grupo.</div><div id="matriz"></div><div class="pie" id="matrizp"></div></div>
     </div>
   </section>
 
@@ -554,18 +613,18 @@ details[open] summary::before{transform:rotate(45deg)}
     <h2>Resultados de las fotos anteriores</h2>
     <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana.</p>
     <div class="rejilla">
-      <div class="tarjeta res"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
-      <div class="tarjeta res"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
-      <div class="tarjeta res"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
-      <div class="tarjeta res"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
+      <div class="tarjeta res vidrio"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
     </div>
-    <div class="ancho anteriores" id="anteriores" style="margin-top:20px"></div>
+    <div class="ancho anteriores vidrio" id="anteriores" style="margin-top:20px"></div>
   </section>
 
   <section class="seccion" id="sDetector">
     <h2>Detector</h2>
     <p class="sub">EANs fuera de su estrategia. Usa la tolerancia y la receta de la foto actual.</p>
-    <div class="ancho">
+    <div class="ancho vidrio">
       <div class="controles">
         <label>Tolerancia <input id="tolIni2" type="number" step="0.5" min="0" value="5">% a <input id="tolFin2" type="number" step="0.5" min="0" value="5">%</label>
         <label><input type="checkbox" id="soloGrupo" checked> Solo el grupo seleccionado</label>
@@ -578,14 +637,20 @@ details[open] summary::before{transform:rotate(45deg)}
   </section>
   <div class="notas" id="notas"></div>
   </div>
-  <aside class="rail" id="rail" aria-label="Resumen"></aside>
+  <aside class="rail vidrio" id="rail" aria-label="Resumen"></aside>
   </div>
 </main>
-    </div>
   </div>
 </div>
 
-<div class="tip" id="tip" role="tooltip"></div>
+<nav class="pestanas vidrio" id="pestanas" aria-label="Pestañas">
+  <button type="button" data-tab="mapa" aria-current="page"><svg class="ico" viewBox="0 0 20 20"><circle cx="7" cy="8" r="4"/><circle cx="13.5" cy="12.5" r="3.5"/><circle cx="14" cy="5" r="1.8"/></svg>Mapa</button>
+  <button type="button" data-tab="detalle"><svg class="ico" viewBox="0 0 20 20"><path d="M3.5 15.5 7.5 10l3 3 6-8"/><path d="M3 3v14h14"/></svg>Detalle</button>
+  <button type="button" data-tab="brands"><svg class="ico" viewBox="0 0 20 20"><path d="M4 5h12M4 10h12M4 15h8"/></svg>Brands</button>
+  <button type="button" data-tab="filtros"><svg class="ico" viewBox="0 0 20 20"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>Filtros</button>
+</nav>
+
+<div class="tip vidrio" id="tip" role="tooltip"></div>
 
 <script>// https://d3js.org/d3-hierarchy/ v3.1.2 Copyright 2010-2021 Mike Bostock
 !function(n,r){"object"==typeof exports&&"undefined"!=typeof module?r(exports):"function"==typeof define&&define.amd?define(["exports"],r):r((n="undefined"!=typeof globalThis?globalThis:n||self).d3=n.d3||{})}(this,(function(n){"use strict";function r(n,r){return n.parent===r.parent?1:2}function t(n,r){return n+r.x}function e(n,r){return Math.max(n,r.y)}function i(n){var r=0,t=n.children,e=t&&t.length;if(e)for(;--e>=0;)r+=t[e].value;else r=1;n.value=r}function u(n,r){n instanceof Map?(n=[void 0,n],void 0===r&&(r=f)):void 0===r&&(r=o);for(var t,e,i,u,a,l=new h(n),p=[l];t=p.pop();)if((i=r(t.data))&&(a=(i=Array.from(i)).length))for(t.children=i,u=a-1;u>=0;--u)p.push(e=i[u]=new h(i[u])),e.parent=t,e.depth=t.depth+1;return l.eachBefore(c)}function o(n){return n.children}function f(n){return Array.isArray(n)?n[1]:null}function a(n){void 0!==n.data.value&&(n.value=n.data.value),n.data=n.data.data}function c(n){var r=0;do{n.height=r}while((n=n.parent)&&n.height<++r)}function h(n){this.data=n,this.depth=this.height=0,this.parent=null}function l(n){return null==n?null:p(n)}function p(n){if("function"!=typeof n)throw new Error;return n}function d(){return 0}function s(n){return function(){return n}}h.prototype=u.prototype={constructor:h,count:function(){return this.eachAfter(i)},each:function(n,r){let t=-1;for(const e of this)n.call(r,e,++t,this);return this},eachAfter:function(n,r){for(var t,e,i,u=this,o=[u],f=[],a=-1;u=o.pop();)if(f.push(u),t=u.children)for(e=0,i=t.length;e<i;++e)o.push(t[e]);for(;u=f.pop();)n.call(r,u,++a,this);return this},eachBefore:function(n,r){for(var t,e,i=this,u=[i],o=-1;i=u.pop();)if(n.call(r,i,++o,this),t=i.children)for(e=t.length-1;e>=0;--e)u.push(t[e]);return this},find:function(n,r){let t=-1;for(const e of this)if(n.call(r,e,++t,this))return e},sum:function(n){return this.eachAfter((function(r){for(var t=+n(r.data)||0,e=r.children,i=e&&e.length;--i>=0;)t+=e[i].value;r.value=t}))},sort:function(n){return this.eachBefore((function(r){r.children&&r.children.sort(n)}))},path:function(n){for(var r=this,t=function(n,r){if(n===r)return n;var t=n.ancestors(),e=r.ancestors(),i=null;n=t.pop(),r=e.pop();for(;n===r;)i=n,n=t.pop(),r=e.pop();return i}(r,n),e=[r];r!==t;)r=r.parent,e.push(r);for(var i=e.length;n!==t;)e.splice(i,0,n),n=n.parent;return e},ancestors:function(){for(var n=this,r=[n];n=n.parent;)r.push(n);return r},descendants:function(){return Array.from(this)},leaves:function(){var n=[];return this.eachBefore((function(r){r.children||n.push(r)})),n},links:function(){var n=this,r=[];return n.each((function(t){t!==n&&r.push({source:t.parent,target:t})})),r},copy:function(){return u(this).eachBefore(a)},[Symbol.iterator]:function*(){var n,r,t,e,i=this,u=[i];do{for(n=u.reverse(),u=[];i=n.pop();)if(yield i,r=i.children)for(t=0,e=r.length;t<e;++t)u.push(r[t])}while(u.length)}};const v=4294967296;function x(){let n=1;return()=>(n=(1664525*n+1013904223)%v)/v}function y(n,r){for(var t,e,i=0,u=(n=function(n,r){let t,e,i=n.length;for(;i;)e=r()*i--|0,t=n[i],n[i]=n[e],n[e]=t;return n}(Array.from(n),r)).length,o=[];i<u;)t=n[i],e&&w(e,t)?++i:(e=M(o=g(o,t)),i=0);return e}function g(n,r){var t,e;if(_(r,n))return[r];for(t=0;t<n.length;++t)if(m(r,n[t])&&_(z(n[t],r),n))return[n[t],r];for(t=0;t<n.length-1;++t)for(e=t+1;e<n.length;++e)if(m(z(n[t],n[e]),r)&&m(z(n[t],r),n[e])&&m(z(n[e],r),n[t])&&_(B(n[t],n[e],r),n))return[n[t],n[e],r];throw new Error}function m(n,r){var t=n.r-r.r,e=r.x-n.x,i=r.y-n.y;return t<0||t*t<e*e+i*i}function w(n,r){var t=n.r-r.r+1e-9*Math.max(n.r,r.r,1),e=r.x-n.x,i=r.y-n.y;return t>0&&t*t>e*e+i*i}function _(n,r){for(var t=0;t<r.length;++t)if(!w(n,r[t]))return!1;return!0}function M(n){switch(n.length){case 1:return function(n){return{x:n.x,y:n.y,r:n.r}}(n[0]);case 2:return z(n[0],n[1]);case 3:return B(n[0],n[1],n[2])}}function z(n,r){var t=n.x,e=n.y,i=n.r,u=r.x,o=r.y,f=r.r,a=u-t,c=o-e,h=f-i,l=Math.sqrt(a*a+c*c);return{x:(t+u+a/l*h)/2,y:(e+o+c/l*h)/2,r:(l+i+f)/2}}function B(n,r,t){var e=n.x,i=n.y,u=n.r,o=r.x,f=r.y,a=r.r,c=t.x,h=t.y,l=t.r,p=e-o,d=e-c,s=i-f,v=i-h,x=a-u,y=l-u,g=e*e+i*i-u*u,m=g-o*o-f*f+a*a,w=g-c*c-h*h+l*l,_=d*s-p*v,M=(s*w-v*m)/(2*_)-e,z=(v*x-s*y)/_,B=(d*m-p*w)/(2*_)-i,A=(p*y-d*x)/_,b=z*z+A*A-1,q=2*(u+M*z+B*A),E=M*M+B*B-u*u,S=-(Math.abs(b)>1e-6?(q+Math.sqrt(q*q-4*b*E))/(2*b):E/q);return{x:e+M+z*S,y:i+B+A*S,r:S}}function A(n,r,t){var e,i,u,o,f=n.x-r.x,a=n.y-r.y,c=f*f+a*a;c?(i=r.r+t.r,i*=i,o=n.r+t.r,i>(o*=o)?(e=(c+o-i)/(2*c),u=Math.sqrt(Math.max(0,o/c-e*e)),t.x=n.x-e*f-u*a,t.y=n.y-e*a+u*f):(e=(c+i-o)/(2*c),u=Math.sqrt(Math.max(0,i/c-e*e)),t.x=r.x+e*f-u*a,t.y=r.y+e*a+u*f)):(t.x=r.x+t.r,t.y=r.y)}function b(n,r){var t=n.r+r.r-1e-6,e=r.x-n.x,i=r.y-n.y;return t>0&&t*t>e*e+i*i}function q(n){var r=n._,t=n.next._,e=r.r+t.r,i=(r.x*t.r+t.x*r.r)/e,u=(r.y*t.r+t.y*r.r)/e;return i*i+u*u}function Node(n){this._=n,this.next=null,this.previous=null}function E(n,r){if(!(o=(t=n,n="object"==typeof t&&"length"in t?t:Array.from(t)).length))return 0;var t,e,i,u,o,f,a,c,h,l,p,d;if((e=n[0]).x=0,e.y=0,!(o>1))return e.r;if(i=n[1],e.x=-i.r,i.x=e.r,i.y=0,!(o>2))return e.r+i.r;A(i,e,u=n[2]),e=new Node(e),i=new Node(i),u=new Node(u),e.next=u.previous=i,i.next=e.previous=u,u.next=i.previous=e;n:for(c=3;c<o;++c){A(e._,i._,u=n[c]),u=new Node(u),h=i.next,l=e.previous,p=i._.r,d=e._.r;do{if(p<=d){if(b(h._,u._)){i=h,e.next=i,i.previous=e,--c;continue n}p+=h._.r,h=h.next}else{if(b(l._,u._)){(e=l).next=i,i.previous=e,--c;continue n}d+=l._.r,l=l.previous}}while(h!==l.next);for(u.previous=e,u.next=i,e.next=i.previous=i=u,f=q(e);(u=u.next)!==i;)(a=q(u))<f&&(e=u,f=a);i=e.next}for(e=[i._],u=i;(u=u.next)!==i;)e.push(u._);for(u=y(e,r),c=0;c<o;++c)(e=n[c]).x-=u.x,e.y-=u.y;return u.r}function S(n){return Math.sqrt(n.value)}function k(n){return function(r){r.children||(r.r=Math.max(0,+n(r)||0))}}function I(n,r,t){return function(e){if(i=e.children){var i,u,o,f=i.length,a=n(e)*r||0;if(a)for(u=0;u<f;++u)i[u].r+=a;if(o=E(i,t),a)for(u=0;u<f;++u)i[u].r-=a;e.r=o+a}}}function T(n){return function(r){var t=r.parent;r.r*=n,t&&(r.x=t.x+n*r.x,r.y=t.y+n*r.y)}}function j(n){n.x0=Math.round(n.x0),n.y0=Math.round(n.y0),n.x1=Math.round(n.x1),n.y1=Math.round(n.y1)}function O(n,r,t,e,i){for(var u,o=n.children,f=-1,a=o.length,c=n.value&&(e-r)/n.value;++f<a;)(u=o[f]).y0=t,u.y1=i,u.x0=r,u.x1=r+=u.value*c}var R={depth:-1},D={},L={};function $(n){return n.id}function N(n){return n.parentId}function P(n){let r=n.length;if(r<2)return"";for(;--r>1&&!C(n,r););return n.slice(0,r)}function C(n,r){if("/"===n[r]){let t=0;for(;r>0&&"\\"===n[--r];)++t;if(0==(1&t))return!0}return!1}function F(n,r){return n.parent===r.parent?1:2}function G(n){var r=n.children;return r?r[0]:n.t}function H(n){var r=n.children;return r?r[r.length-1]:n.t}function J(n,r,t){var e=t/(r.i-n.i);r.c-=e,r.s+=t,n.c+=e,r.z+=t,r.m+=t}function K(n,r,t){return n.a.parent===r.parent?n.a:t}function Q(n,r){this._=n,this.parent=null,this.children=null,this.A=null,this.a=this,this.z=0,this.m=0,this.c=0,this.s=0,this.t=null,this.i=r}function U(n,r,t,e,i){for(var u,o=n.children,f=-1,a=o.length,c=n.value&&(i-t)/n.value;++f<a;)(u=o[f]).x0=r,u.x1=e,u.y0=t,u.y1=t+=u.value*c}Q.prototype=Object.create(h.prototype);var V=(1+Math.sqrt(5))/2;function W(n,r,t,e,i,u){for(var o,f,a,c,h,l,p,d,s,v,x,y=[],g=r.children,m=0,w=0,_=g.length,M=r.value;m<_;){a=i-t,c=u-e;do{h=g[w++].value}while(!h&&w<_);for(l=p=h,x=h*h*(v=Math.max(c/a,a/c)/(M*n)),s=Math.max(p/x,x/l);w<_;++w){if(h+=f=g[w].value,f<l&&(l=f),f>p&&(p=f),x=h*h*v,(d=Math.max(p/x,x/l))>s){h-=f;break}s=d}y.push(o={value:h,dice:a<c,children:g.slice(m,w)}),o.dice?O(o,t,e,i,M?e+=c*h/M:u):U(o,t,e,M?t+=a*h/M:i,u),M-=h,m=w}return y}var X=function n(r){function t(n,t,e,i,u){W(r,n,t,e,i,u)}return t.ratio=function(r){return n((r=+r)>1?r:1)},t}(V);var Y=function n(r){function t(n,t,e,i,u){if((o=n._squarify)&&o.ratio===r)for(var o,f,a,c,h,l=-1,p=o.length,d=n.value;++l<p;){for(a=(f=o[l]).children,c=f.value=0,h=a.length;c<h;++c)f.value+=a[c].value;f.dice?O(f,t,e,i,d?e+=(u-e)*f.value/d:u):U(f,t,e,d?t+=(i-t)*f.value/d:i,u),d-=f.value}else n._squarify=o=W(r,n,t,e,i,u),o.ratio=r}return t.ratio=function(r){return n((r=+r)>1?r:1)},t}(V);n.Node=h,n.cluster=function(){var n=r,i=1,u=1,o=!1;function f(r){var f,a=0;r.eachAfter((function(r){var i=r.children;i?(r.x=function(n){return n.reduce(t,0)/n.length}(i),r.y=function(n){return 1+n.reduce(e,0)}(i)):(r.x=f?a+=n(r,f):0,r.y=0,f=r)}));var c=function(n){for(var r;r=n.children;)n=r[0];return n}(r),h=function(n){for(var r;r=n.children;)n=r[r.length-1];return n}(r),l=c.x-n(c,h)/2,p=h.x+n(h,c)/2;return r.eachAfter(o?function(n){n.x=(n.x-r.x)*i,n.y=(r.y-n.y)*u}:function(n){n.x=(n.x-l)/(p-l)*i,n.y=(1-(r.y?n.y/r.y:1))*u})}return f.separation=function(r){return arguments.length?(n=r,f):n},f.size=function(n){return arguments.length?(o=!1,i=+n[0],u=+n[1],f):o?null:[i,u]},f.nodeSize=function(n){return arguments.length?(o=!0,i=+n[0],u=+n[1],f):o?[i,u]:null},f},n.hierarchy=u,n.pack=function(){var n=null,r=1,t=1,e=d;function i(i){const u=x();return i.x=r/2,i.y=t/2,n?i.eachBefore(k(n)).eachAfter(I(e,.5,u)).eachBefore(T(1)):i.eachBefore(k(S)).eachAfter(I(d,1,u)).eachAfter(I(e,i.r/Math.min(r,t),u)).eachBefore(T(Math.min(r,t)/(2*i.r))),i}return i.radius=function(r){return arguments.length?(n=l(r),i):n},i.size=function(n){return arguments.length?(r=+n[0],t=+n[1],i):[r,t]},i.padding=function(n){return arguments.length?(e="function"==typeof n?n:s(+n),i):e},i},n.packEnclose=function(n){return y(n,x())},n.packSiblings=function(n){return E(n,x()),n},n.partition=function(){var n=1,r=1,t=0,e=!1;function i(i){var u=i.height+1;return i.x0=i.y0=t,i.x1=n,i.y1=r/u,i.eachBefore(function(n,r){return function(e){e.children&&O(e,e.x0,n*(e.depth+1)/r,e.x1,n*(e.depth+2)/r);var i=e.x0,u=e.y0,o=e.x1-t,f=e.y1-t;o<i&&(i=o=(i+o)/2),f<u&&(u=f=(u+f)/2),e.x0=i,e.y0=u,e.x1=o,e.y1=f}}(r,u)),e&&i.eachBefore(j),i}return i.round=function(n){return arguments.length?(e=!!n,i):e},i.size=function(t){return arguments.length?(n=+t[0],r=+t[1],i):[n,r]},i.padding=function(n){return arguments.length?(t=+n,i):t},i},n.stratify=function(){var n,r=$,t=N;function e(e){var i,u,o,f,a,l,p,d,s=Array.from(e),v=r,x=t,y=new Map;if(null!=n){const r=s.map(((r,t)=>function(n){let r=(n=`${n}`).length;C(n,r-1)&&!C(n,r-2)&&(n=n.slice(0,-1));return"/"===n[0]?n:`/${n}`}(n(r,t,e)))),t=r.map(P),i=new Set(r).add("");for(const n of t)i.has(n)||(i.add(n),r.push(n),t.push(P(n)),s.push(L));v=(n,t)=>r[t],x=(n,r)=>t[r]}for(o=0,i=s.length;o<i;++o)u=s[o],l=s[o]=new h(u),null!=(p=v(u,o,e))&&(p+="")&&(d=l.id=p,y.set(d,y.has(d)?D:l)),null!=(p=x(u,o,e))&&(p+="")&&(l.parent=p);for(o=0;o<i;++o)if(p=(l=s[o]).parent){if(!(a=y.get(p)))throw new Error("missing: "+p);if(a===D)throw new Error("ambiguous: "+p);a.children?a.children.push(l):a.children=[l],l.parent=a}else{if(f)throw new Error("multiple roots");f=l}if(!f)throw new Error("no root");if(null!=n){for(;f.data===L&&1===f.children.length;)f=f.children[0],--i;for(let n=s.length-1;n>=0&&(l=s[n],l.data===L);--n)l.data=null}if(f.parent=R,f.eachBefore((function(n){n.depth=n.parent.depth+1,--i})).eachBefore(c),f.parent=null,i>0)throw new Error("cycle");return f}return e.id=function(n){return arguments.length?(r=l(n),e):r},e.parentId=function(n){return arguments.length?(t=l(n),e):t},e.path=function(r){return arguments.length?(n=l(r),e):n},e},n.tree=function(){var n=F,r=1,t=1,e=null;function i(i){var a=function(n){for(var r,t,e,i,u,o=new Q(n,0),f=[o];r=f.pop();)if(e=r._.children)for(r.children=new Array(u=e.length),i=u-1;i>=0;--i)f.push(t=r.children[i]=new Q(e[i],i)),t.parent=r;return(o.parent=new Q(null,0)).children=[o],o}(i);if(a.eachAfter(u),a.parent.m=-a.z,a.eachBefore(o),e)i.eachBefore(f);else{var c=i,h=i,l=i;i.eachBefore((function(n){n.x<c.x&&(c=n),n.x>h.x&&(h=n),n.depth>l.depth&&(l=n)}));var p=c===h?1:n(c,h)/2,d=p-c.x,s=r/(h.x+p+d),v=t/(l.depth||1);i.eachBefore((function(n){n.x=(n.x+d)*s,n.y=n.depth*v}))}return i}function u(r){var t=r.children,e=r.parent.children,i=r.i?e[r.i-1]:null;if(t){!function(n){for(var r,t=0,e=0,i=n.children,u=i.length;--u>=0;)(r=i[u]).z+=t,r.m+=t,t+=r.s+(e+=r.c)}(r);var u=(t[0].z+t[t.length-1].z)/2;i?(r.z=i.z+n(r._,i._),r.m=r.z-u):r.z=u}else i&&(r.z=i.z+n(r._,i._));r.parent.A=function(r,t,e){if(t){for(var i,u=r,o=r,f=t,a=u.parent.children[0],c=u.m,h=o.m,l=f.m,p=a.m;f=H(f),u=G(u),f&&u;)a=G(a),(o=H(o)).a=r,(i=f.z+l-u.z-c+n(f._,u._))>0&&(J(K(f,r,e),r,i),c+=i,h+=i),l+=f.m,c+=u.m,p+=a.m,h+=o.m;f&&!H(o)&&(o.t=f,o.m+=l-h),u&&!G(a)&&(a.t=u,a.m+=c-p,e=r)}return e}(r,i,r.parent.A||e[0])}function o(n){n._.x=n.z+n.parent.m,n.m+=n.parent.m}function f(n){n.x*=r,n.y=n.depth*t}return i.separation=function(r){return arguments.length?(n=r,i):n},i.size=function(n){return arguments.length?(e=!1,r=+n[0],t=+n[1],i):e?null:[r,t]},i.nodeSize=function(n){return arguments.length?(e=!0,r=+n[0],t=+n[1],i):e?[r,t]:null},i},n.treemap=function(){var n=X,r=!1,t=1,e=1,i=[0],u=d,o=d,f=d,a=d,c=d;function h(n){return n.x0=n.y0=0,n.x1=t,n.y1=e,n.eachBefore(l),i=[0],r&&n.eachBefore(j),n}function l(r){var t=i[r.depth],e=r.x0+t,h=r.y0+t,l=r.x1-t,p=r.y1-t;l<e&&(e=l=(e+l)/2),p<h&&(h=p=(h+p)/2),r.x0=e,r.y0=h,r.x1=l,r.y1=p,r.children&&(t=i[r.depth+1]=u(r)/2,e+=c(r)-t,h+=o(r)-t,(l-=f(r)-t)<e&&(e=l=(e+l)/2),(p-=a(r)-t)<h&&(h=p=(h+p)/2),n(r,e,h,l,p))}return h.round=function(n){return arguments.length?(r=!!n,h):r},h.size=function(n){return arguments.length?(t=+n[0],e=+n[1],h):[t,e]},h.tile=function(r){return arguments.length?(n=p(r),h):n},h.padding=function(n){return arguments.length?h.paddingInner(n).paddingOuter(n):h.paddingInner()},h.paddingInner=function(n){return arguments.length?(u="function"==typeof n?n:s(+n),h):u},h.paddingOuter=function(n){return arguments.length?h.paddingTop(n).paddingRight(n).paddingBottom(n).paddingLeft(n):h.paddingTop()},h.paddingTop=function(n){return arguments.length?(o="function"==typeof n?n:s(+n),h):o},h.paddingRight=function(n){return arguments.length?(f="function"==typeof n?n:s(+n),h):f},h.paddingBottom=function(n){return arguments.length?(a="function"==typeof n?n:s(+n),h):a},h.paddingLeft=function(n){return arguments.length?(c="function"==typeof n?n:s(+n),h):c},h},n.treemapBinary=function(n,r,t,e,i){var u,o,f=n.children,a=f.length,c=new Array(a+1);for(c[0]=o=u=0;u<a;++u)c[u+1]=o+=f[u].value;!function n(r,t,e,i,u,o,a){if(r>=t-1){var h=f[r];return h.x0=i,h.y0=u,h.x1=o,void(h.y1=a)}var l=c[r],p=e/2+l,d=r+1,s=t-1;for(;d<s;){var v=d+s>>>1;c[v]<p?d=v+1:s=v}p-c[d-1]<c[d]-p&&r+1<d&&--d;var x=c[d]-l,y=e-x;if(o-i>a-u){var g=e?(i*y+o*x)/e:o;n(r,d,x,i,u,g,a),n(d,t,y,g,u,o,a)}else{var m=e?(u*y+a*x)/e:a;n(r,d,x,i,u,o,m),n(d,t,y,i,m,o,a)}}(0,a,n.value,r,t,e,i)},n.treemapDice=O,n.treemapResquarify=Y,n.treemapSlice=U,n.treemapSliceDice=function(n,r,t,e,i){(1&n.depth?U:O)(n,r,t,e,i)},n.treemapSquarify=X,Object.defineProperty(n,"__esModule",{value:!0})}));
@@ -728,18 +793,22 @@ function dibujarMapa(){
   svg.setAttribute("viewBox", `0 0 ${W} ${W}`);
   // índice de brand para la entrada en cascada
   const iBrand = new Map(); raiz.children.forEach((b, i) => iBrand.set(b, i));
-  let h = "";
-  M.nodos.forEach((n, i) => {
-    const d = n.data;
+  // grupos anidados (brand > línea > código): cada grupo puede flotar sin romper el orden de M.nodos
+  const pinta = (n) => {
+    const i = M.nodos.indexOf(n), d = n.data;
     const brand = n.depth >= 1 ? n.ancestors().find(a => a.depth === 1) : null;
     const delay = brand ? Math.min(iBrand.get(brand), 9) * 45 + (n.depth - 1) * 40 : 0;
     const cls = d.nivel === "hoja"
       ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.sinrec ? " sinrec" : ""}`
       : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
     const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
-    h += `<circle class="${cls}" data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
-  });
-  $("mundo").innerHTML = h;
+    const c = `<circle class="${cls}" data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
+    if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
+    return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
+  };
+  $("mundo").innerHTML = pinta(raiz);
+  M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
+  prepararFlotacion();
   if (M.primera) {
     lz.classList.add("entrando");
     requestAnimationFrame(() => requestAnimationFrame(() => lz.classList.remove("entrando")));
@@ -749,6 +818,50 @@ function dibujarMapa(){
   enfocar(M.foco, false);
   aplicarFiltros();
 }
+
+// ================= Flotación =================
+// Skill de Emil: se ve pocas veces al día y su propósito es dar vida a la vista de inicio; los datos se quedan quietos al leerlos.
+// Cada código y cada línea flotan unos píxeles con periodos de 9 a 16 s. Al entrar el puntero en el mapa, todo frena con un
+// muelle críticamente amortiguado (sin rebote) para poder leer y apuntar; al salir, vuelve a flotar. Con movimiento reducido no flota.
+const F = {lista: [], amp: 0, vel: 0, objetivo: 1, corre: false, t0: performance.now(), ult: 0};
+function prepararFlotacion(){
+  F.lista = [];
+  $("mundo").querySelectorAll("g.flota").forEach(g => {
+    const n = M.nodos[+g.dataset.g], p = n.parent; if (!p) return;
+    const holgura = Math.max(0, p.r - Math.hypot(n.x - p.x, n.y - p.y) - n.r);  // no se sale de su grupo
+    const s = (n.data.hoja ? n.data.hoja.ean : n.data.clave).split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
+    const rnd = k => (((s ^ (k * 2654435761)) * 2246822519) >>> 0) / 4294967296;
+    F.lista.push({g, holgura, px: 9 + 7 * rnd(1), py: 9 + 7 * rnd(2), fx: rnd(3) * 6.283, fy: rnd(4) * 6.283});
+  });
+  F.objetivo = reducir.matches || M.encima ? 0 : 1;
+  if (reducir.matches) { F.amp = 0; F.vel = 0; F.lista.forEach(e => e.g.removeAttribute("transform")); return; }
+  arrancarFlotacion();
+}
+function arrancarFlotacion(){ if (!F.corre && !document.hidden) { F.corre = true; F.ult = performance.now(); requestAnimationFrame(pasoFlotacion); } }
+function pasoFlotacion(ahora){
+  if (document.hidden || $("vistaInicio").hidden) { F.corre = false; return; }
+  const dt = Math.min(0.05, (ahora - F.ult) / 1000); F.ult = ahora;
+  // muelle críticamente amortiguado sobre la amplitud (respuesta ≈ 0,7 s)
+  const w = 2 * Math.PI / 0.7;
+  F.vel += (-w * w * (F.amp - F.objetivo) - 2 * w * F.vel) * dt; F.amp += F.vel * dt;
+  if (F.amp < 0.002 && F.objetivo === 0 && Math.abs(F.vel) < 0.01) {
+    F.amp = 0; F.vel = 0; F.corre = false;
+    F.lista.forEach(e => e.g.removeAttribute("transform"));
+    return;
+  }
+  const t = (ahora - F.t0) / 1000, k = transformDe(M.foco).k;
+  const tope = 2.6 / k;  // unos 2,6 px en pantalla a cualquier zoom
+  for (const e of F.lista) {
+    const a = Math.min(e.holgura * 0.7, tope) * F.amp;
+    if (a < 0.01) continue;
+    e.g.setAttribute("transform", `translate(${(a * Math.sin(6.283 * t / e.px + e.fx)).toFixed(2)} ${(a * Math.cos(6.283 * t / e.py + e.fy)).toFixed(2)})`);
+  }
+  requestAnimationFrame(pasoFlotacion);
+}
+$("lienzo").addEventListener("pointerenter", ev => { if (ev.pointerType === "touch") return; M.encima = true; F.objetivo = 0; arrancarFlotacion(); });
+$("lienzo").addEventListener("pointerleave", () => { M.encima = false; if (!reducir.matches) { F.objetivo = 1; arrancarFlotacion(); } });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && F.objetivo > 0) arrancarFlotacion(); });
+reducir.addEventListener("change", prepararFlotacion);
 
 function transformDe(n){
   if (n.depth === 0 && n.children) {
@@ -828,9 +941,8 @@ function pintarEtiquetas(){
 }
 
 function aplicarFiltros(){
-  const cs = $("mundo").children;
   M.nodos.forEach((n, i) => {
-    const c = cs[i]; if (!c || n.depth === 0) return;
+    const c = M.els[i]; if (!c || n.depth === 0) return;
     const on = n.data.nivel === "hoja" ? coincide(n.data.hoja) : n.leaves().some(l => coincide(l.data.hoja));
     c.classList.toggle("apagado", !on);
   });
@@ -970,7 +1082,8 @@ $("btnFiltros").addEventListener("click", ev => { ev.stopPropagation(); abrirPop
 $("cerrarPop").addEventListener("click", () => { abrirPop(false); $("btnFiltros").focus(); });
 document.addEventListener("pointerdown", ev => { if (!ev.target.closest("#pop,#btnFiltros")) abrirPop(false); });
 // barra lateral como hoja en ventanas estrechas
-function cerrarLado(){ $("lado").classList.remove("abierto"); $("velo").classList.remove("ver"); $("btnLado").setAttribute("aria-expanded", "false"); }
+function cerrarLado(){ $("lado").classList.remove("abierto"); $("velo").classList.remove("ver"); }
+function _cerrarLadoAnterior(){ $("lado").classList.remove("abierto"); $("velo").classList.remove("ver"); $("btnLado").setAttribute("aria-expanded", "false"); }
 $("btnLado").addEventListener("click", () => { const ab = !$("lado").classList.contains("abierto"); $("lado").classList.toggle("abierto", ab); $("velo").classList.toggle("ver", ab); $("btnLado").setAttribute("aria-expanded", String(ab)); });
 $("velo").addEventListener("click", cerrarLado);
 // borde de la barra de herramientas solo cuando hay contenido pasando por debajo
@@ -986,29 +1099,61 @@ addEventListener("resize", () => { moverPulgar($("segVista")); moverPulgar($("se
 
 // ================= INICIO: interacción =================
 const tip = $("tip");
-function verTip(ev, html){ tip.innerHTML = html; tip.classList.add("ver");
-  const w = tip.offsetWidth, h = tip.offsetHeight;
-  let x = ev.clientX + 14, y = ev.clientY + 14;
-  if (x + w > innerWidth - 8) x = ev.clientX - w - 14;
-  if (y + h > innerHeight - 8) y = ev.clientY - h - 14;
-  tip.style.left = x + "px"; tip.style.top = y + "px"; }
-function ocultarTip(){ tip.classList.remove("ver"); }
-
-$("pack").addEventListener("pointermove", ev => {
-  const c = ev.target.closest("circle"); if (!c) { ocultarTip(); return; }
-  const n = M.nodos[+c.dataset.i]; if (!n || n.depth === 0) { ocultarTip(); return; }
+let tipT = null, tipFuera = null, tipActual = -1;
+function contenidoTip(n){
   const d = n.data;
   if (d.nivel === "hoja") {
     const x = d.hoja;
-    verTip(ev, `<span class="mono">${x.ean}</span><b>${esc(x.desc)}</b><br>Actuals 12M ${num(x.vol12)} · Consensus 9M ${num(x.cons9)}<br>`
-      + (x.scope ? (x.sinrec ? "Sin receta elegida" : `Desvío ${num(x.u)} uds · ${pct(x.p)}`) : `Fuera de scope: ${esc(x.motivo || "local")}`));
-  } else {
-    const r = resumenGrupo(n);
-    verTip(ev, `<span class="mono">${{brand: "Brand", pl: "Product Line"}[d.nivel]}</span><b>${esc(corto(d.nombre))}</b><br>${r.hs.length} códigos · ${r.sc.length} en scope · ${r.fuera.length} fuera<br>Desvío ${num(r.u)} uds · ${pct(r.sR > 0 ? r.u / r.sR : null)}`);
+    const estado = x.scope ? (x.sinrec ? "En scope, sin receta elegida." : (x.meses.length ? `Se sale en ${x.meses.length} de 9 meses.` : "Dentro de su receta los 9 meses.")) : `Fuera de scope: ${esc(x.motivo || "local")}.`;
+    return `<span class="mono">${x.ean} · ${esc(corto(x.pl))}</span><div class="tt">${esc(x.desc)}</div>
+      <div class="kk"><div><span>Desvío</span><b>${x.u == null ? "-" : num(x.u)}</b></div><div><span>Sobre la receta</span><b>${x.p == null ? "-" : pct(x.p)}</b></div>
+      <div><span>Actuals 12M</span><b>${num(x.vol12)}</b></div><div><span>Consensus 9M</span><b>${num(x.cons9)}</b></div></div>
+      <div class="nota">${estado}${x.scope ? " Clic para verlo en el panel." : ""}</div>`;
   }
+  const r = resumenGrupo(n);
+  return `<span class="mono">${{brand: "Brand", pl: "Product Line"}[d.nivel]}</span><div class="tt">${esc(corto(d.nombre))}</div>
+    <div class="kk"><div><span>Códigos</span><b>${r.hs.length}</b></div><div><span>En scope</span><b>${r.sc.length}</b></div>
+    <div><span>Fuera</span><b>${r.fuera.length}</b></div><div><span>Desvío</span><b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b></div></div>
+    <div class="nota">Clic para entrar.</div>`;
+}
+function colocarTip(c){
+  const b = c.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, m = 14;
+  let x = b.right + m, to = "left center";
+  if (x + w > innerWidth - 8) { x = b.left - w - m; to = "right center"; }
+  if (x < 8) { x = Math.min(innerWidth - w - 8, Math.max(8, b.left + b.width / 2 - w / 2)); to = "center top"; }
+  const y = Math.min(innerHeight - h - 8, Math.max(8, b.top + b.height / 2 - h / 2));
+  tip.style.setProperty("--tx", x + "px"); tip.style.setProperty("--ty", y + "px"); tip.style.setProperty("--to", to);
+}
+function verTipNodo(i){
+  const n = M.nodos[i], c = M.els[i]; if (!n || !c) return;
+  if (tipActual >= 0 && M.els[tipActual]) M.els[tipActual].classList.remove("encima");
+  tipActual = i;
+  if (n.data.nivel === "hoja") c.classList.add("encima");
+  tip.innerHTML = contenidoTip(n);
+  // la primera tarjeta aparece con una transición corta; las siguientes, al instante (como los tooltips de Apple)
+  tip.classList.toggle("instant", tip.classList.contains("ver"));
+  colocarTip(c);
+  tip.classList.add("ver");
+}
+function ocultarTip(){
+  clearTimeout(tipT); tipT = null;
+  if (tipActual >= 0 && M.els && M.els[tipActual]) M.els[tipActual].classList.remove("encima");
+  tipActual = -1; tip.classList.remove("ver", "instant");
+}
+$("pack").addEventListener("pointerover", ev => {
+  if (ev.pointerType === "touch") return;
+  const c = ev.target.closest("circle[data-i]"); const i = c ? +c.dataset.i : -1;
+  const n = M.nodos[i];
+  clearTimeout(tipFuera);
+  if (!n || n.depth === 0 || n === M.foco) { tipFuera = setTimeout(ocultarTip, 120); return; }
+  if (i === tipActual) return;
+  clearTimeout(tipT);
+  if (tip.classList.contains("ver")) verTipNodo(i);
+  else tipT = setTimeout(() => verTipNodo(i), 120);
 });
-$("pack").addEventListener("pointerleave", ocultarTip);
+$("pack").addEventListener("pointerleave", () => { tipFuera = setTimeout(ocultarTip, 80); });
 $("pack").addEventListener("click", ev => {
+  ocultarTip();
   const c = ev.target.closest("circle");
   const n = c ? M.nodos[+c.dataset.i] : null;
   if (!n || n === M.foco || n.depth === 0) { if (M.foco.parent && (!n || n.depth === 0 || n === M.foco)) enfocar(M.foco.parent); return; }
@@ -1021,11 +1166,12 @@ $("pack").addEventListener("click", ev => {
   else enfocar(sig);
 });
 
+
 function seleccionar(ean){
   M.sel = ean;
   $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo"));
   const i = M.nodos.findIndex(n => n.data.hoja && n.data.hoja.ean === ean);
-  if (i >= 0) $("mundo").children[i].classList.add("activo");
+  if (i >= 0) M.els[i].classList.add("activo");
   pintarPanel();
 }
 
@@ -1086,8 +1232,7 @@ TOL.flat().forEach(id => $(id).addEventListener("input", () => {
   if (!$("vistaDetalle").hidden) { fotoActual(); detector(); }
 }));
 function recolorear(){
-  const cs = $("mundo").children;
-  M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; cs[i].style.fill = colorHoja(x); });
+  M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; M.els[i].style.fill = colorHoja(x); });
 }
 $("migas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; const n = M.nodos.find(x => x.data.clave === b.dataset.clave); if (n && n !== M.foco) enfocar(n); });
 $("panel").addEventListener("click", ev => {
@@ -1105,6 +1250,45 @@ $("panel").addEventListener("click", ev => {
 });
 new ResizeObserver(() => { if (!$("vistaInicio").hidden && Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); }).observe($("lienzo"));
 
+// ================= iPhone: pestañas flotantes y hoja del inspector =================
+$("pestanas").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const t = b.dataset.tab;
+  if (t === "mapa") location.hash = "inicio";
+  else if (t === "detalle") $("navDetalle").click();
+  else if (t === "brands") { $("lado").classList.add("abierto"); $("velo").classList.add("ver"); }
+  else if (t === "filtros") abrirPop(true);
+});
+// la hoja tiene dos posiciones; se arrastra 1:1 y al soltar decide por la posición proyectada con la velocidad (skill de Apple)
+(function(){
+  const hoja = $("hojaIns"), agarre = $("agarre"), mq = matchMedia("(max-width: 900px)");
+  let y0 = 0, base = 0, hist = [], arrastre = false;
+  const cerradoPx = () => hoja.offsetHeight - 270;
+  agarre.addEventListener("click", () => { if (!arrastre) hoja.classList.toggle("abierta"); });
+  agarre.addEventListener("pointerdown", ev => {
+    if (!mq.matches) return;
+    agarre.setPointerCapture(ev.pointerId); y0 = ev.clientY; arrastre = false; hist = [{y: ev.clientY, t: ev.timeStamp}];
+    base = hoja.classList.contains("abierta") ? 0 : cerradoPx();
+    hoja.style.transition = "none";
+  });
+  agarre.addEventListener("pointermove", ev => {
+    if (!agarre.hasPointerCapture(ev.pointerId)) return;
+    const dy = ev.clientY - y0; if (Math.abs(dy) > 6) arrastre = true;
+    let y = base + dy;
+    if (y < 0) y = -Math.sqrt(-y) * 2.2;  // resistencia en el tope, sin parada seca
+    hoja.style.transform = `translateY(${y}px)`;
+    hist.push({y: ev.clientY, t: ev.timeStamp}); if (hist.length > 6) hist.shift();
+  });
+  agarre.addEventListener("pointerup", ev => {
+    if (!agarre.hasPointerCapture(ev.pointerId)) return;
+    const a = hist[0], z = hist[hist.length - 1], v = (z.y - a.y) / Math.max(1, z.t - a.t) * 1000;
+    const actual = base + (ev.clientY - y0), proyectado = actual + (v / 1000) * 0.998 / (1 - 0.998);
+    hoja.style.transition = ""; hoja.style.transform = "";
+    if (arrastre) hoja.classList.toggle("abierta", proyectado < cerradoPx() / 2);
+    setTimeout(() => { arrastre = false; }, 0);
+  });
+})();
+
 // ================= Navegación entre vistas =================
 function irA(vista, sel){
   const cambio = () => {
@@ -1113,6 +1297,9 @@ function irA(vista, sel){
     $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
     $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
     moverPulgar($("segVista"));
+    document.querySelectorAll("#pestanas button").forEach(b => b.setAttribute("aria-current", (ini ? b.dataset.tab === "mapa" : b.dataset.tab === "detalle") ? "page" : "false"));
+    ocultarTip();
+    if (ini) arrancarFlotacion();
     if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false; pintar(); $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"}); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
     else { $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
     bordeBarra();
