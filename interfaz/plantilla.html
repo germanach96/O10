@@ -398,6 +398,10 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 .interruptor input:focus-visible + .pista{outline:2px solid var(--blue);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){.interruptor .pista::after{transition:none}}
 .calor-v{font-size:11px !important;font-weight:600;font-variant-numeric:tabular-nums}
+.tarjeta svg text.et-mes{fill:var(--label);font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
+.tarjeta svg text.num-calor{fill:var(--label) !important;opacity:1 !important;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
+.calor-img{image-rendering:auto}
+svg [data-k]{transform-box:fill-box;transform-origin:center}
 .elegidaTxt{color:var(--blue-txt);font-weight:600}
 .bueno{color:var(--green-txt)} .malo{color:var(--red-txt)}
 .pequeño{font-size:12px;color:var(--label-2)}
@@ -892,11 +896,30 @@ function dibujarMapa(){
       : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
     const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
     const bin = d.nivel === "hoja" && d.hoja.scope && !d.hoja.sinrec ? ` data-bin="${binDe(d.hoja.p)}"` : "";
-    const c = `<circle class="${cls}"${bin} data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
-    if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
+    const c = `<circle class="${cls}"${bin} data-i="${i}" data-k="${esc(d.nivel === "hoja" ? d.hoja.ean : d.clave)}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
+    if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" data-k="${esc(d.hoja.ean)}-b" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
     return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
   };
+  // FLIP: cada burbuja que ya estaba sale de su posición y tamaño anteriores (WAAPI, solo transform)
+  const previas = new Map(), mismoAncho = M.W0 === W;
+  if (!M.primera && mismoAncho) $("mundo").querySelectorAll("circle[data-k]").forEach(c => previas.set(c.dataset.k, {x: +c.getAttribute("cx"), y: +c.getAttribute("cy"), r: +c.getAttribute("r"), el: c}));
+  M.W0 = W;
   $("mundo").innerHTML = pinta(raiz);
+  if (previas.size && !reducir.matches) {
+    const curva = getComputedStyle(document.documentElement).getPropertyValue("--muelle").trim() || "ease-out";
+    let nuevas = 0;
+    $("mundo").querySelectorAll("circle[data-k]").forEach(c => {
+      const o = previas.get(c.dataset.k);
+      if (!o) { if (nuevas++ < 120) c.animate([{opacity: 0, transform: "scale(.9)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: 120, easing: MOV.curva, fill: "backwards"}); return; }
+      previas.delete(c.dataset.k);
+      const x = +c.getAttribute("cx"), y = +c.getAttribute("cy"), r = +c.getAttribute("r") || 1;
+      if (Math.abs(o.x - x) < .5 && Math.abs(o.y - y) < .5 && Math.abs(o.r - r) < .5) return;
+      c.animate([{transform: `translate(${(o.x - x).toFixed(2)}px, ${(o.y - y).toFixed(2)}px) scale(${(o.r / r).toFixed(4)})`}, {transform: "none"}], {duration: 620, easing: curva});
+    });
+    // las que desaparecen (tipos ignorados) se desvanecen en su sitio
+    previas.forEach(o => { if (o.el.classList.contains("brillo")) return; const c = o.el.cloneNode(); c.removeAttribute("data-k"); c.style.pointerEvents = "none"; $("mundo").appendChild(c);
+      c.animate([{opacity: 1}, {opacity: 0, transform: "scale(.94)"}], {duration: 180, easing: "ease", fill: "forwards"}).onfinish = () => c.remove(); });
+  }
   M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
   prepararFlotacion();
   if (M.primera) {
@@ -1507,22 +1530,96 @@ function capaCodigos(cods, X, Y){
 }
 function capaMedia(pts, X, Y, etiqueta){
   let h = "";
-  if (pts.length > 1) h += `<polyline points="${pts.map(p => X(p)+","+Y(p)).join(" ")}" fill="none" stroke="var(--receta)" stroke-opacity=".55" stroke-width="2"/>`;
+  if (pts.length > 1) h += `<polyline data-k="m-linea" points="${pts.map(p => X(p)+","+Y(p)).join(" ")}" fill="none" stroke="var(--receta)" stroke-opacity=".55" stroke-width="2"/>`;
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
-    h += `<circle class="media" cx="${X(p)}" cy="${Y(p)}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${esc(etiqueta(p))}</title></circle>`;
+    h += `<circle class="media" data-k="m-${p.mes}" cx="${X(p)}" cy="${Y(p)}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${esc(etiqueta(p))}</title></circle>`;
   });
   return h;
 }
-// leyenda del mapa de calor: rampa de 5 pasos de menos a más veces elegido
-const leyendaCalor = (x, y) => `<g class="ley-sel"><text x="${x}" y="${y}">Menos elegido</text>${[0.1, 0.28, 0.46, 0.64, 0.82].map((a, k) => `<rect x="${x + 82 + k * 15}" y="${y - 9}" width="13" height="10" rx="2" fill="var(--blue)" fill-opacity="${a}"/>`).join("")}<text x="${x + 82 + 5 * 15 + 4}" y="${y}">Más elegido</text></g>`;
 // leyenda dentro del lienzo (la tarjeta tiene altura fija)
 const leyendaGrupo = (tr, x, y) => esRegla() && tr.media.length
   ? `<g class="ley-sel"><circle cx="${x + 5}" cy="${y - 4}" r="5" fill="var(--receta)"/><text x="${x + 15}" y="${y}">Promedio de ${tr.media[tr.media.length - 1].n} códigos</text>
      <circle cx="${x + 148}" cy="${y - 4}" r="2.5" fill="var(--receta)" fill-opacity=".45"/><text x="${x + 156}" y="${y}">Cada código</text></g>` : "";
 
+
+// ================= Transiciones entre selecciones (skills animate + apple-design) =================
+// Al abrir o cambiar la selección, cada gráfico pasa del estado anterior al nuevo en vez de saltar.
+// Propósito: continuidad espacial (se ve hacia dónde se mueve cada punto). Frecuencia: ocasional.
+// Elementos con data-k: sus números (cx, cy, r, x, y, width, height, fill-opacity, points, d) se interpolan desde el
+// valor que tienen en pantalla, así que una transición interrumpida sigue desde donde iba. Muelle críticamente
+// amortiguado (sin rebote, respuesta ≈0,4 s). Lo nuevo entra con opacidad y escala 0,92; lo que se va sale más rápido.
+// Con movimiento reducido solo hay un fundido corto.
+const MOV = {dur: 560, entrada: 240, salida: 160, curva: "cubic-bezier(0.23, 1, 0.32, 1)"};
+const ATTRS = ["cx", "cy", "r", "x", "y", "width", "height", "fill-opacity", "points", "d", "x1", "x2", "y1", "y2"];
+const muelle = t => { const w = 9.2; const v = 1 - (1 + w * t) * Math.exp(-w * t); return t >= 1 ? 1 : v / (1 - (1 + w) * Math.exp(-w)); };
+const trozos = s => String(s).split(/(-?\d*\.?\d+(?:e-?\d+)?)/);
+function capturar(raiz){
+  const m = new Map();
+  if (!raiz) return m;
+  raiz.querySelectorAll("[data-k]").forEach(el => {
+    const a = {}; ATTRS.forEach(k => { if (el.hasAttribute(k)) a[k] = el.getAttribute(k); });
+    m.set(el.dataset.k, {a, el});
+  });
+  return m;
+}
+const animando = new WeakMap();
+function transicion(raiz, antes, {fundir = []} = {}){
+  if (!raiz) return;
+  const reducido = reducir.matches;
+  if (animando.has(raiz)) cancelAnimationFrame(animando.get(raiz));
+  // capas que se funden (mapa de calor, códigos del grupo): la vieja se queda encima y se desvanece
+  fundir.forEach(viejo => { if (!viejo) return; const c = viejo.cloneNode(true); c.removeAttribute("data-k"); c.querySelectorAll("[data-k]").forEach(x => x.removeAttribute("data-k"));
+    c.style.pointerEvents = "none";
+    const ref = raiz.querySelector('[data-k^="m-"], [data-k^="l-"], [data-k="c-elegida"]');   // debajo de la trayectoria
+    ref ? ref.parentNode.insertBefore(c, ref) : raiz.appendChild(c);
+    c.animate([{opacity: 1}, {opacity: 0}], {duration: reducido ? 120 : MOV.entrada, easing: "ease", fill: "forwards"}).onfinish = () => c.remove(); });
+  if (reducido) { raiz.animate([{opacity: .55}, {opacity: 1}], {duration: 160, easing: "ease"}); return; }
+  const tw = []; let nuevos = 0;
+  raiz.querySelectorAll("[data-k]").forEach(el => {
+    const o = antes.get(el.dataset.k);
+    if (!o) {   // entra: opacidad + escala desde 0,92, con un escalonado corto
+      el.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}],
+        {duration: MOV.entrada, delay: Math.min(nuevos++ * 18, 160), easing: MOV.curva, fill: "backwards"});
+      return;
+    }
+    antes.delete(el.dataset.k);
+    ATTRS.forEach(k => {
+      if (!el.hasAttribute(k) || o.a[k] == null || o.a[k] === el.getAttribute(k)) return;
+      const A = trozos(o.a[k]), B = trozos(el.getAttribute(k));
+      if (A.length !== B.length || A.some((t, i) => i % 2 === 0 && t !== B[i])) return;   // misma forma: se interpola número a número
+      tw.push({el, k, A, B, fin: el.getAttribute(k)});
+    });
+  });
+  // salen: el clon se queda donde estaba y se desvanece (más rápido que la entrada)
+  antes.forEach(({el}) => {
+    const c = el.cloneNode(true); c.removeAttribute("data-k"); c.style.pointerEvents = "none"; raiz.appendChild(c);
+    c.animate([{opacity: 1}, {opacity: 0, transform: "scale(.96)"}], {duration: MOV.salida, easing: "ease", fill: "forwards"}).onfinish = () => c.remove();
+  });
+  if (!tw.length) return;
+  const t0 = performance.now();
+  const paso = ahora => {
+    const t = Math.min(1, (ahora - t0) / MOV.dur), e = muelle(t);
+    tw.forEach(({el, k, A, B, fin}) => {
+      if (t >= 1) { el.setAttribute(k, fin); return; }
+      el.setAttribute(k, B.map((b, i) => i % 2 ? (+A[i] + (+b - +A[i]) * e).toFixed(2) : b).join(""));
+    });
+    if (t < 1) animando.set(raiz, requestAnimationFrame(paso)); else animando.delete(raiz);
+  };
+  tw.forEach(({el, k, A}) => el.setAttribute(k, A.join("")));   // primer fotograma: el valor que se veía
+  animando.set(raiz, requestAnimationFrame(paso));
+}
+// pinta un SVG conservando sus elementos para poder interpolar
+function pintarSVG(svg, html){
+  const antes = capturar(svg), capas = [...svg.querySelectorAll(":scope > .calor-img, :scope > .cods, :scope > .en-celda")];
+  const viejas = capas.map(c => c.cloneNode(true));
+  svg.innerHTML = html;
+  transicion(svg, antes, {fundir: viejas});
+}
+
 // ---- Mapa de calor de los inputs elegidos: cuántas veces (fotos, o códigos × fotos en un grupo) la mejor
-// receta usó cada combinación de valores. Escala secuencial de un solo tono (azul = receta).
+// receta usó cada combinación de valores. Se dibuja como un mapa de calor difuminado (densidad gaussiana con
+// la paleta "turbo": azul → cian → verde → amarillo → rojo, transparente donde no hay nada).
 let CALOR = false;
 try { CALOR = localStorage.getItem("o10-calor") === "1"; } catch(e) {}
 function conteoCalor(clave){
@@ -1536,20 +1633,48 @@ function conteoCalor(clave){
   return {n, tot, max: Math.max(0, ...n.values())};
 }
 const unidadCalor = () => esRegla() ? "códigos × fotos" : "fotos";
-// intensidad: lineal sobre el máximo, con un suelo visible para las celdas no vacías
-const alfaCalor = (v, max) => v > 0 && max > 0 ? 0.1 + 0.72 * v / max : 0;
+// Turbo (Google, 2019): aproximación polinómica, t en 0…1
+function turbo(t){
+  t = Math.max(0, Math.min(1, t));
+  const r = 34.61 + t * (1172.33 - t * (10793.56 - t * (33300.12 - t * (38394.49 - t * 14825.05))));
+  const g = 23.31 + t * (557.33 + t * (1225.33 - t * (3574.96 - t * (1073.77 + t * 707.56))));
+  const b = 27.2 + t * (3211.1 - t * (15327.97 - t * (27814 - t * (22569.18 - t * 6838.66))));
+  return [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))));
+}
+// densidad gaussiana de los puntos {x, y, w} en un lienzo W×H; devuelve la imagen como data URL
+function imagenCalor(pts, W, H, sigma){
+  const esc = 0.5, w = Math.ceil(W * esc), h = Math.ceil(H * esc), s2 = 2 * (sigma * esc) ** 2;
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const ctx = cv.getContext("2d"), img = ctx.createImageData(w, h), d = new Float32Array(w * h);
+  let max = 0;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    let v = 0; for (const p of pts) { const dx = i - p.x * esc, dy = j - p.y * esc; v += p.w * Math.exp(-(dx * dx + dy * dy) / s2); }
+    d[j * w + i] = v; if (v > max) max = v;
+  }
+  for (let k = 0; k < d.length; k++) {
+    const v = max ? d[k] / max : 0, [r, g, b] = turbo(0.1 + 0.88 * v);
+    const a = v < 0.03 ? 0 : Math.min(1, (v - 0.03) / 0.32);    // el borde se funde con el fondo, como en el ejemplo
+    img.data.set([r, g, b, Math.round(a * 230)], k * 4);
+  }
+  ctx.putImageData(img, 0, 0);
+  return cv.toDataURL();
+}
+// leyenda: la rampa turbo de menos a más elegido
+const leyendaCalor = (x, y) => `<g class="ley-sel"><defs><linearGradient id="gTurbo" x1="0" x2="1">${[0, .25, .5, .75, 1].map(t => `<stop offset="${t}" stop-color="rgb(${turbo(0.1 + 0.88 * t).join(",")})"/>`).join("")}</linearGradient></defs>
+  <text x="${x}" y="${y}">Menos elegido</text><rect x="${x + 82}" y="${y - 9}" width="90" height="10" rx="3" fill="url(#gTurbo)"/><text x="${x + 178}" y="${y}">Más elegido</text></g>`;
 function capaCalorBrujula(ex, ey, c, R){
   const cal = conteoCalor(r => { const i = EJ[ex].indexOf(r[ex]), j = EJ[ey].indexOf(r[ey]); return i < 0 || j < 0 ? null : i + "," + j; });
-  const L = 2 * R / 3, g = 2;
-  let h = `<g class="calor">`;
+  const L = 2 * R / 3, pts = [];
+  cal.n.forEach((v, k) => { const [i, j] = k.split(",").map(Number); pts.push({x: (i + 0.5) * L, y: 2 * R - (j + 0.5) * L, w: v}); });
+  const url = pts.length ? imagenCalor(pts, 2 * R, 2 * R, L * 0.42) : "";
+  let h = `<defs><clipPath id="clip-${ex}${ey}"><rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8"/></clipPath></defs>`;
+  if (url) h += `<image class="calor-img" href="${url}" x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" clip-path="url(#clip-${ex}${ey})" preserveAspectRatio="none"/>`;
+  // zonas invisibles con el detalle al pasar el puntero (el % no se escribe encima del calor)
   for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
-    const v = cal.n.get(i + "," + j) || 0, al = alfaCalor(v, cal.max);
-    const x = c - R + i * L, y = c + R - (j + 1) * L, share = cal.tot ? v / cal.tot : 0;
-    const tt = `${ex} ${vtxt(ex, EJ[ex][i])} · ${ey} ${vtxt(ey, EJ[ey][j])}\n${v} de ${cal.tot} ${unidadCalor()} (${pct(share, 0)})`;
-    h += `<g><title>${tt}</title><rect x="${(x + g/2).toFixed(1)}" y="${(y + g/2).toFixed(1)}" width="${(L - g).toFixed(1)}" height="${(L - g).toFixed(1)}" rx="${i === 0 && j === 2 || i === 2 && j === 2 || i === 0 && j === 0 || i === 2 && j === 0 ? 7 : 3}" fill="var(--blue)" fill-opacity="${al.toFixed(3)}"/>`
-      + (v ? `<text x="${(x + 7).toFixed(1)}" y="${(y + 15).toFixed(1)}" class="calor-v" style="fill:${al > 0.5 ? "#fff" : "var(--label)"}">${pct(share, 0)}</text>` : "") + `</g>`;
+    const v = cal.n.get(i + "," + j) || 0, share = cal.tot ? v / cal.tot : 0;
+    h += `<rect x="${(c - R + i * L).toFixed(1)}" y="${(c + R - (j + 1) * L).toFixed(1)}" width="${L.toFixed(1)}" height="${L.toFixed(1)}" fill="transparent"><title>${ex} ${vtxt(ex, EJ[ex][i])} · ${ey} ${vtxt(ey, EJ[ey][j])}\n${v} de ${cal.tot} ${unidadCalor()} (${pct(share, 0)})</title></rect>`;
   }
-  return h + `</g>`;
+  return h;
 }
 
 function brujula(svgId, ex, ey, polos){
@@ -1575,17 +1700,20 @@ function brujula(svgId, ex, ey, polos){
   h += capaMedia(pts, PX, PY, p => esRegla()
     ? `${p.mes} · promedio de ${p.n} códigos`
     : `${p.mes}\n${ex}: ${EJ[ex].map((v,k)=>vtxt(ex,v)+" → "+pct(p.e.ejes[ex][k])).join(", ")}\n${ey}: ${EJ[ey].map((v,k)=>vtxt(ey,v)+" → "+pct(p.e.ejes[ey][k])).join(", ")}`);
+  const ultP = pts[pts.length - 1];
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1;
+    if (i === 0 && !ult && Math.hypot(p.px - ultP.px, p.py - ultP.py) < 46) return;   // la del mes inicial pisaría la final
     if (i === 0 || ult) {
       // cerca del eje horizontal la etiqueta va encima del punto para no pisar los polos
       const cercaEje = Math.abs(p.py - c) < 22;
-      h += cercaEje ? `<text x="${p.px}" y="${p.py > c ? p.py + 22 : p.py - 14}" text-anchor="middle" style="fill:var(--label);font-size:10px">${p.mes}</text>`
-                    : `<text x="${p.px > c ? p.px - 13 : p.px + 13}" y="${p.py + 4}" text-anchor="${p.px > c ? "end" : "start"}" style="fill:var(--label);font-size:10px">${p.mes}</text>`;
+      const kl = `data-k="l-${i === 0 ? "ini" : "fin"}"`;
+      h += cercaEje ? `<text ${kl} x="${p.px}" y="${p.py > c ? p.py + 22 : p.py - 14}" text-anchor="middle" class="et-mes">${p.mes}</text>`
+                    : `<text ${kl} x="${p.px > c ? p.px - 13 : p.px + 13}" y="${p.py + 4}" text-anchor="${p.px > c ? "end" : "start"}" class="et-mes">${p.mes}</text>`;
     }
   });
   if (!pts.length) h += `<text x="${c}" y="${c+40}" text-anchor="middle">Sin fotos con tramos cerrados</text>`;
-  svg.innerHTML = h;
+  pintarSVG(svg, h);
   const p = pts.length ? pts[pts.length - 1].e : null;
   const linea = k => `<b>${k}</b> ${EJ[k].map((v,i)=>vtxt(k,v)+": "+pct(p.ejes[k][i])).join(" · ")}`;
   $(svgId + "p").innerHTML = p && p.ejes ? `Mejor WAPE alcanzable en cada valor del eje${esRegla() ? ", regla del grupo" : ""} (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
@@ -1605,7 +1733,8 @@ function selector(){
   const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos, max = Math.max(...tam);
   const rec = recetaElegida(), gan = rec ? rec.g : -1;
   const cal = CALOR ? conteoCalor(r => r.g >= 0 ? r.g : null) : null;
-  $("selSubt").textContent = cal ? `Arriba, nº de códigos del grupo. Intensidad y %: veces elegido (${cal.tot} ${unidadCalor()}).` : "X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).";
+  let capaCal = "";
+  $("selSubt").textContent = cal ? `Arriba, nº de códigos del grupo. Color: veces elegido, de azul (poco) a rojo (mucho), sobre ${cal.tot} ${unidadCalor()}.` : "X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).";
   const celda = gi => ({col: AMPL.indexOf(CELDAS[gi][0]), fila: CRIT.indexOf(CELDAS[gi][1])});
   const cx = col => L + col * CW + CW / 2, cy = fila => T + fila * CH + CH / 2;
   let h = AMPL.map((a, k) => `<text x="${cx(k)}" y="${T - 10}" text-anchor="middle">${a === "Product Line" ? "Línea" : a}</text>`).join("")
@@ -1613,13 +1742,20 @@ function selector(){
   CELDAS.forEach((_, gi) => {
     const {col, fila} = celda(gi), n = tam[gi], t = max > 0 ? Math.log(1 + n) / Math.log(1 + max) : 0;
     // con el mapa de calor la intensidad pasa a ser cuántas veces se eligió el grupo (el nº de códigos queda arriba)
-    const vc = cal ? (cal.n.get(gi) || 0) : 0, al = cal ? Math.max(0.05, alfaCalor(vc, cal.max)) : 0.07 + 0.78 * t;
+    // con el mapa de calor las celdas quedan en gris claro y el calor va encima, recortado a las celdas
+    const vc = cal ? (cal.n.get(gi) || 0) : 0, al = cal ? 0.06 : 0.07 + 0.78 * t;
     const x = L + col * CW + gap / 2, y = T + fila * CH + gap / 2, w = e.ejes ? e.ejes.g[gi] : null;
     h += `<g class="celda"><title>${CELDAS[gi][0]} · ${CELDAS[gi][1]}${gi === gan ? " (elegido)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}${cal ? `\nelegido ${vc} de ${cal.tot} ${unidadCalor()}` : ""}</title>
-      <rect x="${x}" y="${y}" width="${CW - gap}" height="${CH - gap}" rx="9" fill="var(--blue)" fill-opacity="${al.toFixed(3)}"/>
-      <text x="${x + 6}" y="${y + 14}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text>${cal && vc ? `<text x="${x + CW - gap - 6}" y="${y + CH - gap - 7}" text-anchor="end" class="calor-v" style="fill:${al > 0.5 ? "#fff" : "var(--label)"}">${pct(vc / cal.tot, 0)}</text>` : ""}</g>`;
-    if (gi === gan) h += `<rect x="${x - 1.5}" y="${y - 1.5}" width="${CW - gap + 3}" height="${CH - gap + 3}" rx="10.5" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
+      <rect data-k="c-${gi}" x="${x}" y="${y}" width="${CW - gap}" height="${CH - gap}" rx="9" fill="${cal ? "var(--label)" : "var(--blue)"}" fill-opacity="${al.toFixed(3)}"/>
+      <text x="${x + 6}" y="${y + 14}" class="${cal ? "num-calor" : ""}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text></g>`;
+    if (gi === gan) h += `<rect data-k="c-elegida" x="${x - 1.5}" y="${y - 1.5}" width="${CW - gap + 3}" height="${CH - gap + 3}" rx="10.5" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
   });
+  if (cal && cal.tot) {
+    const pts = []; cal.n.forEach((v, gi) => { const q = celda(gi); pts.push({x: cx(q.col) - L, y: cy(q.fila) - T, w: v}); });
+    const W = AMPL.length * CW, H = CRIT.length * CH, url = imagenCalor(pts, W, H, CW * 0.48);
+    capaCal = `<defs><clipPath id="clip-sel">${CELDAS.map((_, gi) => { const q = celda(gi); return `<rect x="${L + q.col * CW + gap / 2}" y="${T + q.fila * CH + gap / 2}" width="${CW - gap}" height="${CH - gap}" rx="9"/>`; }).join("")}</clipPath></defs>`
+      + `<image class="calor-img" href="${url}" x="${L}" y="${T}" width="${W}" height="${H}" clip-path="url(#clip-sel)" preserveAspectRatio="none" style="pointer-events:none"/>`;
+  }
   // posición = centro de la celda ganadora; los códigos de un grupo se reparten dentro de su celda
   const tr = trayectorias((x) => { const r = x.oraculo_receta || x.receta_txt; if (!r || r.g == null || r.g < 0) return null; const q = celda(r.g); return {x: q.col, y: q.fila}; });
   const hash = s => { let v = 2166136261; for (const ch of s) v = Math.imul(v ^ ch.charCodeAt(0), 16777619); return (v >>> 0) / 4294967296; };
@@ -1633,12 +1769,15 @@ function selector(){
     const r = p.e.oraculo_receta; return `${p.mes} · mejor grupo: ${r ? r.grupo : "-"}`;
   });
   const m = tr.media;
-  [0, m.length - 1].filter((v, i, a) => m.length && a.indexOf(v) === i).forEach(i => {
+  const lejos = m.length > 1 && Math.hypot(+PX(m[0]) - +PX(m[m.length - 1]), +PY(m[0]) - +PY(m[m.length - 1])) >= 46;
+  [0, m.length - 1].filter((v, i, a) => m.length && a.indexOf(v) === i && (v !== 0 || m.length === 1 || lejos)).forEach(i => {
     const p = m[i], x = +PX(p), y = +PY(p);
     const der = x < cx(3);
-    h += `<text x="${der ? x + 13 : x - 13}" y="${y + 4}" text-anchor="${der ? "start" : "end"}" style="fill:var(--label);font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:3px">${p.mes}</text>`;
+    h += `<text data-k="l-${i === 0 ? "ini" : "fin"}" x="${der ? x + 13 : x - 13}" y="${y + 4}" text-anchor="${der ? "start" : "end"}" class="et-mes et-halo">${p.mes}</text>`;
   });
-  svg.innerHTML = h;
+  // el calor va sobre las celdas y bajo la trayectoria
+  if (capaCal) { const k = h.indexOf('<g class="en-celda">') >= 0 ? h.indexOf('<g class="en-celda">') : h.indexOf("<polyline data-k=\"m-linea\""); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
+  pintarSVG(svg, h);
   const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "-"}`; });
   $("matrizp").innerHTML = (rec ? `<span class="elegidaTxt">Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida");
 }
@@ -1665,15 +1804,15 @@ function mediaBrujula(id, ventana){
       const e = entidad(f); const v = e && e[k] && e[k][ventana];
       if (v) pts.push({x: X(v.spp), y: Y(v.wape), v, mes: f.foto, out: fuera(v.spp, v.wape)});
     });
-    if (pts.length > 1) h += `<polyline points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
+    if (pts.length > 1) h += `<polyline data-k="${k}-linea" points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
     pts.forEach((p, i) => {
       const u = i === pts.length - 1;
       h += p.out ? `<path d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala. SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
-                 : `<circle cx="${p.x}" cy="${p.y}" r="${u ? 7 : 4}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="2"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
+                 : `<circle data-k="${k}-${p.mes}" cx="${p.x}" cy="${p.y}" r="${u ? 7 : 4}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="2"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
       if (u) ult[k] = p;
     });
   });
-  svg.innerHTML = h;
+  pintarSVG(svg, h);
   const lin = (k, nom) => { const p = ult[k]; if (!p) return `${nom}: -`;
     return `${nom} (${p.mes}): WAPE <b class="${p.v.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.v.wape)}</b> · SPP <b class="${Math.abs(p.v.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.v.spp)}</b>${p.out ? " (fuera de escala)" : ""}`; };
   let extra = "";
@@ -1708,17 +1847,17 @@ function grafico(meses, ev){
   for (let v = 0; v <= tope + 1e-9; v += paso)
     h += `<line x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}" stroke="var(--sep)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${num(v)}</text>`;
   meses.forEach((m, i) => h += `<text x="${x(i)}" y="${H-B+18}" text-anchor="middle">${estrecho ? m.slice(5) : m}</text>` + (estrecho ? "" : `<text x="${x(i)}" y="${H-B+33}" text-anchor="middle" style="fill:var(--label-3)">±${pct(ev[i].t,1)}</text>`));
-  h += `<polygon points="${ev.map((e,i)=>x(i)+","+y(e.hi)).join(" ")} ${ev.map((e,i)=>x(i)+","+y(e.lo)).reverse().join(" ")}" fill="var(--banda)"/>`;
-  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--receta)" stroke-width="2" stroke-linejoin="round"/>`;
-  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  h += `<polygon data-k="g-banda" points="${ev.map((e,i)=>x(i)+","+y(e.hi)).join(" ")} ${ev.map((e,i)=>x(i)+","+y(e.lo)).reverse().join(" ")}" fill="var(--banda)"/>`;
+  h += `<polyline data-k="g-rec" points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--receta)" stroke-width="2" stroke-linejoin="round"/>`;
+  h += `<polyline data-k="g-cons" points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
   ev.forEach((e, i) => {
     const out = e.dev > 0.5;
-    h += `<circle cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5 : 3.5}" fill="${out ? "var(--red)" : "var(--cons)"}" stroke="var(--card)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)} a ${num(e.hi)}${out ? " · desvío " + num(e.dev) + (e.C > e.hi ? " por encima" : " por debajo") : ""}</title></circle>`;
+    h += `<circle data-k="g-c${i}" cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5 : 3.5}" fill="${out ? "var(--red)" : "var(--cons)"}" stroke="var(--card)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)} a ${num(e.hi)}${out ? " · desvío " + num(e.dev) + (e.C > e.hi ? " por encima" : " por debajo") : ""}</title></circle>`;
     if (out && !estrecho) h += `<text x="${x(i)}" y="${y(e.C) + (e.C < e.lo ? 18 : -10)}" text-anchor="middle" style="fill:var(--red-txt);font-weight:600">${num(e.dev)}</text>`;
   });
   const sw = (c) => `<span class="ley-it">${c}</span>`;
   return `<div class="ley-graf">${sw('<i style="background:var(--banda);box-shadow:inset 0 0 0 1px var(--sep-fuerte)"></i>Rango de tolerancia')}${sw('<i style="height:2px;background:var(--receta)"></i>Receta elegida')}${sw('<i style="height:0;border-top:1.5px dashed var(--cons)"></i>Consensus de la foto')}${sw('<i style="border-radius:50%;width:9px;height:9px;background:var(--red)"></i>Mes fuera del rango, desvío en uds')}</div>`
-    + `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%">${h}</svg>`;
+    + `<svg id="grafActual" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%">${h}</svg>`;
 }
 
 function rail(r){
@@ -1764,7 +1903,9 @@ function fotoActual(){
   ev.forEach((e, i) => {
     h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td class="c-x">${i+1}</td><td class="c-x">±${pct(e.t)}</td><td>${num(e.R)}</td><td class="c-x">${num(e.lo)}</td><td class="c-x">${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td class="c-x">${e.R > 0 ? pct(e.C / e.R - 1) : "-"}</td><td class="dv">${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
   });
+  const antesG = capturar($("grafActual"));
   $("actual").innerHTML = h + "</table>";
+  transicion($("grafActual"), antesG);
 }
 
 function anteriores(){
