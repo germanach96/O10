@@ -1,0 +1,668 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T00:10:14+00:00",
+  "title": "Design System: Brújulas de Demand",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Tinta",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Lienzo",
+        "canonical": "#f5f5f5",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Niebla",
+        "canonical": "#e9e9e9",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "#d9d9d9",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "grid": {
+        "role": "neutral",
+        "displayName": "Rejilla",
+        "canonical": "#e4e4e4",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "mute": {
+        "role": "neutral",
+        "displayName": "Gris apagado",
+        "canonical": "#5c5c5c",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "mute-2": {
+        "role": "neutral",
+        "displayName": "Gris apagado 2",
+        "canonical": "#8a8a8a",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "consensus-gray": {
+        "role": "neutral",
+        "displayName": "Gris Consensus",
+        "canonical": "#7a7a7a",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "highlight-yellow": {
+        "role": "tertiary",
+        "displayName": "Amarillo rotulador",
+        "canonical": "#fecc33",
+        "tonalRamp": [
+          "#4c3900",
+          "#866501",
+          "#c09101",
+          "#fabd01",
+          "#fecd38",
+          "#fedc72",
+          "#ffeaac",
+          "#fff9e6"
+        ]
+      },
+      "ember": {
+        "role": "secondary",
+        "displayName": "Brasa",
+        "canonical": "#ff8400",
+        "tonalRamp": [
+          "#4c2800",
+          "#874600",
+          "#c16400",
+          "#fb8200",
+          "#ff9e37",
+          "#ffba71",
+          "#ffd7ab",
+          "#fff3e6"
+        ]
+      },
+      "ember-ink": {
+        "role": "secondary",
+        "displayName": "Brasa tinta",
+        "canonical": "#b45400",
+        "tonalRamp": [
+          "#4c2400",
+          "#873f00",
+          "#c15a00",
+          "#fb7500",
+          "#ff9437",
+          "#ffb371",
+          "#ffd2ab",
+          "#fff1e6"
+        ]
+      },
+      "forest": {
+        "role": "tertiary",
+        "displayName": "Bosque",
+        "canonical": "#21935b",
+        "tonalRamp": [
+          "#0e3e27",
+          "#196e44",
+          "#239e62",
+          "#2ecd7f",
+          "#5bda9c",
+          "#8be5b9",
+          "#bbf0d6",
+          "#eafaf2"
+        ]
+      },
+      "ok-green": {
+        "role": "tertiary",
+        "displayName": "Verde OK",
+        "canonical": "#16703f",
+        "tonalRamp": [
+          "#0d4024",
+          "#16713f",
+          "#20a15b",
+          "#29d276",
+          "#58de95",
+          "#88e8b4",
+          "#b9f1d3",
+          "#eafbf1"
+        ]
+      },
+      "dev-inside": {
+        "role": "neutral",
+        "displayName": "Desvío: dentro",
+        "canonical": "#d6d6d6",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "dev-low": {
+        "role": "neutral",
+        "displayName": "Desvío: hasta 5%",
+        "canonical": "#b3b3b3",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "dev-mid": {
+        "role": "secondary",
+        "displayName": "Desvío: 5-15%",
+        "canonical": "#ffb366",
+        "tonalRamp": [
+          "#4c2600",
+          "#874400",
+          "#c16100",
+          "#fb7e00",
+          "#ff9b37",
+          "#ffb871",
+          "#ffd5ab",
+          "#fff2e6"
+        ]
+      },
+      "dev-high": {
+        "role": "secondary",
+        "displayName": "Desvío: 15-30%",
+        "canonical": "#ff8400",
+        "tonalRamp": [
+          "#4c2800",
+          "#874600",
+          "#c16400",
+          "#fb8200",
+          "#ff9e37",
+          "#ffba71",
+          "#ffd7ab",
+          "#fff3e6"
+        ]
+      },
+      "dev-extreme": {
+        "role": "primary",
+        "displayName": "Desvío: más de 30%",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "ink-dark": {
+        "role": "primary",
+        "displayName": "Tinta (oscuro)",
+        "canonical": "#f0f0ee",
+        "tonalRamp": [
+          "#292924",
+          "#48483f",
+          "#67675b",
+          "#868676",
+          "#a1a195",
+          "#bcbcb4",
+          "#d8d8d2",
+          "#f3f3f1"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Papel (oscuro)",
+        "canonical": "#1b1b1b",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "canvas-dark": {
+        "role": "neutral",
+        "displayName": "Lienzo (oscuro)",
+        "canonical": "#111111",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "mist-dark": {
+        "role": "neutral",
+        "displayName": "Niebla (oscuro)",
+        "canonical": "#262626",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "hairline-dark": {
+        "role": "neutral",
+        "displayName": "Filete (oscuro)",
+        "canonical": "#333333",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "grid-dark": {
+        "role": "neutral",
+        "displayName": "Rejilla (oscuro)",
+        "canonical": "#1c1c1c",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "mute-dark": {
+        "role": "neutral",
+        "displayName": "Gris apagado (oscuro)",
+        "canonical": "#a9a9a9",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "ember-ink-dark": {
+        "role": "secondary",
+        "displayName": "Brasa tinta (oscuro)",
+        "canonical": "#ff9a33",
+        "tonalRamp": [
+          "#4c2700",
+          "#874400",
+          "#c16100",
+          "#fb7f00",
+          "#ff9c37",
+          "#ffb971",
+          "#ffd6ab",
+          "#fff2e6"
+        ]
+      },
+      "ok-green-dark": {
+        "role": "tertiary",
+        "displayName": "Verde OK (oscuro)",
+        "canonical": "#4cc985",
+        "tonalRamp": [
+          "#123b24",
+          "#1f6840",
+          "#2d945c",
+          "#3ac178",
+          "#65d196",
+          "#92deb5",
+          "#bfecd3",
+          "#ebf9f2"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Solo el nombre de la herramienta en la cabecera de la portada."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título del código en el detalle y cifra grande del rail."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Títulos de sección del detalle."
+      },
+      "title-sm": {
+        "displayName": "Title pequeño",
+        "purpose": "Título del panel lateral y cifras de cabecera y rail."
+      },
+      "card-title": {
+        "displayName": "Título de tarjeta",
+        "purpose": "Títulos de brújula y resultado, una línea de altura fija."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto base."
+      },
+      "body-sm": {
+        "displayName": "Body pequeño",
+        "purpose": "Tablas, tooltip y notas."
+      },
+      "label": {
+        "displayName": "Etiqueta mono",
+        "purpose": "Navegación, chips, botones, controles, migas y cabeceras de tabla, en mayúsculas."
+      },
+      "chart-label": {
+        "displayName": "Rótulo de gráfico",
+        "purpose": "Todo texto dentro de los SVG."
+      }
+    },
+    "shadows": [
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "Sistema plano: la profundidad es filete de 1 px y contraste lienzo/papel."
+      },
+      {
+        "name": "anillo-elegida",
+        "value": "inset 0 0 0 2px #141414",
+        "purpose": "Anillo interior de la celda elegida de la matriz; es un borde, no una elevación."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23,1,0.32,1)",
+        "purpose": "Pulsación de botones y chips, transición de vistas, entrada de burbujas."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.77,0,0.175,1)",
+        "purpose": "Zoom entre niveles del mapa (560 ms)."
+      },
+      {
+        "name": "duracion-estado",
+        "value": "160ms",
+        "purpose": "Cambios de color, filete y opacidad; escala 0,97 al pulsar."
+      },
+      {
+        "name": "duracion-tooltip",
+        "value": "120ms",
+        "purpose": "Fundido del tooltip y de las filas de lista."
+      },
+      {
+        "name": "vista-entrar",
+        "value": "260ms",
+        "purpose": "View transition: entrada con fundido y 8 px de subida."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "movil",
+        "value": "700px"
+      },
+      {
+        "name": "brujulas-una-columna",
+        "value": "820px"
+      },
+      {
+        "name": "mesa-una-columna",
+        "value": "1100px"
+      },
+      {
+        "name": "rail-lateral",
+        "value": "1280px"
+      }
+    ],
+    "themes": {
+      "toggle": [
+        "Claro",
+        "Oscuro",
+        "Auto"
+      ],
+      "darkSelectors": [
+        ":root[data-theme=\"dark\"]",
+        "@media (prefers-color-scheme:dark) :root:not([data-theme=\"light\"])"
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "El único botón relleno: tinta con texto en papel (p. ej. Buscar).",
+      "html": "<button class=\"ds-btn\">Buscar <span class=\"ds-kbd\">⌘K</span></button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:8px;background:var(--ink,#141414);color:var(--paper,#fff);padding:10px 16px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:transform 160ms cubic-bezier(0.23,1,0.32,1),opacity 160ms ease}.ds-btn:active{transform:scale(.97)}.ds-btn:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}.ds-btn[disabled]{opacity:.35;cursor:not-allowed}.ds-kbd{border:1px solid currentColor;border-radius:4px;padding:2px 5px;opacity:.7}"
+    },
+    {
+      "name": "Botón fantasma",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria: transparente con filete.",
+      "html": "<button class=\"ds-btn-fant\">Ver regla del grupo</button>",
+      "css": ".ds-btn-fant{border:1px solid var(--hairline,#d9d9d9);background:transparent;color:var(--ink,#141414);border-radius:8px;padding:10px 16px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:border-color 160ms ease,transform 160ms cubic-bezier(0.23,1,0.32,1)}.ds-btn-fant:hover{border-color:var(--ink,#141414)}.ds-btn-fant:active{transform:scale(.97)}.ds-btn-fant:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}"
+    },
+    {
+      "name": "Chips de filtro",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtros en píldora; pulsado se invierte a tinta.",
+      "html": "<div class=\"ds-grupo\"><span class=\"ds-lbl\">Scope</span><button class=\"ds-chip\" aria-pressed=\"true\">Central</button><button class=\"ds-chip\" aria-pressed=\"false\">Todos</button></div>",
+      "css": ".ds-grupo{display:flex;align-items:center;gap:8px}.ds-lbl{font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;color:var(--mute,#5c5c5c);margin-right:4px}.ds-chip{border:1px solid var(--hairline,#d9d9d9);background:var(--paper,#fff);color:var(--ink,#141414);border-radius:160px;padding:8px 12px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease,transform 160ms cubic-bezier(0.23,1,0.32,1)}.ds-chip:hover{border-color:var(--ink,#141414)}.ds-chip:active{transform:scale(.97)}.ds-chip:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}.ds-chip[aria-pressed=\"true\"]{background:var(--ink,#141414);color:var(--paper,#fff);border-color:var(--ink,#141414)}"
+    },
+    {
+      "name": "Buscador en píldora",
+      "kind": "input",
+      "refersTo": "search-pill",
+      "description": "Entrada principal de la portada: píldora con lupa y botón acoplado.",
+      "html": "<form class=\"ds-buscador\" role=\"search\" onsubmit=\"return false\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><circle cx=\"7.5\" cy=\"7.5\" r=\"5.75\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M11.8 11.8 16 16\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg><input type=\"search\" placeholder=\"Buscar EAN, descripción, brand o línea\" aria-label=\"Buscar\"><button type=\"submit\">Buscar</button></form>",
+      "css": ".ds-buscador{display:flex;align-items:center;gap:12px;background:var(--paper,#fff);border:1px solid var(--hairline,#d9d9d9);border-radius:160px;padding:8px 8px 8px 22px;max-width:640px;color:var(--ink,#141414)}.ds-buscador svg{flex:none;color:var(--mute,#5c5c5c)}.ds-buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;padding:10px 0;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:15px;letter-spacing:.06em;color:inherit}.ds-buscador input::placeholder{color:var(--mute,#5c5c5c);text-transform:uppercase}.ds-buscador:focus-within{border-color:var(--ink,#141414)}.ds-buscador button{border:0;border-radius:8px;background:var(--ink,#141414);color:var(--paper,#fff);padding:10px 16px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer}.ds-buscador button:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}"
+    },
+    {
+      "name": "Navegación y tema",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Barra superior: marca, enlaces mono fantasma y selector de tema segmentado.",
+      "html": "<header class=\"ds-barra\"><a class=\"ds-marca\" href=\"#\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"9.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"13.5\" cy=\"8.5\" r=\"2.6\" fill=\"#ff8400\"/></svg>Brújulas</a><nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Inicio</a><a href=\"#\">Detalle</a></nav><div class=\"ds-tema\"><button aria-pressed=\"true\">Claro</button><button aria-pressed=\"false\">Oscuro</button><button aria-pressed=\"false\">Auto</button></div></header>",
+      "css": ".ds-barra{display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;color:var(--ink,#141414)}.ds-marca{font-family:\"Schibsted Grotesk\",ui-sans-serif,sans-serif;font-weight:600;font-size:21px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}.ds-nav{display:flex;gap:20px}.ds-nav a{font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;color:inherit;text-decoration:none;padding:6px 0;opacity:.55;transition:opacity 160ms ease}.ds-nav a:hover{opacity:1}.ds-nav a[aria-current=\"page\"]{opacity:1;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}.ds-nav a:focus-visible,.ds-tema button:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px;border-radius:4px}.ds-tema{margin-left:auto;display:flex;border:1px solid var(--hairline,#d9d9d9);border-radius:160px;padding:3px;background:var(--paper,#fff)}.ds-tema button{border:0;background:transparent;color:inherit;border-radius:160px;padding:7px 12px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-tema button[aria-pressed=\"true\"]{background:var(--ink,#141414);color:var(--paper,#fff)}"
+    },
+    {
+      "name": "Panel con ficha",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Panel lateral en papel con la ficha del código seleccionado (filete en tinta) y KPIs.",
+      "html": "<aside class=\"ds-panel\"><h2>Gucci Bloom</h2><p class=\"ds-res\"><b>38</b> EANs fuera de estrategia de 212 en scope.</p><div class=\"ds-ficha\"><div class=\"ds-kpis\"><div><span class=\"ds-lbl\">WAPE90</span><b>31,4%</b></div><div><span class=\"ds-lbl\">SPP3</span><b class=\"ds-malo\">−7,2%</b></div><div><span class=\"ds-lbl\">Desvío</span><b>12%</b></div></div></div></aside>",
+      "css": ".ds-panel{background:var(--paper,#fff);border:1px solid var(--hairline,#d9d9d9);border-radius:16px;padding:20px;max-width:400px;color:var(--ink,#141414);font-family:Arial,Helvetica,sans-serif}.ds-panel h2{font-family:\"Schibsted Grotesk\",ui-sans-serif,sans-serif;font-weight:500;font-size:27px;line-height:1.05;letter-spacing:-.02em;margin:0 0 10px}.ds-res{color:var(--mute,#5c5c5c);font-size:15px;line-height:1.45;margin:0 0 16px}.ds-res b{color:var(--ink,#141414)}.ds-ficha{border:1px solid var(--ink,#141414);border-radius:16px;padding:16px}.ds-kpis{display:flex;gap:18px}.ds-kpis div{display:flex;flex-direction:column;gap:6px}.ds-lbl{font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;color:var(--mute,#5c5c5c)}.ds-kpis b{font-family:\"Schibsted Grotesk\",ui-sans-serif,sans-serif;font-weight:500;font-size:21px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.ds-malo{color:var(--ember-ink,#b45400)}"
+    },
+    {
+      "name": "Marcador y celda elegida",
+      "kind": "custom",
+      "refersTo": "marker",
+      "description": "Amarillo rotulador: detrás de palabras y en la celda elegida de la matriz del selector.",
+      "html": "<p class=\"ds-claim\">Mira <span class=\"ds-marcador\">quién se sale</span> de su receta.</p><table class=\"ds-matriz\"><tr><td style=\"background:#d6d6d6\">212</td><td class=\"ds-elegida\">58</td><td style=\"background:#ededed\">9</td></tr></table>",
+      "css": ".ds-claim{font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.3;color:var(--ink,#141414)}.ds-marcador{background:#fecc33;color:#141414;border-radius:25px;padding:0 .25em;box-decoration-break:clone;-webkit-box-decoration-break:clone}.ds-matriz{border-collapse:separate;border-spacing:2px}.ds-matriz td{width:60px;height:42px;text-align:center;border-radius:6px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;color:#141414}.ds-matriz td.ds-elegida{background:#fecc33;box-shadow:inset 0 0 0 2px #141414}"
+    },
+    {
+      "name": "Tooltip",
+      "kind": "custom",
+      "refersTo": "tooltip",
+      "description": "Capa superior invertida a tinta, sin sombra.",
+      "html": "<div class=\"ds-tip\"><span class=\"ds-tip-c\">2026.M05</span>Consensus 1.240 · receta 1.050 · fuera +78 uds</div>",
+      "css": ".ds-tip{display:inline-block;background:var(--ink,#141414);color:var(--paper,#fff);border-radius:8px;padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.45;max-width:300px}.ds-tip-c{display:block;margin-bottom:6px;opacity:.7;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La mesa de trabajo del planner",
+    "overview": "**Creative North Star: \"La mesa de trabajo del planner\"**\n\nBrújulas de Demand se presenta como un cuaderno de ingeniería sobre una mesa: un lienzo gris claro cuadriculado (rejilla de 40 px) donde se apoyan, sin flotar, paneles blancos de esquinas suaves con un filete de pelo. Todo es tinta casi negra sobre papel. El color aparece solo cuando significa algo: el naranja brasa marca lo que se sale de la estrategia, el verde marca la zona meta y el amarillo rotulador señala lo elegido. El mundo viene fijado por la guía de estilo del usuario (`DESIGN html.md`, referencia \"Flim\"), adaptada a una herramienta de operación con densidad de datos alta.\n\nLa superficie es de **operación**, no de escaparate: filtrar primero, leer después. La portada combina una cabecera con el nombre a gran escala, un buscador en píldora, filas de chips de filtro y un mapa de burbujas anidadas (casa → brand → product line → EAN) junto a un panel lateral fijo con la lista ordenada. El detalle de un código apila secciones (Foto actual, Decisiones, Resultados, Detector) con un rail de resumen pegajoso a partir de 1280 px. Los números van en mono o con cifras tabulares; los gráficos son SVG dibujados a mano con la misma tinta y los mismos grises que el texto.\n\nHay tema claro y oscuro con selector manual (Claro / Oscuro / Auto); el oscuro invierte la tinta y el papel y conserva la cuadrícula y los acentos funcionales.",
+    "keyCharacteristics": [
+      "Lienzo cuadriculado como superficie de toda la página, nunca como adorno de un bloque.",
+      "Monocromo de tinta: el color es señal (desvío, meta, elección), nunca decoración.",
+      "Tres voces tipográficas: grotesca de display, mono de etiquetas en mayúsculas, Arial para leer.",
+      "Tres radios estructurales (8 / 16 / 160 px) y cero sombras.",
+      "Tarjetas de brújula de tamaño fijo en px, alineadas en rejilla 2 × 2."
+    ],
+    "rules": [
+      {
+        "name": "La regla de la señal",
+        "body": "Ningún color que no sea neutro aparece sin significado de dato: brasa = fuera de estrategia, verde = meta, amarillo = elegido. Si un elemento no comunica uno de esos tres estados, va en tinta o gris.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de la doble pista",
+        "body": "El color nunca es la única señal: cada desvío lleva su cifra, su tooltip o su texto de leyenda; el Consensus además se distingue por el trazo discontinuo.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla del amarillo sin superficie",
+        "body": "El amarillo marca palabras o una celda elegida; no rellena paneles ni tarjetas.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de las tres voces",
+        "body": "Display para nombres y cifras, mono para etiquetas y controles, Arial para frases. No se introduce una cuarta familia.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla de la cifra tabular",
+        "body": "Toda cifra comparable (tablas, lista, KPIs) usa cifras tabulares o mono para que las columnas se alineen.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del tamaño fijo",
+        "body": "Las cuatro tarjetas de cada rejilla 2 × 2 tienen exactamente el mismo tamaño en px (360 × 480 para Decisiones, 360 × 410 para Resultados), con lienzo SVG fijo (326 × 326 y 326 × 230) y título de altura fija. Nunca se dimensionan por contenido.",
+        "section": "layout"
+      },
+      {
+        "name": "La regla del papel apoyado",
+        "body": "Ninguna superficie flota. Si algo debe destacar, se invierte a tinta o se le cambia el filete a tinta (ficha del código seleccionado, buscador con foco), nunca se le añade sombra.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do apoyar toda la página sobre el lienzo (canvas) con la cuadrícula de 40 px en líneas de 1 px (grid).",
+      "Do usar solo los radios 8 / 16 / 160 px para botones, tarjetas y píldoras, y reservar 4 / 6 / 25 px a foco, celdas de matriz y marcador.",
+      "Do escribir etiquetas, controles y rótulos de gráfico en JetBrains Mono en mayúsculas con 0,06em (0,04em dentro de SVG).",
+      "Do fijar en px el tamaño de las tarjetas de brújula y su lienzo SVG, y la altura del título.",
+      "Do acompañar cada color de desvío con su cifra, tooltip o leyenda en texto.",
+      "Do dibujar el Consensus en gris discontinuo (4/3) y la receta en tinta continua en todos los gráficos.",
+      "Do redefinir los tokens en `[data-theme=\"dark\"]` y en `prefers-color-scheme: dark` sin `[data-theme=\"light\"]`, manteniendo el selector Claro / Oscuro / Auto.",
+      "Do respetar `prefers-reduced-motion`: sin zoom animado del mapa ni escalado de entrada."
+    ],
+    "donts": [
+      "Don't añadir sombras de elevación a ningún panel, tarjeta o control; la profundidad es filete y contraste de superficie.",
+      "Don't usar #000000 como color de diseño; la tinta es #141414.",
+      "Don't rellenar botones con color: el único botón relleno es el de tinta.",
+      "Don't usar el amarillo como fondo de paneles o tarjetas; marca palabras, la celda elegida o la burbuja activa.",
+      "Don't usar brasa ni verde como decoración: brasa es fuera de estrategia, verde es meta (la única excepción es el punto brasa del logotipo).",
+      "Don't introducir una cuarta familia tipográfica ni pesos de display por encima de 600.",
+      "Don't dimensionar las tarjetas de una rejilla 2 × 2 por su contenido."
+    ]
+  }
+}
