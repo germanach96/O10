@@ -343,6 +343,13 @@ main[hidden]{display:none}
 #vistaInicio .mapa{cursor:grab;-webkit-user-select:none;user-select:none}
 #vistaInicio .mapa.arrastrando,#vistaInicio .mapa.arrastrando *{cursor:grabbing !important}
 #vistaInicio .mapa .leyenda{cursor:auto}
+/* "Ver todo": vuelve al encuadre completo con el muelle de la cámara */
+.ver-todo{position:absolute;z-index:3;top:6px;right:12px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 12px;border:0;border-radius:999px;color:var(--label);font:600 13px/1 var(--font);cursor:pointer;transition:transform 140ms var(--ease-out),opacity 200ms ease}
+.ver-todo .ico{width:14px;height:14px}
+.ver-todo:active{transform:scale(.96)}
+.ver-todo[data-lleno]{opacity:.55}
+@media (hover:hover) and (pointer:fine){.ver-todo:hover{color:var(--blue-txt)}}
+.ver-todo:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 #mundo{transform-origin:0 0;transition:transform 640ms var(--muelle)}
 #mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
 .n-todo{fill:transparent;stroke:none}
@@ -604,7 +611,8 @@ details[open] summary::before{transform:rotate(45deg)}
   .pop{position:fixed;top:auto;bottom:0;right:0;left:0;width:auto;border-radius:var(--r-xl) var(--r-xl) 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));transform-origin:bottom center}
   .pop[data-cerrado]{transform:translateY(100%);filter:none}
   .pop{transition:opacity 200ms ease,transform 420ms var(--ease-drawer),visibility 0s linear 0s}
-  .mapa{position:static;padding:4px 12px 0}
+  .mapa,#vistaInicio .mapa{position:relative;top:auto;padding:4px 12px 0}
+  .ver-todo{top:10px;right:20px;height:32px}
   #vistaInicio{overflow-x:clip}
   .lienzo{width:100%}
   .leyenda{max-width:none;border-radius:var(--r-l)}
@@ -794,10 +802,11 @@ details[open] summary::before{transform:rotate(45deg)}
   <div class="mesa">
     <section class="mapa" aria-label="Mapa de códigos agrupados por casa, brand y product line">
       <div class="lienzo" id="lienzo">
-        <svg id="pack" role="img" aria-label="Burbujas anidadas: casa, brand, product line y EAN"><g id="mundo"></g></svg>
+        <svg id="pack" role="img" aria-label="Burbujas anidadas: casa, brand, product line y EAN"><g id="mundo"></g><g id="fantasmas" style="pointer-events:none"></g></svg>
         <div class="etiquetas" id="etiquetas"></div>
       </div>
       <div class="leyenda vidrio" id="leyenda"></div>
+      <button type="button" class="ver-todo vidrio" id="verTodo" aria-label="Ver todo el mapa"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg><span>Ver todo</span></button>
     </section>
     <aside class="hoja-ins vidrio" id="hojaIns">
       <button type="button" class="agarre" id="agarre" aria-label="Mostrar u ocultar el panel"></button>
@@ -1155,6 +1164,17 @@ function dibujarMapa(){
   const lz = $("lienzo"), W = Math.round(lz.getBoundingClientRect().width);
   if (!W) return;
   M.W = W;
+  // Ancla de la vista: al reordenar (filtro de tipos, tolerancia…) el mapa NO vuelve al encuadre del foco. Se guarda el
+  // grupo que se está mirando (el más profundo que contiene el centro de la vista y aún cabe en ella) y su sitio y tamaño
+  // en pantalla; tras el nuevo empaquetado, la cámara se coloca para que ese grupo siga exactamente donde estaba.
+  const mismoAncho = M.W0 === W, conAncla = !M.primera && mismoAncho && M.cam && M.raiz;
+  let ancla = null;
+  if (conAncla) {
+    pararInercia(); if (G.arr) G.arr = false; camViva(); $("mundo").style.transition = "";
+    const c = W / 2, dentro = M.nodos.filter(n => n.depth && n.children && (() => { const p = aEscala(n); return Math.hypot(p.x - c, p.y - c) < p.r && p.r < 1.5 * W; })());
+    const n = dentro.sort((a, b) => b.depth - a.depth)[0] || M.foco;
+    ancla = {claves: n.ancestors().map(a => a.data.clave), p: aEscala(n), cam: {...M.cam}};
+  }
   const raiz = construirArbol(M.hojas);
   d3.pack().size([W, W]).padding(n => n.depth === 0 ? 10 : n.depth === 1 ? 14 : n.depth === 2 ? 6 : 2)(raiz);
   M.raiz = raiz; M.nodos = raiz.descendants();
@@ -1172,34 +1192,61 @@ function dibujarMapa(){
     const i = M.nodos.indexOf(n), d = n.data;
     const brand = n.depth >= 2 ? n.ancestors().find(a => a.depth === 2) : null;
     const delay = brand ? Math.min(iBrand.get(brand) || 0, 9) * 45 + (n.depth - 2) * 40 : 0;
+    // el estado del filtro ya va en el marcado: si se añadiera después, cada burbuja dispararía su transición de opacidad
+    const off = n.depth && !(d.nivel === "hoja" ? coincide(d.hoja) : n.leaves().some(l => coincide(l.data.hoja))) ? " apagado" : "";
     const cls = d.nivel === "hoja"
-      ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.tipo ? " t-" + d.hoja.tipo : ""}${d.hoja.sinrec ? " sinrec" : ""}`
-      : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
+      ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.tipo ? " t-" + d.hoja.tipo : ""}${d.hoja.sinrec ? " sinrec" : ""}${off}`
+      : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}${off}`;
     const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
     const bin = d.nivel === "hoja" && d.hoja.scope && !d.hoja.sinrec ? ` data-bin="${binDe(d.hoja.p)}"` : "";
     const c = `<circle class="${cls}"${bin} data-i="${i}" data-k="${esc(d.nivel === "hoja" ? d.hoja.ean : d.clave)}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
     if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" data-k="${esc(d.hoja.ean)}-b" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
     return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
   };
-  // FLIP: cada burbuja que ya estaba sale de su posición y tamaño anteriores (WAAPI, solo transform)
-  const previas = new Map(), mismoAncho = M.W0 === W;
-  if (!M.primera && mismoAncho) $("mundo").querySelectorAll("circle[data-k]").forEach(c => previas.set(c.dataset.k, {x: +c.getAttribute("cx"), y: +c.getAttribute("cy"), r: +c.getAttribute("r"), el: c}));
+  // FLIP en coordenadas de PANTALLA: cada burbuja que ya estaba sale de donde se veía (con la cámara de antes) y llega a
+  // su sitio nuevo (con la cámara nueva). Solo se animan las que se ven; el resto cambia sin coste. WAAPI, solo transform.
+  const previas = new Map();
+  if (conAncla) $("mundo").querySelectorAll("circle[data-k]").forEach(c => { const x = +c.getAttribute("cx"), y = +c.getAttribute("cy"), r = +c.getAttribute("r"), k = ancla.cam;
+    previas.set(c.dataset.k, {sx: x * k.k + k.tx, sy: y * k.k + k.ty, sr: r * k.k, el: c}); });
   M.W0 = W;
   $("mundo").innerHTML = pinta(raiz);
+  if (ancla) {
+    // cámara nueva: el grupo ancla (o el antepasado más cercano que siga existiendo) conserva su sitio y tamaño en pantalla
+    const n = ancla.claves.map(k => M.nodos.find(x => x.data.clave === k)).find(Boolean) || M.foco;
+    const [k0, k1] = limitesK(), k = Math.min(k1, Math.max(k0, ancla.p.r / Math.max(n.r, .01)));
+    M.cam = {k, tx: ancla.p.x - n.x * k, ty: ancla.p.y - n.y * k};
+    // sin transición y sin forzar un reflow: la transición CSS de la cámara se repone en el fotograma siguiente
+    const g = $("mundo"); g.style.transition = "none"; aplicarCam(); requestAnimationFrame(() => requestAnimationFrame(() => { g.style.transition = ""; }));
+  }
   if (previas.size && !reducir.matches) {
     const curva = getComputedStyle(document.documentElement).getPropertyValue("--muelle").trim() || "ease-out";
-    let nuevas = 0;
+    const lr = $("lienzo").getBoundingClientRect(), mr = document.querySelector("#vistaInicio .mapa").getBoundingClientRect(), e = W / (lr.width || W);
+    const vis = {x0: (mr.left - lr.left) * e - 40, x1: (mr.right - lr.left) * e + 40, y0: (mr.top - lr.top) * e - 40, y1: (mr.bottom - lr.top) * e + 40};
+    const seVe = (x, y, r) => x + r > vis.x0 && x - r < vis.x1 && y + r > vis.y0 && y - r < vis.y1 && r > 0.8;
+    // presupuesto: como mucho ~240 animaciones a la vez (las burbujas más grandes en pantalla, con su brillo); las diminutas
+    // cambian sin animar. Cientos de animaciones SVG a la vez se comen el fotograma en cualquier equipo.
+    const cam = M.cam, mover = [], entrar = [];
     $("mundo").querySelectorAll("circle[data-k]").forEach(c => {
       const o = previas.get(c.dataset.k);
-      if (!o) { if (nuevas++ < 120) c.animate([{opacity: 0, transform: "scale(.9)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: 120, easing: MOV.curva, fill: "backwards"}); return; }
+      const x = +c.getAttribute("cx"), y = +c.getAttribute("cy"), r = +c.getAttribute("r") || 1, sx = x * cam.k + cam.tx, sy = y * cam.k + cam.ty, sr = r * cam.k;
+      if (!o) { if (seVe(sx, sy, sr)) entrar.push({c, t: sr}); return; }
       previas.delete(c.dataset.k);
-      const x = +c.getAttribute("cx"), y = +c.getAttribute("cy"), r = +c.getAttribute("r") || 1;
-      if (Math.abs(o.x - x) < .5 && Math.abs(o.y - y) < .5 && Math.abs(o.r - r) < .5) return;
-      c.animate([{transform: `translate(${(o.x - x).toFixed(2)}px, ${(o.y - y).toFixed(2)}px) scale(${(o.r / r).toFixed(4)})`}, {transform: "none"}], {duration: 620, easing: curva});
+      if (!seVe(sx, sy, sr) && !seVe(o.sx, o.sy, o.sr)) return;
+      if (Math.abs(o.sx - sx) < .5 && Math.abs(o.sy - sy) < .5 && Math.abs(o.sr - sr) < .5) return;
+      mover.push({c, o, sx, sy, sr, t: Math.max(sr, o.sr)});
     });
-    // las que desaparecen (tipos ignorados) se desvanecen en su sitio
-    previas.forEach(o => { if (o.el.classList.contains("brillo")) return; const c = o.el.cloneNode(); c.removeAttribute("data-k"); c.style.pointerEvents = "none"; $("mundo").appendChild(c);
-      c.animate([{opacity: 1}, {opacity: 0, transform: "scale(.94)"}], {duration: 180, easing: "ease", fill: "forwards"}).onfinish = () => c.remove(); });
+    mover.sort((a, b) => b.t - a.t).slice(0, 240).forEach(({c, o, sx, sy, sr}) =>
+      // el desplazamiento va en unidades del mundo (el grupo #mundo ya está escalado por la cámara nueva)
+      c.animate([{transform: `translate(${((o.sx - sx) / cam.k).toFixed(3)}px, ${((o.sy - sy) / cam.k).toFixed(3)}px) scale(${(o.sr / sr).toFixed(4)})`}, {transform: "none"}], {duration: 560, easing: curva}));
+    entrar.sort((a, b) => b.t - a.t).slice(0, 80).forEach(({c}) =>
+      c.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}], {duration: 240, delay: 140, easing: MOV.curva, fill: "backwards"}));
+    // las que desaparecen (tipos que dejan de contar) se desvanecen donde se veían, en un clon fuera del mundo escalado
+    const fant = $("fantasmas"); fant.innerHTML = "";
+    let n = 0;
+    [...previas.values()].sort((a, b) => b.sr - a.sr).forEach(o => { if (o.el.classList.contains("brillo") || !seVe(o.sx, o.sy, o.sr) || n++ > 80) return;
+      const c = o.el.cloneNode(); c.removeAttribute("data-k"); c.removeAttribute("data-i"); c.setAttribute("cx", o.sx.toFixed(2)); c.setAttribute("cy", o.sy.toFixed(2)); c.setAttribute("r", o.sr.toFixed(2));
+      fant.appendChild(c);
+      c.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: "scale(.9)"}], {duration: 200, easing: "ease-out", fill: "forwards"}).onfinish = () => c.remove(); });
   }
   M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
   marcarSeleccion();
@@ -1210,7 +1257,7 @@ function dibujarMapa(){
     setTimeout(() => $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = ""), 900);
     M.primera = false;
   } else $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = "");
-  enfocar(M.foco, false);
+  if (ancla) { pintarMigas(); pintarPanel(); tocarCam(); } else enfocar(M.foco, false);
   aplicarFiltros();
 }
 
@@ -1277,7 +1324,7 @@ function camara(t, animar){
   pararInercia();
   M.cam = {k: t.k, tx: t.tx, ty: t.ty};
   const g = $("mundo"), et = $("etiquetas");
-  const final = () => { pintarEtiquetas(); et.classList.remove("fuera"); };
+  const final = () => { pintarEtiquetas(); et.classList.remove("fuera"); marcarVerTodo(); };
   if (animar && !reducir.matches) {
     et.classList.add("fuera"); g.style.transition = ""; aplicarCam();
     clearTimeout(M.tz); M.tz = setTimeout(final, 560);
@@ -1297,6 +1344,12 @@ function enfocar(n, animar = true, mover = true){
       {duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)"});
   }
 }
+// "Ver todo": todo el mapa a la vista (la casa si solo hay una), sin perder el filtro ni la selección
+function verTodo(){ const n = M.raiz.children.length === 1 ? M.casaN : M.raiz; ocultarTip(); enfocar(n); }
+$("verTodo").addEventListener("click", verTodo);
+// atenuado cuando ya se ve todo (sigue pulsable)
+function marcarVerTodo(){ const n = M.raiz && (M.raiz.children.length === 1 ? M.casaN : M.raiz), t = n && transformDe(n);
+  $("verTodo").toggleAttribute("data-lleno", !!t && Math.abs(t.k - M.cam.k) / t.k < .02 && Math.abs(t.tx - M.cam.tx) < 4 && Math.abs(t.ty - M.cam.ty) < 4); }
 // ¿el nodo ya se ve entero y grande? Entonces entrar en él no mueve la cámara (no se pierde el sitio al que se llegó a mano)
 function encuadrado(n){ const p = aEscala(n), W = M.W; return 2 * p.r >= 0.5 * W && p.x - p.r >= -0.04 * W && p.x + p.r <= 1.04 * W && p.y - p.r >= -0.04 * W && p.y + p.r <= 1.04 * W; }
 function aEscala(n){ const t = M.cam || transformDe(M.foco); return {x: n.x * t.k + t.tx, y: n.y * t.k + t.ty, r: n.r * t.k}; }
@@ -1324,7 +1377,7 @@ const goma = (o, d) => o * d * 0.55 / (d + 0.55 * Math.abs(o));
 function suave(v, lo, hi){ return v < lo ? lo - goma(lo - v, M.W) : v > hi ? hi + goma(v - hi, M.W) : v; }
 function tocarCam(){
   $("etiquetas").classList.add("fuera");
-  clearTimeout(G.te); G.te = setTimeout(() => { pintarEtiquetas(); $("etiquetas").classList.remove("fuera"); }, 140);
+  clearTimeout(G.te); G.te = setTimeout(() => { pintarEtiquetas(); $("etiquetas").classList.remove("fuera"); marcarVerTodo(); }, 140);
 }
 function volverDentro(){
   // muelle críticamente amortiguado (respuesta 0,4 s) hasta el borde permitido, sin rebote
@@ -1363,7 +1416,7 @@ function zoomEn(p, k){
 }
 (function(){
   const mapa = document.querySelector("#vistaInicio .mapa");
-  const fuera = ev => ev.target.closest(".leyenda, .etq");
+  const fuera = ev => ev.target.closest(".leyenda, .etq, .ver-todo");
   mapa.addEventListener("wheel", ev => {
     if (fuera(ev) || !M.raiz) return;
     ev.preventDefault(); pararInercia(); camViva(); ocultarTip();
@@ -1799,7 +1852,9 @@ $("ajTipos").addEventListener("click", ev => {
   const quedan = [...par].filter(x => x !== b && !AJ.ignorar.has(x.dataset.t)).length;
   if (!AJ.ignorar.has(t) && !quedan) return;
   AJ.ignorar.has(t) ? AJ.ignorar.delete(t) : AJ.ignorar.add(t);
-  guardarAjustes(); pintarAjustes(); refrescarTodo(true);
+  // respuesta al instante en el botón; el recálculo y el nuevo empaquetado van en el fotograma siguiente
+  guardarAjustes(); pintarAjustes();
+  cancelAnimationFrame(AJ.raf); AJ.raf = requestAnimationFrame(() => setTimeout(() => refrescarTodo(true), 0));
 });
 ["tolGIni", "tolGFin"].forEach(id => $(id).addEventListener("input", () => {
   AJ.tol = {ini: parseFloat($("tolGIni").value) || 0, fin: parseFloat($("tolGFin").value) || 0};
