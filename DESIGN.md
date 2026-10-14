@@ -1,377 +1,368 @@
 ---
-name: Brújulas de Demand
-description: App de Mac para Demand Planning. Mapa de burbujas, inspector y brújulas de la mejor receta de forecast por código y foto.
+name: O10
+description: App iOS / iPadOS 26 de cristal líquido para Demand Planning. Mapa de burbujas que flota sobre un fondo gris difuminado, inspector de cristal y brújulas de la mejor receta de forecast por código y foto.
 colors:
-  window-bg: "#f5f5f7"
-  surface: "#ffffff"
-  surface-secondary: "#f5f5f7"
-  sidebar: "#ececef"
-  control-fill: "rgba(118,118,128,.12)"
-  control-fill-strong: "rgba(118,118,128,.20)"
-  separator: "rgba(60,60,67,.16)"
-  separator-strong: "rgba(60,60,67,.29)"
-  label: "#1d1d1f"
-  label-secondary: "#6e6e73"
-  label-tertiary: "#76767b"
+  wallpaper: "#e9ebee"
+  wallpaper-dark: "#0e0e0e"
+  blob-light: "#ffffff"
+  blob-shadow: "#c6cad1"
+  blob-light-dark: "#2f2f2f"
+  blob-shadow-dark: "#151515"
+  glass: "rgba(255,255,255,.46)"
+  glass-strong: "rgba(255,255,255,.72)"
+  glass-edge: "rgba(255,255,255,.66)"
+  glass-sheen: "rgba(255,255,255,.9)"
+  glass-dark: "rgba(40,40,40,.46)"
+  glass-strong-dark: "rgba(46,46,46,.78)"
+  glass-edge-dark: "rgba(255,255,255,.13)"
+  card: "#ffffff"
+  card-dark: "#2c2c2e"
+  fill: "rgba(120,120,128,.14)"
+  fill-strong: "rgba(120,120,128,.24)"
+  separator: "rgba(60,60,67,.14)"
+  separator-strong: "rgba(60,60,67,.26)"
+  label: "#1c1c1e"
+  label-secondary: "#5d5d63"
+  label-tertiary: "#6e6e74"
+  label-dark: "#f5f5f7"
+  label-secondary-dark: "#b2b2b8"
   system-blue: "#0071e3"
-  system-blue-text: "#0066cc"
+  system-blue-text: "#0062c4"
+  system-blue-dark: "#0a72e8"
+  system-blue-text-dark: "#74b8ff"
   on-blue: "#ffffff"
   consensus-gray: "#8e8e93"
-  recipe-band: "rgba(0,113,227,.10)"
+  recipe-band: "rgba(0,113,227,.12)"
   goal-green: "#34c759"
-  goal-green-text: "#248a3d"
-  goal-zone: "rgba(52,199,89,.14)"
-  warning-orange: "#ff9500"
-  alert-red: "#ff3b30"
-  alert-red-text: "#d70015"
-  desvio-inside: "#d1d1d6"
+  goal-green-text: "#1f7a35"
+  goal-zone: "rgba(52,199,89,.16)"
+  alert-red-text: "#c9001a"
+  desvio-inside: "#9fa1a8"
   desvio-1: "#ffcc00"
   desvio-2: "#ff9500"
   desvio-3: "#ff3b30"
   desvio-4: "#b3001b"
-  bubble-empty: "#aeaeb2"
-  bubble-norecipe: "#e5e5ea"
-  bubble-pl: "#f2f2f5"
-  toolbar-material: "rgba(245,245,247,.72)"
-  dark-window-bg: "#1c1c1e"
-  dark-surface: "#2c2c2e"
-  dark-surface-secondary: "#3a3a3c"
-  dark-sidebar: "#252527"
-  dark-label: "#f5f5f7"
-  dark-label-secondary: "#aeaeb2"
-  dark-system-blue: "#0a72e8"
-  dark-system-blue-text: "#4ea1ff"
-  dark-goal-green: "#30d158"
-  dark-alert-red-text: "#ff6961"
-  dark-desvio-3: "#ff6a3d"
-  dark-desvio-4: "#ff375f"
+  desvio-rim-0: "#6c6e75"
+  desvio-rim-1: "#a37f00"
+  desvio-rim-2: "#b86a00"
+  desvio-rim-3: "#c4170c"
+  desvio-rim-4: "#7a0012"
 typography:
-  large-title:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "34px"
+  display:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
+    fontSize: "36px"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "-0.028em"
+  headline:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
+    fontSize: "30px"
     fontWeight: 700
     lineHeight: 1.1
     letterSpacing: "-0.025em"
-  metric-hero:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "40px"
-    fontWeight: 700
-    lineHeight: 1.05
-    letterSpacing: "-0.03em"
-    fontFeature: "\"tnum\""
-  title-1:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "22px"
+  title:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
+    fontSize: "24px"
     fontWeight: 700
     lineHeight: 1.15
-    letterSpacing: "-0.022em"
-  metric:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "17px"
-    fontWeight: 600
-    letterSpacing: "-0.01em"
-    fontFeature: "\"tnum\""
-  headline:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "15px"
-    fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: "-0.01em"
-  title-3:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "14px"
-    fontWeight: 600
+    letterSpacing: "-0.025em"
+  card-title:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
+    fontSize: "14.5px"
+    fontWeight: 700
     lineHeight: "22px"
     letterSpacing: "-0.01em"
   body:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
     fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.45
     letterSpacing: "-0.003em"
-  callout:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "12.5px"
-    fontWeight: 500
-    fontFeature: "\"tnum\""
-  caption:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
+  metric:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
+    fontSize: "16px"
+    fontWeight: 700
+    letterSpacing: "-0.01em"
+    fontFeature: "tnum"
+  label:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
     fontSize: "11.5px"
-    fontWeight: 400
-    lineHeight: 1.45
-  section-header:
-    fontFamily: "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"Helvetica Neue\", \"Segoe UI\", Roboto, Arial, sans-serif"
-    fontSize: "11px"
-    fontWeight: 600
-    letterSpacing: "0.01em"
+    fontWeight: 500
+    lineHeight: 1.3
   code:
-    fontFamily: "ui-monospace, \"SF Mono\", SFMono-Regular, Menlo, Consolas, monospace"
+    fontFamily: "ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace"
     fontSize: "11.5px"
     fontWeight: 400
     letterSpacing: "0"
 rounded:
-  s: "6px"
-  control: "8px"
-  m: "10px"
-  l: "16px"
-  canvas: "22px"
-  pill: "999px"
+  s: "10px"
+  row: "12px"
+  m: "14px"
+  l: "22px"
+  xl: "28px"
+  capsule: "999px"
 spacing:
-  xxs: "2px"
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "20px"
+  hairline: "3px"
+  xs: "6px"
+  sm: "10px"
+  float: "12px"
+  md: "16px"
+  grid: "20px"
+  lg: "24px"
   section: "40px"
 components:
   button-primary:
     backgroundColor: "{colors.system-blue}"
     textColor: "{colors.on-blue}"
-    typography: "{typography.body}"
-    rounded: "{rounded.s}"
-    padding: "5px 12px"
-  button-secondary:
-    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.capsule}"
+    padding: "8px 16px"
+  button-tinted:
+    backgroundColor: "{colors.fill}"
     textColor: "{colors.label}"
-    rounded: "{rounded.s}"
-    padding: "5px 12px"
-  button-icon:
-    backgroundColor: "transparent"
-    textColor: "{colors.label-secondary}"
-    rounded: "{rounded.s}"
-    width: "30px"
-    height: "28px"
-  button-icon-hover:
-    backgroundColor: "{colors.control-fill}"
+    rounded: "{rounded.capsule}"
+    padding: "8px 16px"
+  button-round:
+    backgroundColor: "{colors.glass}"
     textColor: "{colors.label}"
-  segmented-control:
-    backgroundColor: "{colors.control-fill}"
-    textColor: "{colors.label}"
-    rounded: "{rounded.control}"
-    padding: "2px"
+    rounded: "{rounded.capsule}"
+    size: "42px"
   segmented-thumb:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.s}"
-  search-field:
-    backgroundColor: "{colors.control-fill}"
+    backgroundColor: "{colors.glass-strong}"
     textColor: "{colors.label}"
-    rounded: "7px"
-    height: "28px"
-    width: "240px"
-  search-field-focus:
-    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.capsule}"
+    padding: "6px 16px"
+  search-capsule:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.capsule}"
+    height: "42px"
+    width: "250px"
+    padding: "0 14px"
   chip:
-    backgroundColor: "{colors.control-fill}"
+    backgroundColor: "{colors.fill}"
     textColor: "{colors.label}"
-    rounded: "{rounded.pill}"
-    padding: "3px 10px"
+    rounded: "{rounded.capsule}"
+    padding: "4px 11px"
   chip-selected:
     backgroundColor: "{colors.system-blue}"
     textColor: "{colors.on-blue}"
-  sidebar-row:
-    backgroundColor: "transparent"
+    rounded: "{rounded.capsule}"
+    padding: "4px 11px"
+  sidebar:
+    backgroundColor: "{colors.glass}"
     textColor: "{colors.label}"
-    rounded: "{rounded.s}"
-    padding: "5px 8px"
-    height: "28px"
-  sidebar-row-selected:
-    backgroundColor: "{colors.system-blue}"
-    textColor: "{colors.on-blue}"
-  badge:
-    backgroundColor: "{colors.control-fill}"
-    textColor: "{colors.label-secondary}"
-    rounded: "{rounded.pill}"
-    padding: "1px 7px"
-  card:
-    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.xl}"
+    width: "264px"
+    padding: "14px 10px 10px"
+  sidebar-row-active:
+    textColor: "{colors.system-blue-text}"
+    rounded: "{rounded.row}"
+    padding: "6px 10px"
+  inspector:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.xl}"
+    width: "332px"
+    padding: "18px 16px 0"
+  glass-card:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
     rounded: "{rounded.l}"
-    padding: "16px"
-  compass-card:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.l}"
-    padding: "16px"
     width: "360px"
-    height: "480px"
-  inspector-sheet:
-    backgroundColor: "{colors.surface}"
-    rounded: "{rounded.m}"
-    padding: "14px"
-  toolbar:
-    backgroundColor: "{colors.toolbar-material}"
-    padding: "8px 16px"
-    height: "52px"
+    padding: "16px"
+  detail-card:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.l}"
+    width: "260px"
+    padding: "12px 14px"
+  filters-popover:
+    backgroundColor: "{colors.glass-strong}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.l}"
+    width: "450px"
+    padding: "16px 18px"
+  tab-bar:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.capsule}"
+    padding: "5px"
 ---
 
-# Design System: Brújulas de Demand
+# Design System: O10
 
 ## Overview
 
-**Creative North Star: "La app de Mac recién salida de Cupertino"**
+**Creative North Star: "El cristal sobre la mesa gris"**
 
-Brújulas de Demand se ve y se comporta como una app nativa de macOS nueva. No imita el estilo de Apple como decoración: usa sus convenciones de ventana. Barra lateral con lista de fuentes y vistas inteligentes, barra de herramientas translúcida, contenido central sobre superficies agrupadas y una columna de inspector a la derecha. Todo lo que el planner conoce de Finder, Notas o Música le sirve aquí sin aprender nada.
+O10 es una app de iPadOS 26 que vive en una sola ventana sin marco: el contenido (el mapa de burbujas, las tarjetas de brújulas, las tablas) ocupa todo el lienzo, y todo lo que se manipula flota encima como piezas de cristal líquido. Debajo hay un papel tapiz quieto: un gris casi neutro con cuatro manchas suaves, difuminadas 48px y con un grano de ruido al 3,5%. Ese fondo no se mueve nunca; lo que se mueve son las burbujas, que derivan despacio y frenan en cuanto el puntero entra en el mapa, para poder leer y apuntar.
 
-La densidad es la de una herramienta de trabajo. El cuerpo es de 13px, como en macOS. Las filas de la barra lateral miden 28px, los controles son compactos y los números van siempre en cifras tabulares. La jerarquía no la da el tamaño sino el peso y el color de la etiqueta (primaria, secundaria, terciaria). El único gesto grande es el título del detalle, que pasa a la barra cuando sale de la vista.
+El color se reserva para los datos y la acción: azul de sistema para la receta y los botones, gris para el Consensus, verde para la meta y una escala ordinal amarillo, naranja, rojo para el desvío. Las superficies de cristal son incoloras: toman el tono de lo que tienen detrás. La densidad es de herramienta de trabajo (cuerpo de 13px, filas de 32px), con títulos grandes de iPadOS arriba de cada vista.
 
-El color sigue los colores del sistema de Apple y cada uno tiene un solo trabajo. Azul para la receta y para la selección, gris para el Consensus, verde para la meta y una escala ordinal amarillo → naranja → rojo para el desvío. Hay modo claro, modo oscuro y Auto, que se eligen a mano en la barra lateral. El movimiento es un muelle críticamente amortiguado, sin rebote.
+El movimiento sigue la física de Apple: muelles críticamente amortiguados, sin rebote, respuestas cortas al pulsar y nada que tarde en dejar leer un número. Con movimiento reducido no hay deriva, ni zoom animado, ni escalas.
 
 **Key Characteristics:**
-- Ventana en tres columnas: barra lateral (260px), contenido y un inspector de 320px.
-- Fuente del sistema (SF Pro vía `-apple-system`), cuerpo de 13px y cifras tabulares en todos los datos.
-- Superficies agrupadas blancas sobre el gris de ventana, separadas por un filo de media línea y no por bordes gruesos.
-- Material translúcido solo donde el contenido pasa por debajo (barra de herramientas, popover, tooltip, etiquetas de burbuja).
-- Muelle críticamente amortiguado para el zoom del mapa y el pulgar de los segmentados; respeta movimiento y transparencia reducidos.
+- Contenido a sangre sobre un fondo gris difuminado y estático; claro `#e9ebee`, oscuro en grises puros `#0e0e0e`.
+- Un único material de cristal para todo lo flotante: barra lateral, cápsulas, inspector, popover, tarjetas de detalle y barra de pestañas.
+- Burbujas hoja como lentes de cristal: tinte translúcido del tramo de desvío, aro del mismo tramo y reflejo especular arriba; sin sombreado de esfera.
+- Colores de sistema de Apple con significado fijo; fuente del sistema.
+- Deriva de 2,6px controlada por un solo bucle de animación con muelle sobre la amplitud.
+- Apariencia manual Claro / Oscuro / Auto.
 
 ## Colors
 
-Colores del sistema de Apple en claro y oscuro: neutros grises sin tinte y acentos saturados que solo aparecen cuando significan algo. Los pares oscuros figuran en el frontmatter con el prefijo `dark-`.
+Grises neutros de sistema para el fondo y el cristal; los colores saturados solo significan algo (acción, receta, meta, desvío).
 
 ### Primary
-- **Azul del sistema** (system-blue / dark-system-blue): fila seleccionada de la barra lateral y de la lista del inspector, botón principal, chip activo, recuadro del grupo elegido en el selector, anillo de foco y trayectoria de la mejor receta en las brújulas. En oscuro baja a un azul algo más profundo que el `#0a84ff` de Apple para que el texto blanco encima mantenga el contraste.
-- **Azul de texto** (system-blue-text / dark-system-blue-text): enlaces, migas activas, EAN clicables y el texto "Elegido". Nunca se usa para rellenos.
-- **Banda de receta** (recipe-band): la banda de tolerancia alrededor de la receta en el gráfico de la foto actual.
+- **Azul de sistema** (system-blue / system-blue-dark): receta elegida en todas las gráficas, botón principal, chip seleccionado, fila activa de la barra lateral (al 16% de mezcla), anillo de foco al 55% y recuadro de la celda elegida del selector. En oscuro se usa un azul algo más profundo para que el texto blanco encima mantenga contraste.
+- **Azul de texto** (system-blue-text / system-blue-text-dark): enlaces, migas, EANs enlazados, filas activas. Es la versión legible del azul sobre cristal; nunca uses el azul de relleno para texto pequeño.
+- **Banda de la receta** (recipe-band): rango de tolerancia alrededor de la receta en la gráfica de la foto actual.
 
 ### Secondary
-- **Gris Consensus** (consensus-gray): lo que pasó de verdad. Siempre con línea discontinua (4 3) para que se distinga del azul también sin color.
+- **Gris Consensus** (consensus-gray): lo que pasó. Trayectoria discontinua en las medias brújulas y línea del Consensus frente a la receta.
+- **Verde meta** (goal-green, goal-green-text, goal-zone): zona WAPE ≤ 40% y SPP ±5% en las medias brújulas y valores que cumplen la meta (`.bueno`). El rojo de texto (alert-red-text) marca los que no la cumplen y los desvíos de la tabla del detector.
 
-### Tertiary
-- **Verde meta** (goal-green, goal-zone, goal-green-text): la zona WAPE ≤ 40% y SPP ±5% de las medias brújulas, su línea discontinua y los valores que cumplen la meta.
-- **Escala de desvío** (desvio-inside, desvio-1 … desvio-4): gris = dentro, amarillo hasta 5%, naranja 5–15%, rojo 15–30% y granate por encima del 30%. Colorea las hojas del mapa y sus muestras en la leyenda. El texto sobre cada tono cambia (oscuro en los claros, blanco en el granate claro) para mantener AA.
-- **Rojo de alerta** (alert-red-text): la cifra grande de desvío del inspector y la celda de desvío de las filas fuera de estrategia.
-- **Naranja de aviso** (warning-orange): avisos en línea, como "historia corta".
+### Tertiary: escala ordinal de desvío
+- **Dentro** (desvio-inside), **Hasta 5%** (desvio-1, amarillo), **5–15%** (desvio-2, naranja), **15–30%** (desvio-3, rojo), **Más de 30%** (desvio-4, granate). Rellenan las burbujas hoja con opacidad 0,62 (0,74 y 0,9 en los dos tramos altos, 0,6 en oscuro) y cada tramo tiene su aro más oscuro (desvio-rim-0 … desvio-rim-4; en oscuro los aros son más claros). El modo oscuro aclara la escala (`#ffd60a`, `#ff9f0a`, `#ff6a3d`, `#ff375f`) en lugar de oscurecerla.
 
 ### Neutral
-- **Gris de ventana** (window-bg / dark-window-bg): lienzo de la ventana y fondo del inspector.
-- **Superficie** (surface / dark-surface): tarjetas, fichas, el lienzo del mapa, el pulgar del segmentado en claro y los popups.
-- **Superficie secundaria** (surface-secondary / dark-surface-secondary): bloques dentro de una tarjeta (la tira de KPIs, los grupos del rail).
-- **Barra lateral** (sidebar / dark-sidebar): un gris un punto más oscuro que la ventana.
-- **Rellenos de control** (control-fill, control-fill-strong): fondo del segmentado, del buscador, de los chips y de las filas al pasar el ratón.
-- **Separadores** (separator, separator-strong): filos de media línea en tarjetas y líneas de tabla. La versión fuerte es para cabeceras de tabla y contornos de control.
-- **Etiquetas** (label, label-secondary, label-tertiary): los tres niveles de texto. Casi toda la jerarquía se hace con ellos.
-- **Burbujas** (bubble-pl, bubble-empty, bubble-norecipe): relleno de las product lines, contorno de los huecos y de los códigos sin receta (estos últimos con trazo punteado).
+- **Papel tapiz** (wallpaper / wallpaper-dark) con sus manchas (blob-*): el único fondo de la app.
+- **Cristal** (glass, glass-strong y sus versiones oscuras): relleno translúcido de todas las piezas flotantes; el fuerte se usa en el popover, el pulgar del segmentado y las etiquetas de grupo del mapa.
+- **Borde y brillo de cristal** (glass-edge, glass-sheen): el filo de 1px y el reflejo interior superior.
+- **Tarjeta sólida** (card / card-dark): fondo de la tarjeta de detalle (al 88%), de la barra lateral y la barra de pestañas en iPhone, y de todo el cristal cuando se pide menos transparencia.
+- **Rellenos** (fill, fill-strong): pozos de controles, chips, celdas de KPI, filas al pasar.
+- **Separadores** (separator, separator-strong) y **etiquetas** (label, label-secondary, label-tertiary): jerarquía de texto de iOS.
 
 ### Named Rules
-**La regla de un color, un trabajo.** El azul es la receta y la selección, el gris es el Consensus, el verde es la meta, y la escala amarilla-roja es el desvío. Ningún color cambia de papel entre vistas.
+**La Regla del Cristal Incoloro.** El cristal no lleva tinte de marca: es blanco o gris translúcido y toma el color del fondo. El color va en los datos, nunca en el material.
 
-**La regla del color acompañado.** El desvío nunca se comunica solo con color: cada tono va con su tramo en la leyenda, una cifra en la lista y un tooltip. El Consensus además de gris es discontinuo.
+**La Regla del Significado Fijo.** Azul = receta y acción; gris = Consensus; verde = meta; amarillo → rojo = desvío. Ningún color cambia de papel entre vistas, y el color nunca es la única señal: la tarjeta de detalle y la leyenda nombran el tramo.
+
+**La Regla de los Grises Puros.** El modo oscuro es gris neutro (`#0e0e0e` de fondo, manchas `#151515`–`#393939`), sin tinte azulado.
 
 ## Typography
 
-**Display Font:** SF Pro Display (vía `-apple-system`, con Helvetica Neue, Segoe UI, Roboto y Arial de reserva)
-**Body Font:** SF Pro Text (vía `-apple-system`, misma cadena)
-**Label/Mono Font:** SF Mono (`ui-monospace`) solo para EAN y códigos
+**Display Font:** fuente del sistema (SF Pro Display, con Helvetica Neue, Segoe UI, Roboto y Arial de reserva)
+**Body Font:** fuente del sistema (SF Pro Text, con la misma pila)
+**Label/Mono Font:** ui-monospace / SF Mono, solo para EANs y códigos
 
-**Character:** una sola familia, la del sistema, como en cualquier app de Apple. La personalidad sale del tracking negativo en los tamaños grandes y del contraste entre negrita 700 y regular, no de una fuente con carácter.
+**Character:** La voz de iPadOS sin disfraz: títulos grandes y apretados en 700 con interletraje negativo, cuerpo compacto de herramienta, cifras siempre tabulares.
 
 ### Hierarchy
-- **Large title** (700, 34px, 1.1): nombre del código o grupo en el detalle. Cuando sale de la vista, el título pasa a la barra de herramientas.
-- **Metric hero** (700, 40px, 1.05): la cifra de desvío del inspector del detalle.
-- **Title 1** (700, 22px, 1.15): título del inspector y de cada sección del detalle.
-- **Metric** (600, 17–20px, tabulares): KPIs de la ficha y del rail.
-- **Headline** (600, 15px): título de la ventana en la barra de herramientas.
-- **Title 3** (600, 14px, alto fijo de 22px): títulos de las tarjetas de brújula, con una sola línea y elipsis para que las cuatro tarjetas queden alineadas.
-- **Body** (400, 13px, 1.45): texto base de la app, filas y tablas.
-- **Callout** (500, 12.5px, tabulares): segmentados, tablas y valores de la lista.
-- **Caption** (400, 11.5px): migas, leyendas, etiquetas de burbuja y notas.
-- **Section header** (600, 11px, etiqueta secundaria, sin mayúsculas forzadas): encabezados de la barra lateral ("Códigos", "Brands"), de las columnas de lista y de los grupos del rail, como los encabezados de lista de fuentes de macOS.
+- **Display** (700, 36px, 1.1, −0.028em): título del código o grupo en la vista Detalle, hasta 26ch, con balanceo de líneas.
+- **Headline** (700, 30px, 1.1, −0.025em): título grande de la barra superior (nombre de la casa o del nivel del mapa). 28px en iPhone.
+- **Title** (700, 24px, 1.15–1.2, −0.025em): títulos de sección del Detalle y título del inspector.
+- **Card title** (700, 14.5px, altura fija de 22px): título de cada tarjeta de brújula, en una línea con elipsis; el subtítulo tiene altura fija de 36px para que las cuatro tarjetas alineen.
+- **Body** (400, 13px, 1.45): texto general, filas, resúmenes.
+- **Metric** (700, 16px, tabular): cifras de KPI en las fichas; 14px en la tarjeta de detalle.
+- **Label** (500–600, 11–12px): cabeceras de lista, leyendas, rótulos de los grupos de filtros, encabezados de la barra lateral (11px 600, en minúscula de frase).
+- **Code** (400, 11.5px, monoespaciada): EANs.
 
 ### Named Rules
-**La regla de las cifras tabulares.** Cualquier número (KPI, desvío, contador o eje) lleva `font-variant-numeric: tabular-nums`, para que las columnas no bailen al ordenar ni al cambiar de foto.
+**La Regla de las Cifras Tabulares.** Todo número (KPI, desvío, unidades, recuentos, ejes) usa cifras tabulares para que las columnas no bailen.
 
-**La regla de la fuente del sistema.** No se carga ninguna fuente web. Si el SO no tiene SF Pro, la cadena cae a la fuente nativa de cada plataforma.
+**La Regla de la Minúscula de Frase.** Los rótulos van en minúscula de frase, como en iOS. Nada de rótulos en mayúsculas espaciadas encima de los títulos.
 
 ## Layout
 
-Es una ventana de app, no una página. Ocupa `100dvh`, en una rejilla de dos columnas: la barra lateral de 260px y el contenido. El scroll vive dentro de cada vista, no en el body. El Mapa reparte el contenido en el lienzo de burbujas (cuadrado, con un ancho de `min(100%, 100dvh − 150px)`) y el inspector de 320px. El Detalle es una columna de lectura con márgenes de 28px y secciones separadas por 40px. A partir de 1360px suma un rail de resumen fijo de 280px a la derecha; por debajo, el rail sube antes de las secciones.
+Ventana a sangre, sin lienzo enmarcado. En iPad / escritorio (más de 900px):
 
-Las tarjetas de Decisiones y Resultados forman una rejilla de 2 × 2 de tamaño fijo: 360px de ancho, 480px de alto las brújulas y 410px las medias brújulas. El lienzo SVG mide 326px y el título tiene un alto fijo, así que las cuatro tarjetas siempre quedan iguales y alineadas.
+- **Barra lateral** flotante de 264px, separada 12px de los bordes, de arriba abajo.
+- **Contenido** desde 288px a la derecha. Arriba, una barra con el título grande a la izquierda y las cápsulas a la derecha (segmentado Mapa / Detalle, botón redondo de filtros, cápsula de búsqueda de 250px), con 10px entre cápsulas. Al hacer scroll aparece detrás un velo difuminado con máscara degradada.
+- **Mapa**: lienzo circular cuadrado de `min(100%, 100dvh − 150px)` centrado, con la leyenda en cápsula de cristal debajo; a su derecha, el **inspector** de 332px que flota desde 84px arriba hasta 12px abajo.
+- **Detalle**: columna con secciones separadas 40px; rejillas de tarjetas de 2 × 360px con 20px de hueco (una columna por debajo de 820px). A partir de 1360px aparece un raíl de resumen de 280px pegajoso a la derecha.
 
-El ritmo de espaciado es de 4 en 4 (2, 4, 8, 12, 16, 20, 40), con pasos impares heredados de macOS en los controles (5px y 7px de relleno vertical).
+En iPhone (900px o menos) todo pasa a una columna con scroll de página: barra superior pegajosa con la búsqueda a todo el ancho, mapa a todo el ancho, **barra de pestañas** de cristal flotante abajo (Mapa, Detalle, Brands, Filtros), el inspector como hoja inferior y la barra lateral y los filtros como hojas que suben desde abajo. Se respetan las zonas seguras (`env(safe-area-inset-*)`).
 
-Por debajo de 900px la barra lateral se convierte en una hoja deslizante sobre un velo, el buscador baja a una fila propia (a 16px para que iOS no haga zoom), el inspector va debajo del mapa, la rejilla de tarjetas pasa a una columna y el detector se lee como lista de dos columnas. El popover de filtros pasa a ser una hoja inferior.
-
-### Named Rules
-**La regla del tamaño fijo.** Las tarjetas de brújula tienen ancho, alto y altura de título fijos en px. Ningún contenido las estira.
+El ritmo usa pasos de 3, 6, 10, 12, 16, 20, 24 y 40px; 12px es la distancia de flotación de toda pieza de cristal al borde.
 
 ## Elevation & Depth
 
-Es un sistema híbrido, como macOS. Las superficies en reposo se separan por tono (blanco sobre gris) y por un filo interior de media línea. Las sombras son suaves y ambientales, y crecen solo con lo que flota. Los materiales translúcidos (`saturate(180%) blur(20–30px)`) se reservan para lo que tiene contenido debajo: la barra de herramientas, el popover de filtros, el tooltip y las píldoras de etiqueta del mapa. La barra de herramientas no tiene borde en reposo; el separador aparece en cuanto el contenido pasa por debajo.
+La profundidad es material, no tonal: el fondo está abajo, el contenido a sangre encima, y el cristal flota por encima de todo. Cada pieza de cristal combina relleno translúcido, `backdrop-filter: blur(28px) saturate(185%)` (40px en el popover, 36px en la tarjeta de detalle, 44px en las hojas de iPhone), un filo de 1px, una línea de brillo interior arriba, un reflejo especular diagonal en `soft-light` y una sombra suave y amplia.
 
 ### Shadow Vocabulary
-- **Reposo** (`box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 1px rgba(0,0,0,.04)`): tarjetas, fichas, botones y popups, siempre junto con el filo `inset 0 0 0 .5px` del separador.
-- **Lienzo** (`box-shadow: 0 4px 14px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06)`): el lienzo del mapa, la superficie principal.
-- **Flotante** (`box-shadow: 0 12px 40px rgba(0,0,0,.16), 0 2px 8px rgba(0,0,0,.08)`): popover, tooltip y hoja lateral.
-- En oscuro, las tres sombras suben de opacidad (de .4 a .55) porque el negro sobre gris oscuro se ve menos.
+- **Sombra de cristal clara** (`box-shadow: 0 10px 34px rgba(30,36,48,.12), 0 1px 3px rgba(30,36,48,.08)`): toda pieza flotante.
+- **Sombra de cristal oscura** (`box-shadow: 0 12px 40px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4)`): la misma en modo oscuro.
+- **Brillo interior** (`inset 0 1px 0 <glass-sheen>, inset 0 -1px 1px rgba(255,255,255,.08)`): filo superior luminoso y luz de rebote abajo.
+- **Halo del botón principal** (`0 4px 14px color-mix(in srgb, <azul> 35%, transparent), inset 0 1px 0 rgba(255,255,255,.3)`): el único elemento con sombra de color.
+- **Pulgar del segmentado** (`0 2px 8px rgba(0,0,0,.12), inset 0 1px 0 <glass-sheen>, 0 0 0 .5px <glass-edge>`).
 
 ### Named Rules
-**La regla del material con motivo.** El desenfoque translúcido solo existe donde hay contenido debajo. Con `prefers-reduced-transparency`, todos los materiales pasan a un fondo opaco.
+**La Regla del Fondo Quieto.** El papel tapiz no se anima nunca. Solo se mueve el contenido, y solo cuando el puntero no está encima.
+
+**La Regla de la Lente, no la Esfera.** Las burbujas son lentes planas de cristal: reflejo especular arriba, luz de borde abajo, tinte translúcido. Sin gradiente radial de volumen ni sombra proyectada.
+
+**La Regla del Cristal Accesible.** Con `prefers-reduced-transparency` todo el cristal pasa a tarjeta sólida y el fondo deja de difuminarse; con `prefers-contrast: more` el borde del cristal se oscurece y el cristal se vuelve casi opaco.
 
 ## Shapes
 
-Esquinas continuas y suaves al estilo Apple, con un radio según el tamaño de la pieza. 6px en controles y filas, 8px en el segmentado y en los bloques internos, 10px en fichas y tooltips, 16px en tarjetas y popovers y 22px en el lienzo del mapa. Los chips, los contadores y las etiquetas de grupo son píldoras. La forma propia del producto es el círculo: burbujas anidadas para casa, brand, product line y EAN, puntos de trayectoria (9px el último, 5px los antiguos, con un aro del color de la superficie) y las brújulas, que también son círculos. El icono de la app es un squircle azul con una brújula blanca. Los iconos de la interfaz son SVG de trazo de 1.6px, en una caja de 16px y con remates redondos.
+Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco, 12px para filas y celdas, 14px para grupos del raíl, 22px para tarjetas, popover y tarjeta de detalle, 28px para las piezas grandes (barra lateral, inspector y hojas de iPhone, solo con las esquinas superiores redondeadas). Todo control es cápsula (999px): botones, segmentados, chips, búsqueda, barra de pestañas, etiquetas de grupo del mapa. El mapa es un círculo recortado; las burbujas son círculos anidados (casa, brand, product line, EAN) con filo de 1px que no escala con el zoom.
 
 ## Components
 
 ### Buttons
-Discretos y táctiles, como los botones de una hoja de macOS.
-- **Shape:** esquinas suaves (6px).
-- **Primary:** azul del sistema con texto blanco, peso 500, relleno 5px 12px y sombra de reposo. Uno por bloque como mucho ("Abrir brújulas del código", "Hecho").
-- **Secondary:** superficie blanca con el filo de separador fuerte y texto en la etiqueta primaria ("Subir un nivel").
-- **Icon:** 30 × 28px, transparente, con el icono en la etiqueta secundaria. Al pasar el ratón toma el relleno de control; abierto (`aria-expanded`) toma el relleno fuerte. Puede llevar un contador azul en la esquina.
-- **Press:** `scale(.97)` y `brightness(.92)` en 120ms ease-out. Los hovers solo se activan con `hover: hover` y puntero fino.
-- **Link:** texto en azul de texto sin fondo, subrayado al pasar el ratón con un offset de 3px.
+- **Shape:** cápsula (999px).
+- **Primary:** azul de sistema con texto blanco, 13px 600, 8px × 16px, con halo azul suave y brillo interior.
+- **Tinted:** relleno gris de sistema, texto de etiqueta, sin sombra.
+- **Round:** botón de cristal de 42px (filtros, menú en iPhone) con contador azul de 17px en la esquina cuando hay filtros activos.
+- **Link:** texto azul sin fondo, subrayado solo al pasar con puntero fino.
+- **Press:** escala 0,96 (0,93 en los redondos, 0,94–0,98 en pestañas y filas) en 140ms con ease-out fuerte; los estados hover solo existen con `(hover: hover) and (pointer: fine)`.
 
-### Segmented Control
-- Pista con el relleno de control (radio de 8px, 2px de relleno) y un pulgar blanco (gris `#636366` en oscuro) que se desliza con el muelle en 320ms. Se usa para Mapa/Detalle en la barra y para Claro/Oscuro/Auto en el pie de la barra lateral.
+### Segmented control
+- Cápsula con pulgar de cristal que se desliza bajo la opción elegida (`transform` y `width` en 360ms con la curva de muelle `linear()`). Se usa para Mapa / Detalle y para Claro / Oscuro / Auto.
 
 ### Chips
-- **Style:** píldora con el relleno de control, 12px y relleno 3px 10px.
-- **State:** activo en azul del sistema con texto blanco (`aria-pressed`). Al pulsar, `scale(.96)`. Viven en el popover de filtros, en filas con la etiqueta alineada a 92px.
+- **Style:** cápsula de relleno gris, 12px 500, 4px × 11px.
+- **State:** seleccionado = azul con texto blanco (`aria-pressed`); hover = relleno más fuerte.
 
 ### Cards / Containers
-- **Corner Style:** 16px en tarjetas y bloques anchos, 10px en las fichas del inspector y 22px en el lienzo.
-- **Background:** superficie sobre el gris de ventana. Los bloques internos van en superficie secundaria con un radio de 8–10px.
-- **Shadow Strategy:** sombra de reposo con el filo de media línea (ver Elevation & Depth).
-- **Border:** ninguno; solo el filo `inset 0 0 0 .5px`.
-- **Internal Padding:** 14–18px.
+- **Corner Style:** 22px (tarjetas), 28px (barra lateral e inspector).
+- **Background:** cristal; la ficha interna del inspector usa cristal blanco al 55% con filo de cristal.
+- **Shadow Strategy:** sombra de cristal (ver Elevation & Depth).
+- **Border:** filo de cristal de 1px.
+- **Internal Padding:** 16px en tarjetas; 14px en fichas; celdas de KPI de 8 × 9px con radio de 12px.
+- **Brújulas:** las cuatro tarjetas miden exactamente 360 × 480px (410px en Resultados) con lienzo SVG fijo de 326px.
 
 ### Inputs / Fields
-- **Search:** campo redondeado de 28px con el relleno de control, una lupa SVG y la pista `⌘K`, que abre la búsqueda de verdad. Al enfocar pasa a la superficie con un halo azul de 3px.
-- **Popup / select:** superficie con el filo fuerte, la sombra de reposo y el chevron doble de macOS dibujado en SVG.
-- **Number:** alineado a la derecha, con cifras tabulares y el filo de separador fuerte.
-- **Focus:** anillo azul de 3px al 55% con un offset de 1px en todo elemento enfocado con teclado.
+- **Search capsule:** cristal de 42px de alto, icono de lupa, placeholder en etiqueta secundaria; 16px de texto en iPhone para que Safari no haga zoom.
+- **Campos pequeños** (tolerancias, selects): pozo de relleno gris, radio 9–10px, cifras alineadas a la derecha.
+- **Focus:** contorno azul al 55% de 3px con 2px de separación; la búsqueda añade un halo azul de 4px al 35%.
 
 ### Navigation
-- **Barra lateral:** cabecera con el icono de la app; un popup de casa; las secciones "Códigos" (vistas inteligentes con iconos azules y contadores en píldora) y "Brands" (con flechas de despliegue que giran 90° y sublistas sangradas 18px); y el selector de apariencia en el pie. La fila seleccionada se rellena de azul con el texto, el icono y el contador en blanco.
-- **Barra de herramientas:** de 52px, translúcida y sticky, con el título de 15px y las migas debajo; luego el segmentado de vista, el botón de filtros y el buscador. En el Detalle el título de la barra solo aparece cuando el título grande sale de la vista.
-- **Móvil:** la barra lateral pasa a hoja deslizante (380ms, curva de cajón) y un botón de icono la abre.
+- **Barra lateral:** cabecera con el icono de la app y "O10", selector de casa, encabezados de sección en 11px 600, filas de 32px con icono azul y contador en cápsula; fila activa con fondo azul al 16% y texto azul. Abajo, el segmentado de apariencia. Los triángulos de despliegue giran 90° en 220ms.
+- **iPhone:** barra de pestañas de cristal flotante centrada abajo; pestaña activa con relleno gris y texto azul. La barra lateral sube como hoja (420ms, curva de cajón `cubic-bezier(0.32,0.72,0,1)`) con velo del 22%.
 
 ### Mapa de burbujas (signature)
-Círculos anidados casa → brand → product line → EAN dentro de un lienzo cuadrado de 22px de radio. Las brands son blancas con el filo fuerte, las product lines van en el gris de product line y las hojas llevan el color de su tramo de desvío con un aro de la superficie. Lo filtrado se apaga al 16%. El zoom al grupo es una transformación con el muelle de 620ms. Las etiquetas de grupo son píldoras translúcidas y se desvanecen con un desenfoque de 3px mientras el mapa se mueve.
+- Burbujas anidadas: casa transparente, brands y product lines con cristal blanco tenue y filo claro, hojas EAN como lentes de cristal tintadas por tramo de desvío. Códigos sin receta: aro discontinuo; códigos local: hueco con filo gris.
+- **Deriva:** cada burbuja se desplaza como mucho 2,6px en pantalla (a cualquier zoom, y nunca fuera de su grupo) con periodos propios de 9–16s. Un solo bucle `requestAnimationFrame` mueve todas; un muelle críticamente amortiguado (respuesta ≈ 0,7s) lleva la amplitud a 0 al entrar el puntero y a 1 al salir. El bucle se detiene con la pestaña oculta y no arranca con movimiento reducido.
+- **Hover:** la hoja señalada crece a 1,07 en 200ms ease-out con filo blanco de 2,5px.
+- **Zoom:** al entrar en un grupo, transformación en 640ms con la curva de muelle `linear()`; las etiquetas se desvanecen con un desenfoque de 4px.
+- **Etiquetas de grupo:** cápsulas de cristal fuerte de 11,5px 600 con el recuento en etiqueta secundaria.
 
-### Brújulas y medias brújulas (signature)
-Círculos dibujados en SVG de 326px, con cada polo en su extremo y texto de 10.5px en la etiqueta secundaria. La trayectoria de la receta va en azul: un punto por foto, los antiguos más tenues, el último más grande y el mes rotulado en el primero y en el último. En las medias brújulas el Consensus va en gris discontinuo, y la zona meta es verde con la línea discontinua de WAPE 40%.
+### Tarjeta de detalle
+- Cristal casi opaco (tarjeta al 88%, blur 36px) de 260px anclada a la burbuja. La primera aparece en 150ms (opacidad, desenfoque de 4px y escala de 0,96 a 1); mientras sigue visible, las siguientes cambian al instante, como los tooltips de Apple. Muestra EAN, descripción, KPIs en celdas de relleno y una nota.
 
-### Selector de grupo
-Una matriz de 17 celdas de 40px de alto con un radio de 7px. La intensidad del azul crece con el logaritmo del tamaño del grupo y el texto pasa de negro a blanco según el contraste real de cada celda. La celda elegida lleva un doble anillo (2px de superficie y 4px de azul).
+### Popover de filtros
+- Cristal fuerte de 450px que nace del botón que lo abre (`transform-origin` en el botón): entra en 240ms ease-out desde escala 0,94, −6px y desenfoque de 6px; sale en 140ms. En iPhone es una hoja inferior.
 
-### Inspector
-Una columna de 320px sobre el gris de ventana, con el título 1, un resumen en la etiqueta secundaria, acciones, una ficha con la tira de tres KPIs y una lista de códigos que se desvanece con una máscara en los últimos 24px. La fila activa de la lista se rellena de azul.
+### Inspector (hoja en iPhone)
+- En iPad, panel de cristal fijo a la derecha. En iPhone, hoja inferior con dos posiciones (asomada 270px / abierta), agarradera de 38 × 5px; se arrastra 1:1 y al soltar elige la posición proyectando la velocidad; transición de 420ms con la curva de cajón.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** usar los tokens de color del sistema en las dos apariencias; cada token claro tiene su par oscuro y se cambian juntos con `data-theme` o `prefers-color-scheme`.
-- **Do** separar las superficies por tono y por el filo `inset 0 0 0 .5px` del separador, y guardar las sombras grandes para lo que flota.
-- **Do** animar con el muelle críticamente amortiguado (`--muelle`, 320–620ms) para lo que se mueve en el espacio y con `cubic-bezier(0.23,1,0.32,1)` en 120–220ms para la respuesta al pulsar y los popovers.
-- **Do** desactivar transformaciones y desenfoques con `prefers-reduced-motion`, y quitar materiales con `prefers-reduced-transparency`.
-- **Do** dibujar el Consensus en gris discontinuo y la receta en azul continuo en todos los gráficos.
-- **Do** dibujar los iconos como SVG de trazo de 1.6px en una caja de 16px.
+- **Do** usar un único material de cristal (relleno translúcido, blur 28px saturate 185%, filo de 1px, brillo superior, sombra suave) para todo lo que flota.
+- **Do** dejar que el contenido llegue a los bordes y separar las piezas flotantes 12px del borde.
+- **Do** mantener el papel tapiz gris, difuminado y quieto en los dos modos.
+- **Do** usar azul solo para receta y acción, gris para Consensus, verde para la meta y la escala amarillo → rojo para el desvío.
+- **Do** usar cifras tabulares en todo número y la fuente del sistema en todo texto.
+- **Do** animar con muelles críticamente amortiguados y curvas ease-out fuertes, respetar `prefers-reduced-motion` y `prefers-reduced-transparency`, y reservar el hover para punteros finos.
+- **Do** mantener las cuatro tarjetas de cada rejilla del mismo tamaño fijo (360 × 480px o 360 × 410px).
 
 ### Don't:
-- **Don't** cargar fuentes web ni usar una fuente de display distinta de la del sistema.
-- **Don't** usar el azul para algo que no sea la receta, la selección, el foco o un enlace.
-- **Don't** usar la escala amarilla-roja fuera del desvío, ni dejar el desvío sin su cifra o su tooltip.
-- **Don't** poner desenfoque translúcido en superficies que no tienen contenido debajo.
-- **Don't** dejar que una tarjeta de brújula cambie de tamaño con su contenido.
-- **Don't** poner bordes de 1px opacos alrededor de las tarjetas; el filo es de media línea y semitransparente.
+- **Don't** animar el fondo ni añadir fondos en movimiento.
+- **Don't** dar volumen de esfera a las burbujas (gradiente radial, sombra proyectada): son lentes planas.
+- **Don't** teñir el cristal con color de marca ni usar azul para decorar.
+- **Don't** usar grises azulados en el modo oscuro.
+- **Don't** poner rótulos en mayúsculas espaciadas sobre los títulos.
+- **Don't** usar animaciones con rebote ni que retrasen la lectura de un número más de 640ms.

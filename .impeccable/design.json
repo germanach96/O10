@@ -1,716 +1,750 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-14T01:02:40.279927+00:00",
-  "title": "Design System: Brújulas de Demand",
+  "generatedAt": "2026-10-14T06:09:26.747419+00:00",
+  "title": "Design System: O10",
   "extensions": {
     "colorMeta": {
-      "window-bg": {
+      "wallpaper": {
         "role": "neutral",
-        "displayName": "Gris de ventana",
-        "canonical": "#f5f5f7",
+        "displayName": "Gris papel tapiz",
         "tonalRamp": [
-          "#0b0b0c",
-          "#242425",
-          "#3f3f41",
-          "#5d5d5f",
-          "#808082",
-          "#a4a4a6",
-          "#cacacc",
-          "#eeeef0"
+          "oklch(15% 0.004 250)",
+          "oklch(26% 0.004 250)",
+          "oklch(38% 0.004 250)",
+          "oklch(50% 0.004 250)",
+          "oklch(62% 0.004 250)",
+          "oklch(74% 0.004 250)",
+          "oklch(85% 0.004 250)",
+          "oklch(95% 0.004 250)"
         ]
       },
-      "surface": {
+      "wallpaper-dark": {
         "role": "neutral",
-        "displayName": "Superficie",
-        "canonical": "#ffffff",
+        "displayName": "Grafito puro",
         "tonalRamp": [
-          "#0b0b0b",
-          "#242424",
-          "#404040",
-          "#5d5d5d",
-          "#808080",
-          "#a4a4a4",
-          "#cacaca",
-          "#eeeeee"
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
         ]
       },
-      "surface-secondary": {
+      "blob-light": {
         "role": "neutral",
-        "displayName": "Superficie secundaria",
-        "canonical": "#f5f5f7",
+        "displayName": "Mancha de luz",
         "tonalRamp": [
-          "#0b0b0c",
-          "#242425",
-          "#3f3f41",
-          "#5d5d5f",
-          "#808082",
-          "#a4a4a6",
-          "#cacacc",
-          "#eeeef0"
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
         ]
       },
-      "sidebar": {
+      "blob-shadow": {
         "role": "neutral",
-        "displayName": "Barra lateral",
-        "canonical": "#ececef",
+        "displayName": "Mancha de sombra",
         "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f42",
-          "#5d5d60",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
+          "oklch(15% 0.01 255)",
+          "oklch(26% 0.01 255)",
+          "oklch(38% 0.01 255)",
+          "oklch(50% 0.01 255)",
+          "oklch(62% 0.01 255)",
+          "oklch(74% 0.01 255)",
+          "oklch(85% 0.01 255)",
+          "oklch(95% 0.01 255)"
         ]
       },
-      "control-fill": {
+      "blob-light-dark": {
         "role": "neutral",
-        "displayName": "Relleno de control",
-        "canonical": "rgba(118,118,128,.12)"
+        "displayName": "Mancha de luz oscura",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
       },
-      "control-fill-strong": {
+      "blob-shadow-dark": {
         "role": "neutral",
-        "displayName": "Relleno de control fuerte",
-        "canonical": "rgba(118,118,128,.20)"
+        "displayName": "Mancha de sombra oscura",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass": {
+        "role": "neutral",
+        "displayName": "Cristal",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass-strong": {
+        "role": "neutral",
+        "displayName": "Cristal fuerte",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass-edge": {
+        "role": "neutral",
+        "displayName": "Filo de cristal",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass-sheen": {
+        "role": "neutral",
+        "displayName": "Brillo de cristal",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass-dark": {
+        "role": "neutral",
+        "displayName": "Cristal oscuro",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass-strong-dark": {
+        "role": "neutral",
+        "displayName": "Cristal fuerte oscuro",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "glass-edge-dark": {
+        "role": "neutral",
+        "displayName": "Filo de cristal oscuro",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Tarjeta",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Tarjeta oscura",
+        "tonalRamp": [
+          "oklch(15% 0.005 285)",
+          "oklch(26% 0.005 285)",
+          "oklch(38% 0.005 285)",
+          "oklch(50% 0.005 285)",
+          "oklch(62% 0.005 285)",
+          "oklch(74% 0.005 285)",
+          "oklch(85% 0.005 285)",
+          "oklch(95% 0.005 285)"
+        ]
+      },
+      "fill": {
+        "role": "neutral",
+        "displayName": "Relleno de sistema",
+        "tonalRamp": [
+          "oklch(15% 0.01 285)",
+          "oklch(26% 0.01 285)",
+          "oklch(38% 0.01 285)",
+          "oklch(50% 0.01 285)",
+          "oklch(62% 0.01 285)",
+          "oklch(74% 0.01 285)",
+          "oklch(85% 0.01 285)",
+          "oklch(95% 0.01 285)"
+        ]
+      },
+      "fill-strong": {
+        "role": "neutral",
+        "displayName": "Relleno fuerte",
+        "tonalRamp": [
+          "oklch(15% 0.01 285)",
+          "oklch(26% 0.01 285)",
+          "oklch(38% 0.01 285)",
+          "oklch(50% 0.01 285)",
+          "oklch(62% 0.01 285)",
+          "oklch(74% 0.01 285)",
+          "oklch(85% 0.01 285)",
+          "oklch(95% 0.01 285)"
+        ]
       },
       "separator": {
         "role": "neutral",
         "displayName": "Separador",
-        "canonical": "rgba(60,60,67,.16)"
+        "tonalRamp": [
+          "oklch(15% 0.02 285)",
+          "oklch(26% 0.02 285)",
+          "oklch(38% 0.02 285)",
+          "oklch(50% 0.02 285)",
+          "oklch(62% 0.02 285)",
+          "oklch(74% 0.02 285)",
+          "oklch(85% 0.02 285)",
+          "oklch(95% 0.02 285)"
+        ]
       },
       "separator-strong": {
         "role": "neutral",
         "displayName": "Separador fuerte",
-        "canonical": "rgba(60,60,67,.29)"
+        "tonalRamp": [
+          "oklch(15% 0.02 285)",
+          "oklch(26% 0.02 285)",
+          "oklch(38% 0.02 285)",
+          "oklch(50% 0.02 285)",
+          "oklch(62% 0.02 285)",
+          "oklch(74% 0.02 285)",
+          "oklch(85% 0.02 285)",
+          "oklch(95% 0.02 285)"
+        ]
       },
       "label": {
         "role": "neutral",
         "displayName": "Etiqueta",
-        "canonical": "#1d1d1f",
         "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f42",
-          "#5d5d60",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
+          "oklch(15% 0.005 285)",
+          "oklch(26% 0.005 285)",
+          "oklch(38% 0.005 285)",
+          "oklch(50% 0.005 285)",
+          "oklch(62% 0.005 285)",
+          "oklch(74% 0.005 285)",
+          "oklch(85% 0.005 285)",
+          "oklch(95% 0.005 285)"
         ]
       },
       "label-secondary": {
         "role": "neutral",
         "displayName": "Etiqueta secundaria",
-        "canonical": "#6e6e73",
         "tonalRamp": [
-          "#0b0b0e",
-          "#242428",
-          "#3f3f44",
-          "#5d5d62",
-          "#808085",
-          "#a4a4a9",
-          "#cacacf",
-          "#eeeef4"
+          "oklch(15% 0.008 285)",
+          "oklch(26% 0.008 285)",
+          "oklch(38% 0.008 285)",
+          "oklch(50% 0.008 285)",
+          "oklch(62% 0.008 285)",
+          "oklch(74% 0.008 285)",
+          "oklch(85% 0.008 285)",
+          "oklch(95% 0.008 285)"
         ]
       },
       "label-tertiary": {
         "role": "neutral",
         "displayName": "Etiqueta terciaria",
-        "canonical": "#76767b",
         "tonalRamp": [
-          "#0b0b0e",
-          "#242428",
-          "#3f3f44",
-          "#5d5d62",
-          "#808085",
-          "#a4a4a9",
-          "#cacacf",
-          "#eeeef3"
+          "oklch(15% 0.008 285)",
+          "oklch(26% 0.008 285)",
+          "oklch(38% 0.008 285)",
+          "oklch(50% 0.008 285)",
+          "oklch(62% 0.008 285)",
+          "oklch(74% 0.008 285)",
+          "oklch(85% 0.008 285)",
+          "oklch(95% 0.008 285)"
+        ]
+      },
+      "label-dark": {
+        "role": "neutral",
+        "displayName": "Etiqueta oscura",
+        "tonalRamp": [
+          "oklch(15% 0.003 285)",
+          "oklch(26% 0.003 285)",
+          "oklch(38% 0.003 285)",
+          "oklch(50% 0.003 285)",
+          "oklch(62% 0.003 285)",
+          "oklch(74% 0.003 285)",
+          "oklch(85% 0.003 285)",
+          "oklch(95% 0.003 285)"
+        ]
+      },
+      "label-secondary-dark": {
+        "role": "neutral",
+        "displayName": "Etiqueta secundaria oscura",
+        "tonalRamp": [
+          "oklch(15% 0.008 285)",
+          "oklch(26% 0.008 285)",
+          "oklch(38% 0.008 285)",
+          "oklch(50% 0.008 285)",
+          "oklch(62% 0.008 285)",
+          "oklch(74% 0.008 285)",
+          "oklch(85% 0.008 285)",
+          "oklch(95% 0.008 285)"
         ]
       },
       "system-blue": {
         "role": "primary",
-        "displayName": "Azul del sistema",
-        "canonical": "#0071e3",
+        "displayName": "Azul de sistema",
         "tonalRamp": [
-          "#00003b",
-          "#001b65",
-          "#003893",
-          "#0057c4",
-          "#197df0",
-          "#4ba4ff",
-          "#81cdff",
-          "#b0f2ff"
+          "oklch(15% 0.19 255)",
+          "oklch(26% 0.19 255)",
+          "oklch(38% 0.19 255)",
+          "oklch(50% 0.19 255)",
+          "oklch(62% 0.19 255)",
+          "oklch(74% 0.19 255)",
+          "oklch(85% 0.19 255)",
+          "oklch(95% 0.19 255)"
         ]
       },
       "system-blue-text": {
         "role": "primary",
         "displayName": "Azul de texto",
-        "canonical": "#0066cc",
         "tonalRamp": [
-          "#000137",
-          "#001d61",
-          "#003a8d",
-          "#0059bc",
-          "#287ee7",
-          "#53a5ff",
-          "#86cdff",
-          "#b4f2ff"
+          "oklch(15% 0.17 255)",
+          "oklch(26% 0.17 255)",
+          "oklch(38% 0.17 255)",
+          "oklch(50% 0.17 255)",
+          "oklch(62% 0.17 255)",
+          "oklch(74% 0.17 255)",
+          "oklch(85% 0.17 255)",
+          "oklch(95% 0.17 255)"
+        ]
+      },
+      "system-blue-dark": {
+        "role": "primary",
+        "displayName": "Azul de sistema oscuro",
+        "tonalRamp": [
+          "oklch(15% 0.19 255)",
+          "oklch(26% 0.19 255)",
+          "oklch(38% 0.19 255)",
+          "oklch(50% 0.19 255)",
+          "oklch(62% 0.19 255)",
+          "oklch(74% 0.19 255)",
+          "oklch(85% 0.19 255)",
+          "oklch(95% 0.19 255)"
+        ]
+      },
+      "system-blue-text-dark": {
+        "role": "primary",
+        "displayName": "Azul de texto oscuro",
+        "tonalRamp": [
+          "oklch(15% 0.13 250)",
+          "oklch(26% 0.13 250)",
+          "oklch(38% 0.13 250)",
+          "oklch(50% 0.13 250)",
+          "oklch(62% 0.13 250)",
+          "oklch(74% 0.13 250)",
+          "oklch(85% 0.13 250)",
+          "oklch(95% 0.13 250)"
         ]
       },
       "on-blue": {
         "role": "primary",
-        "displayName": "Texto sobre azul",
-        "canonical": "#ffffff",
+        "displayName": "Sobre azul",
         "tonalRamp": [
-          "#0b0b0b",
-          "#242424",
-          "#404040",
-          "#5d5d5d",
-          "#808080",
-          "#a4a4a4",
-          "#cacaca",
-          "#eeeeee"
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(50% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(74% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "recipe-band": {
+        "role": "primary",
+        "displayName": "Banda de la receta",
+        "tonalRamp": [
+          "oklch(15% 0.19 255)",
+          "oklch(26% 0.19 255)",
+          "oklch(38% 0.19 255)",
+          "oklch(50% 0.19 255)",
+          "oklch(62% 0.19 255)",
+          "oklch(74% 0.19 255)",
+          "oklch(85% 0.19 255)",
+          "oklch(95% 0.19 255)"
         ]
       },
       "consensus-gray": {
         "role": "secondary",
         "displayName": "Gris Consensus",
-        "canonical": "#8e8e93",
         "tonalRamp": [
-          "#0b0b0e",
-          "#242427",
-          "#3f3f44",
-          "#5d5d62",
-          "#808084",
-          "#a4a4a9",
-          "#cacacf",
-          "#eeeef3"
+          "oklch(15% 0.01 285)",
+          "oklch(26% 0.01 285)",
+          "oklch(38% 0.01 285)",
+          "oklch(50% 0.01 285)",
+          "oklch(62% 0.01 285)",
+          "oklch(74% 0.01 285)",
+          "oklch(85% 0.01 285)",
+          "oklch(95% 0.01 285)"
         ]
       },
-      "recipe-band": {
-        "role": "primary",
-        "displayName": "Banda de receta",
-        "canonical": "rgba(0,113,227,.10)"
-      },
       "goal-green": {
-        "role": "tertiary",
+        "role": "secondary",
         "displayName": "Verde meta",
-        "canonical": "#34c759",
         "tonalRamp": [
-          "#001500",
-          "#003300",
-          "#005400",
-          "#007700",
-          "#009d2e",
-          "#37c359",
-          "#79e78b",
-          "#acffb8"
+          "oklch(15% 0.18 148)",
+          "oklch(26% 0.18 148)",
+          "oklch(38% 0.18 148)",
+          "oklch(50% 0.18 148)",
+          "oklch(62% 0.18 148)",
+          "oklch(74% 0.18 148)",
+          "oklch(85% 0.18 148)",
+          "oklch(95% 0.18 148)"
         ]
       },
       "goal-green-text": {
-        "role": "tertiary",
-        "displayName": "Verde meta (texto)",
-        "canonical": "#248a3d",
+        "role": "secondary",
+        "displayName": "Verde meta texto",
         "tonalRamp": [
-          "#001300",
-          "#003100",
-          "#00500c",
-          "#007225",
-          "#349749",
-          "#5dbd6d",
-          "#8fe19a",
-          "#bcffc4"
+          "oklch(15% 0.14 148)",
+          "oklch(26% 0.14 148)",
+          "oklch(38% 0.14 148)",
+          "oklch(50% 0.14 148)",
+          "oklch(62% 0.14 148)",
+          "oklch(74% 0.14 148)",
+          "oklch(85% 0.14 148)",
+          "oklch(95% 0.14 148)"
         ]
       },
       "goal-zone": {
-        "role": "tertiary",
+        "role": "secondary",
         "displayName": "Zona meta",
-        "canonical": "rgba(52,199,89,.14)"
-      },
-      "warning-orange": {
-        "role": "tertiary",
-        "displayName": "Naranja de aviso",
-        "canonical": "#ff9500",
         "tonalRamp": [
-          "#260000",
-          "#4b0400",
-          "#732100",
-          "#9d3c00",
-          "#c66100",
-          "#ee8700",
-          "#ffb359",
-          "#ffdb92"
-        ]
-      },
-      "alert-red": {
-        "role": "tertiary",
-        "displayName": "Rojo de alerta",
-        "canonical": "#ff3b30",
-        "tonalRamp": [
-          "#310000",
-          "#5c0000",
-          "#8a0000",
-          "#bb0000",
-          "#eb201b",
-          "#ff5c4c",
-          "#ff9380",
-          "#ffc2af"
+          "oklch(15% 0.18 148)",
+          "oklch(26% 0.18 148)",
+          "oklch(38% 0.18 148)",
+          "oklch(50% 0.18 148)",
+          "oklch(62% 0.18 148)",
+          "oklch(74% 0.18 148)",
+          "oklch(85% 0.18 148)",
+          "oklch(95% 0.18 148)"
         ]
       },
       "alert-red-text": {
-        "role": "tertiary",
-        "displayName": "Rojo de alerta (texto)",
-        "canonical": "#d70015",
+        "role": "secondary",
+        "displayName": "Rojo alerta texto",
         "tonalRamp": [
-          "#310000",
-          "#5b0000",
-          "#890000",
-          "#b90000",
-          "#e82728",
-          "#ff5e54",
-          "#ff9586",
-          "#ffc3b4"
+          "oklch(15% 0.22 25)",
+          "oklch(26% 0.22 25)",
+          "oklch(38% 0.22 25)",
+          "oklch(50% 0.22 25)",
+          "oklch(62% 0.22 25)",
+          "oklch(74% 0.22 25)",
+          "oklch(85% 0.22 25)",
+          "oklch(95% 0.22 25)"
         ]
       },
       "desvio-inside": {
         "role": "tertiary",
         "displayName": "Desvío: dentro",
-        "canonical": "#d1d1d6",
         "tonalRamp": [
-          "#0b0b0e",
-          "#242427",
-          "#3f3f43",
-          "#5d5d61",
-          "#808084",
-          "#a4a4a9",
-          "#cacacf",
-          "#eeeef3"
+          "oklch(15% 0.01 285)",
+          "oklch(26% 0.01 285)",
+          "oklch(38% 0.01 285)",
+          "oklch(50% 0.01 285)",
+          "oklch(62% 0.01 285)",
+          "oklch(74% 0.01 285)",
+          "oklch(85% 0.01 285)",
+          "oklch(95% 0.01 285)"
         ]
       },
       "desvio-1": {
         "role": "tertiary",
         "displayName": "Desvío hasta 5%",
-        "canonical": "#ffcc00",
         "tonalRamp": [
-          "#1c0300",
-          "#3c1b00",
-          "#5e3700",
-          "#835400",
-          "#a87800",
-          "#ce9d00",
-          "#f0c642",
-          "#ffeb84"
+          "oklch(15% 0.18 95)",
+          "oklch(26% 0.18 95)",
+          "oklch(38% 0.18 95)",
+          "oklch(50% 0.18 95)",
+          "oklch(62% 0.18 95)",
+          "oklch(74% 0.18 95)",
+          "oklch(85% 0.18 95)",
+          "oklch(95% 0.18 95)"
         ]
       },
       "desvio-2": {
         "role": "tertiary",
         "displayName": "Desvío 5-15%",
-        "canonical": "#ff9500",
         "tonalRamp": [
-          "#260000",
-          "#4b0400",
-          "#732100",
-          "#9d3c00",
-          "#c66100",
-          "#ee8700",
-          "#ffb359",
-          "#ffdb92"
+          "oklch(15% 0.19 65)",
+          "oklch(26% 0.19 65)",
+          "oklch(38% 0.19 65)",
+          "oklch(50% 0.19 65)",
+          "oklch(62% 0.19 65)",
+          "oklch(74% 0.19 65)",
+          "oklch(85% 0.19 65)",
+          "oklch(95% 0.19 65)"
         ]
       },
       "desvio-3": {
         "role": "tertiary",
         "displayName": "Desvío 15-30%",
-        "canonical": "#ff3b30",
         "tonalRamp": [
-          "#310000",
-          "#5c0000",
-          "#8a0000",
-          "#bb0000",
-          "#eb201b",
-          "#ff5c4c",
-          "#ff9380",
-          "#ffc2af"
+          "oklch(15% 0.22 30)",
+          "oklch(26% 0.22 30)",
+          "oklch(38% 0.22 30)",
+          "oklch(50% 0.22 30)",
+          "oklch(62% 0.22 30)",
+          "oklch(74% 0.22 30)",
+          "oklch(85% 0.22 30)",
+          "oklch(95% 0.22 30)"
         ]
       },
       "desvio-4": {
         "role": "tertiary",
         "displayName": "Desvío más de 30%",
-        "canonical": "#b3001b",
         "tonalRamp": [
-          "#2d0000",
-          "#560000",
-          "#820005",
-          "#b00a1d",
-          "#dd3e3f",
-          "#ff6a65",
-          "#ff9c93",
-          "#ffc8bf"
+          "oklch(15% 0.2 22)",
+          "oklch(26% 0.2 22)",
+          "oklch(38% 0.2 22)",
+          "oklch(50% 0.2 22)",
+          "oklch(62% 0.2 22)",
+          "oklch(74% 0.2 22)",
+          "oklch(85% 0.2 22)",
+          "oklch(95% 0.2 22)"
         ]
       },
-      "bubble-empty": {
-        "role": "neutral",
-        "displayName": "Burbuja hueca",
-        "canonical": "#aeaeb2",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242427",
-          "#3f3f43",
-          "#5d5d61",
-          "#808083",
-          "#a4a4a8",
-          "#cacace",
-          "#eeeef2"
-        ]
-      },
-      "bubble-norecipe": {
-        "role": "neutral",
-        "displayName": "Burbuja sin receta",
-        "canonical": "#e5e5ea",
-        "tonalRamp": [
-          "#0b0b0e",
-          "#242427",
-          "#3f3f43",
-          "#5d5d61",
-          "#808084",
-          "#a4a4a9",
-          "#cacacf",
-          "#eeeef3"
-        ]
-      },
-      "bubble-pl": {
-        "role": "neutral",
-        "displayName": "Burbuja de product line",
-        "canonical": "#f2f2f5",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f42",
-          "#5d5d60",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
-        ]
-      },
-      "toolbar-material": {
-        "role": "neutral",
-        "displayName": "Material de barra",
-        "canonical": "rgba(245,245,247,.72)"
-      },
-      "dark-window-bg": {
-        "role": "neutral",
-        "displayName": "Gris de ventana (oscuro)",
-        "canonical": "#1c1c1e",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f42",
-          "#5d5d60",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
-        ]
-      },
-      "dark-surface": {
-        "role": "neutral",
-        "displayName": "Superficie (oscuro)",
-        "canonical": "#2c2c2e",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f42",
-          "#5d5d60",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
-        ]
-      },
-      "dark-surface-secondary": {
-        "role": "neutral",
-        "displayName": "Superficie secundaria (oscuro)",
-        "canonical": "#3a3a3c",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f41",
-          "#5d5d5f",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
-        ]
-      },
-      "dark-sidebar": {
-        "role": "neutral",
-        "displayName": "Barra lateral (oscuro)",
-        "canonical": "#252527",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242426",
-          "#3f3f42",
-          "#5d5d60",
-          "#808082",
-          "#a4a4a7",
-          "#cacacd",
-          "#eeeef1"
-        ]
-      },
-      "dark-label": {
-        "role": "neutral",
-        "displayName": "Etiqueta (oscuro)",
-        "canonical": "#f5f5f7",
-        "tonalRamp": [
-          "#0b0b0c",
-          "#242425",
-          "#3f3f41",
-          "#5d5d5f",
-          "#808082",
-          "#a4a4a6",
-          "#cacacc",
-          "#eeeef0"
-        ]
-      },
-      "dark-label-secondary": {
-        "role": "neutral",
-        "displayName": "Etiqueta secundaria (oscuro)",
-        "canonical": "#aeaeb2",
-        "tonalRamp": [
-          "#0b0b0d",
-          "#242427",
-          "#3f3f43",
-          "#5d5d61",
-          "#808083",
-          "#a4a4a8",
-          "#cacace",
-          "#eeeef2"
-        ]
-      },
-      "dark-system-blue": {
-        "role": "primary",
-        "displayName": "Azul del sistema (oscuro)",
-        "canonical": "#0a72e8",
-        "tonalRamp": [
-          "#00003c",
-          "#001967",
-          "#003795",
-          "#0056c6",
-          "#1c7cf3",
-          "#4ca3ff",
-          "#81ccff",
-          "#b0f1ff"
-        ]
-      },
-      "dark-system-blue-text": {
-        "role": "primary",
-        "displayName": "Azul de texto (oscuro)",
-        "canonical": "#4ea1ff",
-        "tonalRamp": [
-          "#000433",
-          "#00205b",
-          "#003d86",
-          "#005cb4",
-          "#2c81dc",
-          "#55a7ff",
-          "#88cfff",
-          "#b6f3ff"
-        ]
-      },
-      "dark-goal-green": {
+      "desvio-rim-0": {
         "role": "tertiary",
-        "displayName": "Verde meta (oscuro)",
-        "canonical": "#30d158",
+        "displayName": "Aro dentro",
         "tonalRamp": [
-          "#001500",
-          "#003400",
-          "#005500",
-          "#007800",
-          "#009e21",
-          "#29c451",
-          "#74e885",
-          "#a8ffb3"
+          "oklch(15% 0.01 285)",
+          "oklch(26% 0.01 285)",
+          "oklch(38% 0.01 285)",
+          "oklch(50% 0.01 285)",
+          "oklch(62% 0.01 285)",
+          "oklch(74% 0.01 285)",
+          "oklch(85% 0.01 285)",
+          "oklch(95% 0.01 285)"
         ]
       },
-      "dark-alert-red-text": {
+      "desvio-rim-1": {
         "role": "tertiary",
-        "displayName": "Rojo de alerta (texto) (oscuro)",
-        "canonical": "#ff6961",
+        "displayName": "Aro hasta 5%",
         "tonalRamp": [
-          "#2c0000",
-          "#540000",
-          "#7f0007",
-          "#ac191f",
-          "#d84541",
-          "#ff6f67",
-          "#ff9f94",
-          "#ffcbbf"
+          "oklch(15% 0.13 90)",
+          "oklch(26% 0.13 90)",
+          "oklch(38% 0.13 90)",
+          "oklch(50% 0.13 90)",
+          "oklch(62% 0.13 90)",
+          "oklch(74% 0.13 90)",
+          "oklch(85% 0.13 90)",
+          "oklch(95% 0.13 90)"
         ]
       },
-      "dark-desvio-3": {
+      "desvio-rim-2": {
         "role": "tertiary",
-        "displayName": "Desvío 15-30% (oscuro)",
-        "canonical": "#ff6a3d",
+        "displayName": "Aro 5-15%",
         "tonalRamp": [
-          "#2c0000",
-          "#550000",
-          "#800000",
-          "#ad1c00",
-          "#da4713",
-          "#ff7246",
-          "#ffa27c",
-          "#ffcdac"
+          "oklch(15% 0.15 65)",
+          "oklch(26% 0.15 65)",
+          "oklch(38% 0.15 65)",
+          "oklch(50% 0.15 65)",
+          "oklch(62% 0.15 65)",
+          "oklch(74% 0.15 65)",
+          "oklch(85% 0.15 65)",
+          "oklch(95% 0.15 65)"
         ]
       },
-      "dark-desvio-4": {
+      "desvio-rim-3": {
         "role": "tertiary",
-        "displayName": "Desvío más de 30% (oscuro)",
-        "canonical": "#ff375f",
+        "displayName": "Aro 15-30%",
         "tonalRamp": [
-          "#310000",
-          "#5b0004",
-          "#890019",
-          "#ba002f",
-          "#e9174e",
-          "#ff5774",
-          "#ff90a0",
-          "#ffbfc9"
+          "oklch(15% 0.2 30)",
+          "oklch(26% 0.2 30)",
+          "oklch(38% 0.2 30)",
+          "oklch(50% 0.2 30)",
+          "oklch(62% 0.2 30)",
+          "oklch(74% 0.2 30)",
+          "oklch(85% 0.2 30)",
+          "oklch(95% 0.2 30)"
+        ]
+      },
+      "desvio-rim-4": {
+        "role": "tertiary",
+        "displayName": "Aro más de 30%",
+        "tonalRamp": [
+          "oklch(15% 0.17 20)",
+          "oklch(26% 0.17 20)",
+          "oklch(38% 0.17 20)",
+          "oklch(50% 0.17 20)",
+          "oklch(62% 0.17 20)",
+          "oklch(74% 0.17 20)",
+          "oklch(85% 0.17 20)",
+          "oklch(95% 0.17 20)"
         ]
       }
     },
     "typographyMeta": {
-      "large-title": {
-        "displayName": "Large title",
-        "purpose": "Título del código o grupo en el detalle; colapsa a la barra al salir de vista."
-      },
-      "metric-hero": {
-        "displayName": "Cifra principal",
-        "purpose": "Desvío grande del rail del detalle."
-      },
-      "title-1": {
-        "displayName": "Title 1",
-        "purpose": "Título del inspector y de las secciones del detalle."
-      },
-      "metric": {
-        "displayName": "Métrica",
-        "purpose": "KPIs de ficha y rail (17-20px)."
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título del código o grupo en Detalle."
       },
       "headline": {
-        "displayName": "Headline",
-        "purpose": "Título de ventana en la barra de herramientas."
+        "displayName": "Título grande",
+        "purpose": "Título grande de la barra superior."
       },
-      "title-3": {
-        "displayName": "Title 3",
-        "purpose": "Títulos de tarjeta de brújula, alto fijo 22px."
+      "title": {
+        "displayName": "Título",
+        "purpose": "Secciones del Detalle y título del inspector."
+      },
+      "card-title": {
+        "displayName": "Título de tarjeta",
+        "purpose": "Títulos de brújulas, altura fija 22px."
       },
       "body": {
-        "displayName": "Body",
-        "purpose": "Texto base de la app, 13px como macOS."
+        "displayName": "Cuerpo",
+        "purpose": "Texto general y filas."
       },
-      "callout": {
-        "displayName": "Callout",
-        "purpose": "Segmentados, tablas y valores de lista."
+      "metric": {
+        "displayName": "Cifra",
+        "purpose": "KPIs en fichas, tabulares."
       },
-      "caption": {
-        "displayName": "Caption",
-        "purpose": "Migas, leyendas, etiquetas de burbuja."
-      },
-      "section-header": {
-        "displayName": "Encabezado de sección",
-        "purpose": "Encabezados de lista de fuentes y de grupos, sin mayúsculas forzadas."
+      "label": {
+        "displayName": "Rótulo",
+        "purpose": "Cabeceras, leyendas, encabezados de barra lateral."
       },
       "code": {
         "displayName": "Código",
-        "purpose": "Solo EAN y códigos."
+        "purpose": "EANs."
       }
     },
     "shadows": [
       {
-        "name": "sombra-s",
-        "value": "0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04)",
-        "purpose": "Reposo: tarjetas, fichas, botones, siempre con el filo inset .5px."
+        "name": "glass-light",
+        "value": "inset 0 1px 0 rgba(255,255,255,.9), inset 0 -1px 1px rgba(255,255,255,.08), 0 10px 34px rgba(30,36,48,.12), 0 1px 3px rgba(30,36,48,.08)",
+        "purpose": "Toda pieza de cristal flotante en claro."
       },
       {
-        "name": "sombra-m",
-        "value": "0 4px 14px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.06)",
-        "purpose": "Lienzo del mapa."
+        "name": "glass-dark",
+        "value": "inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 1px rgba(255,255,255,.08), 0 12px 40px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4)",
+        "purpose": "Toda pieza de cristal flotante en oscuro."
       },
       {
-        "name": "sombra-l",
-        "value": "0 12px 40px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08)",
-        "purpose": "Flotantes: popover, tooltip, hoja lateral."
+        "name": "button-halo",
+        "value": "0 4px 14px color-mix(in srgb, #0071e3 35%, transparent), inset 0 1px 0 rgba(255,255,255,.3)",
+        "purpose": "Botón principal; única sombra de color."
       },
       {
-        "name": "sombra-s-dark",
-        "value": "0 1px 2px rgba(0,0,0,.4)",
-        "purpose": "Reposo en oscuro."
+        "name": "segmented-thumb",
+        "value": "0 2px 8px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.9), 0 0 0 .5px rgba(255,255,255,.66)",
+        "purpose": "Pulgar del segmentado."
       },
       {
-        "name": "sombra-m-dark",
-        "value": "0 4px 14px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.3)",
-        "purpose": "Lienzo en oscuro."
+        "name": "glass-material",
+        "value": "backdrop-filter: blur(28px) saturate(185%)",
+        "purpose": "Material de cristal; 36px en la tarjeta de detalle, 40px en el popover, 44px en hojas de iPhone."
       },
       {
-        "name": "sombra-l-dark",
-        "value": "0 12px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.35)",
-        "purpose": "Flotantes en oscuro."
+        "name": "specular-sheen",
+        "value": "linear-gradient(160deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 70%, rgba(255,255,255,.12) 100%) soft-light",
+        "purpose": "Reflejo especular del cristal."
       },
       {
-        "name": "filo",
-        "value": "inset 0 0 0 .5px rgba(60,60,67,.16)",
-        "purpose": "Borde de media línea de toda superficie agrupada."
-      },
-      {
-        "name": "material",
-        "value": "backdrop-filter: saturate(180%) blur(20px)",
-        "purpose": "Barra de herramientas, tooltip (20px) y popover (30px); solo con contenido debajo."
+        "name": "wallpaper",
+        "value": "4 radial-gradient blobs over #e9ebee, filter: blur(48px) saturate(110%), noise overlay .035",
+        "purpose": "Papel tapiz quieto."
       }
     ],
     "motion": [
       {
-        "name": "muelle",
+        "name": "spring",
         "value": "linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1)",
-        "purpose": "Muelle críticamente amortiguado (~0,4 s de respuesta, sin rebote): pulgar del segmentado (320ms), burbujas (420ms), zoom del mapa (620ms)."
+        "purpose": "Muelle críticamente amortiguado: zoom del mapa 640ms, pulgar del segmentado 360ms, entrada de burbujas 460ms."
       },
       {
         "name": "ease-out",
-        "value": "cubic-bezier(0.23,1,0.32,1)",
-        "purpose": "Respuesta al pulsar (120ms), popover (180-220ms), flecha de despliegue (200ms)."
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Pulsaciones 140ms, hover de burbuja 200ms, popover 240ms, tarjeta de detalle 150ms."
       },
       {
         "name": "ease-drawer",
-        "value": "cubic-bezier(0.32,0.72,0,1)",
-        "purpose": "Hoja lateral y hoja inferior en ventanas estrechas (380ms)."
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Hojas inferiores de iPhone, 420ms."
       },
       {
-        "name": "press",
-        "value": "scale(.97) brightness(.92) 120ms",
-        "purpose": "Botones; chips a scale(.96), botones de icono a scale(.94)."
+        "name": "drift",
+        "value": "2.6px max on screen, periods 9-16s, one rAF loop, critically damped spring on amplitude (response 0.7s)",
+        "purpose": "Deriva de burbujas; frena al entrar el puntero, vuelve al salir, apagada con movimiento reducido."
       },
       {
-        "name": "view-transition",
-        "value": "salida 150ms opacidad, entrada 240ms opacidad + scale(.995)",
-        "purpose": "Cambio entre Mapa y Detalle."
+        "name": "sheet-velocity",
+        "value": "1:1 drag, release picks detent by velocity-projected position",
+        "purpose": "Inspector como hoja de dos posiciones en iPhone."
       }
     ],
     "breakpoints": [
       {
-        "name": "narrow",
+        "name": "phone",
         "value": "900px"
       },
       {
-        "name": "detector-compact",
-        "value": "1240px"
+        "name": "one-column-cards",
+        "value": "820px"
       },
       {
-        "name": "rail",
+        "name": "detail-rail",
         "value": "1360px"
-      },
-      {
-        "name": "detector-full",
-        "value": "1700px"
       }
     ]
   },
@@ -719,124 +753,143 @@
       "name": "Botón principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Acción principal de un bloque, en azul del sistema.",
+      "description": "Acción principal en cápsula azul con halo suave.",
       "html": "<button class=\"ds-btn\">Abrir brújulas del código</button>",
-      "css": ".ds-btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:6px;background:#0071e3;color:#fff;padding:5px 12px;font:500 13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04);transition:transform 120ms cubic-bezier(0.23,1,0.32,1),filter 120ms ease} .ds-btn:hover{filter:brightness(1.05)} .ds-btn:active{transform:scale(.97);filter:brightness(.92)} .ds-btn:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:1px}"
+      "css": ".ds-btn{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;display:inline-flex;align-items:center;gap:6px;border:0;border-radius:999px;background:#0071e3;color:#fff;padding:8px 16px;font-size:13px;font-weight:600;box-shadow:0 4px 14px color-mix(in srgb,#0071e3 35%,transparent),inset 0 1px 0 rgba(255,255,255,.3);transition:transform 140ms cubic-bezier(0.23,1,0.32,1),filter 140ms ease}.ds-btn:active{transform:scale(.96);filter:brightness(.92)}.ds-btn:focus-visible{outline:3px solid color-mix(in srgb,#0071e3 55%,transparent);outline-offset:2px}"
     },
     {
-      "name": "Botón secundario",
+      "name": "Botón gris",
       "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "Acción secundaria, superficie blanca con filo de media línea.",
-      "html": "<button class=\"ds-btn-fant\">Subir un nivel</button>",
-      "css": ".ds-btn-fant{border:0;border-radius:6px;background:#fff;color:#1d1d1f;padding:5px 12px;font:500 13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.06),inset 0 0 0 .5px rgba(60,60,67,.29);transition:transform 120ms cubic-bezier(0.23,1,0.32,1),filter 120ms ease} .ds-btn-fant:hover{background:#fafafa} .ds-btn-fant:active{transform:scale(.97);filter:brightness(.92)} .ds-btn-fant:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:1px}"
+      "refersTo": "button-tinted",
+      "description": "Acción secundaria en relleno gris de sistema.",
+      "html": "<button class=\"ds-btn-g\">Restablecer</button>",
+      "css": ".ds-btn-g{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;border:0;border-radius:999px;background:rgba(120,120,128,.14);color:#1c1c1e;padding:8px 16px;font-size:13px;font-weight:600;transition:transform 140ms cubic-bezier(0.23,1,0.32,1)}.ds-btn-g:hover{background:rgba(120,120,128,.24)}.ds-btn-g:active{transform:scale(.96)}.ds-btn-g:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:2px}"
     },
     {
-      "name": "Control segmentado",
+      "name": "Segmentado de cristal",
       "kind": "custom",
-      "refersTo": "segmented-control",
-      "description": "Mapa/Detalle y Claro/Oscuro/Auto; pulgar blanco que se desliza con muelle.",
-      "html": "<div class=\"ds-seg\"><span class=\"ds-pulgar\"></span><button>Mapa</button><button>Detalle</button></div>",
-      "css": ".ds-seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:rgba(118,118,128,.12);border-radius:8px;padding:2px;font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif} .ds-seg button{position:relative;z-index:1;border:0;background:transparent;padding:3px 12px;border-radius:6px;font-size:12.5px;font-weight:500;color:#1d1d1f} .ds-seg button:focus-visible{outline:3px solid rgba(0,113,227,.55)} .ds-pulgar{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);border-radius:6px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);transition:transform 320ms linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1)} .ds-seg:has(button:nth-of-type(2):hover) .ds-pulgar{transform:translateX(100%)}"
+      "refersTo": "segmented-thumb",
+      "description": "Cápsula con pulgar de cristal deslizante (Mapa / Detalle, Claro / Oscuro / Auto).",
+      "html": "<div class=\"ds-seg\"><span class=\"ds-thumb\"></span><button>Mapa</button><button>Detalle</button></div>",
+      "css": ".ds-seg{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;position:relative;background:var(--cristal,rgba(255,255,255,.46));-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.08),0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;border-radius:999px;padding:3px;isolation:isolate}.ds-seg button{position:relative;z-index:1;border:0;background:transparent;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:#1c1c1e}.ds-seg button:focus-visible{outline:3px solid rgba(0,113,227,.55)}.ds-thumb{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:999px;background:rgba(255,255,255,.72);box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.9),0 0 0 .5px rgba(255,255,255,.66);transition:transform 360ms linear(0,.0333,.1111,.2093,.3132,.4139,.5068,.5895,.6614,.7228,.7745,.8176,.8532,.8823,.9059,.9251,.9405,.9529,.9628,.9707,.9769,.9819,.9858,.9889,1)}.ds-seg:hover .ds-thumb{transform:translateX(100%)}"
     },
     {
-      "name": "Campo de búsqueda",
+      "name": "Cápsula de búsqueda",
       "kind": "input",
-      "refersTo": "search-field",
-      "description": "Buscador de la barra con pista ⌘K; halo azul al enfocar.",
-      "html": "<label class=\"ds-buscar\"><svg viewBox=\"0 0 16 16\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><circle cx=\"7\" cy=\"7\" r=\"4.75\"/><path d=\"M10.5 10.5 14 14\"/></svg><input type=\"search\" placeholder=\"Buscar\"><span>⌘K</span></label>",
-      "css": ".ds-buscar{display:flex;align-items:center;gap:6px;background:rgba(118,118,128,.12);border-radius:7px;padding:0 8px;width:240px;height:28px;color:#6e6e73;font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;transition:box-shadow 150ms ease,background-color 150ms ease} .ds-buscar:focus-within{background:#fff;box-shadow:0 0 0 3px rgba(0,113,227,.45)} .ds-buscar input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:13px;color:#1d1d1f} .ds-buscar span{font-size:11px}"
+      "refersTo": "search-capsule",
+      "description": "Búsqueda en cápsula de cristal de 42px.",
+      "html": "<form class=\"ds-search\"><svg viewBox=\"0 0 16 16\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"><circle cx=\"7\" cy=\"7\" r=\"4.75\"/><path d=\"M10.5 10.5 14 14\"/></svg><input type=\"search\" placeholder=\"Buscar\"></form>",
+      "css": ".ds-search{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;position:relative;background:var(--cristal,rgba(255,255,255,.46));-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.08),0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);display:flex;align-items:center;gap:7px;border-radius:999px;padding:0 14px;width:250px;height:42px;color:#5d5d63;transition:box-shadow 160ms ease}.ds-search:focus-within{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 4px rgba(0,113,227,.35),0 10px 34px rgba(30,36,48,.12)}.ds-search input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:14px;color:#1c1c1e}"
     },
     {
       "name": "Chip de filtro",
       "kind": "chip",
       "refersTo": "chip",
-      "description": "Filtros del popover; activo en azul.",
-      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Central</button><button class=\"ds-chip\" aria-pressed=\"false\">Todos</button>",
-      "css": ".ds-chip{border:0;background:rgba(118,118,128,.12);border-radius:999px;padding:3px 10px;margin-right:6px;font:12px -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;color:#1d1d1f;transition:background-color 120ms ease,transform 120ms cubic-bezier(0.23,1,0.32,1)} .ds-chip:hover:not([aria-pressed=true]){background:rgba(118,118,128,.20)} .ds-chip:active{transform:scale(.96)} .ds-chip[aria-pressed=true]{background:#0071e3;color:#fff} .ds-chip:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:1px}"
+      "description": "Filtro en cápsula; seleccionado en azul.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Central</button> <button class=\"ds-chip\" aria-pressed=\"false\">Todos</button>",
+      "css": ".ds-chip{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;border:0;background:rgba(120,120,128,.14);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500;color:#1c1c1e;transition:background-color 140ms ease,transform 140ms cubic-bezier(0.23,1,0.32,1)}.ds-chip[aria-pressed=true]{background:#0071e3;color:#fff}.ds-chip[aria-pressed=false]:hover{background:rgba(120,120,128,.24)}.ds-chip:active{transform:scale(.95)}.ds-chip:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:2px}"
     },
     {
       "name": "Fila de barra lateral",
       "kind": "nav",
-      "refersTo": "sidebar-row",
-      "description": "Lista de fuentes con icono, contador y fila seleccionada en azul.",
-      "html": "<div class=\"ds-lado\"><div class=\"ds-h\">Códigos</div><button class=\"ds-fila\" aria-current=\"true\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><circle cx=\"8\" cy=\"8\" r=\"6\"/><circle cx=\"8\" cy=\"8\" r=\"2.5\"/></svg><span class=\"t\">En scope</span><span class=\"ds-badge\">312</span></button><button class=\"ds-fila\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><circle cx=\"5\" cy=\"5\" r=\"2.5\"/><circle cx=\"11\" cy=\"5\" r=\"2.5\"/><circle cx=\"5\" cy=\"11\" r=\"2.5\"/><circle cx=\"11\" cy=\"11\" r=\"2.5\"/></svg><span class=\"t\">Todos</span><span class=\"ds-badge\">524</span></button></div>",
-      "css": ".ds-lado{background:#ececef;padding:10px;width:240px;font:13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif} .ds-h{font-size:11px;font-weight:600;color:#6e6e73;margin:4px 8px} .ds-fila{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;text-align:left;padding:5px 8px;border-radius:6px;min-height:28px;color:#1d1d1f;font:inherit;transition:background-color 120ms ease} .ds-fila svg{color:#0071e3} .ds-fila .t{flex:1} .ds-fila:hover{background:rgba(118,118,128,.12)} .ds-fila[aria-current=true]{background:#0071e3;color:#fff} .ds-fila[aria-current=true] svg{color:#fff} .ds-fila[aria-current=true] .ds-badge{color:#fff;background:rgba(255,255,255,.22)} .ds-fila:focus-visible{outline:3px solid rgba(0,113,227,.55)} .ds-badge{font-size:11px;font-variant-numeric:tabular-nums;color:#6e6e73;background:rgba(118,118,128,.12);border-radius:999px;padding:1px 7px}"
+      "refersTo": "sidebar-row-active",
+      "description": "Fila de 32px con icono y contador; la activa en azul al 16%.",
+      "html": "<div class=\"ds-side\"><button class=\"ds-row\" aria-current=\"true\"><span>En scope central</span><b>312</b></button><button class=\"ds-row\"><span>Fuera de estrategia</span><b>41</b></button></div>",
+      "css": ".ds-side{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;position:relative;background:var(--cristal,rgba(255,255,255,.46));-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.08),0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);border-radius:28px;padding:10px;width:264px}.ds-row{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:6px 10px;border-radius:12px;min-height:32px;font-size:13px;color:#1c1c1e;transition:background-color 140ms ease}.ds-row span{flex:1}.ds-row b{font-size:11px;font-weight:500;color:#5d5d63;background:rgba(120,120,128,.14);border-radius:999px;padding:1px 7px;font-variant-numeric:tabular-nums}.ds-row:hover{background:rgba(120,120,128,.14)}.ds-row[aria-current=true]{background:color-mix(in srgb,#0071e3 16%,transparent);color:#0062c4;font-weight:600}.ds-row:focus-visible{outline:3px solid rgba(0,113,227,.55)}"
     },
     {
-      "name": "Ficha del inspector",
+      "name": "Tarjeta de detalle",
       "kind": "card",
-      "refersTo": "inspector-sheet",
-      "description": "Ficha con tira de tres KPIs sobre superficie secundaria.",
-      "html": "<div class=\"ds-ficha\"><p class=\"d\">Gucci Bloom EDP 50 ML</p><div class=\"ds-kpis\"><div><span>WAPE90</span><b>28,4%</b></div><div><span>WAPE180</span><b>34,1%</b></div><div><span>Desvío</span><b class=\"r\">1.240 u</b></div></div></div>",
-      "css": ".ds-ficha{background:#fff;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04),inset 0 0 0 .5px rgba(60,60,67,.16);padding:14px;width:288px;font:13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;color:#1d1d1f} .ds-ficha .d{font-weight:600;margin:0 0 10px} .ds-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#f5f5f7;border-radius:8px;padding:10px} .ds-kpis span{display:block;font-size:11px;color:#6e6e73} .ds-kpis b{font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Display\",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em;font-variant-numeric:tabular-nums} .ds-kpis .r{color:#d70015}"
+      "refersTo": "detail-card",
+      "description": "Cristal casi opaco anclado a la burbuja, con KPIs en celdas.",
+      "html": "<div class=\"ds-tip\"><span class=\"ds-m\">3614227758001</span><div class=\"ds-tt\">Gucci Bloom EDP 50 ML</div><div class=\"ds-kk\"><div><span>Desvío</span><b>1.240</b></div><div><span>%</span><b>8,4%</b></div></div></div>",
+      "css": ".ds-tip{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;position:relative;background:var(--cristal,rgba(255,255,255,.46));-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.08),0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);background:color-mix(in srgb,#fff 88%,transparent);-webkit-backdrop-filter:blur(36px) saturate(185%);backdrop-filter:blur(36px) saturate(185%);border-radius:22px;padding:12px 14px;width:260px;font-size:12.5px;line-height:1.45;color:#1c1c1e}.ds-m{display:block;font-size:11px;color:#5d5d63;font-variant-numeric:tabular-nums}.ds-tt{font-weight:700;font-size:13.5px;margin:2px 0 8px;letter-spacing:-.01em}.ds-kk{display:grid;grid-template-columns:1fr 1fr;gap:6px}.ds-kk div{background:rgba(120,120,128,.14);border-radius:10px;padding:6px 8px}.ds-kk span{display:block;font-size:10.5px;color:#5d5d63}.ds-kk b{font-size:14px;font-variant-numeric:tabular-nums}"
     },
     {
-      "name": "Leyenda de desvío",
+      "name": "Burbuja lente",
       "kind": "custom",
-      "refersTo": "desvio-1",
-      "description": "Escala ordinal del desvío; cada tono con su tramo escrito.",
-      "html": "<div class=\"ds-ley\"><span><i style=\"background:#d1d1d6\"></i>Dentro</span><span><i style=\"background:#ffcc00\"></i>Hasta 5%</span><span><i style=\"background:#ff9500\"></i>5-15%</span><span><i style=\"background:#ff3b30\"></i>15-30%</span><span><i style=\"background:#b3001b\"></i>Más de 30%</span></div>",
-      "css": ".ds-ley{display:flex;flex-wrap:wrap;gap:6px 14px;font:11.5px -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;color:#6e6e73} .ds-ley span{display:flex;align-items:center;gap:5px} .ds-ley i{width:10px;height:10px;border-radius:50%;display:inline-block}"
+      "description": "Hoja EAN: tinte translúcido del tramo, aro del tramo y reflejo especular; crece a 1,07 al pasar.",
+      "html": "<svg class=\"ds-lens\" viewBox=\"0 0 120 60\" width=\"240\" height=\"120\"><defs><linearGradient id=\"dsb\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#fff\" stop-opacity=\".55\"/><stop offset=\".2\" stop-color=\"#fff\" stop-opacity=\".14\"/><stop offset=\".42\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\".86\" stop-color=\"#fff\" stop-opacity=\"0\"/><stop offset=\"1\" stop-color=\"#fff\" stop-opacity=\".18\"/></linearGradient></defs><g><circle class=\"h\" cx=\"30\" cy=\"30\" r=\"22\" fill=\"#ffcc00\" fill-opacity=\".62\" stroke=\"#a37f00\" stroke-width=\"1.25\"/><circle cx=\"30\" cy=\"30\" r=\"22\" fill=\"url(#dsb)\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\".75\" pointer-events=\"none\"/></g><g><circle class=\"h\" cx=\"86\" cy=\"30\" r=\"22\" fill=\"#ff3b30\" fill-opacity=\".74\" stroke=\"#c4170c\" stroke-width=\"1.25\"/><circle cx=\"86\" cy=\"30\" r=\"22\" fill=\"url(#dsb)\" stroke=\"rgba(255,255,255,.55)\" stroke-width=\".75\" pointer-events=\"none\"/></g></svg>",
+      "css": ".ds-lens{background:#e9ebee;border-radius:22px}.ds-lens .h{transform-box:fill-box;transform-origin:center;transition:transform 200ms cubic-bezier(0.23,1,0.32,1)}.ds-lens .h:hover{transform:scale(1.07);stroke:#fff;stroke-width:2.5}"
+    },
+    {
+      "name": "Barra de pestañas",
+      "kind": "nav",
+      "refersTo": "tab-bar",
+      "description": "Pestañas de iPhone en cápsula de cristal flotante.",
+      "html": "<nav class=\"ds-tabs\"><button aria-current=\"page\">Mapa</button><button>Detalle</button><button>Brands</button><button>Filtros</button></nav>",
+      "css": ".ds-tabs{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;position:relative;background:var(--cristal,rgba(255,255,255,.46));-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.08),0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);display:inline-flex;border-radius:999px;padding:5px;gap:2px}.ds-tabs button{border:0;background:transparent;border-radius:999px;padding:6px 14px;min-width:64px;font-size:11px;font-weight:600;color:#1c1c1e;transition:background-color 160ms ease,transform 140ms cubic-bezier(0.23,1,0.32,1)}.ds-tabs button[aria-current=page]{background:rgba(120,120,128,.14);color:#0062c4}.ds-tabs button:active{transform:scale(.94)}.ds-tabs button:focus-visible{outline:3px solid rgba(0,113,227,.55)}"
     }
   ],
   "narrative": {
-    "northStar": "La app de Mac recién salida de Cupertino",
-    "overview": "Brújulas de Demand se ve y se comporta como una app nativa de macOS nueva. No imita el estilo de Apple como decoración: usa sus convenciones de ventana. Barra lateral con lista de fuentes y vistas inteligentes, barra de herramientas translúcida, contenido central sobre superficies agrupadas y una columna de inspector a la derecha. Todo lo que el planner conoce de Finder, Notas o Música le sirve aquí sin aprender nada.\n\nLa densidad es la de una herramienta de trabajo. El cuerpo es de 13px, como en macOS. Las filas de la barra lateral miden 28px, los controles son compactos y los números van siempre en cifras tabulares. La jerarquía no la da el tamaño sino el peso y el color de la etiqueta (primaria, secundaria, terciaria). El único gesto grande es el título del detalle, que pasa a la barra cuando sale de la vista.\n\nEl color sigue los colores del sistema de Apple y cada uno tiene un solo trabajo. Azul para la receta y para la selección, gris para el Consensus, verde para la meta y una escala ordinal amarillo → naranja → rojo para el desvío. Hay modo claro, modo oscuro y Auto, que se eligen a mano en la barra lateral. El movimiento es un muelle críticamente amortiguado, sin rebote.",
+    "northStar": "El cristal sobre la mesa gris",
+    "overview": "O10 es una app de iPadOS 26 que vive en una sola ventana sin marco: el contenido (el mapa de burbujas, las tarjetas de brújulas, las tablas) ocupa todo el lienzo, y todo lo que se manipula flota encima como piezas de cristal líquido. Debajo hay un papel tapiz quieto: un gris casi neutro con cuatro manchas suaves, difuminadas 48px y con un grano de ruido al 3,5%. Ese fondo no se mueve nunca; lo que se mueve son las burbujas, que derivan despacio y frenan en cuanto el puntero entra en el mapa, para poder leer y apuntar.\n\nEl color se reserva para los datos y la acción: azul de sistema para la receta y los botones, gris para el Consensus, verde para la meta y una escala ordinal amarillo, naranja, rojo para el desvío. Las superficies de cristal son incoloras: toman el tono de lo que tienen detrás. La densidad es de herramienta de trabajo (cuerpo de 13px, filas de 32px), con títulos grandes de iPadOS arriba de cada vista.\n\nEl movimiento sigue la física de Apple: muelles críticamente amortiguados, sin rebote, respuestas cortas al pulsar y nada que tarde en dejar leer un número. Con movimiento reducido no hay deriva, ni zoom animado, ni escalas.",
     "keyCharacteristics": [
-      "Ventana en tres columnas: barra lateral (260px), contenido y un inspector de 320px.",
-      "Fuente del sistema (SF Pro vía `-apple-system`), cuerpo de 13px y cifras tabulares en todos los datos.",
-      "Superficies agrupadas blancas sobre el gris de ventana, separadas por un filo de media línea y no por bordes gruesos.",
-      "Material translúcido solo donde el contenido pasa por debajo (barra de herramientas, popover, tooltip, etiquetas de burbuja).",
-      "Muelle críticamente amortiguado para el zoom del mapa y el pulgar de los segmentados; respeta movimiento y transparencia reducidos."
+      "Contenido a sangre sobre un fondo gris difuminado y estático; claro `#e9ebee`, oscuro en grises puros `#0e0e0e`.",
+      "Un único material de cristal para todo lo flotante: barra lateral, cápsulas, inspector, popover, tarjetas de detalle y barra de pestañas.",
+      "Burbujas hoja como lentes de cristal: tinte translúcido del tramo de desvío, aro del mismo tramo y reflejo especular arriba; sin sombreado de esfera.",
+      "Colores de sistema de Apple con significado fijo; fuente del sistema.",
+      "Deriva de 2,6px controlada por un solo bucle de animación con muelle sobre la amplitud.",
+      "Apariencia manual Claro / Oscuro / Auto."
     ],
     "rules": [
       {
-        "name": "La regla de un color, un trabajo",
-        "body": "El azul es la receta y la selección, el gris es el Consensus, el verde es la meta, y la escala amarilla-roja es el desvío. Ningún color cambia de papel entre vistas.",
+        "name": "La Regla del Cristal Incoloro",
+        "body": "El cristal no lleva tinte de marca: es blanco o gris translúcido y toma el color del fondo. El color va en los datos, nunca en el material.",
         "section": "colors"
       },
       {
-        "name": "La regla del color acompañado",
-        "body": "El desvío nunca se comunica solo con color: cada tono va con su tramo en la leyenda, una cifra en la lista y un tooltip. El Consensus además de gris es discontinuo.",
+        "name": "La Regla del Significado Fijo",
+        "body": "Azul = receta y acción; gris = Consensus; verde = meta; amarillo → rojo = desvío. Ningún color cambia de papel entre vistas, y el color nunca es la única señal: la tarjeta de detalle y la leyenda nombran el tramo.",
         "section": "colors"
       },
       {
-        "name": "La regla de las cifras tabulares",
-        "body": "Cualquier número (KPI, desvío, contador o eje) lleva `font-variant-numeric: tabular-nums`, para que las columnas no bailen al ordenar ni al cambiar de foto.",
+        "name": "La Regla de los Grises Puros",
+        "body": "El modo oscuro es gris neutro (`#0e0e0e` de fondo, manchas `#151515`–`#393939`), sin tinte azulado.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de las Cifras Tabulares",
+        "body": "Todo número (KPI, desvío, unidades, recuentos, ejes) usa cifras tabulares para que las columnas no bailen.",
         "section": "typography"
       },
       {
-        "name": "La regla de la fuente del sistema",
-        "body": "No se carga ninguna fuente web. Si el SO no tiene SF Pro, la cadena cae a la fuente nativa de cada plataforma.",
+        "name": "La Regla de la Minúscula de Frase",
+        "body": "Los rótulos van en minúscula de frase, como en iOS. Nada de rótulos en mayúsculas espaciadas encima de los títulos.",
         "section": "typography"
       },
       {
-        "name": "La regla del tamaño fijo",
-        "body": "Las tarjetas de brújula tienen ancho, alto y altura de título fijos en px. Ningún contenido las estira.",
-        "section": "layout"
+        "name": "La Regla del Fondo Quieto",
+        "body": "El papel tapiz no se anima nunca. Solo se mueve el contenido, y solo cuando el puntero no está encima.",
+        "section": "elevation"
       },
       {
-        "name": "La regla del material con motivo",
-        "body": "El desenfoque translúcido solo existe donde hay contenido debajo. Con `prefers-reduced-transparency`, todos los materiales pasan a un fondo opaco.",
+        "name": "La Regla de la Lente, no la Esfera",
+        "body": "Las burbujas son lentes planas de cristal: reflejo especular arriba, luz de borde abajo, tinte translúcido. Sin gradiente radial de volumen ni sombra proyectada.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla del Cristal Accesible",
+        "body": "Con `prefers-reduced-transparency` todo el cristal pasa a tarjeta sólida y el fondo deja de difuminarse; con `prefers-contrast: more` el borde del cristal se oscurece y el cristal se vuelve casi opaco.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** usar los tokens de color del sistema en las dos apariencias; cada token claro tiene su par oscuro y se cambian juntos con `data-theme` o `prefers-color-scheme`.",
-      "**Do** separar las superficies por tono y por el filo `inset 0 0 0 .5px` del separador, y guardar las sombras grandes para lo que flota.",
-      "**Do** animar con el muelle críticamente amortiguado (`--muelle`, 320–620ms) para lo que se mueve en el espacio y con `cubic-bezier(0.23,1,0.32,1)` en 120–220ms para la respuesta al pulsar y los popovers.",
-      "**Do** desactivar transformaciones y desenfoques con `prefers-reduced-motion`, y quitar materiales con `prefers-reduced-transparency`.",
-      "**Do** dibujar el Consensus en gris discontinuo y la receta en azul continuo en todos los gráficos.",
-      "**Do** dibujar los iconos como SVG de trazo de 1.6px en una caja de 16px."
+      "**Do** usar un único material de cristal (relleno translúcido, blur 28px saturate 185%, filo de 1px, brillo superior, sombra suave) para todo lo que flota.",
+      "**Do** dejar que el contenido llegue a los bordes y separar las piezas flotantes 12px del borde.",
+      "**Do** mantener el papel tapiz gris, difuminado y quieto en los dos modos.",
+      "**Do** usar azul solo para receta y acción, gris para Consensus, verde para la meta y la escala amarillo → rojo para el desvío.",
+      "**Do** usar cifras tabulares en todo número y la fuente del sistema en todo texto.",
+      "**Do** animar con muelles críticamente amortiguados y curvas ease-out fuertes, respetar `prefers-reduced-motion` y `prefers-reduced-transparency`, y reservar el hover para punteros finos.",
+      "**Do** mantener las cuatro tarjetas de cada rejilla del mismo tamaño fijo (360 × 480px o 360 × 410px)."
     ],
     "donts": [
-      "**Don't** cargar fuentes web ni usar una fuente de display distinta de la del sistema.",
-      "**Don't** usar el azul para algo que no sea la receta, la selección, el foco o un enlace.",
-      "**Don't** usar la escala amarilla-roja fuera del desvío, ni dejar el desvío sin su cifra o su tooltip.",
-      "**Don't** poner desenfoque translúcido en superficies que no tienen contenido debajo.",
-      "**Don't** dejar que una tarjeta de brújula cambie de tamaño con su contenido.",
-      "**Don't** poner bordes de 1px opacos alrededor de las tarjetas; el filo es de media línea y semitransparente."
+      "**Don't** animar el fondo ni añadir fondos en movimiento.",
+      "**Don't** dar volumen de esfera a las burbujas (gradiente radial, sombra proyectada): son lentes planas.",
+      "**Don't** teñir el cristal con color de marca ni usar azul para decorar.",
+      "**Don't** usar grises azulados en el modo oscuro.",
+      "**Don't** poner rótulos en mayúsculas espaciadas sobre los títulos.",
+      "**Don't** usar animaciones con rebote ni que retrasen la lectura de un número más de 640ms."
     ]
   }
 }
