@@ -346,15 +346,11 @@ main[hidden]{display:none}
 #vistaInicio .mapa .leyenda{cursor:auto}
 /* Indicador de nivel: dónde estoy (cápsula segmentada, el pulgar se desliza con el muelle de los controles) y qué hará el
    clic (debajo, cambia al pasar el puntero por una burbuja). Los niveles por encima se pueden pulsar para subir. */
-.nivel{position:absolute;z-index:3;top:6px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
-.nivel > *{pointer-events:auto}
-.niv-seg button{padding:5px 12px;font-size:12px}
+.niv-seg[hidden]{display:none}
+.niv-seg button{padding:6px 13px;font-size:13px}
 .niv-seg button[aria-disabled="true"]{color:var(--label-3);cursor:default}
 .niv-seg button[aria-pressed="true"]{color:var(--label)}
 @media (hover:hover) and (pointer:fine){.niv-seg button:not([aria-disabled="true"]):not([aria-pressed="true"]):hover{color:var(--blue-txt)}}
-.niv-clic{display:inline-flex;align-items:center;gap:6px;max-width:min(520px,70vw);padding:4px 12px;border-radius:999px;font-size:12px;font-weight:500;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.niv-clic b{color:var(--label);font-weight:600;overflow:hidden;text-overflow:ellipsis}
-.niv-clic .tecla{font-size:10.5px;font-weight:700;color:var(--blue-txt);letter-spacing:.02em}
 #mundo circle.n-grupo.objetivo{stroke:var(--blue);stroke-width:2;stroke-opacity:.9}
 /* "Ver todo": vuelve al encuadre completo con el muelle de la cámara */
 .ver-todo{position:absolute;z-index:3;top:6px;right:12px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 12px;border:0;border-radius:999px;color:var(--label);font:600 13px/1 var(--font);cursor:pointer;transition:transform 140ms var(--ease-out),opacity 200ms ease}
@@ -631,9 +627,9 @@ details[open] summary::before{transform:rotate(45deg)}
   .mapa,#vistaInicio .mapa{position:relative;top:auto;padding:4px 12px 0}
   .ver-todo{top:10px;right:20px;height:32px;padding:0 9px}
   .ver-todo span{display:none}
-  .nivel{left:16px;top:10px;transform:none;align-items:flex-start}
-  .niv-seg button{padding:5px 9px;font-size:11.5px}
-  .niv-clic{max-width:calc(100vw - 40px)}
+  .capsulas{flex-wrap:wrap;row-gap:8px}
+  .niv-seg{order:-1;flex:1 1 100%;width:100%}
+  .niv-seg button{padding:5px 0;font-size:12.5px}
   #vistaInicio{overflow-x:clip}
   .lienzo{width:100%}
   .leyenda{max-width:none;border-radius:var(--r-l)}
@@ -766,6 +762,10 @@ details[open] summary::before{transform:rotate(45deg)}
         <button type="button" id="navInicio" aria-current="page">Mapa</button>
         <button type="button" id="navDetalle">Detalle</button>
       </div>
+      <div class="seg vidrio niv-seg" id="nivSeg" role="group" aria-label="Nivel del mapa: dónde estás y a qué niveles puedes subir">
+        <span class="pulgar" aria-hidden="true"></span>
+        <button type="button" data-nv="todo">Todas</button><button type="button" data-nv="casa">Casa</button><button type="button" data-nv="brand">Brand</button><button type="button" data-nv="pl">Línea</button><button type="button" data-nv="hoja">EAN</button>
+      </div>
       <button type="button" class="redondo vidrio" id="btnFiltros" aria-label="Filtros" aria-expanded="false" aria-controls="pop">
         <svg class="ico" viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
         <span class="punto" id="nFiltros" hidden></span>
@@ -825,13 +825,6 @@ details[open] summary::before{transform:rotate(45deg)}
         <div class="etiquetas" id="etiquetas"></div>
       </div>
       <div class="leyenda vidrio" id="leyenda"></div>
-      <div class="nivel" id="nivelMapa">
-        <div class="seg vidrio niv-seg" id="nivSeg" role="group" aria-label="Nivel del mapa: dónde estás y a qué niveles puedes subir">
-          <span class="pulgar" aria-hidden="true"></span>
-          <button type="button" data-nv="todo">Todas</button><button type="button" data-nv="casa">Casa</button><button type="button" data-nv="brand">Brand</button><button type="button" data-nv="pl">Línea</button><button type="button" data-nv="hoja">EAN</button>
-        </div>
-        <span class="niv-clic vidrio" id="nivClic" aria-live="polite"></span>
-      </div>
       <button type="button" class="ver-todo vidrio" id="verTodo" aria-label="Ver todo el mapa"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg><span>Ver todo</span></button>
     </section>
     <aside class="hoja-ins vidrio" id="hojaIns">
@@ -1545,7 +1538,7 @@ function pintarEtiquetas(){
   const dentro = (x, y) => x > vis.x0 + 20 && x < vis.x1 - 20 && y > vis.y0 + 12 && y < vis.y1 - 12;
   const puestos = [];  // rectángulos ya ocupados: la etiqueta que choca no se pinta (queda en el tooltip)
   // el indicador de nivel y "Ver todo" flotan encima del mapa: ninguna etiqueta se esconde debajo de su cristal
-  ["nivSeg", "nivClic", "verTodo"].forEach(id => { const b = $(id) && $(id).getBoundingClientRect(); if (b && b.width)
+  ["verTodo"].forEach(id => { const b = $(id) && $(id).getBoundingClientRect(); if (b && b.width)
     puestos.push({x: (b.left - lr.left) / k - 6, y: (b.top - lr.top) / k - 6, w: b.width / k + 12, h: b.height / k + 12}); });
   const libre = r => !puestos.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
   // palabras iniciales que repite la mayoría de una línea (p. ej. "GUCCI GUILT H"): no distinguen, se quitan
@@ -1832,24 +1825,15 @@ function destinoClic(n){
   const sig = camino[iF + 1];
   return {tipo: sig.data.nivel === "hoja" ? "elegir" : "entrar", nodo: sig};
 }
-const TECLA = () => matchMedia("(pointer: coarse)").matches ? "TOCA" : "CLIC";
 const NOMBRE_NIVEL = {todo: "Todas las casas", casa: "Casa", brand: "Brand", pl: "Línea", hoja: "EAN"};
-const HIJO = {todo: "una casa", casa: "una brand", brand: "una línea", pl: "un EAN"};
-function textoClic(d){
-  if (!d) return `<span class="tecla">${TECLA()}</span> en ${HIJO[M.foco.data.nivel] || "una burbuja"} para entrar`;
-  if (d.tipo === "subir") return `<span class="tecla">${TECLA()}</span> fuera de las burbujas: subir a <b>${esc(corto(d.nodo.data.nombre))}</b>`;
-  const nom = d.nodo.data.nivel === "hoja" ? d.nodo.data.hoja.desc : d.nodo.data.nombre;
-  return `<span class="tecla">${TECLA()}</span> ${d.tipo === "elegir" ? "elegir EAN" : "entrar en " + NOMBRE_NIVEL[d.nodo.data.nivel].toLowerCase()} <b>${esc(corto(nom))}</b>`;
-}
 // indicador: nivel actual (el EAN si hay uno elegido), niveles de arriba pulsables, de abajo apagados
-function pintarNivel(d){
+function pintarNivel(){
   if (!M.foco) return;
   const orden = ["todo", "casa", "brand", "pl", "hoja"], act = M.sel ? "hoja" : M.foco.data.nivel, ia = orden.indexOf(act);
   $("nivSeg").querySelectorAll("button").forEach(b => { const i = orden.indexOf(b.dataset.nv);
     b.setAttribute("aria-pressed", String(i === ia)); b.setAttribute("aria-disabled", String(i > ia));
     b.title = i < ia ? "Subir a " + NOMBRE_NIVEL[b.dataset.nv].toLowerCase() : i === ia ? "Estás aquí" : ""; });
   moverPulgar($("nivSeg"));
-  $("nivClic").innerHTML = d === undefined ? textoClic(null) : textoClic(d);
 }
 $("nivSeg").addEventListener("click", ev => {
   const b = ev.target.closest("button[data-nv]"); if (!b || b.getAttribute("aria-disabled") === "true" || b.getAttribute("aria-pressed") === "true") return;
@@ -1867,7 +1851,7 @@ $("pack").addEventListener("pointerover", ev => {
   if (ev.pointerType === "touch" || G.arr) return;
   const c = ev.target.closest("circle[data-i]"), n = c ? M.nodos[+c.dataset.i] : null, d = destinoClic(n);
   clearTimeout(tipFuera);
-  pintarNivel(d);
+  pintarNivel();
   // la tarjeta y el aro van en lo que se elegiría con el clic, no en la burbuja más pequeña bajo el puntero
   if (!d || d.tipo === "subir") { marcarObjetivo(null); tipFuera = setTimeout(ocultarTip, 120); return; }
   marcarObjetivo(d.nodo);
@@ -2065,7 +2049,7 @@ $("pestanas").addEventListener("click", ev => {
 function irA(vista, sel){
   const cambio = () => {
     const ini = vista === "inicio";
-    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini;
+    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini;
     $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
     $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
     moverPulgar($("segVista"));
@@ -2077,7 +2061,7 @@ function irA(vista, sel){
       if (actual !== "detalle") document.querySelectorAll("#vistaDetalle [data-dibujado]").forEach(e => delete e.dataset.dibujado);
       $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"});
       pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esSel() ? "Selección de " + miembros().length + " códigos" : esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
-    else { $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
+    else { requestAnimationFrame(() => pintarNivel()); $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
     bordeBarra();
   };
   const actual = $("vistaInicio").hidden ? "detalle" : "inicio";
