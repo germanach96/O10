@@ -1,4 +1,4 @@
-# Brújulas de Demand — ejemplo fase 1
+# O10 · Brújulas de Demand — ejemplo fase 1
 
 Especificación completa en `CLAUDE.md`.
 
@@ -13,4 +13,4 @@ python -m pytest tests
 - `brujulas/lector.py`: lectura y validación de fotos (EAN, mes, scope, edad, tamaño).
 - `brujulas/motor.py`: forecast de las 12.393 recetas por código y foto.
 - `brujulas/pipeline.py`: actuals posteriores, tramos, cubo Parquet (`salida/cubo`), resúmenes, score multi-foto y detector.
-- `BRUJULAS_ejemplo.html`: página autocontenida con los datos precalculados (se abre sin servidor).
+- `BRUJULAS_ejemplo.html`: página autocontenida con los datos precalculados (se abre sin servidor). Plantilla en `brujulas/plantilla.html`; sistema de diseño en `DESIGN.md`.

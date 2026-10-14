@@ -1,3 +1,5 @@
 salida/
 __pycache__/
 .pytest_cache/
+.impeccable/review/
+.impeccable/questions/

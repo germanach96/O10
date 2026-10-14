@@ -418,11 +418,23 @@ def main(argv=None):
                                 "pl": row["Product Line"], "segmento": row["Final Segment"],
                                 "tamano": row["tamano"], "flag": row["Ignore System Forecast Flag"],
                                 "fr": row["Final Responsibility"]}
+        # página de inicio: volumen y scope de cada EAN en la foto más actual (incluye los local)
+        fu = fotos[-1]
+        ult12 = (fu.meses >= fu.mes - 12) & (fu.meses < fu.mes)
+        fut = (fu.meses > fu.mes) & (fu.meses <= fu.mes + cfg["horizonte"])
+        vol12 = np.nansum(fu.mat["Actuals"][:, ult12], axis=1)
+        cons9 = np.nansum(fu.mat["Consensus - Final"][:, fut], axis=1)
+        inicio = {}
+        for i, (e, row) in enumerate(fu.codigos.iterrows()):
+            inicio[e] = {"vol12": round(float(vol12[i]), 1), "cons9": round(float(cons9[i]), 1),
+                         "scope": bool(row["scope"]), "motivo": row["fuera_scope_motivo"],
+                         "edad": row["tramo_edad"], "tipo": row["Article Type"]}
         for rsm in resumenes:
             (salida / f"resumen_{casa}_{rsm['foto']}.json").write_text(
                 json.dumps(rsm, ensure_ascii=False), encoding="utf-8")
         datos["casas"][casa] = {
             "fotos": resumenes, "elegida": elegida, "detector": det, "atributos": atributos,
+            "inicio": {"foto": fu.etiqueta, "codigos": inicio},
         }
         print(f"  {casa}: score multi-foto con {len(elegida)} códigos ({time.time()-t0:.1f}s)")
     tabla_recetas(R).to_csv(salida / "recetas.csv")

@@ -230,7 +230,18 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-Diseño limpio tipo Apple (ver `BRUJULAS.html` de referencia: lienzo gris, paneles blancos de 20px, colores fijos, modo oscuro). Selector de casa, de código y de foto.
+El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `DESIGN.md` (la guía `DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+
+### Decisiones de diseño (fijadas por el usuario)
+- **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
+- **iPhone:** barra de pestañas flotante (Mapa, Detalle, Brands, Filtros), inspector como hoja inferior arrastrable con dos posiciones y brands como hoja.
+- **Página de inicio = burbujas anidadas** casa → brand → product line → EAN (no un grafo de fuerza, demasiado sucio con ~500 códigos). Tamaño = actuals 12M (si no hay, Consensus 9M anualizado). Color = desvío del Consensus frente a la receta elegida, escala ordinal gris (dentro) → amarillo → naranja → rojo → rojo oscuro; huecos = fuera de scope.
+- **Burbujas como lentes de cristal** (tinte translúcido, borde de luz, reflejo superior). Flotan muy despacio (≈2–3 px, ciclos de 9–16 s); al entrar el puntero en el mapa **todas frenan** con un muelle sin rebote y la burbuja señalada crece y muestra una tarjeta de cristal con su detalle. Con movimiento reducido no flotan.
+- **Fondo:** gris difuminado y quieto (en oscuro, grises puros).
+- **Colores del sistema de Apple con un significado fijo:** azul = receta y acciones, gris discontinuo = Consensus, verde = meta. Fuente del sistema.
+- **Movimiento** según la skill de Emil Kowalski: muelles críticamente amortiguados para zoom y controles, curvas ease-out fuertes para pulsaciones y popovers, nada animado en acciones de teclado.
+
+Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 
 ### Sección "Decisiones" — rejilla 2 × 2
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.

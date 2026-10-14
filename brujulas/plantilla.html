@@ -2,118 +2,712 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brújulas de Demand</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#e9ebee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e0e0e" media="(prefers-color-scheme: dark)">
+<title>O10 · Brújulas de Demand</title>
+<meta name="description" content="O10: mejor receta de forecast por código y foto, y detector de desvíos del Consensus frente a la estrategia.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fafafa'/%3E%3Cstop offset='1' stop-color='%23c9ccd1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7.5' fill='url(%23g)'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='-apple-system,Helvetica,Arial' font-weight='700' font-size='13' fill='%231d1d1f'%3EO10%3C/text%3E%3C/svg%3E">
 <style>
-:root{--bg:#f2f2f7;--panel:#fff;--txt:#1c1c1e;--sub:#6e6e73;--line:#d1d1d6;--azul:#0a84ff;--gris:#8e8e93;--verde:#34c759;--rojo:#ff3b30;--naranja:#ff9500;--meta:rgba(52,199,89,.14);--banda:rgba(10,132,255,.14)}
-@media (prefers-color-scheme:dark){:root{--bg:#000;--panel:#1c1c1e;--txt:#f2f2f7;--sub:#98989d;--line:#38383a;--meta:rgba(52,199,89,.2);--banda:rgba(10,132,255,.25)}}
+/* =====================================================================
+   O10 · estilo iOS / iPadOS 26 (cristal líquido)
+   El contenido ocupa toda la ventana; la navegación y los paneles flotan
+   encima como piezas de cristal. El fondo es un gris difuminado y quieto.
+   ===================================================================== */
+:root{
+  --fondo:#e9ebee;
+  --mancha-1:#ffffff; --mancha-2:#c6cad1; --mancha-3:#fafbfc; --mancha-4:#babfc7;
+  /* cristal */
+  --cristal:rgba(255,255,255,.46); --cristal-fuerte:rgba(255,255,255,.72);
+  --borde-cristal:rgba(255,255,255,.66); --brillo-cristal:rgba(255,255,255,.9);
+  --sombra-cristal:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);
+  --blur:28px;
+  /* superficies sólidas (bordes de puntos, celdas) */
+  --card:#ffffff; --card-2:rgba(255,255,255,.55); --bg:#eceef1;
+  --fill:rgba(120,120,128,.14); --fill-2:rgba(120,120,128,.24);
+  --sep:rgba(60,60,67,.14); --sep-fuerte:rgba(60,60,67,.26);
+  --label:#1c1c1e; --label-2:#5d5d63; --label-3:#6e6e74;
+  --blue:#0071e3; --blue-txt:#0062c4; --on-blue:#ffffff;
+  --green:#34c759; --green-txt:#1f7a35;
+  --orange:#ff9500; --red:#ff3b30; --red-txt:#c9001a; --yellow:#ffcc00;
+  --d0:#9fa1a8; --d1:#ffcc00; --d2:#ff9500; --d3:#ff3b30; --d4:#b3001b;
+  --r0:#6c6e75; --r1:#a37f00; --r2:#b86a00; --r3:#c4170c; --r4:#7a0012; --tinte:.62;
+  --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#ffffff;
+  --hueco:rgba(60,60,67,.38); --sinrec:rgba(255,255,255,.6);
+  --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:transparent;
+  --borde-burbuja:rgba(255,255,255,.85);
+  --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  /* movimiento (skill de Emil): muelle críticamente amortiguado y curvas fuertes */
+  --muelle:linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1);
+  --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-drawer:cubic-bezier(0.32,0.72,0,1);
+  --r-s:10px; --r-m:14px; --r-l:22px; --r-xl:28px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
+  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
+  --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
+  --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+  --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141414;
+  --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
+  --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
+  --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+  --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
+  --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
+  --d0:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+  --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
+  --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
+  --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
+  --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
+  --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
+    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
+    --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
+    --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+    --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141414;
+    --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
+    --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
+    --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+    --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
+    --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
+    --d0:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+    --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
+    --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
+    --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
+    --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
+    --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
+    color-scheme:dark;
+  }
+}
+
+/* ============ Base y fondo difuminado ============ */
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-header{padding:16px 20px 8px}
-h1{font-size:22px;margin:0 0 4px}
-h2{font-size:18px;margin:24px 20px 8px}
-h3{font-size:15px;margin:0 0 6px}
-.controles{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:0 20px}
-select,input{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--txt)}
-#selCodigo{max-width:520px}
-.info{padding:6px 20px;color:var(--sub);font-size:13px}
-.aviso{color:#c77c00}
-.rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:16px;padding:0 20px}
-@media (max-width:780px){.rejilla{grid-template-columns:1fr}}
-.tarjeta{background:var(--panel);border-radius:20px;padding:14px;width:360px;height:470px;overflow:hidden}
-.tarjeta.res{height:400px}
-.tarjeta h3{height:22px;margin:0}
-.tarjeta .subt{color:var(--sub);font-size:12px;height:34px}
-.tarjeta .pie{font-size:12px;color:var(--sub);margin-top:4px}
-.ancho{background:var(--panel);border-radius:20px;padding:14px;margin:0 20px 16px;overflow-x:auto}
-svg text{font-size:10.5px;fill:var(--sub)}
-table{border-collapse:collapse;font-size:12.5px}
-td,th{padding:3px 7px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-th{color:var(--sub);font-weight:600;cursor:default}
+html,body{height:100%}
+body{margin:0;background:var(--fondo);color:var(--label);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;overflow:hidden;caret-color:var(--blue);-webkit-tap-highlight-color:transparent}
+/* el "papel tapiz": manchas grises muy suaves, difuminadas y quietas (nada de fondos en movimiento) */
+body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 14% 18%,var(--mancha-1) 0,transparent 70%),
+    radial-gradient(34% 40% at 88% 12%,var(--mancha-2) 0,transparent 72%),
+    radial-gradient(40% 46% at 72% 88%,var(--mancha-3) 0,transparent 70%),
+    radial-gradient(36% 40% at 20% 92%,var(--mancha-4) 0,transparent 72%),
+    var(--fondo);
+  filter:blur(48px) saturate(110%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:color-mix(in srgb,var(--blue) 28%,transparent)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--blue) 55%,transparent);outline-offset:2px;border-radius:var(--r-s)}
+*{scrollbar-color:var(--fill-2) transparent;scrollbar-width:thin}
+button,input,select{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:default}
+.mono{font-variant-numeric:tabular-nums}
+.ean,.codigo{font-family:var(--font-code);font-size:11.5px;letter-spacing:0}
+.num{font-variant-numeric:tabular-nums}
+.oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.saltar{position:absolute;left:16px;top:-48px;background:var(--blue);color:var(--on-blue);padding:8px 12px;border-radius:var(--r-s);z-index:60}
+.saltar:focus{top:12px}
+svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ Material de cristal ============ */
+.vidrio{position:relative;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);
+  border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),inset 0 -1px 1px rgba(255,255,255,.08),var(--sombra-cristal)}
+/* reflejo especular en el borde superior, como el cristal líquido */
+.vidrio::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.12) 100%);mix-blend-mode:soft-light}
+
+/* ============ Ventana ============ */
+.lado{position:fixed;z-index:20;top:12px;left:12px;bottom:12px;width:264px;border-radius:var(--r-xl);display:flex;flex-direction:column;min-height:0;padding:14px 10px 10px}
+.contenido{position:fixed;inset:0;left:288px}
+.lado-cab{display:flex;align-items:center;gap:11px;padding:4px 8px 14px}
+.lado-cab .icono{width:34px;height:34px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.14))}
+.lado-cab b{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.02em;display:block;line-height:1.1}
+.lado-cab span{color:var(--label-2);font-size:11.5px}
+.lado-scroll{flex:1;overflow:auto;min-height:0;margin:0 -4px;padding:0 4px}
+.lado h2{font-size:11px;font-weight:600;color:var(--label-2);margin:16px 10px 4px;letter-spacing:.01em}
+.fila{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:6px 10px;border-radius:12px;min-height:32px;color:var(--label);transition:background-color 140ms ease,transform 140ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.fila:hover{background:var(--fill)}}
+.fila:active{transform:scale(.98)}
+.fila[aria-current="true"]{background:color-mix(in srgb,var(--blue) 16%,transparent);color:var(--blue-txt);font-weight:600}
+.fila[aria-current="true"] .badge{color:var(--blue-txt);background:color-mix(in srgb,var(--blue) 14%,transparent)}
+.fila .ico{color:var(--blue)}
+.fila .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-size:11px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--label-2);background:var(--fill);border-radius:999px;padding:1px 7px;min-width:22px;text-align:center}
+.disc{width:16px;height:16px;flex:none;display:grid;place-items:center;border:0;background:transparent;padding:0;color:var(--label-3);border-radius:5px;transition:transform 220ms var(--ease-out)}
+.disc[aria-expanded="true"]{transform:rotate(90deg)}
+.sub-lista{list-style:none;margin:0;padding:0 0 0 16px}
+.sub-lista[hidden]{display:none}
+.lista-lado{list-style:none;margin:0;padding:0}
+.lado-pie{padding:10px 4px 2px;display:flex;flex-direction:column;gap:8px}
+.lado-pie label{color:var(--label-2);font-size:11.5px;padding-left:4px}
+
+/* controles */
+.popup{appearance:none;border:0;background:var(--fill);border-radius:12px;padding:7px 28px 7px 12px;font-size:13px;font-weight:500;width:100%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M2 5l3-3 3 3M2 9l3 3 3-3' fill='none' stroke='%238e8e93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;border-radius:999px;padding:3px;isolation:isolate}
+.lado-pie .seg{background:var(--fill)}
+.seg button{position:relative;z-index:1;border:0;background:transparent;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--label);white-space:nowrap;transition:color 160ms ease}
+.seg .pulgar{position:absolute;z-index:0;top:3px;bottom:3px;left:3px;border-radius:999px;background:var(--cristal-fuerte);box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 var(--brillo-cristal),0 0 0 .5px var(--borde-cristal);transition:transform 360ms var(--muelle),width 360ms var(--muelle)}
+:root[data-theme="dark"] .seg .pulgar{background:rgba(255,255,255,.16)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg .pulgar{background:rgba(255,255,255,.16)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;background:var(--blue);color:var(--on-blue);padding:8px 16px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 4px 14px color-mix(in srgb,var(--blue) 35%,transparent),inset 0 1px 0 rgba(255,255,255,.3);transition:transform 140ms var(--ease-out),filter 140ms ease}
+.btn:active{transform:scale(.96);filter:brightness(.92)}
+.btn[disabled]{opacity:.4;transform:none;filter:none;box-shadow:none}
+.btn-fant{background:var(--fill);color:var(--label);box-shadow:none}
+:root[data-theme="dark"] .btn:not(.btn-fant){box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn:not(.btn-fant){box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}}
+.redondo{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:999px;color:var(--label);position:relative;border:1px solid var(--borde-cristal);transition:transform 140ms var(--ease-out)}
+.redondo:active{transform:scale(.93)}
+.redondo[aria-expanded="true"]{color:var(--blue-txt)}
+.redondo .punto{position:absolute;top:-2px;right:-2px;min-width:17px;height:17px;border-radius:9px;background:var(--blue);color:var(--on-blue);font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 0 2px var(--fondo)}
+.redondo .punto[hidden]{display:none}
+.enlace{background:none;border:0;padding:0;color:var(--blue-txt);font-weight:500;cursor:pointer}
+@media (hover:hover) and (pointer:fine){.enlace:hover{text-decoration:underline;text-underline-offset:3px}}
+
+/* ============ Barra superior: título grande + cápsulas de cristal ============ */
+.barra{position:absolute;z-index:15;top:0;left:0;right:12px;display:flex;align-items:flex-start;gap:10px;padding:18px 0 0 12px;pointer-events:none}
+.barra > *{pointer-events:auto}
+.barra::after{content:"";position:absolute;z-index:-1;inset:0 -12px -22px -12px;pointer-events:none;opacity:0;transition:opacity 200ms ease;
+  background:color-mix(in srgb,var(--fondo) 62%,transparent);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
+  -webkit-mask-image:linear-gradient(#000 62%,transparent);mask-image:linear-gradient(#000 62%,transparent)}
+.barra.borde::after{opacity:1}
+.barra .titulo{min-width:0;flex:1;padding-top:2px;pointer-events:none}
+.barra h1{font-family:var(--font-display);font-size:30px;font-weight:700;margin:0;letter-spacing:-.025em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 12px var(--fondo)}
+.migas{display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow:hidden;color:var(--label-2);font-size:12.5px;font-weight:500;margin-top:3px;white-space:nowrap;pointer-events:auto}
+.migas > span{overflow:hidden;text-overflow:ellipsis}
+.migas button{border:0;background:transparent;padding:0;color:var(--blue-txt);font-weight:500;white-space:nowrap}
+.migas .sep{color:var(--label-3)}
+.barra .titulo{transition:opacity 180ms ease}
+.barra.titulo-oculto .titulo{opacity:0}
+.capsulas{display:flex;align-items:center;gap:10px}
+#segVista{border:1px solid var(--borde-cristal)}
+.buscador{display:flex;align-items:center;gap:7px;border-radius:999px;padding:0 14px;width:250px;height:42px;color:var(--label-2);transition:box-shadow 160ms ease}
+.buscador:focus-within{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 0 0 4px color-mix(in srgb,var(--blue) 35%,transparent),var(--sombra-cristal)}
+.buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:14px;color:var(--label)}
+.buscador input::placeholder{color:var(--label-2)}
+.buscador input::-webkit-search-cancel-button{appearance:none}
+.kbd{font-size:11px;font-weight:600;color:var(--label-2)}
+#btnBuscar{display:none}
+.solo-movil{display:none}
+
+/* popover de filtros: cristal que nace del botón que lo abre */
+.pop{position:absolute;z-index:40;top:70px;right:0;width:min(450px,calc(100vw - 24px));border-radius:var(--r-l);padding:16px 18px 16px;background:var(--cristal-fuerte);--blur:40px;transform-origin:var(--origen,top right);
+  transition:opacity 180ms var(--ease-out),transform 240ms var(--ease-out),filter 200ms var(--ease-out),visibility 0s linear 0s}
+.pop[data-cerrado]{opacity:0;transform:scale(.94) translateY(-6px);filter:blur(6px);visibility:hidden;pointer-events:none;transition:opacity 140ms ease,transform 140ms ease,filter 140ms ease,visibility 0s linear 140ms}
+.pop h2{font-size:15px;font-weight:700;margin:0 0 12px;letter-spacing:-.01em}
+.filtros{display:flex;flex-direction:column;gap:12px}
+.grupo-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;position:relative;padding-left:92px;min-height:26px}
+.grupo-f > span.mono{color:var(--label-2);position:absolute;left:0;top:4px;font-size:12px;font-weight:500}
+.chip{border:0;background:var(--fill);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--label);transition:background-color 140ms ease,color 140ms ease,transform 140ms var(--ease-out)}
+.chip:active{transform:scale(.95)}
+.chip[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+@media (hover:hover) and (pointer:fine){.chip:not([aria-pressed="true"]):hover{background:var(--fill-2)}}
+.tol input{width:58px;border:0;background:var(--fill);border-radius:9px;padding:4px 7px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+.pop-pie{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--sep);margin-top:14px;padding-top:12px}
+
+/* ============ Vistas ============ */
+.vistas{position:absolute;inset:0}
+main{position:absolute;inset:0;overflow:auto}
+main[hidden]{display:none}
+#vistaInicio{overflow:hidden}
+::view-transition-old(root){animation:vt-salir 160ms var(--ease-out) both}
+::view-transition-new(root){animation:vt-entrar 260ms var(--ease-out) both}
+@keyframes vt-salir{to{opacity:0;filter:blur(4px)}}
+@keyframes vt-entrar{from{opacity:0;filter:blur(6px);transform:scale(.99)}}
+
+/* ============ Mapa sobre el fondo + inspector de cristal ============ */
+.mesa{position:absolute;inset:0}
+.mapa{position:absolute;top:84px;left:0;right:344px;bottom:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:0}
+.lienzo{position:relative;width:min(100%,calc(100dvh - 150px));aspect-ratio:1/1;overflow:hidden;border-radius:50%;isolation:isolate}
+.lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;touch-action:manipulation}
+#mundo{transform-origin:0 0;transition:transform 640ms var(--muelle)}
+#mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
+.n-casa{fill:var(--b-casa);stroke:none}
+.n-brand{fill:var(--b-brand);stroke:var(--borde-burbuja);stroke-width:1}
+.n-pl{fill:var(--b-pl);stroke:var(--borde-burbuja);stroke-width:.75}
+.n-hoja{fill-opacity:var(--tinte);stroke-width:1.25;transform-box:fill-box;transform-origin:center}
+.n-hoja[data-bin="0"]{stroke:var(--r0)}.n-hoja[data-bin="1"]{stroke:var(--r1)}.n-hoja[data-bin="2"]{stroke:var(--r2)}.n-hoja[data-bin="3"]{stroke:var(--r3)}.n-hoja[data-bin="4"]{stroke:var(--r4)}
+.n-hoja.sinrec{fill-opacity:1}
+.n-hoja[data-bin="3"]{fill-opacity:.74}.n-hoja[data-bin="4"]{fill-opacity:.9}
+.n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
+.n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
+.n-grupo,.n-hoja{cursor:pointer}
+/* brillo de burbuja de cristal sobre cada código */
+.brillo{fill:url(#gBrillo);stroke:rgba(255,255,255,.55);stroke-width:.75;vector-effect:non-scaling-stroke;pointer-events:none;transition:opacity 220ms ease}
+g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
+#mundo circle.apagado{opacity:.16}
+#mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important;fill-opacity:.12;stroke:var(--hueco);stroke-width:.75}
+#mundo circle.activo{stroke:var(--blue);stroke-width:3}
+/* la burbuja señalada crece un poco (respuesta al puntero, 200 ms ease-out) */
+@media (hover:hover) and (pointer:fine){#mundo circle.n-hoja.encima{transform:scale(1.07);stroke:#ffffff;stroke-width:2.5;transition:transform 200ms var(--ease-out),stroke 140ms ease,opacity 220ms ease,fill 220ms ease}}
+.entrando #mundo .n-hoja,.entrando #mundo .n-pl,.entrando #mundo .n-brand,.entrando #mundo .brillo{opacity:0}
+.n-anim{transform-box:fill-box;transform-origin:center;transition:opacity 260ms ease,fill 220ms ease,stroke 160ms ease,transform 460ms var(--muelle)}
+.entrando .n-anim{transform:scale(.88)}
+.etiquetas{position:absolute;inset:0;pointer-events:none;transition:opacity 160ms ease,filter 160ms ease}
+.etiquetas.fuera{opacity:0;filter:blur(4px)}
+.etq{position:absolute;transform:translate(-50%,-50%);text-align:center;white-space:nowrap}
+.etq.grupo{display:flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:600;color:var(--label);background:var(--cristal-fuerte);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),0 4px 14px rgba(0,0,0,.1)}
+.etq.grupo .c{color:var(--label-2);font-weight:500;font-variant-numeric:tabular-nums}
+.etq.hoja{font-size:11.5px;font-weight:600;line-height:1.2}
+.etq.hoja .t{display:block;overflow:hidden;text-overflow:ellipsis}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;margin-top:12px;color:var(--label-2);font-size:11.5px;font-weight:500;max-width:min(100%,calc(100dvh - 150px));padding:7px 14px;border-radius:999px}
+.leyenda .it{display:flex;align-items:center;gap:5px}
+.leyenda .sw{width:10px;height:10px;border-radius:50%;display:inline-block}
+.leyenda .tam{display:none}
+
+.hoja-ins{position:absolute;z-index:12;top:84px;right:0;bottom:12px;width:332px;border-radius:var(--r-xl);display:flex;flex-direction:column;overflow:hidden}
+.agarre{display:none}
+.panel{padding:18px 16px 0;display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden}
+.panel h2{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin:0 0 6px;text-wrap:balance}
+.panel .resumen{color:var(--label-2);font-size:13px;line-height:1.5;margin:0 0 14px}
+.panel .resumen b{color:var(--label);font-weight:600}
+.panel .acciones{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.marcador{color:var(--label);font-weight:600}
+.ficha{background:var(--card-2);border:1px solid var(--borde-cristal);border-radius:var(--r-l);padding:14px;margin-bottom:14px}
+.ficha .d{font-weight:700;font-size:13.5px;margin:0 0 4px}
+.ficha .m{color:var(--label-2);margin-bottom:10px;line-height:1.5;font-size:12px}
+.ficha .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.ficha .kpis div{display:flex;flex-direction:column;gap:2px;background:var(--fill);border-radius:12px;padding:8px 9px}
+.ficha .kpis .mono{font-size:11px;color:var(--label-2)}
+.ficha .kpis b{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.lista-cab{display:flex;justify-content:space-between;color:var(--label-2);font-size:11px;font-weight:600;padding:6px 6px;border-bottom:1px solid var(--sep)}
+.lista{list-style:none;margin:0 -8px;padding:4px 0 24px;overflow:auto;flex:1;min-height:120px;-webkit-mask-image:linear-gradient(#000 calc(100% - 28px),transparent);mask-image:linear-gradient(#000 calc(100% - 28px),transparent)}
+.lista li button{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:12px;transition:background-color 120ms ease}
+@media (hover:hover) and (pointer:fine){.lista li button:hover{background:var(--fill)}}
+.lista li button[aria-current="true"]{background:color-mix(in srgb,var(--blue) 16%,transparent)}
+.lista .sw{width:10px;height:10px;border-radius:50%;box-shadow:inset 0 1px 1px rgba(255,255,255,.5)}
+.lista .d{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista .e{color:var(--label-2);margin-top:1px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lista .v{text-align:right;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.lista .v small{display:block;color:var(--label-2);font-weight:500;font-size:11px}
+.vacio{padding:24px 4px;color:var(--label-2);line-height:1.5;text-align:center}
+.vacio b{color:var(--label)}
+.mas{color:var(--label-2);padding:10px 8px 0;font-size:11.5px;text-align:center}
+
+/* tarjeta de detalle al pasar sobre una burbuja: cristal anclado a la burbuja */
+.tip{position:fixed;left:0;top:0;z-index:50;pointer-events:none;border-radius:var(--r-l);padding:12px 14px;font-size:12.5px;line-height:1.45;width:260px;color:var(--label);background:color-mix(in srgb,var(--card) 88%,transparent) !important;--blur:36px;
+  opacity:0;transform:translate3d(var(--tx,0),var(--ty,0),0) scale(.96);transform-origin:var(--to,left center);filter:blur(4px);
+  transition:opacity 150ms var(--ease-out),filter 150ms var(--ease-out),transform 150ms var(--ease-out)}
+.tip.ver{opacity:1;filter:none;transform:translate3d(var(--tx,0),var(--ty,0),0)}
+.tip.instant{transition:opacity 150ms var(--ease-out),filter 150ms var(--ease-out)}
+.tip .mono{color:var(--label-2);display:block;margin-bottom:2px;font-size:11px}
+.tip .tt{font-weight:700;font-size:13.5px;line-height:1.3;margin-bottom:8px;letter-spacing:-.01em}
+.tip .kk{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.tip .kk div{background:var(--fill);border-radius:10px;padding:6px 8px}
+.tip .kk span{display:block;font-size:10.5px;color:var(--label-2)}
+.tip .kk b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.tip .nota{color:var(--label-2);font-size:11.5px}
+
+/* ============ Detalle: tarjetas de cristal sobre el fondo ============ */
+#vistaDetalle{padding:96px 12px 60px 12px}
+.det-cab{padding:4px 0 4px}
+.volver{display:none}
+.det-migas{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px;font-size:12.5px;color:var(--label-2);font-weight:500}
+.det-migas button{border:0;background:transparent;padding:0;color:var(--blue-txt);font-weight:500}
+.det-migas button[aria-current="true"]{color:var(--label-2)}
+.det-migas button[disabled]{color:var(--label-3)}
+.det-cab h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.028em;margin:0 0 10px;text-wrap:balance;max-width:26ch}
+.info{color:var(--label-2);font-size:12.5px;line-height:1.6;max-width:110ch}
+.info b{color:var(--label)}
+.aviso{color:#b85700}
+:root[data-theme="dark"] .aviso{color:var(--orange)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .aviso{color:var(--orange)}}
+.seccion{margin-top:40px;scroll-margin-top:90px}
+.seccion > h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.025em;line-height:1.2;margin:0 0 2px}
+.seccion > .sub{color:var(--label-2);margin:0 0 14px;font-size:13px}
+.ancho{border-radius:var(--r-l);padding:16px 18px;overflow-x:auto}
+.controles{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:14px;font-size:12.5px}
+.controles label{display:flex;align-items:center;gap:6px;color:var(--label-2);font-weight:500}
+.controles select,.controles input[type=number],.controles input[type=search]{border:0;background:var(--fill);border-radius:10px;padding:5px 9px;font-size:12.5px;color:var(--label)}
+.controles input[type=number]{width:64px;text-align:right;font-variant-numeric:tabular-nums}
+.controles input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px}
+.rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:20px}
+@media (max-width:820px){.rejilla{grid-template-columns:360px}}
+.tarjeta{border-radius:var(--r-l);padding:16px;width:360px;height:480px;overflow:hidden}
+.tarjeta.res{height:410px}
+.tarjeta h3{height:22px;margin:0;font-size:14.5px;font-weight:700;letter-spacing:-.01em;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tarjeta .subt{color:var(--label-2);font-size:12px;height:36px;line-height:1.4;margin-top:1px}
+.tarjeta .pie{font-size:12px;color:var(--label-2);margin-top:6px;line-height:1.5}
+.tarjeta .pie b:not(.bueno):not(.malo){color:var(--label);font-weight:600}
+svg text{font-size:11px;fill:var(--label-2);font-family:var(--font);font-variant-numeric:tabular-nums}
+.tarjeta svg text{font-size:10.5px}
+.ley-graf{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--label-2);margin:2px 0 8px}
+.ley-it{display:inline-flex;align-items:center;gap:6px}
+.ley-it i{display:inline-block;width:16px;height:10px;border-radius:3px}
+table{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+td,th{padding:6px 10px;border-bottom:1px solid var(--sep);text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{color:var(--label-2);font-weight:600;font-size:11.5px;cursor:default;border-bottom-color:var(--sep-fuerte)}
 th.ord{cursor:pointer}
+@media (hover:hover) and (pointer:fine){th.ord:hover{color:var(--label)}}
 td.izq,th.izq{text-align:left}
-.matriz{table-layout:fixed;width:332px}
-.matriz td{text-align:center;height:40px;padding:2px;border:1px solid var(--bg);font-weight:600;cursor:default;position:relative}
-.matriz th{font-size:10.5px;padding:2px;white-space:normal}
-.matriz td.elegida{outline:3px solid var(--naranja);outline-offset:-3px;box-shadow:0 0 0 2px var(--naranja)}
-.matriz td.elegida::after{content:"✓";position:absolute;top:1px;right:3px;font-size:11px;color:var(--naranja)}
-.elegidaTxt{color:var(--naranja);font-weight:600}
-.bueno{color:var(--verde)} .malo{color:var(--rojo)}
-.pequeño{font-size:11.5px;color:var(--sub)}
-a.ean{color:var(--azul);cursor:pointer;text-decoration:none}
-tr.fuera td{color:var(--rojo)}
-details summary{cursor:pointer;color:var(--azul);margin:6px 0}
+td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
+#detector td.desc{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.sub-mes{display:block;color:var(--label-2);font-size:11px;margin-top:1px;overflow:hidden;text-overflow:ellipsis}
+.t-det .c-mes,.t-det th:nth-child(9){display:none}
+#detector td,#detector th{padding:6px 8px}
+@media (max-width:1700px){.t-det .c-grupo,.t-det .c-edad,.t-det th:nth-child(4),.t-det th:last-child{display:none}}
+@media (max-width:1240px) and (min-width:901px){.t-det .c-brand,.t-det th:nth-child(3){display:none}}
+.matriz{table-layout:fixed;width:326px;margin-top:4px;border-collapse:separate;border-spacing:3px}
+.matriz td{text-align:center;height:40px;padding:2px;border:0;font-size:12px;font-weight:700;cursor:default;position:relative;border-radius:10px}
+.matriz th{font-size:11px;padding:2px;white-space:normal;line-height:1.15;border:0;font-weight:500}
+.matriz th.izq{width:70px;white-space:nowrap}
+.matriz tr:first-child th{vertical-align:bottom}
+.matriz td.elegida{box-shadow:0 0 0 2px var(--fondo),0 0 0 4px var(--blue)}
+.elegidaTxt{color:var(--blue-txt);font-weight:600}
+.bueno{color:var(--green-txt)} .malo{color:var(--red-txt)}
+.pequeño{font-size:12px;color:var(--label-2)}
+a.ean{color:var(--blue-txt);cursor:pointer;text-decoration:none}
+@media (hover:hover) and (pointer:fine){a.ean:hover{text-decoration:underline}}
+tr.fuera td.dv{color:var(--red-txt);font-weight:600}
+details summary{cursor:pointer;margin:10px 0;color:var(--blue-txt);font-weight:500;width:max-content;list-style:none;display:flex;align-items:center;gap:6px}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"";width:6px;height:6px;border-right:1.7px solid currentColor;border-bottom:1.7px solid currentColor;transform:rotate(-45deg);transition:transform 220ms var(--ease-out)}
+details[open] summary::before{transform:rotate(45deg)}
+.flecha{vertical-align:-1px;margin-left:3px}
+.anteriores h3{font-size:15px;font-weight:700;margin:6px 0 8px}
+.notas{color:var(--label-2);font-size:12px;margin-top:32px}
+.det-cuerpo{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.rail{order:-1;border-radius:var(--r-l);padding:16px;margin-top:24px;align-self:start}
+.rail-t{font-size:11px;font-weight:600;color:var(--label-2);margin:0 0 6px}
+.rail-g{background:var(--fill);border-radius:var(--r-m);margin-bottom:14px}
+.rail-f{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 12px;font-size:13px}
+.rail-f + .rail-f{border-top:1px solid var(--sep)}
+.rail-f b{font-weight:700}
+.rail .rec{font-size:12px;line-height:1.55;color:var(--label);background:var(--fill);border-radius:12px;padding:9px 10px;margin:0 0 12px}
+.rail nav{display:flex;flex-direction:column;border-top:1px solid var(--sep);padding-top:6px}
+.rail nav a{color:var(--blue-txt);font-weight:500;text-decoration:none;padding:6px 0;font-size:13px}
+@media (min-width:1360px){.det-cuerpo{grid-template-columns:minmax(0,1fr) 280px}.rail{order:0;position:sticky;top:90px;margin-top:40px}}
+
+/* barra de pestañas flotante (iPhone) */
+.pestanas{display:none}
+
+/* ============ iPhone: una columna, pestañas abajo, inspector como hoja ============ */
+.velo{display:none}
+@media (max-width:900px){
+  html,body{height:auto}
+  body{overflow:visible}
+  .barra::after{inset:0 0 -22px 0}
+  .contenido{position:static;left:auto}
+  .vistas,.mesa,main{position:static}
+  main{overflow:visible;padding-bottom:110px}
+  #vistaInicio{overflow:visible}
+  .lado{top:auto;bottom:0;left:0;right:0;width:auto;height:min(78dvh,620px);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:45;transform:translateY(102%);visibility:hidden;transition:transform 420ms var(--ease-drawer),visibility 0s linear 420ms;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  .lado.abierto{transform:none;visibility:visible;transition:transform 420ms var(--ease-drawer),visibility 0s linear 0s}
+  .lado.vidrio{background:color-mix(in srgb,var(--card) 92%,transparent);--blur:44px}
+  .velo{display:block;position:fixed;inset:0;z-index:44;background:rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity 320ms ease}
+  .velo.ver{opacity:1;pointer-events:auto}
+  .barra{position:sticky;top:0;right:0;padding:max(12px,env(safe-area-inset-top)) 12px 8px;flex-wrap:wrap;align-items:center}
+  .barra.titulo-oculto .titulo{display:none}
+  .barra h1{font-size:28px}
+  .capsulas{width:100%;order:3}
+  #segVista,#btnFiltros{display:none}
+  .buscador{width:100%;height:40px}
+  .buscador input{font-size:16px}
+  .kbd{display:none}
+  .pop{position:fixed;top:auto;bottom:0;right:0;left:0;width:auto;border-radius:var(--r-xl) var(--r-xl) 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));transform-origin:bottom center}
+  .pop[data-cerrado]{transform:translateY(100%);filter:none}
+  .pop{transition:opacity 200ms ease,transform 420ms var(--ease-drawer),visibility 0s linear 0s}
+  .mapa{position:static;padding:4px 12px 0}
+  .lienzo{width:100%}
+  .leyenda{max-width:none;border-radius:var(--r-l)}
+  /* inspector: hoja inferior con dos posiciones (asomada / abierta), se arrastra */
+  .hoja-ins{position:fixed;top:auto;left:8px;right:8px;bottom:0;width:auto;height:min(76dvh,640px);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:30;
+    transform:translateY(calc(100% - 270px - env(safe-area-inset-bottom)));transition:transform 420ms var(--ease-drawer);touch-action:none}
+  .hoja-ins.abierta{transform:translateY(0)}
+  .agarre{display:block;flex:none;height:22px;cursor:grab;position:relative;border:0;background:transparent;width:100%}
+  .agarre::after{content:"";position:absolute;left:50%;top:8px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--fill-2)}
+  .panel{padding-top:2px;padding-bottom:92px;overflow:hidden}
+  .lista{max-height:none}
+  #vistaDetalle{padding:12px 12px 120px}
+  .rejilla{grid-template-columns:1fr;justify-items:center}
+  .tarjeta{width:100%;max-width:360px}
+  .ancho{padding:12px 14px;overflow-x:visible}
+  .controles select{width:100%}
+  .controles label:has(select){width:100%;flex-wrap:wrap}
+  .t-foto{width:100%}
+  .t-foto .c-x{display:none}
+  .t-det,.t-det tbody{display:block}
+  .t-det tr.cab{display:none}
+  .t-det tr{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;padding:9px 0;border-bottom:1px solid var(--sep)}
+  .t-det td{border:0;padding:0;white-space:nowrap}
+  .t-det .c-brand,.t-det .c-edad,.t-det .c-sr,.t-det .c-sc,.t-det .c-grupo{display:none}
+  .t-det .desc{grid-column:1;grid-row:1;max-width:none;font-size:13px;color:var(--label)}
+  .t-det .c-ean{grid-column:1;grid-row:2;font-size:11px}
+  .t-det .c-u{grid-column:2;grid-row:1;text-align:right}
+  .t-det .c-p{grid-column:2;grid-row:2;text-align:right;color:var(--label-2);font-size:11.5px}
+  .t-det .sub-mes{display:none}
+  .t-det .c-mes{display:block;grid-column:1 / -1;grid-row:3;max-width:none;margin-top:3px;color:var(--label-2)}
+  .anteriores table{display:block;overflow-x:auto;max-width:100%}
+  .pestanas.vidrio{background:color-mix(in srgb,var(--card) 84%,transparent)}
+  .lado::after{content:"";position:absolute;left:50%;top:7px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--fill-2)}
+  .pestanas{display:flex;position:fixed;z-index:35;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);border-radius:999px;padding:5px;gap:2px}
+  .pestanas button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:600;color:var(--label);min-width:64px;transition:background-color 160ms ease,color 160ms ease,transform 140ms var(--ease-out)}
+  .pestanas button:active{transform:scale(.94)}
+  .pestanas button[aria-current="page"]{background:var(--fill);color:var(--blue-txt)}
+  .pestanas .ico{width:20px;height:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  #mundo{transition:none}
+  .n-anim{transition:opacity 220ms ease,fill 220ms ease}
+  .entrando .n-anim{transform:none}
+  .seg .pulgar,.lado,.disc,.hoja-ins{transition:none}
+  #mundo circle.n-hoja.encima{transform:none}
+  .pop,.pop[data-cerrado]{transform:none !important;filter:none !important;transition:opacity 160ms ease,visibility 0s linear 160ms}
+  .tip,.tip.ver{transform:translate3d(var(--tx,0),var(--ty,0),0);filter:none}
+  ::view-transition-new(root){animation:vt-salir 1ms reverse both}
+  ::view-transition-old(root){animation:none}
+}
+@media (prefers-reduced-transparency:reduce){
+  .vidrio,.pop,.tip,.etq.grupo{background:var(--card) !important;-webkit-backdrop-filter:none;backdrop-filter:none}
+  body::before{filter:none}
+}
+@media (prefers-contrast:more){
+  :root{--borde-cristal:rgba(60,60,67,.5);--label-2:#3a3a3c;--cristal:rgba(255,255,255,.86)}
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>Brújulas de Demand <span class="pequeño">· ejemplo fase 1</span></h1>
-  <div class="pequeño">¿Qué inputs de forecast debí haber puesto en cada foto para tener los mejores KPIs? Todo precalculado por <code>python -m brujulas.pipeline</code>; la página solo lee.</div>
-</header>
-<div class="controles">
-  <label>Casa <select id="selCasa"></select></label>
-  <label>Ver <select id="selCodigo"></select></label>
-</div>
-<div class="info" id="info"></div>
-
-<h2 id="tituloActual">Foto actual · Consensus frente a la estrategia</h2>
-<div class="ancho">
-  <div class="controles" style="padding:0 0 8px">
-    <label>Tolerancia mes 1 <input id="tolIni" type="number" step="0.5" value="5" style="width:70px">%</label>
-    <label>mes 9 <input id="tolFin" type="number" step="0.5" value="5" style="width:70px">%</label>
-    <label>Receta <select id="selFuente">
-      <option value="codigo">elegida por código (score de las fotos anteriores)</option>
-      <option value="pl">regla de su Product Line</option>
-      <option value="brand">regla de su Brand</option>
-      <option value="casa">regla de la casa</option>
-    </select></label>
+<a class="saltar" href="#vistas">Saltar al contenido</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- lente de cristal: reflejo especular arriba y luz de borde abajo, sin sombreado de esfera -->
+    <linearGradient id="gBrillo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".2" stop-color="#ffffff" stop-opacity=".14"/>
+      <stop offset=".42" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".86" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".18"/>
+    </linearGradient>
+  </defs>
+</svg>
+<aside class="lado vidrio" id="lado" aria-label="Barra lateral">
+  <div class="lado-cab">
+    <svg class="icono" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfdfd"/><stop offset="1" stop-color="#c3c7cd"/></linearGradient></defs><rect width="34" height="34" rx="8" fill="url(#gi)"/><rect x=".5" y=".5" width="33" height="33" rx="7.5" fill="none" stroke="#fff" stroke-opacity=".9"/><text x="17" y="22" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Helvetica,Arial" font-weight="800" font-size="13" letter-spacing="-.5" fill="#1d1d1f">O10</text></svg>
+    <div><b>O10</b><span id="ladoFoto">Brújulas de Demand</span></div>
   </div>
-  <div id="actual"></div>
-</div>
-
-<h2>Decisiones <span class="pequeño" id="decSub"></span></h2>
-<div class="rejilla">
-  <div class="tarjeta"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s · Y: peso del trend w</div><svg id="b1" width="330" height="330"></svg><div class="pie" id="b1p"></div></div>
-  <div class="tarjeta"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in/sell-out m · Y: duración del trend N</div><svg id="b2" width="330" height="330"></svg><div class="pie" id="b2p"></div></div>
-  <div class="tarjeta"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c · Y: promos restadas p</div><svg id="b3" width="330" height="330"></svg><div class="pie" id="b3p"></div></div>
-  <div class="tarjeta"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">Nº de códigos del grupo (más oscuro = más grande). Tooltip: mejor WAPE con ese grupo.</div><div id="matriz"></div><div class="pie" id="matrizp"></div></div>
-</div>
-
-<h2>Resultados de las fotos anteriores</h2>
-<div class="rejilla">
-  <div class="tarjeta res"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1…F+3</div><svg id="r90" width="330" height="230"></svg><div class="pie" id="r90p"></div></div>
-  <div class="tarjeta res"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1…F+6</div><svg id="r180" width="330" height="230"></svg><div class="pie" id="r180p"></div></div>
-  <div class="tarjeta res"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1…F+9</div><svg id="r9M" width="330" height="230"></svg><div class="pie" id="r9Mp"></div></div>
-  <div class="tarjeta res"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
-</div>
-<div class="ancho" id="anteriores"></div>
-
-<h2>Detector · EANs fuera de su estrategia</h2>
-<div class="ancho">
-  <div class="controles" style="padding:0 0 8px">
-    <span class="pequeño">Usa la tolerancia y la receta de arriba.</span>
-    <label><input type="checkbox" id="soloGrupo" checked> solo el grupo seleccionado</label>
-    <label><input type="checkbox" id="verTodos"> ver también los que están dentro</label>
-    <input id="filtro" placeholder="filtrar EAN / descripción" style="width:200px">
+  <label class="oculto" for="selCasa">Casa</label>
+  <select id="selCasa" class="popup"></select>
+  <div class="lado-scroll">
+    <h2>Códigos</h2>
+    <ul class="lista-lado" id="cifras"></ul>
+    <h2>Brands</h2>
+    <ul class="lista-lado" id="ladoBrands"></ul>
   </div>
-  <div class="pequeño" id="detInfo"></div>
-  <div id="detector"></div>
-</div>
-<div class="info" id="notas"></div>
+  <div class="lado-pie">
+    <label id="lblTema">Apariencia</label>
+    <div class="seg tema" role="group" aria-labelledby="lblTema" id="segTema">
+      <span class="pulgar" aria-hidden="true"></span>
+      <button type="button" data-tema="light">Claro</button>
+      <button type="button" data-tema="dark">Oscuro</button>
+      <button type="button" data-tema="auto">Auto</button>
+    </div>
+  </div>
+</aside>
+<div class="velo" id="velo"></div>
 
+<div class="contenido" id="contenido">
+  <header class="barra" id="barra">
+    <button type="button" class="redondo vidrio solo-movil" id="btnLado" aria-label="Brands y vistas" aria-controls="lado" aria-expanded="false" hidden></button>
+    <div class="titulo">
+      <h1 id="barraTitulo">Gucci</h1>
+      <div class="migas" id="migas" aria-label="Nivel del mapa"></div>
+    </div>
+    <div class="capsulas">
+      <div class="seg vidrio" role="group" aria-label="Vista" id="segVista">
+        <span class="pulgar" aria-hidden="true"></span>
+        <button type="button" id="navInicio" aria-current="page">Mapa</button>
+        <button type="button" id="navDetalle">Detalle</button>
+      </div>
+      <button type="button" class="redondo vidrio" id="btnFiltros" aria-label="Filtros" aria-expanded="false" aria-controls="pop">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
+        <span class="punto" id="nFiltros" hidden></span>
+      </button>
+      <form class="buscador vidrio" id="formBuscar" role="search" onsubmit="return false">
+        <svg class="ico" viewBox="0 0 16 16" style="width:15px;height:15px"><circle cx="7" cy="7" r="4.75"/><path d="M10.5 10.5 14 14"/></svg>
+        <label class="oculto" for="q">Buscar</label>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar">
+        <span class="kbd" aria-hidden="true">⌘K</span>
+        <button type="submit" id="btnBuscar">Buscar</button>
+      </form>
+    </div>
+    <div class="pop vidrio" id="pop" role="dialog" aria-label="Filtros" data-cerrado>
+      <h2>Filtros</h2>
+      <div class="filtros" id="filtros">
+        <div class="grupo-f" role="group" aria-label="Scope">
+          <span class="mono">Scope</span>
+          <button type="button" class="chip" data-f="scope" data-v="central" aria-pressed="true">Central</button>
+          <button type="button" class="chip" data-f="scope" data-v="todos" aria-pressed="false">Todos</button>
+        </div>
+        <div class="grupo-f" role="group" aria-label="Estado">
+          <span class="mono">Estado</span>
+          <button type="button" class="chip" data-f="fuera" data-v="1" aria-pressed="false">Fuera de estrategia</button>
+        </div>
+        <div class="grupo-f" role="group" aria-label="Segmento" id="fSeg"><span class="mono">Segmento</span></div>
+        <div class="grupo-f" role="group" aria-label="Edad" id="fEdad"><span class="mono">Edad</span></div>
+        <div class="grupo-f tol">
+          <span class="mono">Tolerancia</span>
+          <label class="oculto" for="tolIni0">Tolerancia mes 1</label><input id="tolIni0" type="number" step="0.5" min="0" value="5">
+          <span class="pequeño">% en el mes 1 y</span>
+          <label class="oculto" for="tolFin0">Tolerancia mes 9</label><input id="tolFin0" type="number" step="0.5" min="0" value="5">
+          <span class="pequeño">% en el 9</span>
+        </div>
+      </div>
+      <div class="pop-pie">
+        <button type="button" class="enlace" id="limpiar">Restablecer</button>
+        <button type="button" class="btn" id="cerrarPop">Hecho</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="vistas" id="vistas">
+<!-- ======================= MAPA ======================= -->
+<main id="vistaInicio" tabindex="-1">
+  <div class="mesa">
+    <section class="mapa" aria-label="Mapa de códigos agrupados por casa, brand y product line">
+      <div class="lienzo" id="lienzo">
+        <svg id="pack" role="img" aria-label="Burbujas anidadas: casa, brand, product line y EAN"><g id="mundo"></g></svg>
+        <div class="etiquetas" id="etiquetas"></div>
+      </div>
+      <div class="leyenda vidrio" id="leyenda"></div>
+    </section>
+    <aside class="hoja-ins vidrio" id="hojaIns">
+      <button type="button" class="agarre" id="agarre" aria-label="Mostrar u ocultar el panel"></button>
+      <div class="panel" id="panel" aria-live="polite"></div>
+    </aside>
+  </div>
+</main>
+
+<!-- ======================= DETALLE ======================= -->
+<main id="vistaDetalle" hidden tabindex="-1">
+  <div class="det-cab">
+    <button type="button" class="enlace volver" id="volver">Mapa</button>
+    <div class="det-migas" id="detMigas"></div>
+    <h1 id="detTitulo"></h1>
+    <div class="info" id="info"></div>
+  </div>
+
+  <div class="det-cuerpo">
+  <div class="det-main">
+  <section class="seccion" id="sFoto">
+    <h2 id="tituloActual">Foto actual</h2>
+    <p class="sub">Consensus de la foto frente a la receta elegida, con su rango de tolerancia.</p>
+    <div class="ancho vidrio">
+      <div class="controles">
+        <label>Tolerancia mes 1 <input id="tolIni" type="number" step="0.5" min="0" value="5">%</label>
+        <label>Mes 9 <input id="tolFin" type="number" step="0.5" min="0" value="5">%</label>
+        <label>Receta <select id="selFuente">
+          <option value="codigo">Elegida por código (score de las fotos anteriores)</option>
+          <option value="pl">Regla de su Product Line</option>
+          <option value="brand">Regla de su Brand</option>
+          <option value="casa">Regla de la casa</option>
+        </select></label>
+      </div>
+      <div id="actual"></div>
+    </div>
+  </section>
+
+  <section class="seccion" id="sDecisiones">
+    <h2>Decisiones</h2>
+    <p class="sub" id="decSub"></p>
+    <div class="rejilla">
+      <div class="tarjeta vidrio"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s. Y: peso del trend w.</div><svg id="b1" width="326" height="326"></svg><div class="pie" id="b1p"></div></div>
+      <div class="tarjeta vidrio"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in / sell-out m. Y: duración del trend N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
+      <div class="tarjeta vidrio"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c. Y: promos restadas p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
+      <div class="tarjeta vidrio"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">Nº de códigos del grupo (más intenso, más grande). Al pasar: mejor WAPE con ese grupo.</div><div id="matriz"></div><div class="pie" id="matrizp"></div></div>
+    </div>
+  </section>
+
+  <section class="seccion" id="sResultados">
+    <h2>Resultados de las fotos anteriores</h2>
+    <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana.</p>
+    <div class="rejilla">
+      <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
+      <div class="tarjeta res vidrio"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
+      <div class="tarjeta res vidrio"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
+    </div>
+    <div class="ancho anteriores vidrio" id="anteriores" style="margin-top:20px"></div>
+  </section>
+
+  <section class="seccion" id="sDetector">
+    <h2>Detector</h2>
+    <p class="sub">EANs fuera de su estrategia. Usa la tolerancia y la receta de la foto actual.</p>
+    <div class="ancho vidrio">
+      <div class="controles">
+        <label>Tolerancia <input id="tolIni2" type="number" step="0.5" min="0" value="5">% a <input id="tolFin2" type="number" step="0.5" min="0" value="5">%</label>
+        <label><input type="checkbox" id="soloGrupo" checked> Solo el grupo seleccionado</label>
+        <label><input type="checkbox" id="verTodos"> Ver también los que están dentro</label>
+        <label class="oculto" for="filtro">Filtrar</label><input id="filtro" type="search" placeholder="Filtrar EAN o descripción" style="width:220px">
+      </div>
+      <div class="pequeño" id="detInfo" style="margin-bottom:10px;line-height:1.5"></div>
+      <div id="detector"></div>
+    </div>
+  </section>
+  <div class="notas" id="notas"></div>
+  </div>
+  <aside class="rail vidrio" id="rail" aria-label="Resumen"></aside>
+  </div>
+</main>
+  </div>
+</div>
+
+<nav class="pestanas vidrio" id="pestanas" aria-label="Pestañas">
+  <button type="button" data-tab="mapa" aria-current="page"><svg class="ico" viewBox="0 0 20 20"><circle cx="7" cy="8" r="4"/><circle cx="13.5" cy="12.5" r="3.5"/><circle cx="14" cy="5" r="1.8"/></svg>Mapa</button>
+  <button type="button" data-tab="detalle"><svg class="ico" viewBox="0 0 20 20"><path d="M3.5 15.5 7.5 10l3 3 6-8"/><path d="M3 3v14h14"/></svg>Detalle</button>
+  <button type="button" data-tab="brands"><svg class="ico" viewBox="0 0 20 20"><path d="M4 5h12M4 10h12M4 15h8"/></svg>Brands</button>
+  <button type="button" data-tab="filtros"><svg class="ico" viewBox="0 0 20 20"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>Filtros</button>
+</nav>
+
+<div class="tip vidrio" id="tip" role="tooltip"></div>
+
+<script>/*__D3H__*/</script>
 <script>
 const D = /*__DATOS__*/null;
 const $ = id => document.getElementById(id);
-const pct = (x, d=1) => x == null || !isFinite(x) ? "—" : (x*100).toFixed(d) + "%";
-const num = x => x == null || !isFinite(x) ? "—" : Math.round(x).toLocaleString("es-ES");
+const pct = (x, d=1) => x == null || !isFinite(x) ? "-" : (x*100).toLocaleString("es-ES", {minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: "always"}) + "%";
+const num = x => x == null || !isFinite(x) ? "-" : Math.round(x).toLocaleString("es-ES", {useGrouping: "always"});
+const corto = s => (s || "").replace(/\s*\(\d+\)\s*$/, "");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const EJ = D.ejes, CELDAS = D.celdas, CFG = D.config;
 const AMPL = ["Propio","Product Line","Brand","House","Todo"], CRIT = ["Jerarquía","Segmento","Tamaño","Edad"];
 const vtxt = (k, v) => k === "N" ? v + "M" : Math.round(v*100) + "%";
+const reducir = matchMedia("(prefers-reduced-motion: reduce)");
 let estado = {casa: null, sel: null, orden: {col: "u", dir: -1}};
 
-function recetaTxt(r){ if(!r) return "—";
-  return `s ${vtxt("s",r.s)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · ${r.grupo}`; }
+// ================= Tema (claro / oscuro / auto) =================
+function aplicarTema(t){
+  if (t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  document.querySelectorAll(".tema button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tema === t)));
+  moverPulgar($("segTema"));
+}
+// control segmentado: el pulgar se desliza bajo el botón activo (muelle sin rebote)
+function moverPulgar(seg){
+  if (!seg) return;
+  const b = seg.querySelector('button[aria-pressed="true"],button[aria-current="page"]'), p = seg.querySelector(".pulgar");
+  if (!b || !p || !b.offsetWidth) return;
+  p.style.width = b.offsetWidth + "px";
+  p.style.transform = `translateX(${b.offsetLeft - 2}px)`;
+}
+(function(){ let t = "auto"; try { t = localStorage.getItem("brujulas-tema") || "auto"; } catch(e) {} aplicarTema(t); })();
+document.querySelectorAll(".tema button").forEach(b => b.addEventListener("click", () => {
+  const t = b.dataset.tema;
+  const cambio = () => aplicarTema(t);
+  if (document.startViewTransition && !reducir.matches) document.startViewTransition(cambio); else cambio();
+  try { localStorage.setItem("brujulas-tema", t); } catch(e) {}
+}));
 
+// ================= Utilidades comunes =================
+function recetaTxt(r){ if(!r) return "-";
+  return `s ${vtxt("s",r.s)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · ${r.grupo}`; }
 function casa(){ return D.casas[estado.casa]; }
 function esRegla(){ return estado.sel.startsWith("R|"); }
 function entidad(foto){
@@ -122,8 +716,634 @@ function entidad(foto){
 }
 const fotosCerradas = () => casa().fotos.filter(f => f.hay_tramos_cerrados);
 const fotoUltCerrada = () => { const l = fotosCerradas(); return l[l.length - 1]; };
+const existeRegla = k => fotosCerradas().some(f => f.reglas[k]);
 
-// ---------- posición en un eje: hacia el valor ganador, distancia = tanh(ΔWAPE / τ) ----------
+function tolerancia(){
+  const ti = (parseFloat($("tolIni").value) || 0) / 100, tf = (parseFloat($("tolFin").value) || 0) / 100;
+  return h => ti + (tf - ti) * (h - 1) / 8;
+}
+function evaluar(fc, cons, tol){
+  // desvío de un mes = solo el exceso fuera de [R·(1−tol), R·(1+tol)], en valor absoluto
+  return fc.map((R, i) => {
+    const t = tol(i + 1), lo = R * (1 - t), hi = R * (1 + t), C = cons[i];
+    const dev = C > hi ? C - hi : (C < lo ? lo - C : 0);
+    return {R, C, lo, hi, dev, t};
+  });
+}
+
+// ================= INICIO: datos del mapa =================
+const BINS = [  // desvío % frente a la receta elegida (secuencial, un solo tono)
+  {max: 0.0005, v: "--d0", txt: "Dentro"},
+  {max: 0.05, v: "--d1", txt: "Hasta 5%"},
+  {max: 0.15, v: "--d2", txt: "5-15%"},
+  {max: 0.30, v: "--d3", txt: "15-30%"},
+  {max: Infinity, v: "--d4", txt: "Más de 30%"},
+];
+const binDe = p => BINS.findIndex(b => p <= b.max);
+let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
+
+function calcularHojas(){
+  const c = casa(), ini = c.inicio.codigos, tol = tolerancia(), det = c.detector;
+  const filas = {}; det.filas.forEach(r => filas[r.ean] = r);
+  return Object.keys(ini).map(ean => {
+    const a = c.atributos[ean] || {}, i = ini[ean], r = filas[ean];
+    let u = null, p = null, sR = null, sinrec = false, meses = [];
+    if (i.scope && r && r.recetas.codigo) {
+      const ev = evaluar(r.recetas.codigo.fc, r.consensus, tol);
+      u = ev.reduce((s, e) => s + e.dev, 0); sR = ev.reduce((s, e) => s + e.R, 0);
+      p = sR > 0 ? u / sR : (u > 0.5 ? Infinity : 0);
+      meses = ev.map((e, k) => e.dev > 0.5 ? det.meses[k] : null).filter(Boolean);
+    } else if (i.scope) sinrec = true;
+    const vol = i.vol12 > 0 ? i.vol12 : i.cons9 * 12 / 9;
+    return {ean, desc: a.desc || ean, brand: a.brand || "(sin brand)", pl: a.pl || "(sin línea)", seg: a.segmento || "", edad: i.edad,
+            scope: i.scope, motivo: i.motivo, vol12: i.vol12, cons9: i.cons9, vol, u, p, sR, sinrec, meses,
+            fuera: u != null && u > 0.5};
+  });
+}
+
+function construirArbol(hojas){
+  const minVis = Math.max(1, Math.max(0, ...hojas.map(h => h.vol)) * 0.0012);
+  const brands = new Map();
+  hojas.forEach(h => {
+    if (!brands.has(h.brand)) brands.set(h.brand, new Map());
+    const pls = brands.get(h.brand); if (!pls.has(h.pl)) pls.set(h.pl, []); pls.get(h.pl).push(h);
+  });
+  const raiz = {nombre: estado.casa, clave: "Casa: " + estado.casa, nivel: "casa", children: []};
+  brands.forEach((pls, b) => {
+    const nb = {nombre: b, clave: "Brand: " + b, nivel: "brand", children: []};
+    pls.forEach((hs, pl) => nb.children.push({nombre: pl, clave: "PL: " + pl, nivel: "pl", children: hs.map(h => ({nombre: h.desc, nivel: "hoja", hoja: h, valor: Math.max(h.vol, minVis)}))}));
+    raiz.children.push(nb);
+  });
+  return d3.hierarchy(raiz).sum(d => d.valor || 0).sort((a, b) => b.value - a.value);
+}
+
+function coincide(h){
+  const f = M.filtros;
+  if (f.scope === "central" && !h.scope) return false;
+  if (f.fuera && !h.fuera) return false;
+  if (f.seg.size && !f.seg.has(h.seg || "(vacío)")) return false;
+  if (f.edad.size && !f.edad.has(h.edad)) return false;
+  if (f.q) { const t = (h.ean + " " + h.desc + " " + h.brand + " " + h.pl).toLowerCase(); if (!f.q.split(/\s+/).every(w => t.includes(w))) return false; }
+  return true;
+}
+
+// ================= INICIO: dibujo =================
+function colorHoja(h){
+  if (!h.scope) return "transparent";
+  if (h.sinrec) return "var(--sinrec)";
+  return `var(${BINS[binDe(h.p)].v})`;
+}
+
+function dibujarMapa(){
+  const lz = $("lienzo"), W = Math.round(lz.getBoundingClientRect().width);
+  if (!W) return;
+  M.W = W;
+  const raiz = construirArbol(M.hojas);
+  d3.pack().size([W, W]).padding(n => n.depth === 0 ? 14 : n.depth === 1 ? 6 : 2)(raiz);
+  M.raiz = raiz; M.nodos = raiz.descendants();
+  const clave = M.foco && M.foco.data.clave;
+  M.foco = (clave && M.nodos.find(n => n.data.clave === clave)) || raiz;
+  const svg = $("pack");
+  svg.setAttribute("viewBox", `0 0 ${W} ${W}`);
+  // índice de brand para la entrada en cascada
+  const iBrand = new Map(); raiz.children.forEach((b, i) => iBrand.set(b, i));
+  // grupos anidados (brand > línea > código): cada grupo puede flotar sin romper el orden de M.nodos
+  const pinta = (n) => {
+    const i = M.nodos.indexOf(n), d = n.data;
+    const brand = n.depth >= 1 ? n.ancestors().find(a => a.depth === 1) : null;
+    const delay = brand ? Math.min(iBrand.get(brand), 9) * 45 + (n.depth - 1) * 40 : 0;
+    const cls = d.nivel === "hoja"
+      ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.sinrec ? " sinrec" : ""}`
+      : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
+    const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
+    const bin = d.nivel === "hoja" && d.hoja.scope && !d.hoja.sinrec ? ` data-bin="${binDe(d.hoja.p)}"` : "";
+    const c = `<circle class="${cls}"${bin} data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
+    if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
+    return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
+  };
+  $("mundo").innerHTML = pinta(raiz);
+  M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
+  prepararFlotacion();
+  if (M.primera) {
+    lz.classList.add("entrando");
+    requestAnimationFrame(() => requestAnimationFrame(() => lz.classList.remove("entrando")));
+    setTimeout(() => $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = ""), 900);
+    M.primera = false;
+  } else $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = "");
+  enfocar(M.foco, false);
+  aplicarFiltros();
+}
+
+// ================= Flotación =================
+// Skill de Emil: se ve pocas veces al día y su propósito es dar vida a la vista de inicio; los datos se quedan quietos al leerlos.
+// Cada código y cada línea flotan unos píxeles con periodos de 9 a 16 s. Al entrar el puntero en el mapa, todo frena con un
+// muelle críticamente amortiguado (sin rebote) para poder leer y apuntar; al salir, vuelve a flotar. Con movimiento reducido no flota.
+const F = {lista: [], amp: 0, vel: 0, objetivo: 1, corre: false, t0: performance.now(), ult: 0};
+function prepararFlotacion(){
+  F.lista = [];
+  $("mundo").querySelectorAll("g.flota").forEach(g => {
+    const n = M.nodos[+g.dataset.g], p = n.parent; if (!p) return;
+    const holgura = Math.max(0, p.r - Math.hypot(n.x - p.x, n.y - p.y) - n.r);  // no se sale de su grupo
+    const s = (n.data.hoja ? n.data.hoja.ean : n.data.clave).split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
+    const rnd = k => (((s ^ (k * 2654435761)) * 2246822519) >>> 0) / 4294967296;
+    F.lista.push({g, holgura, px: 9 + 7 * rnd(1), py: 9 + 7 * rnd(2), fx: rnd(3) * 6.283, fy: rnd(4) * 6.283});
+  });
+  F.objetivo = reducir.matches || M.encima ? 0 : 1;
+  if (reducir.matches) { F.amp = 0; F.vel = 0; F.lista.forEach(e => e.g.removeAttribute("transform")); return; }
+  arrancarFlotacion();
+}
+function arrancarFlotacion(){ if (!F.corre && !document.hidden) { F.corre = true; F.ult = performance.now(); requestAnimationFrame(pasoFlotacion); } }
+function pasoFlotacion(ahora){
+  if (document.hidden || $("vistaInicio").hidden) { F.corre = false; return; }
+  const dt = Math.min(0.05, (ahora - F.ult) / 1000); F.ult = ahora;
+  // muelle críticamente amortiguado sobre la amplitud (respuesta ≈ 0,7 s)
+  const w = 2 * Math.PI / 0.7;
+  F.vel += (-w * w * (F.amp - F.objetivo) - 2 * w * F.vel) * dt; F.amp += F.vel * dt;
+  if (F.amp < 0.002 && F.objetivo === 0 && Math.abs(F.vel) < 0.01) {
+    F.amp = 0; F.vel = 0; F.corre = false;
+    F.lista.forEach(e => e.g.removeAttribute("transform"));
+    return;
+  }
+  const t = (ahora - F.t0) / 1000, k = transformDe(M.foco).k;
+  const tope = 2.6 / k;  // unos 2,6 px en pantalla a cualquier zoom
+  for (const e of F.lista) {
+    const a = Math.min(e.holgura * 0.7, tope) * F.amp;
+    if (a < 0.01) continue;
+    e.g.setAttribute("transform", `translate(${(a * Math.sin(6.283 * t / e.px + e.fx)).toFixed(2)} ${(a * Math.cos(6.283 * t / e.py + e.fy)).toFixed(2)})`);
+  }
+  requestAnimationFrame(pasoFlotacion);
+}
+$("lienzo").addEventListener("pointerenter", ev => { if (ev.pointerType === "touch") return; M.encima = true; F.objetivo = 0; arrancarFlotacion(); });
+$("lienzo").addEventListener("pointerleave", () => { M.encima = false; if (!reducir.matches) { F.objetivo = 1; arrancarFlotacion(); } });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && F.objetivo > 0) arrancarFlotacion(); });
+reducir.addEventListener("change", prepararFlotacion);
+
+function transformDe(n){
+  if (n.depth === 0 && n.children) {
+    // en la raíz se encuadra lo que hay dentro (las brands), no el círculo vacío de la casa
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    n.children.forEach(c => { x0 = Math.min(x0, c.x - c.r); y0 = Math.min(y0, c.y - c.r); x1 = Math.max(x1, c.x + c.r); y1 = Math.max(y1, c.y + c.r); });
+    const k = M.W / (Math.max(x1 - x0, y1 - y0) * 1.08);
+    return {k, tx: M.W / 2 - (x0 + x1) / 2 * k, ty: M.W / 2 - (y0 + y1) / 2 * k};
+  }
+  const k = M.W / (2 * n.r * 1.03);
+  return {k, tx: M.W / 2 - n.x * k, ty: M.W / 2 - n.y * k};
+}
+
+function enfocar(n, animar = true){
+  M.foco = n;
+  const t = transformDe(n), g = $("mundo"), et = $("etiquetas");
+  const final = () => { pintarEtiquetas(); et.classList.remove("fuera"); };
+  if (animar && !reducir.matches) {
+    et.classList.add("fuera");
+    g.style.transform = `translate(${t.tx}px,${t.ty}px) scale(${t.k})`;
+    clearTimeout(M.tz); M.tz = setTimeout(final, 560);
+  } else {
+    g.style.transition = "none";
+    g.style.transform = `translate(${t.tx}px,${t.ty}px) scale(${t.k})`;
+    g.getBoundingClientRect(); g.style.transition = "";
+    final();
+  }
+  pintarMigas(); pintarPanel();
+  if (animar) {
+    // el panel cambia con la cámara: entra corto y desde abajo para no despegarse del zoom
+    const pn = $("panel");
+    pn.animate(reducir.matches ? [{opacity: .4}, {opacity: 1}] : [{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}],
+      {duration: 240, easing: "cubic-bezier(0.23, 1, 0.32, 1)"});
+  }
+}
+
+function aEscala(n){ const t = transformDe(M.foco); return {x: n.x * t.k + t.tx, y: n.y * t.k + t.ty, r: n.r * t.k}; }
+
+function pintarEtiquetas(){
+  const f = M.foco, et = $("etiquetas");
+  const k = $("lienzo").getBoundingClientRect().width / M.W || 1;
+  const puestos = [];  // rectángulos ya ocupados: la etiqueta que choca no se pinta (queda en el tooltip)
+  const libre = r => !puestos.some(q => r.x < q.x + q.w && r.x + r.w > q.x && r.y < q.y + q.h && r.y + r.h > q.y);
+  let h = "";
+  // prefijo de palabras que comparten todos los códigos de la línea (p. ej. "GUCCI GUILT H"): no distingue, se quita
+  const descs = (f.children || []).filter(n => n.data.nivel === "hoja").map(n => n.data.nombre.split(" "));
+  // palabras iniciales que repite la mayoría de la línea (p. ej. "GUCCI GUILT H"): no distinguen, se quitan
+  const comunes = new Set();
+  for (let i = 0; i < 4 && descs.length > 1; i++) {
+    const cnt = {}; descs.forEach(d => { if (d[i]) cnt[d[i]] = (cnt[d[i]] || 0) + 1; });
+    const [w, c] = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0] || [];
+    if (!w || c < descs.length * 0.5) break;
+    comunes.add(i + "|" + w);
+  }
+  const limpio = d => { const ws = d.split(" "); let i = 0; while (i < ws.length - 1 && comunes.has(i + "|" + ws[i])) i++; return ws.slice(i).join(" "); };
+  (f.children || []).slice().sort((a, b) => (b.children ? b.leaves().length : 0) - (a.children ? a.leaves().length : 0) || b.r - a.r).forEach(n => {
+    const p = aEscala(n);
+    if (n.data.nivel === "hoja") {
+      const x = n.data.hoja;
+      if (p.r < 34 || !x.scope || !coincide(x)) return;
+      const w = Math.min(p.r * 1.6, 170), rc = {x: p.x - w / 2, y: p.y - 9, w, h: 18};
+      if (!libre(rc)) return; puestos.push(rc);
+      // color del texto por tramo y tema, para pasar AA sobre el relleno de la burbuja
+      const col = x.sinrec ? "var(--label)" : `var(--t${binDe(x.p)})`;
+      h += `<div class="etq hoja" style="left:${p.x * k}px;top:${p.y * k}px;max-width:${w}px;color:${col}"><span class="t">${esc(limpio(n.data.nombre))}</span></div>`;
+    } else {
+      if (p.r < 42) return;
+      const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
+      if (!vis) return;
+      const txt = corto(n.data.nombre), w = (txt.length + String(vis).length + String(hs.length).length + 3) * 7.4 + 32;
+      let y = p.y - p.r, rc = {x: p.x - w / 2, y: y - 14, w, h: 28};
+      if (!libre(rc)) { y = p.y + p.r; rc = {x: p.x - w / 2, y: y - 14, w, h: 28}; if (!libre(rc)) return; }
+      puestos.push(rc);
+      h += `<div class="etq grupo" style="left:${p.x * k}px;top:${y * k}px"><span class="t">${esc(txt)}</span><span class="c">${vis}/${hs.length}</span></div>`;
+    }
+  });
+  et.innerHTML = h;
+}
+
+function aplicarFiltros(){
+  M.nodos.forEach((n, i) => {
+    const c = M.els[i]; if (!c || n.depth === 0) return;
+    const on = n.data.nivel === "hoja" ? coincide(n.data.hoja) : n.leaves().some(l => coincide(l.data.hoja));
+    c.classList.toggle("apagado", !on);
+  });
+  pintarEtiquetas(); pintarPanel(); pintarCifras(); pintarLado();
+}
+
+// ================= INICIO: migas, panel, cifras, leyenda =================
+function pintarMigas(){
+  const camino = M.foco.ancestors().reverse();
+  if (!$("vistaInicio").hidden) $("barraTitulo").textContent = corto(M.foco.data.nombre);
+  if (camino.length === 1) { $("migas").innerHTML = `<span>Foto ${casa().inicio.foto} · ${M.hojas.length} códigos</span>`; pintarLado(); return; }
+  camino.pop();
+  $("migas").innerHTML = camino.map((n, i) => `${i ? '<span class="sep">›</span>' : ""}<button type="button" data-clave="${esc(n.data.clave)}" >${esc(corto(n.data.nombre))}</button>`).join("");
+  pintarLado();
+}
+
+function resumenGrupo(n){
+  const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide);
+  const sc = hs.filter(h => h.scope), fuera = sc.filter(h => h.fuera);
+  const u = sc.reduce((s, h) => s + (h.u || 0), 0), sR = sc.reduce((s, h) => s + (h.sR || 0), 0);
+  return {hs, vis, sc, fuera, u, sR};
+}
+
+function pintarPanel(){
+  const n = M.foco, r = resumenGrupo(n), clave = n.data.clave, hayRegla = existeRegla(clave);
+  const tipo = {casa: "Casa", brand: "Brand", pl: "Product Line"}[n.data.nivel];
+  let h = `<h2>${esc(corto(n.data.nombre))}</h2>
+    <p class="resumen">${n.parent ? `${tipo}. <b>${r.hs.length}</b> códigos, <b>${r.sc.length}</b> en scope central, <b>${r.fuera.length}</b> fuera de su estrategia.<br>` : ""}
+    Desvío del Consensus: <b class="marcador">${num(r.u)} uds</b>, <b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b> del forecast de las recetas.</p>
+    <div class="acciones"><button type="button" class="btn" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>
+    ${n.parent ? `<button type="button" class="btn btn-fant" data-subir="1">Subir un nivel</button>` : ""}</div>`;
+  const s = M.sel && M.hojas.find(x => x.ean === M.sel);
+  if (s) {
+    h += `<div class="ficha"><p class="d">${esc(s.desc)}</p>
+      <div class="m mono">${s.ean}<br>${esc(corto(s.brand))} · ${esc(corto(s.pl))}</div>
+      <div class="kpis">
+        <div><span class="mono" style="color:var(--label-2)">Desvío</span><b class="num">${s.u == null ? "-" : num(s.u)}</b></div>
+        <div><span class="mono" style="color:var(--label-2)">%</span><b class="num">${s.p == null ? "-" : pct(s.p)}</b></div>
+        <div><span class="mono" style="color:var(--label-2)">Actuals 12M</span><b class="num">${num(s.vol12)}</b></div>
+      </div>
+      ${s.scope ? (s.sinrec ? `<p class="m">En scope, pero sin receta elegida: no estaba en scope en ninguna foto medida.</p>` : (s.meses.length ? `<p class="m">Se sale en ${s.meses.length} de 9 meses: ${s.meses.join(", ")}.</p>` : `<p class="m">Dentro de su receta los 9 meses.</p>`)) : `<p class="m">Fuera de scope (${esc(s.motivo || "local")}). Cuenta en los volúmenes del grupo.</p>`}
+      <button type="button" class="btn" data-abrir="${s.ean}">Abrir brújulas del código</button></div>`;
+  }
+  const lista = r.vis.slice().sort((a, b) => (b.u ?? -1) - (a.u ?? -1) || b.vol - a.vol);
+  h += `<div class="lista-cab mono"><span>${lista.length} resultado${lista.length === 1 ? "" : "s"}</span><span>Desvío uds · %</span></div>`;
+  if (!lista.length) {
+    h += `<div class="vacio">Ningún código cumple los filtros en <b>${esc(corto(n.data.nombre))}</b>. Prueba con <button type="button" class="enlace" data-limpiar="1">limpiar los filtros</button>${n.parent ? ` o <button type="button" class="enlace" data-subir="1">subir un nivel</button>` : ""}.</div>`;
+  } else {
+    const max = 80;
+    h += `<ul class="lista">` + lista.slice(0, max).map(x => `<li><button type="button" data-ean="${x.ean}" ${x.ean === M.sel ? 'aria-current="true"' : ""}>
+        <span class="sw" style="background:${x.scope ? colorHoja(x) : "transparent"};border:1px solid ${x.scope ? "transparent" : "var(--hueco)"}"></span>
+        <span style="min-width:0"><div class="d">${esc(x.desc)}</div><div class="e mono">${x.ean} · ${esc(corto(x.brand))}</div></span>
+        <span class="v">${x.scope ? (x.sinrec ? "Sin receta" : num(x.u)) : "Local"}<small>${x.scope && !x.sinrec ? pct(x.p) : esc(x.scope ? "" : (x.motivo || ""))}</small></span>
+      </button></li>`).join("") + `</ul>`;
+    if (lista.length > max) h += `<div class="mas mono">y ${lista.length - max} más. Afina la búsqueda.</div>`;
+  }
+  $("panel").innerHTML = h;
+}
+
+const ICO = {
+  todos: '<svg class="ico" viewBox="0 0 16 16"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><circle cx="5" cy="11" r="2.5"/><circle cx="11" cy="11" r="2.5"/></svg>',
+  scope: '<svg class="ico" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2.5"/></svg>',
+  fuera: '<svg class="ico" viewBox="0 0 16 16"><path d="M8 2.2 14.3 13H1.7Z"/><path d="M8 6.5v3"/><path d="M8 11.4v.1"/></svg>',
+};
+function pintarCifras(){
+  const hs = M.hojas, sc = hs.filter(h => h.scope), fuera = sc.filter(h => h.fuera), f = M.filtros;
+  const act = f.fuera ? "fuera" : (f.scope === "todos" ? "todos" : "scope");
+  const fila = (k, t, n) => `<li><button type="button" class="fila" data-vista="${k}" ${act === k ? 'aria-current="true"' : ""}>${ICO[k]}<span class="t">${t}</span><span class="badge">${n}</span></button></li>`;
+  $("cifras").innerHTML = fila("todos", "Todos los códigos", hs.length) + fila("scope", "En scope central", sc.length) + fila("fuera", "Fuera de estrategia", fuera.length);
+  $("ladoFoto").textContent = `Foto ${casa().inicio.foto}`;
+  const n = (f.seg.size ? 1 : 0) + (f.edad.size ? 1 : 0) + (f.fuera ? 1 : 0) + (f.scope !== "central" ? 1 : 0) + (f.q ? 1 : 0);
+  $("nFiltros").hidden = !n; $("nFiltros").textContent = n;
+}
+
+// lista de brands con sus product lines (desplegables), como el panel de Finder
+const abiertas = new Set();
+function pintarLado(){
+  if (!M.raiz) return;
+  const foco = M.foco, enCamino = new Set(foco.ancestors());
+  const fila = (n, nivel) => {
+    const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
+    const actual = n === foco, tieneHijos = nivel === "brand" && n.children && n.children.length;
+    const abierta = abiertas.has(n.data.clave) || (enCamino.has(n) && !actual);
+    let h = `<li><div class="fila" role="button" tabindex="0" data-clave="${esc(n.data.clave)}" ${actual ? 'aria-current="true"' : ""} style="${vis ? "" : "opacity:.45"}">`
+      + (tieneHijos ? `<button type="button" class="disc" data-disc="${esc(n.data.clave)}" aria-expanded="${abierta}" aria-label="Mostrar líneas"><svg class="ico" viewBox="0 0 16 16" style="width:10px;height:10px;stroke-width:2.2"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>` : (nivel === "brand" ? `<span class="disc"></span>` : ""))
+      + `<span class="t">${esc(corto(n.data.nombre))}</span><span class="badge">${vis}</span></div>`;
+    if (tieneHijos) h += `<ul class="sub-lista" ${abierta ? "" : "hidden"}>` + n.children.map(c => fila(c, "pl")).join("") + `</ul>`;
+    return h + `</li>`;
+  };
+  $("ladoBrands").innerHTML = (M.raiz.children || []).map(b => fila(b, "brand")).join("");
+}
+$("cifras").addEventListener("click", ev => {
+  const b = ev.target.closest(".fila"); if (!b) return;
+  const v = b.dataset.vista;
+  M.filtros.scope = v === "todos" ? "todos" : "central"; M.filtros.fuera = v === "fuera";
+  document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === M.filtros.scope)));
+  document.querySelector('[data-f="fuera"]').setAttribute("aria-pressed", String(M.filtros.fuera));
+  cerrarLado(); if ($("vistaInicio").hidden) location.hash = "inicio";
+  aplicarFiltros();
+});
+$("ladoBrands").addEventListener("click", ev => {
+  const d = ev.target.closest(".disc[data-disc]");
+  if (d) { const k = d.dataset.disc; abiertas.has(k) ? abiertas.delete(k) : abiertas.add(k);
+    const ul = d.closest("li").querySelector(".sub-lista"), ab = !ul.hidden ? false : true;
+    ul.hidden = !ab; d.setAttribute("aria-expanded", String(ab)); if (!ab) abiertas.delete(k); else abiertas.add(k); return; }
+  const f = ev.target.closest(".fila"); if (!f) return;
+  const n = M.nodos.find(x => x.data.clave === f.dataset.clave); if (!n) return;
+  cerrarLado();
+  if ($("vistaInicio").hidden) { location.hash = "inicio"; setTimeout(() => enfocar(n), 260); } else enfocar(n);
+});
+$("ladoBrands").addEventListener("keydown", ev => { if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains("fila")) { ev.preventDefault(); ev.target.click(); } });
+
+function pintarLeyenda(){
+  $("leyenda").innerHTML = `<span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
+    + BINS.map((b, k) => `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(${b.v}) 62%,transparent);box-shadow:inset 0 0 0 1.25px var(--r${k})"></span>${b.txt}</span>`).join("")
+    + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
+    + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Fuera de scope</span>`;
+}
+
+function pintarChips(){
+  const hs = M.hojas;
+  const segs = [...new Set(hs.map(h => h.seg || "(vacío)"))].sort();
+  const orden = ["A1 1-6", "A1 7-12", "Año 2", "Año 3+", "Pre-disco", "Sin ventas"];
+  const edades = orden.filter(e => hs.some(h => h.edad === e));
+  const chip = (f, v) => `<button type="button" class="chip mono" data-f="${f}" data-v="${esc(v)}" aria-pressed="${M.filtros[f].has(v)}">${esc(v)}</button>`;
+  $("fSeg").innerHTML = `<span class="mono">Segmento</span>` + segs.map(v => chip("seg", v)).join("");
+  $("fEdad").innerHTML = `<span class="mono">Edad</span>` + edades.map(v => chip("edad", v)).join("");
+}
+
+// ================= Popover de filtros =================
+function abrirPop(si){
+  const p = $("pop"), b = $("btnFiltros");
+  if (si) { p.removeAttribute("data-cerrado"); b.setAttribute("aria-expanded", "true"); setTimeout(() => p.querySelector(".chip").focus({preventScroll: true}), 30); }
+  else { if (p.hasAttribute("data-cerrado")) return; p.setAttribute("data-cerrado", ""); b.setAttribute("aria-expanded", "false"); }
+}
+$("btnFiltros").addEventListener("click", ev => { ev.stopPropagation(); abrirPop($("pop").hasAttribute("data-cerrado")); });
+$("cerrarPop").addEventListener("click", () => { abrirPop(false); $("btnFiltros").focus(); });
+document.addEventListener("pointerdown", ev => { if (!ev.target.closest("#pop,#btnFiltros")) abrirPop(false); });
+// barra lateral como hoja en ventanas estrechas
+function cerrarLado(){ $("lado").classList.remove("abierto"); $("velo").classList.remove("ver"); }
+function _cerrarLadoAnterior(){ $("lado").classList.remove("abierto"); $("velo").classList.remove("ver"); $("btnLado").setAttribute("aria-expanded", "false"); }
+$("btnLado").addEventListener("click", () => { const ab = !$("lado").classList.contains("abierto"); $("lado").classList.toggle("abierto", ab); $("velo").classList.toggle("ver", ab); $("btnLado").setAttribute("aria-expanded", String(ab)); });
+$("velo").addEventListener("click", cerrarLado);
+// borde de la barra de herramientas solo cuando hay contenido pasando por debajo
+// en el detalle, el título pasa a la barra solo cuando el título grande sale de la vista (como en iOS y macOS)
+const bordeBarra = () => {
+  const det = !$("vistaDetalle").hidden, y = det ? Math.max($("vistaDetalle").scrollTop, window.scrollY) : window.scrollY;
+  $("barra").classList.toggle("borde", y > 4);
+  $("barra").classList.toggle("titulo-oculto", det && y < 150);
+};
+$("vistaDetalle").addEventListener("scroll", bordeBarra, {passive: true});
+window.addEventListener("scroll", bordeBarra, {passive: true});
+addEventListener("resize", () => { moverPulgar($("segVista")); moverPulgar($("segTema")); });
+
+// ================= INICIO: interacción =================
+const tip = $("tip");
+let tipT = null, tipFuera = null, tipActual = -1;
+function contenidoTip(n){
+  const d = n.data;
+  if (d.nivel === "hoja") {
+    const x = d.hoja;
+    const estado = x.scope ? (x.sinrec ? "En scope, sin receta elegida." : (x.meses.length ? `Se sale en ${x.meses.length} de 9 meses.` : "Dentro de su receta los 9 meses.")) : `Fuera de scope: ${esc(x.motivo || "local")}.`;
+    return `<span class="mono">${x.ean} · ${esc(corto(x.pl))}</span><div class="tt">${esc(x.desc)}</div>
+      <div class="kk"><div><span>Desvío</span><b>${x.u == null ? "-" : num(x.u)}</b></div><div><span>Sobre la receta</span><b>${x.p == null ? "-" : pct(x.p)}</b></div>
+      <div><span>Actuals 12M</span><b>${num(x.vol12)}</b></div><div><span>Consensus 9M</span><b>${num(x.cons9)}</b></div></div>
+      <div class="nota">${estado}${x.scope ? " Clic para verlo en el panel." : ""}</div>`;
+  }
+  const r = resumenGrupo(n);
+  return `<span class="mono">${{brand: "Brand", pl: "Product Line"}[d.nivel]}</span><div class="tt">${esc(corto(d.nombre))}</div>
+    <div class="kk"><div><span>Códigos</span><b>${r.hs.length}</b></div><div><span>En scope</span><b>${r.sc.length}</b></div>
+    <div><span>Fuera</span><b>${r.fuera.length}</b></div><div><span>Desvío</span><b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b></div></div>
+    <div class="nota">Clic para entrar.</div>`;
+}
+function colocarTip(c){
+  // zona libre: entre la barra lateral y el inspector (en escritorio); nunca encima de la burbuja señalada
+  const b = c.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, m = 14;
+  const ancho = !matchMedia("(max-width: 900px)").matches;
+  const izq = ancho ? $("lado").getBoundingClientRect().right + 8 : 8;
+  const der = ancho ? $("hojaIns").getBoundingClientRect().left - 8 : innerWidth - 8;
+  let x, y, to;
+  if (b.right + m + w <= der) { x = b.right + m; to = "left center"; }
+  else if (b.left - m - w >= izq) { x = b.left - m - w; to = "right center"; }
+  if (x != null) y = Math.min(innerHeight - h - 8, Math.max(8, b.top + b.height / 2 - h / 2));
+  else {
+    x = Math.min(der - w, Math.max(izq, b.left + b.width / 2 - w / 2));
+    if (b.top - m - h >= 8) { y = b.top - m - h; to = "center bottom"; } else { y = Math.min(innerHeight - h - 8, b.bottom + m); to = "center top"; }
+  }
+  tip.style.setProperty("--tx", x + "px"); tip.style.setProperty("--ty", y + "px"); tip.style.setProperty("--to", to);
+}
+function verTipNodo(i){
+  const n = M.nodos[i], c = M.els[i]; if (!n || !c) return;
+  if (tipActual >= 0 && M.els[tipActual]) M.els[tipActual].classList.remove("encima");
+  tipActual = i;
+  if (n.data.nivel === "hoja") c.classList.add("encima");
+  tip.innerHTML = contenidoTip(n);
+  // la primera tarjeta aparece con una transición corta; las siguientes, al instante (como los tooltips de Apple)
+  tip.classList.toggle("instant", tip.classList.contains("ver"));
+  colocarTip(c);
+  tip.classList.add("ver");
+}
+function ocultarTip(){
+  clearTimeout(tipT); tipT = null;
+  if (tipActual >= 0 && M.els && M.els[tipActual]) M.els[tipActual].classList.remove("encima");
+  tipActual = -1; tip.classList.remove("ver", "instant");
+}
+$("pack").addEventListener("pointerover", ev => {
+  if (ev.pointerType === "touch") return;
+  const c = ev.target.closest("circle[data-i]"); const i = c ? +c.dataset.i : -1;
+  const n = M.nodos[i];
+  clearTimeout(tipFuera);
+  if (!n || n.depth === 0 || n === M.foco) { tipFuera = setTimeout(ocultarTip, 120); return; }
+  if (i === tipActual) return;
+  clearTimeout(tipT);
+  if (tip.classList.contains("ver")) verTipNodo(i);
+  else tipT = setTimeout(() => verTipNodo(i), 120);
+});
+$("pack").addEventListener("pointerleave", () => { tipFuera = setTimeout(ocultarTip, 80); });
+$("pack").addEventListener("click", ev => {
+  ocultarTip();
+  const c = ev.target.closest("circle");
+  const n = c ? M.nodos[+c.dataset.i] : null;
+  if (!n || n === M.foco || n.depth === 0) { if (M.foco.parent && (!n || n.depth === 0 || n === M.foco)) enfocar(M.foco.parent); return; }
+  // baja un nivel en dirección al nodo pulsado
+  const camino = n.ancestors().reverse();
+  const iF = camino.indexOf(M.foco);
+  if (iF < 0) { enfocar(camino[Math.max(1, camino.length - 2)]); return; }
+  const sig = camino[iF + 1];
+  if (sig.data.nivel === "hoja") seleccionar(sig.data.hoja.ean);
+  else enfocar(sig);
+});
+
+
+function seleccionar(ean){
+  M.sel = ean;
+  $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo"));
+  const i = M.nodos.findIndex(n => n.data.hoja && n.data.hoja.ean === ean);
+  if (i >= 0) M.els[i].classList.add("activo");
+  pintarPanel();
+}
+
+function focoComun(hs){
+  // el nodo más pequeño que contiene a todos los resultados
+  if (!hs.length) return M.raiz;
+  const set = new Set(hs.map(h => h.ean));
+  const hojas = M.raiz.leaves().filter(l => set.has(l.data.hoja.ean));
+  let a = hojas[0].parent;
+  while (a && !hojas.every(l => l.ancestors().includes(a))) a = a.parent;
+  return a || M.raiz;
+}
+
+const mqMovil = matchMedia("(max-width: 700px)");
+const textoBuscar = () => $("q").placeholder = mqMovil.matches ? "Buscar EAN, brand o línea" : "Buscar";
+mqMovil.addEventListener("change", textoBuscar); textoBuscar();
+let tQ;
+$("q").addEventListener("input", () => { clearTimeout(tQ); tQ = setTimeout(() => { M.filtros.q = $("q").value.trim().toLowerCase(); aplicarFiltros(); }, 90); });
+$("formBuscar").addEventListener("submit", () => {
+  M.filtros.q = $("q").value.trim().toLowerCase(); aplicarFiltros();
+  const vis = M.hojas.filter(coincide);
+  if (!M.filtros.q || !vis.length) return;
+  const f = focoComun(vis); if (f !== M.foco) enfocar(f);
+  if (vis.length === 1) seleccionar(vis[0].ean);
+});
+document.addEventListener("keydown", ev => {
+  if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") { ev.preventDefault(); irA("inicio"); $("q").focus(); $("q").select(); }
+  if (ev.key === "Escape") {
+    if (!$("pop").hasAttribute("data-cerrado")) { abrirPop(false); $("btnFiltros").focus(); return; }
+    if ($("lado").classList.contains("abierto")) { cerrarLado(); return; }
+    if (!$("vistaInicio").hidden && document.activeElement !== $("q") && M.foco && M.foco.parent) enfocar(M.foco.parent);
+  }
+});
+$("filtros").addEventListener("click", ev => {
+  const b = ev.target.closest(".chip"); if (!b) return;
+  const f = b.dataset.f, v = b.dataset.v;
+  if (f === "scope") { M.filtros.scope = v; document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === v))); }
+  else if (f === "fuera") { M.filtros.fuera = !M.filtros.fuera; b.setAttribute("aria-pressed", String(M.filtros.fuera)); }
+  else { const s = M.filtros[f]; s.has(v) ? s.delete(v) : s.add(v); b.setAttribute("aria-pressed", String(s.has(v))); }
+  aplicarFiltros();
+});
+function limpiarFiltros(){
+  M.filtros = {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""};
+  $("q").value = "";
+  document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === "central")));
+  document.querySelector('[data-f="fuera"]').setAttribute("aria-pressed", "false");
+  pintarChips(); aplicarFiltros();
+}
+$("limpiar").addEventListener("click", limpiarFiltros);
+// las tres parejas de tolerancia (filtros, foto actual, detector) son el mismo valor
+const TOL = [["tolIni0", "tolFin0"], ["tolIni", "tolFin"], ["tolIni2", "tolFin2"]];
+function sincronizarTol(id){
+  const par = TOL.find(t => t.includes(id)), k = par.indexOf(id), v = $(id).value;
+  TOL.forEach(t => { if (t !== par) $(t[k]).value = v; });
+}
+TOL.flat().forEach(id => $(id).addEventListener("input", () => {
+  sincronizarTol(id); M.hojas = calcularHojas(); recolorear(); aplicarFiltros();
+  if (!$("vistaDetalle").hidden) { fotoActual(); detector(); }
+}));
+function recolorear(){
+  M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; M.els[i].style.fill = colorHoja(x); if (x.scope && !x.sinrec) M.els[i].dataset.bin = binDe(x.p); });
+}
+$("migas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; const n = M.nodos.find(x => x.data.clave === b.dataset.clave); if (n && n !== M.foco) enfocar(n); });
+$("panel").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  if (b.dataset.abrir) abrirDetalle(b.dataset.abrir);
+  else if (b.dataset.subir) { if (M.foco.parent) enfocar(M.foco.parent); }
+  else if (b.dataset.limpiar) limpiarFiltros();
+  else if (b.dataset.ean) {
+    if (b.getAttribute("aria-current") === "true") { abrirDetalle(b.dataset.ean); return; }
+    const n = M.nodos.find(x => x.data.hoja && x.data.hoja.ean === b.dataset.ean);
+    if (n && !n.ancestors().includes(M.foco)) enfocar(n.parent);
+    else if (n && n.parent !== M.foco) enfocar(n.parent);
+    seleccionar(b.dataset.ean);
+  }
+});
+new ResizeObserver(() => { if (!$("vistaInicio").hidden && Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); }).observe($("lienzo"));
+
+// ================= iPhone: pestañas flotantes y hoja del inspector =================
+$("pestanas").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const t = b.dataset.tab;
+  if (t === "mapa") location.hash = "inicio";
+  else if (t === "detalle") $("navDetalle").click();
+  else if (t === "brands") { $("lado").classList.add("abierto"); $("velo").classList.add("ver"); }
+  else if (t === "filtros") abrirPop(true);
+});
+// la hoja tiene dos posiciones; se arrastra 1:1 y al soltar decide por la posición proyectada con la velocidad (skill de Apple)
+(function(){
+  const hoja = $("hojaIns"), agarre = $("agarre"), mq = matchMedia("(max-width: 900px)");
+  let y0 = 0, base = 0, hist = [], arrastre = false;
+  const cerradoPx = () => hoja.offsetHeight - 270;
+  agarre.addEventListener("click", () => { if (!arrastre) hoja.classList.toggle("abierta"); });
+  agarre.addEventListener("pointerdown", ev => {
+    if (!mq.matches) return;
+    agarre.setPointerCapture(ev.pointerId); y0 = ev.clientY; arrastre = false; hist = [{y: ev.clientY, t: ev.timeStamp}];
+    base = hoja.classList.contains("abierta") ? 0 : cerradoPx();
+    hoja.style.transition = "none";
+  });
+  agarre.addEventListener("pointermove", ev => {
+    if (!agarre.hasPointerCapture(ev.pointerId)) return;
+    const dy = ev.clientY - y0; if (Math.abs(dy) > 6) arrastre = true;
+    let y = base + dy;
+    if (y < 0) y = -Math.sqrt(-y) * 2.2;  // resistencia en el tope, sin parada seca
+    hoja.style.transform = `translateY(${y}px)`;
+    hist.push({y: ev.clientY, t: ev.timeStamp}); if (hist.length > 6) hist.shift();
+  });
+  agarre.addEventListener("pointerup", ev => {
+    if (!agarre.hasPointerCapture(ev.pointerId)) return;
+    const a = hist[0], z = hist[hist.length - 1], v = (z.y - a.y) / Math.max(1, z.t - a.t) * 1000;
+    const actual = base + (ev.clientY - y0), proyectado = actual + (v / 1000) * 0.998 / (1 - 0.998);
+    hoja.style.transition = ""; hoja.style.transform = "";
+    if (arrastre) hoja.classList.toggle("abierta", proyectado < cerradoPx() / 2);
+    setTimeout(() => { arrastre = false; }, 0);
+  });
+})();
+
+// ================= Navegación entre vistas =================
+function irA(vista, sel){
+  const cambio = () => {
+    const ini = vista === "inicio";
+    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini;
+    $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
+    $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
+    moverPulgar($("segVista"));
+    document.querySelectorAll("#pestanas button").forEach(b => b.setAttribute("aria-current", (ini ? b.dataset.tab === "mapa" : b.dataset.tab === "detalle") ? "page" : "false"));
+    ocultarTip();
+    if (ini) arrancarFlotacion();
+    if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false; pintar(); $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"}); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
+    else { $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
+    bordeBarra();
+  };
+  const actual = $("vistaInicio").hidden ? "detalle" : "inicio";
+  if (actual === vista && !sel) return;
+  if (document.startViewTransition && !reducir.matches && actual !== vista) document.startViewTransition(cambio); else cambio();
+}
+function abrirDetalle(sel){ location.hash = "detalle/" + encodeURIComponent(sel); }
+function leerHash(){
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h.startsWith("detalle")) { const s = h.slice(8); irA("detalle", s || estado.sel || "R|Casa: " + estado.casa); }
+  else irA("inicio");
+}
+window.addEventListener("hashchange", leerHash);
+$("volver").addEventListener("click", () => { location.hash = "inicio"; });
+$("navInicio").addEventListener("click", () => { location.hash = "inicio"; });
+$("navDetalle").addEventListener("click", () => { location.hash = "detalle/" + encodeURIComponent(M.sel || estado.sel || "R|Casa: " + estado.casa); });
+
+// ================= DETALLE =================
 function posEje(v){
   if (!v) return null;
   const vals = v.map(x => x == null ? Infinity : x);
@@ -140,16 +1360,14 @@ function posEje(v){
   return 0.5 * Math.tanh((a - z) / tau);
 }
 
-// ---------- brújula cuadrada (sin objetivo: solo ejes) ----------
 function brujula(svgId, ex, ey, polos){
-  const svg = $(svgId), S = 330, c = S/2, R = 125;
-  let h = `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" fill="none" stroke="var(--line)"/>
-    <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--line)"/>
-    <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--line)"/>
-    <text x="${c-R}" y="${c-6}" text-anchor="start">${polos[0]}</text>
-    <text x="${c+R}" y="${c-6}" text-anchor="end">${polos[1]}</text>
-    <text x="${c+4}" y="${c+R-4}" text-anchor="start">${polos[2]}</text>
-    <text x="${c+4}" y="${c-R+12}" text-anchor="start">${polos[3]}</text>`;
+  const svg = $(svgId), S = 326, c = S/2, R = 124;
+  let h = `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--sep-fuerte)"/>
+    <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--sep-fuerte)"/>
+    <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--sep-fuerte)"/>
+    __POLOS_X__
+    <text x="${c}" y="${c+R+16}" text-anchor="middle">${polos[2]}</text>
+    <text x="${c}" y="${c-R-8}" text-anchor="middle">${polos[3]}</text>`;
   const pts = [];
   casa().fotos.forEach(f => {
     const e = entidad(f); if (!e || !e.ejes) return;
@@ -157,66 +1375,80 @@ function brujula(svgId, ex, ey, polos){
     if (x == null || y == null) return;
     pts.push({x: c + x*R, y: c - y*R, mes: f.foto, e});
   });
-  if (pts.length > 1) h += `<polyline points="${pts.map(p => p.x+","+p.y).join(" ")}" fill="none" stroke="var(--azul)" stroke-opacity=".5"/>`;
+  // si algún punto está pegado al eje horizontal, los polos X pasan al otro lado del eje
+  const abajo = pts.some(p => p.y > c && p.y - c < 26), arriba = pts.some(p => p.y <= c && c - p.y < 26);
+  const yPolo = abajo && !arriba ? c - 7 : c + 15;
+  h = h.replace("__POLOS_X__", `<text x="${c-R+6}" y="${yPolo}" text-anchor="start">${polos[0]}</text><text x="${c+R-6}" y="${yPolo}" text-anchor="end">${polos[1]}</text>`);
+  if (pts.length > 1) h += `<polyline points="${pts.map(p => p.x+","+p.y).join(" ")}" fill="none" stroke="var(--receta)" stroke-opacity=".45" stroke-width="1.5"/>`;
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
     const tt = `${p.mes}\n${ex}: ${EJ[ex].map((v,k)=>vtxt(ex,v)+" → "+pct(p.e.ejes[ex][k])).join(", ")}\n${ey}: ${EJ[ey].map((v,k)=>vtxt(ey,v)+" → "+pct(p.e.ejes[ey][k])).join(", ")}`;
-    h += `<circle cx="${p.x}" cy="${p.y}" r="${ult ? 8 : 5}" fill="var(--azul)" fill-opacity="${op}"><title>${tt}</title></circle>`;
-    if (i === 0 || ult) h += `<text x="${p.x > c ? p.x - 10 : p.x + 10}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--txt)">${p.mes}</text>`;
+    h += `<circle cx="${p.x}" cy="${p.y}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${tt}</title></circle>`;
+    if (i === 0 || ult) {
+      // cerca del eje horizontal la etiqueta va encima del punto para no pisar los polos
+      const cercaEje = Math.abs(p.y - c) < 22;
+      h += cercaEje ? `<text x="${p.x}" y="${p.y > c ? p.y + 22 : p.y - 14}" text-anchor="middle" style="fill:var(--label);font-size:10px">${p.mes}</text>`
+                    : `<text x="${p.x > c ? p.x - 13 : p.x + 13}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--label);font-size:10px">${p.mes}</text>`;
+    }
   });
-  if (!pts.length) h += `<text x="${c}" y="${c+40}" text-anchor="middle">sin fotos con tramos cerrados</text>`;
+  if (!pts.length) h += `<text x="${c}" y="${c+40}" text-anchor="middle">Sin fotos con tramos cerrados</text>`;
   svg.innerHTML = h;
   const p = pts.length ? pts[pts.length - 1].e : null;
   const linea = k => `<b>${k}</b> ${EJ[k].map((v,i)=>vtxt(k,v)+": "+pct(p.ejes[k][i])).join(" · ")}`;
   $(svgId + "p").innerHTML = p ? `Mejor WAPE alcanzable en cada valor del eje (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
 }
 
-// ---------- receta elegida (la que se aplica a la foto actual) ----------
 function recetaElegida(){
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); return e ? e.receta_txt : null; }
   const el = casa().elegida[estado.sel]; return el ? el.txt : null;
 }
 
-// ---------- selector de grupo ----------
 function selector(){
   const f = fotoUltCerrada(), e = f && entidad(f);
   if (!e) { $("matriz").innerHTML = "<p class='pequeño'>Sin datos en las fotos con tramos cerrados.</p>"; $("matrizp").innerHTML = ""; return; }
   const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos;
   const max = Math.max(...tam);
   const rec = recetaElegida(), gan = rec ? rec.g : -1;
-  let h = `<table class="matriz"><tr><th></th>${AMPL.map(a=>`<th>${a}</th>`).join("")}</tr>`;
+  const oscuro = getComputedStyle(document.documentElement).getPropertyValue("--card").trim() !== "#ffffff";
+  let h = `<table class="matriz"><tr><th class="izq"></th>${AMPL.map(a=>`<th class="mono">${a === "Product Line" ? "Línea" : a}</th>`).join("")}</tr>`;
   CRIT.forEach(cr => {
-    h += `<tr><th class="izq">${cr === "Jerarquía" ? "Solo jerarquía" : "+ " + cr}</th>`;
+    h += `<tr><th class="izq mono">${cr === "Jerarquía" ? "Jerarquía" : "+ " + cr}</th>`;
     AMPL.forEach(a => {
       const gi = CELDAS.findIndex(x => x[0] === a && x[1] === cr);
-      if (gi < 0) { h += `<td></td>`; return; }
+      if (gi < 0) { h += `<td style="background:transparent"></td>`; return; }
       const n = tam[gi], t = Math.log(1 + n) / Math.log(1 + max);
       const w = e.ejes ? e.ejes.g[gi] : null;
-      const fondo = `rgba(10,132,255,${0.08 + 0.75*t})`, col = t > 0.55 ? "#fff" : "var(--txt)";
-      h += `<td class="${gi === gan ? "elegida" : ""}" style="background:${fondo};color:${col}" title="${a} · ${cr}${gi === gan ? " (ELEGIDO)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}">${esRegla() ? n.toFixed(0) : n}</td>`;
+      const al = 0.06 + 0.8 * t;
+      const fondo = oscuro ? `rgba(10,132,255,${al})` : `rgba(0,113,227,${al})`;
+      // color del texto según el contraste real de la celda (azul mezclado con la tarjeta)
+      const base = oscuro ? [10,132,255] : [0,113,227], fondoT = oscuro ? [44,44,46] : [255,255,255];
+      const mez = base.map((c, k) => c * al + fondoT[k] * (1 - al)), lum = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; };
+      const L = .2126 * lum(mez[0]) + .7152 * lum(mez[1]) + .0722 * lum(mez[2]);
+      const col = 1.05 / (L + .05) >= (L + .05) / .0627 ? "#ffffff" : "#1d1d1f";
+      h += `<td class="${gi === gan ? "elegida" : ""}" style="background:${fondo};color:${col}" title="${a} · ${cr}${gi === gan ? " (elegido)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}">${esRegla() ? n.toFixed(0) : n}</td>`;
     });
     h += "</tr>";
   });
   $("matriz").innerHTML = h + "</table>";
-  const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "—"}`; });
-  $("matrizp").innerHTML = rec ? `<span class="elegidaTxt">✓ Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida";
+  const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "-"}`; });
+  $("matrizp").innerHTML = rec ? `<span class="elegidaTxt">Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida";
 }
 
-// ---------- media brújula (resultados de fotos anteriores) ----------
 function mediaBrujula(id, ventana){
-  const svg = $(id), W = 330, cx = W/2, base = 205, R = 150;
+  const svg = $(id), W = 326, cx = W/2, base = 205, R = 148;
   const X = spp => cx + Math.max(-1, Math.min(1, spp / 0.30)) * R;
   const Y = w => base - Math.max(0, Math.min(1, w / 0.60)) * (base - 15);
   const fuera = (spp, w) => Math.abs(spp) > 0.30 || w > 0.60;
-  let h = `<path d="M ${cx-R} ${base} A ${R} ${base-15} 0 0 1 ${cx+R} ${base}" fill="none" stroke="var(--line)"/>
-    <line x1="${cx-R}" y1="${base}" x2="${cx+R}" y2="${base}" stroke="var(--line)"/>
+  const rr = 22;  // marco con las esquinas superiores redondeadas: la "media brújula" contiene todo el dominio SPP × WAPE
+  let h = `<path d="M ${cx-R} ${base} V ${15+rr} Q ${cx-R} 15 ${cx-R+rr} 15 H ${cx+R-rr} Q ${cx+R} 15 ${cx+R} ${15+rr} V ${base}" fill="none" stroke="var(--sep-fuerte)"/>
+    <line x1="${cx-R}" y1="${base}" x2="${cx+R}" y2="${base}" stroke="var(--sep-fuerte)"/>
     <rect x="${X(-CFG.metas.spp_abs_max)}" y="${Y(CFG.metas.wape_max)}" width="${X(CFG.metas.spp_abs_max)-X(-CFG.metas.spp_abs_max)}" height="${base-Y(CFG.metas.wape_max)}" fill="var(--meta)"/>
-    <line x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--verde)" stroke-dasharray="4 3"/>
-    <line x1="${cx}" y1="${base}" x2="${cx}" y2="15" stroke="var(--line)"/>
-    <text x="${cx+R}" y="${Y(CFG.metas.wape_max)-3}" text-anchor="end">WAPE 40%</text>
-    <text x="${cx-R}" y="${base+14}">−30% sobre-forecast</text><text x="${cx+R}" y="${base+14}" text-anchor="end">+30% bajo-forecast</text>
-    <text x="${cx}" y="${base+14}" text-anchor="middle">SPP 0</text><text x="${cx+3}" y="24">WAPE 60%</text>`;
-  const series = [["kpi_consensus", "var(--gris)", "4 3", "Consensus real"], ["kpi_receta", "var(--azul)", "", esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
+    <line x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--green)" stroke-dasharray="4 3"/>
+    <line x1="${cx}" y1="${base}" x2="${cx}" y2="15" stroke="var(--sep-fuerte)"/>
+    <text x="${cx-R}" y="${Y(CFG.metas.wape_max)+13}" text-anchor="start" style="fill:var(--green-txt)">WAPE 40%</text>
+    <text x="${cx-R}" y="${base+15}">-30% sobre-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+30% bajo-forecast</text>
+    <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx-R+8}" y="30">WAPE 60%</text>`;
+  const series = [["kpi_consensus", "var(--cons)", "4 3", "Consensus real"], ["kpi_receta", "var(--receta)", "", esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
   const ult = {};
   series.forEach(([k, col, dash, nom]) => {
     const pts = [];
@@ -224,36 +1456,24 @@ function mediaBrujula(id, ventana){
       const e = entidad(f); const v = e && e[k] && e[k][ventana];
       if (v) pts.push({x: X(v.spp), y: Y(v.wape), v, mes: f.foto, out: fuera(v.spp, v.wape)});
     });
-    if (pts.length > 1) h += `<polyline points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}"/>`;
+    if (pts.length > 1) h += `<polyline points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
     pts.forEach((p, i) => {
       const u = i === pts.length - 1;
-      h += p.out ? `<path d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala — SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
-                 : `<circle cx="${p.x}" cy="${p.y}" r="${u ? 6 : 4}" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
+      h += p.out ? `<path d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala. SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
+                 : `<circle cx="${p.x}" cy="${p.y}" r="${u ? 7 : 4}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="2"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
       if (u) ult[k] = p;
     });
   });
   svg.innerHTML = h;
-  const lin = (k, nom) => { const p = ult[k]; if (!p) return `${nom}: —`;
-    return `${nom} (${p.mes}): WAPE <b class="${p.v.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.v.wape)}</b> · SPP <b class="${Math.abs(p.v.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.v.spp)}</b>${p.out ? " ▲fuera de escala" : ""}`; };
+  const lin = (k, nom) => { const p = ult[k]; if (!p) return `${nom}: -`;
+    return `${nom} (${p.mes}): WAPE <b class="${p.v.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.v.wape)}</b> · SPP <b class="${Math.abs(p.v.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.v.spp)}</b>${p.out ? " (fuera de escala)" : ""}`; };
   let extra = "";
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); const v = e && e.kpi_oraculo && e.kpi_oraculo[ventana];
     if (v) extra = `<br>Suma de oráculos por código: WAPE ${pct(v.wape)} · SPP ${pct(v.spp)}`; }
-  $(id + "p").innerHTML = `<span style="color:var(--gris)">┅</span> ${lin("kpi_consensus","Consensus")}<br><span style="color:var(--azul)">●</span> ${lin("kpi_receta", esRegla() ? "Regla" : "Receta")}${extra}`;
+  const sw = (col, dash) => `<svg width="18" height="8" style="vertical-align:middle"><line x1="0" x2="18" y1="4" y2="4" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/></svg>`;
+  $(id + "p").innerHTML = `${sw("var(--cons)", "4 3")} ${lin("kpi_consensus","Consensus")}<br>${sw("var(--receta)", "")} ${lin("kpi_receta", esRegla() ? "Regla" : "Receta")}${extra}`;
 }
 
-// ---------- tolerancias y desvío ----------
-function tolerancia(){
-  const ti = parseFloat($("tolIni").value) / 100, tf = parseFloat($("tolFin").value) / 100;
-  return h => ti + (tf - ti) * (h - 1) / 8;
-}
-function evaluar(fc, cons, tol){
-  // desvío de un mes = solo el exceso fuera de [R·(1−tol), R·(1+tol)], en valor absoluto
-  return fc.map((R, i) => {
-    const t = tol(i + 1), lo = R * (1 - t), hi = R * (1 + t), C = cons[i];
-    const dev = C > hi ? C - hi : (C < lo ? lo - C : 0);
-    return {R, C, lo, hi, dev, t};
-  });
-}
 function filasGrupo(){
   const det = casa().detector;
   if (!esRegla()) return det.filas.filter(r => r.ean === estado.sel);
@@ -264,38 +1484,54 @@ function filasGrupo(){
   return [];
 }
 
-// ---------- foto actual: Consensus vs receta elegida con su banda ----------
+function marcas(max){
+  // paso "redondo" (1, 2, 2,5 o 5 × 10^n) para unas 4 líneas de referencia
+  const bruto = max / 4, p = Math.pow(10, Math.floor(Math.log10(bruto))), f = bruto / p;
+  const paso = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  return {paso, tope: Math.ceil(max / paso) * paso};
+}
 function grafico(meses, ev){
-  const W = 760, H = 270, L = 60, Rm = 20, T = 15, B = 40;
-  const max = Math.max(1, ...ev.map(e => Math.max(e.hi, e.C))) * 1.08;
-  const x = i => L + (W - L - Rm) * (i + 0.5) / meses.length, y = v => T + (H - T - B) * (1 - v / max);
+  const W = Math.max(300, Math.round($("actual").clientWidth || 1000)), estrecho = W < 640;
+  const H = estrecho ? 240 : 290, L = estrecho ? 54 : 60, Rm = 12, T = 14, B = estrecho ? 26 : 42;
+  const {paso, tope} = marcas(Math.max(1, ...ev.map(e => Math.max(e.hi, e.C))) * 1.04);
+  const x = i => L + (W - L - Rm) * (i + 0.5) / meses.length, y = v => T + (H - T - B) * (1 - v / tope);
   let h = "";
-  for (let k = 0; k <= 4; k++) { const v = max * k / 4;
-    h += `<line x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width=".5"/><text x="${L-6}" y="${y(v)+3}" text-anchor="end">${num(v)}</text>`; }
-  meses.forEach((m, i) => h += `<text x="${x(i)}" y="${H-B+16}" text-anchor="middle">${m}</text><text x="${x(i)}" y="${H-B+29}" text-anchor="middle">±${pct(ev[i].t,1)}</text>`);
+  for (let v = 0; v <= tope + 1e-9; v += paso)
+    h += `<line x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}" stroke="var(--sep)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${num(v)}</text>`;
+  meses.forEach((m, i) => h += `<text x="${x(i)}" y="${H-B+18}" text-anchor="middle">${estrecho ? m.slice(5) : m}</text>` + (estrecho ? "" : `<text x="${x(i)}" y="${H-B+33}" text-anchor="middle" style="fill:var(--label-3)">±${pct(ev[i].t,1)}</text>`));
   h += `<polygon points="${ev.map((e,i)=>x(i)+","+y(e.hi)).join(" ")} ${ev.map((e,i)=>x(i)+","+y(e.lo)).reverse().join(" ")}" fill="var(--banda)"/>`;
-  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--azul)" stroke-width="2"/>`;
-  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--txt)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--receta)" stroke-width="2" stroke-linejoin="round"/>`;
+  h += `<polyline points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
   ev.forEach((e, i) => {
     const out = e.dev > 0.5;
-    h += `<circle cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5.5 : 4}" fill="${out ? "var(--rojo)" : "var(--txt)"}"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)}–${num(e.hi)}${out ? " · desvío " + num(e.dev) : ""}</title></circle>`;
-    if (out) h += `<text x="${x(i)}" y="${y(e.C) - 9}" text-anchor="middle" style="fill:var(--rojo)">${e.C > e.hi ? "+" : "−"}${num(e.dev)}</text>`;
+    h += `<circle cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5 : 3.5}" fill="${out ? "var(--red)" : "var(--cons)"}" stroke="var(--card)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)} a ${num(e.hi)}${out ? " · desvío " + num(e.dev) + (e.C > e.hi ? " por encima" : " por debajo") : ""}</title></circle>`;
+    if (out && !estrecho) h += `<text x="${x(i)}" y="${y(e.C) + (e.C < e.lo ? 18 : -10)}" text-anchor="middle" style="fill:var(--red-txt);font-weight:600">${num(e.dev)}</text>`;
   });
-  h += `<rect x="${L}" y="2" width="12" height="8" fill="var(--banda)"/><text x="${L+16}" y="10">rango de tolerancia</text>
-        <line x1="${L+130}" x2="${L+152}" y1="6" y2="6" stroke="var(--azul)" stroke-width="2"/><text x="${L+156}" y="10">receta elegida</text>
-        <line x1="${L+250}" x2="${L+272}" y1="6" y2="6" stroke="var(--txt)" stroke-dasharray="4 3"/><text x="${L+276}" y="10">Consensus de la foto</text>
-        <circle cx="${L+400}" cy="6" r="4" fill="var(--rojo)"/><text x="${L+408}" y="10">mes fuera del rango (desvío en uds)</text>`;
-  return `<svg width="${W}" height="${H}">${h}</svg>`;
+  const sw = (c) => `<span class="ley-it">${c}</span>`;
+  return `<div class="ley-graf">${sw('<i style="background:var(--banda);box-shadow:inset 0 0 0 1px var(--sep-fuerte)"></i>Rango de tolerancia')}${sw('<i style="height:2px;background:var(--receta)"></i>Receta elegida')}${sw('<i style="height:0;border-top:1.5px dashed var(--cons)"></i>Consensus de la foto')}${sw('<i style="border-radius:50%;width:9px;height:9px;background:var(--red)"></i>Mes fuera del rango, desvío en uds')}</div>`
+    + `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%">${h}</svg>`;
+}
+
+function rail(r){
+  const nav = `<nav aria-label="Secciones">${[["sFoto","Foto actual"],["sDecisiones","Decisiones"],["sResultados","Resultados"],["sDetector","Detector"]].map(([id, t]) => `<a href="javascript:void 0" data-ir="${id}">${t}</a>`).join("")}</nav>`;
+  if (!r) { $("rail").innerHTML = `<h2 class="rail-t">Foto actual</h2><p class="pequeño" style="margin:0 0 14px">Sin receta con la que comparar.</p>` + nav; return; }
+  const fila = (k, v, cls = "") => `<div class="rail-f"><span>${k}</span><b class="num ${cls}">${v}</b></div>`;
+  const p = r.totR > 0 ? r.totDev / r.totR : null;
+  $("rail").innerHTML = `<h2 class="rail-t">Foto ${r.foto}</h2><div class="rail-g">`
+    + fila("Desvío", num(r.totDev) + " uds", r.totDev > 0.5 ? "malo" : "bueno")
+    + fila("Sobre la receta", pct(p))
+    + fila(esRegla() ? "Códigos fuera" : "Meses fuera", esRegla() ? r.nFuera + " de " + r.n : r.meses + " de 9")
+    + `</div><h2 class="rail-t">Receta</h2><p class="rec">${r.rec ? recetaTxt(r.rec) : "Cada código usa su propia receta."}</p>` + nav;
 }
 
 function fotoActual(){
   const det = casa().detector, fuente = $("selFuente").value, tol = tolerancia();
-  $("tituloActual").textContent = `Foto actual ${det.foto} · Consensus frente a la estrategia`;
+  $("tituloActual").textContent = `Foto actual ${det.foto}`;
   const filas = filasGrupo();
   let h = "";
-  if (!filas.length) { $("actual").innerHTML = `<p>Este código no está en scope en la foto ${det.foto}.</p>`; return; }
+  if (!filas.length) { $("actual").innerHTML = `<p>Este código no está en scope en la foto ${det.foto}.</p>`; rail(null); return; }
   const conRec = filas.filter(r => r.recetas[fuente]);
-  if (!conRec.length) { $("actual").innerHTML = `<p>Sin receta elegida: no estaba en scope en ninguna foto con tramos cerrados.</p>`; return; }
+  if (!conRec.length) { $("actual").innerHTML = `<p>Sin receta elegida: no estaba en scope en ninguna foto con tramos cerrados.</p>`; rail(null); return; }
   const n = det.meses.length;
   let fc = Array(n).fill(0), cons = Array(n).fill(0), devCod = Array(n).fill(0), lo = Array(n).fill(0), hi = Array(n).fill(0);
   let nFuera = 0;
@@ -310,18 +1546,18 @@ function fotoActual(){
     dev: esRegla() ? devCod[i] : (cons[i] > hi[i] ? cons[i] - hi[i] : (cons[i] < lo[i] ? lo[i] - cons[i] : 0))}));
   const totDev = ev.reduce((a, e) => a + e.dev, 0), totR = fc.reduce((a, b) => a + b, 0);
   if (!esRegla()) { const r = conRec[0].recetas[fuente];
-    h += `<p>Receta aplicada: <b>${recetaTxt(r.txt)}</b>${r.sin_trend ? " <span class='aviso'>(trend no calculable hoy para este código: se aplica sin trend)</span>" : ""}</p>`; }
-  else h += `<p>${conRec.length} códigos con receta (${filas.length - conRec.length} sin receta). <b class="${nFuera ? "malo" : "bueno"}">${nFuera} fuera de su estrategia.</b> Totales del grupo; cada código usa su propia receta y su propio rango.</p>`;
+    h += `<p style="margin:0 0 12px">Receta aplicada: <b>${recetaTxt(r.txt)}</b>${r.sin_trend ? " <span class='aviso'>(trend no calculable hoy para este código: se aplica sin trend)</span>" : ""}</p>`; }
+  else h += `<p style="margin:0 0 12px">${conRec.length} códigos con receta (${filas.length - conRec.length} sin receta). <b class="${nFuera ? "malo" : "bueno"}">${nFuera} fuera de su estrategia.</b> Totales del grupo; cada código usa su propia receta y su propio rango.</p>`;
   h += grafico(det.meses, ev);
-  h += `<p>Desvío total: <b>${num(totDev)} uds</b> · <b>${pct(totR > 0 ? totDev / totR : null)}</b> del forecast de la receta (${num(totR)} uds).</p>`;
-  h += `<table><tr><th class="izq">Mes</th><th>h</th><th>Tolerancia</th><th>Receta</th><th>Rango mín</th><th>Rango máx</th><th>Consensus</th><th>Cons / Receta</th><th>Desvío uds</th></tr>`;
+  h += `<p>Desvío total: <b class="marcador">${num(totDev)} uds</b> · <b>${pct(totR > 0 ? totDev / totR : null)}</b> del forecast de la receta (${num(totR)} uds).</p>`;
+  rail({totDev, totR, meses: ev.filter(e => e.dev > 0.5).length, rec: esRegla() ? null : conRec[0].recetas[fuente].txt, nFuera, n: conRec.length, foto: det.foto});
+  h += `<table class="t-foto"><tr><th class="izq">Mes</th><th class="c-x">h</th><th class="c-x">Tolerancia</th><th>Receta</th><th class="c-x">Rango mín</th><th class="c-x">Rango máx</th><th>Consensus</th><th class="c-x">Cons / Receta</th><th>Desvío uds</th></tr>`;
   ev.forEach((e, i) => {
-    h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td>${i+1}</td><td>±${pct(e.t)}</td><td>${num(e.R)}</td><td>${num(e.lo)}</td><td>${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td>${e.R > 0 ? pct(e.C / e.R - 1) : "—"}</td><td>${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
+    h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td class="c-x">${i+1}</td><td class="c-x">±${pct(e.t)}</td><td>${num(e.R)}</td><td class="c-x">${num(e.lo)}</td><td class="c-x">${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td class="c-x">${e.R > 0 ? pct(e.C / e.R - 1) : "-"}</td><td class="dv">${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
   });
   $("actual").innerHTML = h + "</table>";
 }
 
-// ---------- resultados anteriores: tabla y detalle mes a mes ----------
 function anteriores(){
   let h = "";
   fotosCerradas().forEach(f => {
@@ -340,23 +1576,22 @@ function anteriores(){
         <table><tr><th class="izq">Mes</th><th>h</th><th>Actual</th><th>Consensus</th><th>Receta</th><th>H(t−12)</th><th>DA</th><th>|Cons−A|</th><th>|Rec−A|</th></tr>`;
       f.meses_fut.forEach((m, i) => {
         const A = e.actual_fut[i], C = e.consensus_fut[i], Rr = e.fc_oraculo[i];
-        h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null ? "—" : num(Math.abs(C - A))}</td><td>${A == null ? "—" : num(Math.abs(Rr - A))}</td></tr>`;
-        if (i === 2 || i === 5) h += `<tr><td colspan="9" style="border-bottom:2px solid var(--line);padding:0"></td></tr>`;
+        h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null ? "-" : num(Math.abs(C - A))}</td><td>${A == null ? "-" : num(Math.abs(Rr - A))}</td></tr>`;
+        if (i === 2 || i === 5) h += `<tr><td colspan="9" style="border-bottom:2px solid var(--sep-fuerte);padding:0"></td></tr>`;
       });
-      h += `</table><p class="pequeño">* sin año anterior para ese mes: se usa la media. H = Actuals + c·Supply Cuts − p·Total Demand Assumption.</p></details>`;
+      h += `</table><p class="pequeño">* Sin año anterior para ese mes: se usa la media. H = Actuals + c·Supply Cuts − p·Total Demand Assumption.</p></details>`;
     }
     if (esRegla()) {
       h += `<details><summary>Ver los ${e.n_codigos} códigos del grupo</summary><table><tr><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Edad</th><th>Actuals 9M</th><th>WAPE Cons 9M</th><th>WAPE oráculo 9M</th><th class="izq">Receta oráculo</th></tr>`;
       e.eans.map(ean => ({ean, c: f.codigos[ean]})).sort((a, b) => ((b.c.kpi_consensus?.["9M"]?.act)||0) - ((a.c.kpi_consensus?.["9M"]?.act)||0))
         .forEach(({ean, c}) => { const a = casa().atributos[ean];
-          h += `<tr><td class="izq"><a class="ean" data-ean="${ean}">${ean}</a></td><td class="izq">${a.desc}</td><td class="izq">${c.tramo_edad}</td><td>${num(c.kpi_consensus?.["9M"]?.act)}</td><td>${pct(c.kpi_consensus?.["9M"]?.wape)}</td><td>${pct(c.kpi_receta?.["9M"]?.wape)}</td><td class="izq pequeño">${recetaTxt(c.oraculo_receta)}</td></tr>`; });
+          h += `<tr><td class="izq"><a class="ean" data-ean="${ean}">${ean}</a></td><td class="izq">${esc(a.desc)}</td><td class="izq">${c.tramo_edad}</td><td>${num(c.kpi_consensus?.["9M"]?.act)}</td><td>${pct(c.kpi_consensus?.["9M"]?.wape)}</td><td>${pct(c.kpi_receta?.["9M"]?.wape)}</td><td class="izq pequeño">${recetaTxt(c.oraculo_receta)}</td></tr>`; });
       h += "</table></details>";
     }
   });
   $("anteriores").innerHTML = h || "<p>No hay fotos con tramos cerrados.</p>";
 }
 
-// ---------- detector ----------
 function detector(){
   const det = casa().detector, fuente = $("selFuente").value, tol = tolerancia();
   const filtro = $("filtro").value.toLowerCase();
@@ -368,55 +1603,55 @@ function detector(){
     if (!rec) { sinReceta++; return; }
     const ev = evaluar(rec.fc, r.consensus, tol);
     const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + e.R, 0);
-    const meses = ev.map((e, i) => e.dev > 0.5 ? det.meses[i].slice(2) + (e.C > e.hi ? "↑" : "↓") : null).filter(Boolean);
+    const fm = (f) => ev.map((e, i) => e.dev > 0.5 && f(e) ? det.meses[i].slice(5) : null).filter(Boolean);
+    const bajo = fm(e => e.C < e.lo), alto = fm(e => e.C > e.hi);
+    const meses = [bajo.length ? "Bajo " + bajo.join(" ") : "", alto.length ? "Alto " + alto.join(" ") : ""].filter(Boolean).join(" · ");
     filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
   const fuera = filas.filter(x => x.u > 0.5).length;
   let vis = filas.filter(x => ($("verTodos").checked || x.u > 0.5) && (!filtro || (x.r.ean + " " + x.r.desc).toLowerCase().includes(filtro)));
   const {col, dir} = estado.orden;
   vis.sort((a, b) => dir * ((a[col] > b[col]) - (a[col] < b[col])));
-  $("detInfo").innerHTML = `Foto ${det.foto} (meses ${det.meses[0]}…${det.meses[8]}). <b>${fuera} de ${filas.length} EANs fuera de su estrategia.</b>
+  $("detInfo").innerHTML = `Foto ${det.foto} (meses ${det.meses[0]} a ${det.meses[8]}). <b style="color:var(--label)">${fuera} de ${filas.length} EANs fuera de su estrategia.</b>
      ${sinReceta ? sinReceta + " EANs sin receta (no estaban en scope en ninguna foto con tramos cerrados)." : ""}
      Desvío de un mes = solo el exceso fuera del rango, en valor absoluto (un mes arriba y otro abajo no se compensan). Desvío % = desvío / Σ forecast de la receta.`;
-  const th = (k, t) => `<th class="ord" data-col="${k}">${t}${col === k ? (dir > 0 ? " ▲" : " ▼") : ""}</th>`;
-  let h = `<table><tr><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Brand</th><th class="izq">Edad</th>${th("sR","Σ Receta")}${th("sC","Σ Consensus")}${th("u","Desvío uds")}${th("p","Desvío %")}<th class="izq">Meses fuera</th><th class="izq">Grupo del trend</th></tr>`;
-  vis.forEach(x => {
-    h += `<tr><td class="izq"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq">${x.r.desc}</td><td class="izq">${x.r.brand.replace(/ \(\d+\)/,"")}</td><td class="izq">${x.r.edad}</td>
-      <td>${num(x.sR)}</td><td>${num(x.sC)}</td><td><b>${num(x.u)}</b></td><td>${pct(x.p)}</td><td class="izq pequeño">${x.meses.join(" ")}</td>
-      <td class="izq pequeño" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
+  const th = (k, t) => `<th class="ord" data-col="${k}" aria-sort="${col === k ? (dir > 0 ? "ascending" : "descending") : "none"}">${t}${col === k ? `<svg class="flecha" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="${dir > 0 ? "M2 6.5 5 3.5l3 3" : "M2 3.5 5 6.5l3-3"}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ""}</th>`;
+  let h = `<table class="t-det"><tr class="cab"><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Brand</th><th class="izq">Edad</th>${th("sR","Σ Receta")}${th("sC","Σ Consensus")}${th("u","Desvío uds")}${th("p","Desvío %")}<th class="izq">Meses fuera</th><th class="izq">Grupo del trend</th></tr>`;
+  const tope = estado.detTodos ? vis.length : 30;
+  vis.slice(0, tope).forEach(x => {
+    h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq desc" title="${esc(x.r.desc)} · ${x.r.edad} · grupo del trend: ${esc(x.rec.txt.grupo)}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}</td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${x.r.edad}</td>
+      <td class="c-sr">${num(x.sR)}</td><td class="c-sc">${num(x.sC)}</td><td class="c-u"><b>${num(x.u)}</b></td><td class="c-p">${pct(x.p)}</td><td class="izq pequeño meses c-mes">${x.meses}</td>
+      <td class="izq pequeño meses c-grupo" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
   });
-  $("detector").innerHTML = h + "</table>";
-}
-
-// ---------- controles ----------
-function llenarCodigos(){
-  const c = casa();
-  const reglas = new Set(); c.fotos.forEach(f => Object.keys(f.reglas).forEach(k => reglas.add(k)));
-  let h = `<optgroup label="Reglas (todos los códigos del grupo)">${[...reglas].map(k => `<option value="R|${k}">${k}</option>`).join("")}</optgroup>`;
-  const eans = new Set(); c.fotos.forEach(f => Object.keys(f.codigos).forEach(e => eans.add(e)));
-  const lista = [...eans].map(e => ({e, a: c.atributos[e]})).sort((x, y) => (x.a.brand + x.a.desc).localeCompare(y.a.brand + y.a.desc));
-  let brand = null;
-  lista.forEach(({e, a}) => {
-    if (a.brand !== brand) { if (brand) h += "</optgroup>"; brand = a.brand; h += `<optgroup label="${brand}">`; }
-    h += `<option value="${e}">${e} · ${a.desc}</option>`;
-  });
-  $("selCodigo").innerHTML = h + "</optgroup>";
-  estado.sel = "R|Casa: " + estado.casa;
-  $("selCodigo").value = estado.sel;
+  if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--label-2)">Ningún EAN se sale de su estrategia con esta tolerancia.</td></tr>`;
+  $("detector").innerHTML = h + "</table>" + (vis.length > tope ? `<p><button type="button" class="btn btn-fant" id="detMas">Ver los ${vis.length} EANs</button></p>` : "");
 }
 
 function info(){
   const c = casa(), fAct = c.fotos[c.fotos.length - 1];
-  let h = "";
+  let h = "", titulo, migas = [["R|Casa: " + estado.casa, estado.casa]];
   if (!esRegla()) {
     const a = c.atributos[estado.sel], e = fAct.codigos[estado.sel];
-    h += `<b>${a.desc}</b> · ${a.brand} · ${a.pl} · segmento ${a.segmento || "(vacío)"} · tamaño ${a.tamano} · flag sistema ${a.flag || "—"} · responsable ${a.fr || "(vacío)"}`;
+    titulo = a.desc;
+    migas.push(["R|Brand: " + a.brand, corto(a.brand)], ["R|PL: " + a.pl, corto(a.pl)], [estado.sel, estado.sel]);
+    h += `<b class="mono" style="font-size:12px">${estado.sel}</b> · ${esc(a.brand)} · ${esc(a.pl)} · segmento ${a.segmento || "(vacío)"} · tamaño ${a.tamano} · ${a.flag ? "Ignore System Forecast Flag " + a.flag : "sin flag de sistema"} · responsable ${a.fr || "(vacío)"}`;
     h += e ? ` · edad hoy: ${e.tramo_edad}` : ` · <span class="aviso">fuera de scope en ${fAct.foto}</span>`;
+  } else {
+    const k = estado.sel.slice(2);
+    titulo = corto(k.replace(/^(Casa|Brand|PL): /, ""));
+    const tipo = k.split(":")[0];
+    if (tipo !== "Casa") {
+      const ej = c.detector.filas.find(r => (tipo === "Brand" ? r.brand : r.pl) === k.replace(/^(Brand|PL): /, ""));
+      if (ej) { migas.push(["R|Brand: " + ej.brand, corto(ej.brand)]); if (tipo === "PL") migas.push(["R|PL: " + ej.pl, corto(ej.pl)]); }
+    }
+    h += `Regla de ${{Casa: "la casa", Brand: "la brand", PL: "la product line"}[tipo]}: mejor receta común a todos sus códigos. `;
   }
   h += `<br>Fotos: ${c.fotos.map(f => f.foto + (f.hay_tramos_cerrados ? " (medida)" : " (actual)")).join(" · ")}. ` +
-       c.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${a}</span>`)).join(" · ");
+       c.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${esc(a)}</span>`)).join(" · ");
   $("info").innerHTML = h;
-  $("decSub").textContent = `· inputs ganadores en cada foto medida (${fotosCerradas().map(f => f.foto).join(", ")})`;
+  $("detTitulo").textContent = titulo;
+  $("detMigas").innerHTML = migas.map((m, i) => `${i ? '<span style="color:var(--label-3)">/</span>' : ""}<button type="button" data-sel="${esc(m[0])}" ${i === migas.length - 1 ? 'aria-current="true"' : ""} ${m[0].startsWith("R|") && !existeRegla(m[0].slice(2)) ? "disabled" : ""}>${esc(m[1])}</button>`).join("");
+  $("decSub").textContent = `Inputs ganadores en cada foto medida (${fotosCerradas().map(f => f.foto).join(", ")}).`;
 }
 
 function pintar(){
@@ -424,7 +1659,7 @@ function pintar(){
   fotoActual();
   brujula("b1", "s", "w", ["Media plana", "Mismo mes año pasado", "Sin trend", "Trend completo"]);
   brujula("b2", "m", "N", ["100% sell-in", "100% sell-out", "Trend 6M", "Trend 12M"]);
-  brujula("b3", "c", "p", ["Sin sumar cortes", "+100% cortes", "Sin restar promos", "−100% promos"]);
+  brujula("b3", "c", "p", ["Sin sumar cortes", "Sumar 100% cortes", "Sin restar promos", "Restar 100% promos"]);
   selector();
   ["90", "180", "9M"].forEach(v => mediaBrujula("r" + v, v));
   anteriores();
@@ -433,25 +1668,37 @@ function pintar(){
 
 $("leer").innerHTML = `<p><b>X = SPP</b> (bias, ${CFG.spp_signo < 0 ? "Σ(A−F)/ΣA" : "Σ(F−A)/ΣA"}): a la izquierda sobre-forecast, a la derecha bajo-forecast. <b>Y = WAPE</b> = Σ|F−A|/ΣA, 0 abajo, 60% arriba.</p>
   <p>Zona verde = meta: WAPE ≤ ${pct(CFG.metas.wape_max,0)} y SPP entre ±${pct(CFG.metas.spp_abs_max,0)}. Línea verde = WAPE 40%.</p>
-  <p><span style="color:var(--gris)">Gris discontinuo</span> = lo que pasó (Consensus - Final de la foto). <span style="color:var(--azul)">Azul</span> = mejor receta en esa foto (para un código, el oráculo; para un grupo, la regla del grupo). La distancia entre los dos es lo que se habría ganado.</p>
-  <p>Un punto por foto medida; el último más grande. ▲ = fuera de escala, pegado al borde.</p>
-  <p>Solo se miden fotos con actuals posteriores. La foto actual no se mide: se compara su Consensus con la receta elegida (arriba).</p>`;
-$("notas").innerHTML = `Rejilla gruesa: ${D.ejes.s.length**5 * D.ejes.N.length * CELDAS.length} recetas por código y foto. Pesos por tramo ${CFG.peso_tramo.join("-")}. Tope del trend ±${pct(CFG.tope_trend,0)}. Parámetros en brujulas/config.json.`;
+  <p>Gris discontinuo = lo que pasó (Consensus - Final de la foto). Azul = mejor receta en esa foto (para un código, el oráculo; para un grupo, la regla del grupo). La distancia entre los dos es lo que se habría ganado.</p>
+  <p>Un punto por foto medida; el último más grande. Triángulo = fuera de escala, pegado al borde.</p>
+  <p>Solo se miden fotos con actuals posteriores. La foto actual no se mide: se compara su Consensus con la receta elegida.</p>`;
+$("notas").innerHTML = `Rejilla gruesa: ${(D.ejes.s.length**5 * D.ejes.N.length * CELDAS.length).toLocaleString("es-ES")} recetas por código y foto. Pesos por tramo ${CFG.peso_tramo.join("-")}. Tope del trend ±${pct(CFG.tope_trend,0)}. Parámetros en brujulas/config.json.`;
 
-$("selCasa").innerHTML = Object.keys(D.casas).map(k => `<option>${k}</option>`).join("");
-estado.casa = $("selCasa").value;
-llenarCodigos();
-$("selCasa").onchange = () => { estado.casa = $("selCasa").value; llenarCodigos(); pintar(); };
-$("selCodigo").onchange = () => { estado.sel = $("selCodigo").value; pintar(); };
-["tolIni", "tolFin", "selFuente"].forEach(id => $(id).addEventListener("input", () => { fotoActual(); detector(); }));
+$("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-ir]"); if (!a) return; ev.preventDefault(); $(a.dataset.ir).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"}); });
+$("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
+$("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
 ["soloGrupo", "verTodos", "filtro"].forEach(id => $(id).addEventListener("input", detector));
 document.addEventListener("click", ev => {
   const a = ev.target.closest("a.ean");
-  if (a) { estado.sel = a.dataset.ean; $("selCodigo").value = estado.sel; pintar(); window.scrollTo({top: 0, behavior: "smooth"}); return; }
+  if (a) { abrirDetalle(a.dataset.ean); return; }
+  if (ev.target.closest("#detMas")) { estado.detTodos = true; detector(); return; }
   const t = ev.target.closest("th.ord");
   if (t) { const k = t.dataset.col; estado.orden = {col: k, dir: estado.orden.col === k ? -estado.orden.dir : -1}; detector(); }
 });
-pintar();
+
+// ================= Arranque =================
+function cargarCasa(){
+  estado.sel = "R|Casa: " + estado.casa;
+  M.foco = null; M.sel = null; M.primera = true;
+  M.hojas = calcularHojas();
+  pintarChips(); pintarLeyenda(); dibujarMapa();
+}
+$("selCasa").innerHTML = Object.keys(D.casas).map(k => `<option>${esc(k)}</option>`).join("");
+estado.casa = $("selCasa").value;
+$("selCasa").onchange = () => { estado.casa = $("selCasa").value; cargarCasa(); location.hash = "inicio"; };
+cargarCasa();
+leerHash();
+requestAnimationFrame(() => { moverPulgar($("segVista")); moverPulgar($("segTema")); });
+if (document.fonts) document.fonts.ready.then(() => { moverPulgar($("segVista")); moverPulgar($("segTema")); });
 </script>
 </body>
 </html>
