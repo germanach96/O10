@@ -20,7 +20,7 @@
   --mancha-1:#ffffff; --mancha-2:#c6cad1; --mancha-3:#fafbfc; --mancha-4:#babfc7;
   /* cristal */
   --cristal:rgba(255,255,255,.46); --cristal-fuerte:rgba(255,255,255,.72);
-  --sombra-nivel:#000; --velo-nivel:#fff; --k-velo:2.7;
+  --sombra-nivel:#dbe8ff; --mezcla-nivel:multiply; --k-velo:.6; --k-sat:3;
   --borde-cristal:rgba(255,255,255,.66); --brillo-cristal:rgba(255,255,255,.9);
   --sombra-cristal:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);
   --blur:28px;
@@ -51,7 +51,7 @@
 }
 :root[data-theme="dark"]{
   --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
-  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78); --sombra-nivel:#fff; --velo-nivel:#000; --k-velo:2.4;
+  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78); --sombra-nivel:#2f8bff; --mezcla-nivel:color; --k-velo:0; --k-sat:5;
   --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
   --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
   --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141414;
@@ -72,7 +72,7 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
-    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78); --sombra-nivel:#fff; --velo-nivel:#000; --k-velo:2.4;
+    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78); --sombra-nivel:#2f8bff; --mezcla-nivel:color; --k-velo:0; --k-sat:5;
     --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
     --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
     --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141414;
@@ -96,14 +96,17 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--fondo);color:var(--label);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;overflow:hidden;caret-color:var(--blue);-webkit-tap-highlight-color:transparent}
-/* Profundidad por nivel: una capa fija sobre el papel tapiz oscurece (claro) o aclara (oscuro) el fondo según lo hondo
-   que se esté: Todas las casas = nada; EAN = lo más lejos. Solo cambia la opacidad de UNA capa (compuesta en GPU), con una
-   curva larga y suave. Los paneles de cristal llevan un velo inverso con la misma curva, así los menús no cambian de tono. */
-:root{--o-nivel:0}
-:root[data-nivel="1"]{--o-nivel:.045} :root[data-nivel="2"]{--o-nivel:.09} :root[data-nivel="3"]{--o-nivel:.135} :root[data-nivel="4"]{--o-nivel:.18}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-nivel="1"]{--o-nivel:.025} :root:not([data-theme="light"])[data-nivel="2"]{--o-nivel:.05} :root:not([data-theme="light"])[data-nivel="3"]{--o-nivel:.075} :root:not([data-theme="light"])[data-nivel="4"]{--o-nivel:.1}}
-:root[data-theme="dark"][data-nivel="1"]{--o-nivel:.025} :root[data-theme="dark"][data-nivel="2"]{--o-nivel:.05} :root[data-theme="dark"][data-nivel="3"]{--o-nivel:.075} :root[data-theme="dark"][data-nivel="4"]{--o-nivel:.1}
-#sombraNivel{position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--sombra-nivel);opacity:var(--o-nivel);transition:opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)}
+/* Profundidad por nivel: una capa fija sobre el papel tapiz tiñe el fondo de un azul muy discreto según lo hondo que se
+   esté (Todas las casas = nada; EAN = lo más lejos). Con mix-blend-mode: color solo pone el matiz: el claro sigue claro y
+   el oscuro, oscuro. Solo cambia la opacidad de UNA capa, con una curva larga y suave. Los paneles de cristal suman una
+   capa más de su propio cristal con la misma curva: dejan pasar menos fondo y el azul no se cuela en los menús. */
+@property --o-nivel{syntax:"<number>";inherits:true;initial-value:0}
+/* Un solo valor anima el tinte del fondo y la compensación del cristal, a la vez */
+:root{--o-nivel:0;transition:--o-nivel 1000ms cubic-bezier(0.4, 0, 0.2, 1)}
+:root[data-nivel="1"]{--o-nivel:.11} :root[data-nivel="2"]{--o-nivel:.22} :root[data-nivel="3"]{--o-nivel:.33} :root[data-nivel="4"]{--o-nivel:.44}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-nivel="1"]{--o-nivel:.06} :root:not([data-theme="light"])[data-nivel="2"]{--o-nivel:.12} :root:not([data-theme="light"])[data-nivel="3"]{--o-nivel:.18} :root:not([data-theme="light"])[data-nivel="4"]{--o-nivel:.24}}
+:root[data-theme="dark"][data-nivel="1"]{--o-nivel:.06} :root[data-theme="dark"][data-nivel="2"]{--o-nivel:.12} :root[data-theme="dark"][data-nivel="3"]{--o-nivel:.18} :root[data-theme="dark"][data-nivel="4"]{--o-nivel:.24}
+#sombraNivel{position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--sombra-nivel);mix-blend-mode:var(--mezcla-nivel);opacity:var(--o-nivel)}
 /* el "papel tapiz": manchas grises muy suaves, difuminadas y quietas (nada de fondos en movimiento) */
 body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
   background:
@@ -129,9 +132,9 @@ button{cursor:default}
 svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
 /* ============ Material de cristal ============ */
-.vidrio{position:relative;isolation:isolate;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);
+.vidrio{position:relative;isolation:isolate;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(max(0, calc(1.85 - var(--o-nivel) * var(--k-sat))));backdrop-filter:blur(var(--blur)) saturate(max(0, calc(1.85 - var(--o-nivel) * var(--k-sat))));
   border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),inset 0 -1px 1px rgba(255,255,255,.08),var(--sombra-cristal)}
-.vidrio::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:var(--velo-nivel);opacity:min(.9, calc(var(--o-nivel) * var(--k-velo)));transition:opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)}
+.vidrio::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:inherit;opacity:min(1, calc(var(--o-nivel) * var(--k-velo)))}
 /* reflejo especular en el borde superior, como el cristal líquido */
 .vidrio::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:linear-gradient(160deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.12) 100%);mix-blend-mode:soft-light}
