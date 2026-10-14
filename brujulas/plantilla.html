@@ -235,6 +235,7 @@ main[hidden]{display:none}
 .n-hoja{fill-opacity:var(--tinte);stroke-width:1.25;transform-box:fill-box;transform-origin:center}
 .n-hoja[data-bin="0"]{stroke:var(--r0)}.n-hoja[data-bin="1"]{stroke:var(--r1)}.n-hoja[data-bin="2"]{stroke:var(--r2)}.n-hoja[data-bin="3"]{stroke:var(--r3)}.n-hoja[data-bin="4"]{stroke:var(--r4)}
 .n-hoja.sinrec{fill-opacity:1}
+.n-hoja[data-bin="3"]{fill-opacity:.74}.n-hoja[data-bin="4"]{fill-opacity:.9}
 .n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
 .n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
 .n-grupo,.n-hoja{cursor:pointer}
@@ -242,7 +243,7 @@ main[hidden]{display:none}
 .brillo{fill:url(#gBrillo);stroke:rgba(255,255,255,.55);stroke-width:.75;vector-effect:non-scaling-stroke;pointer-events:none;transition:opacity 220ms ease}
 g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
 #mundo circle.apagado{opacity:.16}
-#mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important;stroke:var(--r0)}
+#mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important;fill-opacity:.12;stroke:var(--hueco);stroke-width:.75}
 #mundo circle.activo{stroke:var(--blue);stroke-width:3}
 /* la burbuja señalada crece un poco (respuesta al puntero, 200 ms ease-out) */
 @media (hover:hover) and (pointer:fine){#mundo circle.n-hoja.encima{transform:scale(1.07);stroke:#ffffff;stroke-width:2.5;transition:transform 200ms var(--ease-out),stroke 140ms ease,opacity 220ms ease,fill 220ms ease}}
@@ -391,7 +392,9 @@ details[open] summary::before{transform:rotate(45deg)}
 /* ============ iPhone: una columna, pestañas abajo, inspector como hoja ============ */
 .velo{display:none}
 @media (max-width:900px){
-  body{overflow:auto}
+  html,body{height:auto}
+  body{overflow:visible}
+  .barra::after{inset:0 0 -22px 0}
   .contenido{position:static;left:auto}
   .vistas,.mesa,main{position:static}
   main{overflow:visible;padding-bottom:110px}
@@ -944,8 +947,9 @@ function pintarEtiquetas(){
       const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
       if (!vis) return;
       const txt = corto(n.data.nombre), w = (txt.length + String(vis).length + String(hs.length).length + 3) * 7.4 + 32;
-      const y = p.y - p.r, rc = {x: p.x - w / 2, y: y - 14, w, h: 28};
-      if (!libre(rc)) return; puestos.push(rc);
+      let y = p.y - p.r, rc = {x: p.x - w / 2, y: y - 14, w, h: 28};
+      if (!libre(rc)) { y = p.y + p.r; rc = {x: p.x - w / 2, y: y - 14, w, h: 28}; if (!libre(rc)) return; }
+      puestos.push(rc);
       h += `<div class="etq grupo" style="left:${p.x * k}px;top:${y * k}px"><span class="t">${esc(txt)}</span><span class="c">${vis}/${hs.length}</span></div>`;
     }
   });
@@ -1361,8 +1365,7 @@ function brujula(svgId, ex, ey, polos){
   let h = `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--sep-fuerte)"/>
     <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--sep-fuerte)"/>
     <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--sep-fuerte)"/>
-    <text x="${c-R+6}" y="${c+15}" text-anchor="start">${polos[0]}</text>
-    <text x="${c+R-6}" y="${c+15}" text-anchor="end">${polos[1]}</text>
+    __POLOS_X__
     <text x="${c}" y="${c+R+16}" text-anchor="middle">${polos[2]}</text>
     <text x="${c}" y="${c-R-8}" text-anchor="middle">${polos[3]}</text>`;
   const pts = [];
@@ -1372,6 +1375,10 @@ function brujula(svgId, ex, ey, polos){
     if (x == null || y == null) return;
     pts.push({x: c + x*R, y: c - y*R, mes: f.foto, e});
   });
+  // si algún punto está pegado al eje horizontal, los polos X pasan al otro lado del eje
+  const abajo = pts.some(p => p.y > c && p.y - c < 26), arriba = pts.some(p => p.y <= c && c - p.y < 26);
+  const yPolo = abajo && !arriba ? c - 7 : c + 15;
+  h = h.replace("__POLOS_X__", `<text x="${c-R+6}" y="${yPolo}" text-anchor="start">${polos[0]}</text><text x="${c+R-6}" y="${yPolo}" text-anchor="end">${polos[1]}</text>`);
   if (pts.length > 1) h += `<polyline points="${pts.map(p => p.x+","+p.y).join(" ")}" fill="none" stroke="var(--receta)" stroke-opacity=".45" stroke-width="1.5"/>`;
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
@@ -1380,7 +1387,7 @@ function brujula(svgId, ex, ey, polos){
     if (i === 0 || ult) {
       // cerca del eje horizontal la etiqueta va encima del punto para no pisar los polos
       const cercaEje = Math.abs(p.y - c) < 22;
-      h += cercaEje ? `<text x="${p.x}" y="${p.y - 14}" text-anchor="middle" style="fill:var(--label);font-size:10px">${p.mes}</text>`
+      h += cercaEje ? `<text x="${p.x}" y="${p.y > c ? p.y + 22 : p.y - 14}" text-anchor="middle" style="fill:var(--label);font-size:10px">${p.mes}</text>`
                     : `<text x="${p.x > c ? p.x - 13 : p.x + 13}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--label);font-size:10px">${p.mes}</text>`;
     }
   });
