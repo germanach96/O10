@@ -783,8 +783,8 @@ details[open] summary::before{transform:rotate(45deg)}
       <div class="filtros" id="filtros">
         <div class="grupo-f" role="group" aria-label="Scope">
           <span class="mono">Scope</span>
-          <button type="button" class="chip" data-f="scope" data-v="central" aria-pressed="true">Central</button>
-          <button type="button" class="chip" data-f="scope" data-v="todos" aria-pressed="false">Todos</button>
+          <button type="button" class="chip" data-f="scope" data-v="central" aria-pressed="false">Central</button>
+          <button type="button" class="chip" data-f="scope" data-v="todos" aria-pressed="true">Todos</button>
         </div>
         <div class="grupo-f" role="group" aria-label="Estado">
           <span class="mono">Estado</span>
@@ -1132,7 +1132,7 @@ const BINS = [  // desvío % frente a la receta elegida (secuencial, un solo ton
   {max: Infinity, v: "--d4", txt: "Más de 30%"},
 ];
 const binDe = p => BINS.findIndex(b => p <= b.max);
-let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
+let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "todos", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
 
 // fuera de scope con color propio: One Shot (Article Type) e innovaciones en sus meses 1-6
 const tipoHoja = i => i.scope ? null : (i.art === "One Shot" ? "os" : (i.edad === "A1 1-6" ? "in" : null));
@@ -1692,7 +1692,7 @@ function pintarCifras(){
   const fila = (k, t, n) => `<li><button type="button" class="fila" data-vista="${k}" ${act === k ? 'aria-current="true"' : ""}>${ICO[k]}<span class="t">${t}</span><span class="badge">${n}</span></button></li>`;
   if ($("cifras")) $("cifras").innerHTML = fila("todos", "Todos los códigos", hs.length) + fila("scope", "En scope central", sc.length) + fila("fuera", "Fuera de estrategia", fuera.length);
   $("ladoFoto").textContent = `Foto ${casa().inicio.foto}`;
-  const n = (f.seg.size ? 1 : 0) + (f.edad.size ? 1 : 0) + (f.fuera ? 1 : 0) + (f.scope !== "central" ? 1 : 0) + (f.q ? 1 : 0);
+  const n = (f.seg.size ? 1 : 0) + (f.edad.size ? 1 : 0) + (f.fuera ? 1 : 0) + (f.scope === "central" ? 1 : 0) + (f.q ? 1 : 0);
   $("nFiltros").hidden = !n; $("nFiltros").textContent = n;
 }
 
@@ -1935,9 +1935,10 @@ $("filtros").addEventListener("click", ev => {
   aplicarFiltros();
 });
 function limpiarFiltros(){
-  M.filtros = {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""};
+  // por defecto se ve todo (también One Shot e innovaciones); "Central" es un filtro más
+  M.filtros = {scope: "todos", fuera: false, seg: new Set(), edad: new Set(), q: ""};
   $("q").value = "";
-  document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === "central")));
+  document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === "todos")));
   document.querySelector('[data-f="fuera"]').setAttribute("aria-pressed", "false");
   pintarChips(); aplicarFiltros();
 }

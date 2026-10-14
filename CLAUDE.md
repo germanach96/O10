@@ -103,7 +103,7 @@ Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucc
 
 - **Dos clases de filtro, que no se mezclan:**
   - **Filtros de cálculo** = el filtro de tipos de arriba ("Cuentan en los cálculos"): lo que se apaga queda fuera de TODO (scope, trends, tamaño de grupos, mapa y detector).
-  - **Filtros de selección** = el popover de filtros (segmento, edad, fuera de estrategia, búsqueda): solo eligen QUÉ códigos se miran. Con un filtro activo, "Ver brújulas" de un grupo abre el detalle de los códigos filtrados de ese grupo (por ejemplo, los Bulls de Gucci Flora), como una selección del modo acumulado: los trends y los cálculos se hacen con todos los códigos y cada código conserva su receta; los resultados, el detector y el esquema muestran solo los filtrados. En el modo acumulado, agregar un grupo con filtro agrega el grupo filtrado.
+  - **Filtros de selección** = el popover de filtros (scope, segmento, edad, fuera de estrategia, búsqueda): solo eligen QUÉ códigos se miran. Por defecto el scope es **Todos** (One Shot e innovaciones se ven y se pueden elegir); "Central" es un filtro más. Con un filtro activo, "Ver brújulas" de un grupo abre el detalle de los códigos filtrados de ese grupo (por ejemplo, los Bulls de Gucci Flora), como una selección del modo acumulado: los trends y los cálculos se hacen con todos los códigos y cada código conserva su receta; los resultados, el detector y el esquema muestran solo los filtrados. En el modo acumulado, agregar un grupo con filtro agrega el grupo filtrado.
 
 El scope se evalúa en cada foto: un código puede entrar en la foto de octubre porque ya cumplió 7 meses.
 
