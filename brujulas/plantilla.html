@@ -31,7 +31,8 @@
   --blue:#0071e3; --blue-txt:#0062c4; --on-blue:#ffffff;
   --green:#34c759; --green-txt:#1f7a35;
   --orange:#ff9500; --red:#ff3b30; --red-txt:#c9001a; --yellow:#ffcc00;
-  --d0:#c7c9ce; --d1:#ffcc00; --d2:#ff9500; --d3:#ff3b30; --d4:#b3001b;
+  --d0:#9fa1a8; --d1:#ffcc00; --d2:#ff9500; --d3:#ff3b30; --d4:#b3001b;
+  --r0:#6c6e75; --r1:#a37f00; --r2:#b86a00; --r3:#c4170c; --r4:#7a0012; --tinte:.62;
   --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#ffffff;
   --hueco:rgba(60,60,67,.38); --sinrec:rgba(255,255,255,.6);
   --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:transparent;
@@ -47,8 +48,8 @@
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --fondo:#0d0e10; --mancha-1:#2e3036; --mancha-2:#141518; --mancha-3:#383b41; --mancha-4:#1b1d21;
-  --cristal:rgba(38,39,44,.46); --cristal-fuerte:rgba(44,45,50,.78);
+  --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
+  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
   --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
   --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
   --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141518;
@@ -57,7 +58,8 @@
   --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
   --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
   --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
-  --d0:#4a4b50; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+  --d0:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+  --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
   --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
   --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
   --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
@@ -66,8 +68,8 @@
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --fondo:#0d0e10; --mancha-1:#2e3036; --mancha-2:#141518; --mancha-3:#383b41; --mancha-4:#1b1d21;
-    --cristal:rgba(38,39,44,.46); --cristal-fuerte:rgba(44,45,50,.78);
+    --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
+    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
     --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
     --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
     --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141518;
@@ -76,7 +78,8 @@
     --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
     --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
     --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
-    --d0:#4a4b50; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+    --d0:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
+    --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
     --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
     --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
     --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
@@ -171,6 +174,10 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 /* ============ Barra superior: título grande + cápsulas de cristal ============ */
 .barra{position:absolute;z-index:15;top:0;left:0;right:12px;display:flex;align-items:flex-start;gap:10px;padding:18px 0 0 12px;pointer-events:none}
 .barra > *{pointer-events:auto}
+.barra::after{content:"";position:absolute;z-index:-1;inset:0 -12px -22px -12px;pointer-events:none;opacity:0;transition:opacity 200ms ease;
+  background:color-mix(in srgb,var(--fondo) 62%,transparent);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
+  -webkit-mask-image:linear-gradient(#000 62%,transparent);mask-image:linear-gradient(#000 62%,transparent)}
+.barra.borde::after{opacity:1}
 .barra .titulo{min-width:0;flex:1;padding-top:2px;pointer-events:none}
 .barra h1{font-family:var(--font-display);font-size:30px;font-weight:700;margin:0;letter-spacing:-.025em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 12px var(--fondo)}
 .migas{display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow:hidden;color:var(--label-2);font-size:12.5px;font-weight:500;margin-top:3px;white-space:nowrap;pointer-events:auto}
@@ -225,15 +232,17 @@ main[hidden]{display:none}
 .n-casa{fill:var(--b-casa);stroke:none}
 .n-brand{fill:var(--b-brand);stroke:var(--borde-burbuja);stroke-width:1}
 .n-pl{fill:var(--b-pl);stroke:var(--borde-burbuja);stroke-width:.75}
-.n-hoja{stroke:var(--borde-burbuja);stroke-width:.75;transform-box:fill-box;transform-origin:center}
+.n-hoja{fill-opacity:var(--tinte);stroke-width:1.25;transform-box:fill-box;transform-origin:center}
+.n-hoja[data-bin="0"]{stroke:var(--r0)}.n-hoja[data-bin="1"]{stroke:var(--r1)}.n-hoja[data-bin="2"]{stroke:var(--r2)}.n-hoja[data-bin="3"]{stroke:var(--r3)}.n-hoja[data-bin="4"]{stroke:var(--r4)}
+.n-hoja.sinrec{fill-opacity:1}
 .n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
 .n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
 .n-grupo,.n-hoja{cursor:pointer}
 /* brillo de burbuja de cristal sobre cada código */
-.brillo{fill:url(#gBrillo);pointer-events:none;transition:opacity 220ms ease}
+.brillo{fill:url(#gBrillo);stroke:rgba(255,255,255,.55);stroke-width:.75;vector-effect:non-scaling-stroke;pointer-events:none;transition:opacity 220ms ease}
 g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
 #mundo circle.apagado{opacity:.16}
-#mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important}
+#mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important;stroke:var(--r0)}
 #mundo circle.activo{stroke:var(--blue);stroke-width:3}
 /* la burbuja señalada crece un poco (respuesta al puntero, 200 ms ease-out) */
 @media (hover:hover) and (pointer:fine){#mundo circle.n-hoja.encima{transform:scale(1.07);stroke:#ffffff;stroke-width:2.5;transition:transform 200ms var(--ease-out),stroke 140ms ease,opacity 220ms ease,fill 220ms ease}}
@@ -434,6 +443,8 @@ details[open] summary::before{transform:rotate(45deg)}
   .t-det .sub-mes{display:none}
   .t-det .c-mes{display:block;grid-column:1 / -1;grid-row:3;max-width:none;margin-top:3px;color:var(--label-2)}
   .anteriores table{display:block;overflow-x:auto;max-width:100%}
+  .pestanas.vidrio{background:color-mix(in srgb,var(--card) 84%,transparent)}
+  .lado::after{content:"";position:absolute;left:50%;top:7px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--fill-2)}
   .pestanas{display:flex;position:fixed;z-index:35;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);border-radius:999px;padding:5px;gap:2px}
   .pestanas button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:transparent;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:600;color:var(--label);min-width:64px;transition:background-color 160ms ease,color 160ms ease,transform 140ms var(--ease-out)}
   .pestanas button:active{transform:scale(.94)}
@@ -464,12 +475,14 @@ details[open] summary::before{transform:rotate(45deg)}
 <a class="saltar" href="#vistas">Saltar al contenido</a>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <radialGradient id="gBrillo" cx="34%" cy="26%" r="70%">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".62"/>
-      <stop offset=".38" stop-color="#ffffff" stop-opacity=".12"/>
-      <stop offset=".75" stop-color="#ffffff" stop-opacity="0"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity=".16"/>
-    </radialGradient>
+    <!-- lente de cristal: reflejo especular arriba y luz de borde abajo, sin sombreado de esfera -->
+    <linearGradient id="gBrillo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".2" stop-color="#ffffff" stop-opacity=".14"/>
+      <stop offset=".42" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".86" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".18"/>
+    </linearGradient>
   </defs>
 </svg>
 <aside class="lado vidrio" id="lado" aria-label="Barra lateral">
@@ -800,7 +813,8 @@ function dibujarMapa(){
       ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.sinrec ? " sinrec" : ""}`
       : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
     const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
-    const c = `<circle class="${cls}" data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
+    const bin = d.nivel === "hoja" && d.hoja.scope && !d.hoja.sinrec ? ` data-bin="${binDe(d.hoja.p)}"` : "";
+    const c = `<circle class="${cls}"${bin} data-i="${i}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
     if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
     return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
   };
@@ -915,7 +929,7 @@ function pintarEtiquetas(){
     comunes.add(i + "|" + w);
   }
   const limpio = d => { const ws = d.split(" "); let i = 0; while (i < ws.length - 1 && comunes.has(i + "|" + ws[i])) i++; return ws.slice(i).join(" "); };
-  (f.children || []).slice().sort((a, b) => b.r - a.r).forEach(n => {
+  (f.children || []).slice().sort((a, b) => (b.children ? b.leaves().length : 0) - (a.children ? a.leaves().length : 0) || b.r - a.r).forEach(n => {
     const p = aEscala(n);
     if (n.data.nivel === "hoja") {
       const x = n.data.hoja;
@@ -1055,7 +1069,7 @@ $("ladoBrands").addEventListener("keydown", ev => { if ((ev.key === "Enter" || e
 
 function pintarLeyenda(){
   $("leyenda").innerHTML = `<span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
-    + BINS.map(b => `<span class="it"><span class="sw" style="background:var(${b.v})"></span>${b.txt}</span>`).join("")
+    + BINS.map((b, k) => `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(${b.v}) 62%,transparent);box-shadow:inset 0 0 0 1.25px var(--r${k})"></span>${b.txt}</span>`).join("")
     + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
     + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Fuera de scope</span>`;
 }
@@ -1115,11 +1129,19 @@ function contenidoTip(n){
     <div class="nota">Clic para entrar.</div>`;
 }
 function colocarTip(c){
+  // zona libre: entre la barra lateral y el inspector (en escritorio); nunca encima de la burbuja señalada
   const b = c.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, m = 14;
-  let x = b.right + m, to = "left center";
-  if (x + w > innerWidth - 8) { x = b.left - w - m; to = "right center"; }
-  if (x < 8) { x = Math.min(innerWidth - w - 8, Math.max(8, b.left + b.width / 2 - w / 2)); to = "center top"; }
-  const y = Math.min(innerHeight - h - 8, Math.max(8, b.top + b.height / 2 - h / 2));
+  const ancho = !matchMedia("(max-width: 900px)").matches;
+  const izq = ancho ? $("lado").getBoundingClientRect().right + 8 : 8;
+  const der = ancho ? $("hojaIns").getBoundingClientRect().left - 8 : innerWidth - 8;
+  let x, y, to;
+  if (b.right + m + w <= der) { x = b.right + m; to = "left center"; }
+  else if (b.left - m - w >= izq) { x = b.left - m - w; to = "right center"; }
+  if (x != null) y = Math.min(innerHeight - h - 8, Math.max(8, b.top + b.height / 2 - h / 2));
+  else {
+    x = Math.min(der - w, Math.max(izq, b.left + b.width / 2 - w / 2));
+    if (b.top - m - h >= 8) { y = b.top - m - h; to = "center bottom"; } else { y = Math.min(innerHeight - h - 8, b.bottom + m); to = "center top"; }
+  }
   tip.style.setProperty("--tx", x + "px"); tip.style.setProperty("--ty", y + "px"); tip.style.setProperty("--to", to);
 }
 function verTipNodo(i){
@@ -1230,7 +1252,7 @@ TOL.flat().forEach(id => $(id).addEventListener("input", () => {
   if (!$("vistaDetalle").hidden) { fotoActual(); detector(); }
 }));
 function recolorear(){
-  M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; M.els[i].style.fill = colorHoja(x); });
+  M.nodos.forEach((n, i) => { if (n.data.nivel !== "hoja") return; const x = M.hojas.find(h => h.ean === n.data.hoja.ean); n.data.hoja = x; M.els[i].style.fill = colorHoja(x); if (x.scope && !x.sinrec) M.els[i].dataset.bin = binDe(x.p); });
 }
 $("migas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (!b) return; const n = M.nodos.find(x => x.data.clave === b.dataset.clave); if (n && n !== M.foco) enfocar(n); });
 $("panel").addEventListener("click", ev => {
@@ -1355,7 +1377,12 @@ function brujula(svgId, ex, ey, polos){
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
     const tt = `${p.mes}\n${ex}: ${EJ[ex].map((v,k)=>vtxt(ex,v)+" → "+pct(p.e.ejes[ex][k])).join(", ")}\n${ey}: ${EJ[ey].map((v,k)=>vtxt(ey,v)+" → "+pct(p.e.ejes[ey][k])).join(", ")}`;
     h += `<circle cx="${p.x}" cy="${p.y}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${tt}</title></circle>`;
-    if (i === 0 || ult) h += `<text x="${p.x > c ? p.x - 13 : p.x + 13}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--label);font-size:10px">${p.mes}</text>`;
+    if (i === 0 || ult) {
+      // cerca del eje horizontal la etiqueta va encima del punto para no pisar los polos
+      const cercaEje = Math.abs(p.y - c) < 22;
+      h += cercaEje ? `<text x="${p.x}" y="${p.y - 14}" text-anchor="middle" style="fill:var(--label);font-size:10px">${p.mes}</text>`
+                    : `<text x="${p.x > c ? p.x - 13 : p.x + 13}" y="${p.y + 4}" text-anchor="${p.x > c ? "end" : "start"}" style="fill:var(--label);font-size:10px">${p.mes}</text>`;
+    }
   });
   if (!pts.length) h += `<text x="${c}" y="${c+40}" text-anchor="middle">Sin fotos con tramos cerrados</text>`;
   svg.innerHTML = h;
