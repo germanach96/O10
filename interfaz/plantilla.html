@@ -35,6 +35,7 @@
   --r0:#6c6e75; --r1:#a37f00; --r2:#b86a00; --r3:#c4170c; --r4:#7a0012; --tinte:.62;
   --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#ffffff;
   --hueco:rgba(60,60,67,.38); --sinrec:rgba(255,255,255,.6);
+  --c-os:#af52de; --c-in:#30b0c7; --a-tipo:.34;
   --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:transparent;
   --borde-burbuja:rgba(255,255,255,.85);
   --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
@@ -62,6 +63,7 @@
   --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
   --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
   --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
+  --c-os:#bf5af2; --c-in:#40c8e0; --a-tipo:.4;
   --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
   --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
   color-scheme:dark;
@@ -82,6 +84,7 @@
     --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
     --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
     --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
+    --c-os:#bf5af2; --c-in:#40c8e0; --a-tipo:.4;
     --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
     --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
     color-scheme:dark;
@@ -325,11 +328,14 @@ main[hidden]{display:none}
 .n-hoja.sinrec{fill-opacity:1}
 .n-hoja[data-bin="3"]{fill-opacity:.74}.n-hoja[data-bin="4"]{fill-opacity:.9}
 .n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
+/* One Shot e innovaciones (meses 1-6): fuera de scope, pero con su propio color */
+.n-hoja.hueco.t-os{fill:var(--c-os) !important;fill-opacity:var(--a-tipo);stroke:var(--c-os);stroke-width:1.25}
+.n-hoja.hueco.t-in{fill:var(--c-in) !important;fill-opacity:var(--a-tipo);stroke:var(--c-in);stroke-width:1.25}
 .n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
 .n-grupo,.n-hoja{cursor:pointer}
 /* brillo de burbuja de cristal sobre cada código */
 .brillo{fill:url(#gBrillo);stroke:rgba(255,255,255,.55);stroke-width:.75;vector-effect:non-scaling-stroke;pointer-events:none;transition:opacity 220ms ease}
-g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
+g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) .brillo{opacity:0}
 #mundo circle.apagado{opacity:.16}
 #mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d0) !important;fill-opacity:.12;stroke:var(--hueco);stroke-width:.75}
 #mundo circle.activo{stroke:var(--blue);stroke-width:3}
@@ -1048,6 +1054,9 @@ const BINS = [  // desvío % frente a la receta elegida (secuencial, un solo ton
 const binDe = p => BINS.findIndex(b => p <= b.max);
 let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "central", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
 
+// fuera de scope con color propio: One Shot (Article Type) e innovaciones en sus meses 1-6
+const tipoHoja = i => i.scope ? null : (i.art === "One Shot" ? "os" : (i.edad === "A1 1-6" ? "in" : null));
+const colorTipo = t => t === "os" ? "var(--c-os)" : t === "in" ? "var(--c-in)" : null;
 function calcularHojas(){
   const c = casa(), ini = c.inicio.codigos, det = V().detector;
   const filas = {}; det.filas.forEach(r => filas[r.ean] = r);
@@ -1063,7 +1072,7 @@ function calcularHojas(){
     } else if (i.scope) sinrec = true;
     const vol = i.vol12 > 0 ? i.vol12 : i.cons9 * 12 / 9;
     return {ean, desc: a.desc || ean, brand: a.brand || "(sin brand)", pl: a.pl || "(sin línea)", seg: a.segmento || "", edad: i.edad,
-            scope: i.scope, motivo: i.motivo, vol12: i.vol12, cons9: i.cons9, vol, u, p, sR, sinrec, meses,
+            scope: i.scope, motivo: i.motivo, tipo: tipoHoja(i), vol12: i.vol12, cons9: i.cons9, vol, u, p, sR, sinrec, meses,
             fuera: u != null && u > 0.5};
   });
 }
@@ -1121,7 +1130,7 @@ function dibujarMapa(){
     const brand = n.depth >= 1 ? n.ancestors().find(a => a.depth === 1) : null;
     const delay = brand ? Math.min(iBrand.get(brand), 9) * 45 + (n.depth - 1) * 40 : 0;
     const cls = d.nivel === "hoja"
-      ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.sinrec ? " sinrec" : ""}`
+      ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.tipo ? " t-" + d.hoja.tipo : ""}${d.hoja.sinrec ? " sinrec" : ""}`
       : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
     const fill = d.nivel === "hoja" ? ` style="fill:${colorHoja(d.hoja)};transition-delay:${delay}ms"` : (n.depth ? ` style="transition-delay:${delay}ms"` : "");
     const bin = d.nivel === "hoja" && d.hoja.scope && !d.hoja.sinrec ? ` data-bin="${binDe(d.hoja.p)}"` : "";
@@ -1464,7 +1473,7 @@ function pintarPanel(){
   } else {
     const max = 80;
     h += `<ul class="lista">` + lista.slice(0, max).map(x => `<li><button type="button" data-ean="${x.ean}" ${x.ean === M.sel ? 'aria-current="true"' : ""}>
-        <span class="sw" style="background:${x.scope ? colorHoja(x) : "transparent"};border:1px solid ${x.scope ? "transparent" : "var(--hueco)"}"></span>
+        <span class="sw" style="background:${x.scope ? colorHoja(x) : x.tipo ? `color-mix(in srgb,${colorTipo(x.tipo)} 45%,transparent)` : "transparent"};border:1px solid ${x.scope ? "transparent" : colorTipo(x.tipo) || "var(--hueco)"}"></span>
         <span style="min-width:0"><div class="d">${esc(x.desc)}</div><div class="e mono">${x.ean} · ${esc(corto(x.brand))}</div></span>
         <span class="v">${x.scope ? (x.sinrec ? "Sin receta" : num(x.u)) : "Local"}<small>${x.scope && !x.sinrec ? pct(x.p) : esc(x.scope ? "" : (x.motivo || ""))}</small></span>
       </button></li>`).join("") + `</ul>`;
@@ -1551,7 +1560,9 @@ function pintarLeyenda(){
   $("leyenda").innerHTML = `<span class="it pista-gesto">${matchMedia("(pointer: coarse)").matches ? "Arrastra para moverte · pellizca para acercar" : "Arrastra para moverte · rueda para acercar"}</span><span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
     + BINS.map((b, k) => `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(${b.v}) 62%,transparent);box-shadow:inset 0 0 0 1.25px var(--r${k})"></span>${b.txt}</span>`).join("")
     + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
-    + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Fuera de scope</span>`;
+    + `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(--c-os) 40%,transparent);border:1px solid var(--c-os)"></span>One Shot</span>`
+    + `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(--c-in) 40%,transparent);border:1px solid var(--c-in)"></span>Innovación 1-6 meses</span>`
+    + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Otros fuera de scope</span>`;
 }
 
 function pintarChips(){
