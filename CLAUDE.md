@@ -240,6 +240,7 @@ El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el 
 - **iPhone:** barra de pestañas flotante (Mapa, Detalle, Brands, Filtros), inspector como hoja inferior arrastrable con dos posiciones y brands como hoja.
 - **Página de inicio = burbujas anidadas** casa → brand → product line → EAN (no un grafo de fuerza, demasiado sucio con ~500 códigos). Tamaño = actuals 12M (si no hay, Consensus 9M anualizado). Color = desvío del Consensus frente a la receta elegida, escala ordinal gris (dentro) → amarillo → naranja → rojo → rojo oscuro; huecos = fuera de scope.
 - **Burbujas como lentes de cristal** (tinte translúcido, borde de luz, reflejo superior). Flotan muy despacio (≈2–3 px, ciclos de 9–16 s); al entrar el puntero en el mapa **todas frenan** con un muelle sin rebote y la burbuja señalada crece y muestra una tarjeta de cristal con su detalle. Con movimiento reducido no flotan.
+- **Sin recorte al hacer zoom:** las burbujas nunca se cortan con un círculo ni con el borde del lienzo; siempre están visibles y, si pasan por debajo de la barra, la barra lateral o el inspector, se ven a través del cristal (desenfoque tipo iOS 26).
 - **Fondo:** gris difuminado y quieto (en oscuro, grises puros).
 - **Colores del sistema de Apple con un significado fijo:** azul = receta y acciones, gris discontinuo = Consensus, verde = meta. Fuente del sistema.
 - **Movimiento** según la skill de Emil Kowalski: muelles críticamente amortiguados para zoom y controles, curvas ease-out fuertes para pulsaciones y popovers, nada animado en acciones de teclado.
@@ -247,8 +248,9 @@ El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el 
 Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 
 ### Barra de rango de cálculo (fija arriba, en el mapa y en el detalle)
-- Un punto por cada foto cargada de la casa (lleno = medida, hueco = aún sin actuals cerrados) y dos tiradores para elegir la primera y la última foto. Atajos: Todo, Últimas 6, Últimas 3 (las últimas fotos medidas hasta la foto actual).
-- Arrastre 1:1 con captura del puntero; al soltar se proyecta la inercia y encaja en la foto más cercana con un muelle sin rebote. Con teclado: flechas, Inicio y Fin, sin animación.
+- Un punto por cada foto cargada de la casa y dos tiradores para elegir la primera y la última foto. **Solo se pueden elegir fotos medidas**: las fotos aún sin tramos cerrados van al final, huecas, sobre un tramo discontinuo con la etiqueta "Sin medir aún", y los tiradores no pasan de la última foto medida (tope duro, sin goma). Las fotos dentro del rango van en azul con la etiqueta en negrita. Atajos: Todo, Últimas 6, Últimas 3 (las últimas fotos medidas).
+- El relleno azul se coloca con `left`/`width` en px (no con `scaleX` de 1 px, que se descuadra con el zoom del navegador). Las etiquetas de mes se ocultan si no caben (≥ 34 px entre ellas). Por debajo de 1220 px la barra pasa a dos filas; en iPhone, al bajar, se compacta como en iOS (título pequeño, sin buscador ni atajos).
+- Arrastre 1:1 con captura del puntero; el recálculo pesado se hace al soltar, fuera del fotograma del gesto; al soltar se proyecta la inercia y encaja en la foto más cercana con un muelle sin rebote. Con teclado: flechas, Inicio y Fin, sin animación.
 - **Todo cambia con el rango:** solo las fotos medidas del rango eligen la receta de cada código y de cada grupo (y, con ella, el detector y el color de las burbujas); brújulas, mapa de calor, selector y resultados muestran solo esas fotos. El detector sigue comparando el Consensus de la foto más reciente.
 - La página no calcula: el pipeline precalcula cada rango contiguo de fotos medidas (n·(n+1)/2; 55 con 10 fotos) guardando solo índices de receta, y el forecast de la foto actual una vez por (código, receta) usada. El rango se recuerda en el navegador.
 
@@ -274,7 +276,7 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Dos trayectorias por foto: gris discontinua = lo que pasó (Consensus real), azul = mejor receta. La distancia entre ambas es lo que se habría ganado.
   - Debajo, los valores de la última foto.
 - Cuarto cuadro: cómo leerlas.
-- **Minimizar:** botón en la cabecera de la sección. Minimizada, solo queda un recuadro pequeño con los highlights de la última foto medida del rango: WAPE 9M y SPP de la receta (o regla) y del Consensus, y cuántos pp habría ganado la receta.
+- **Sectores minimizables:** cada sector (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M, Cómo leerlas, Detalle por foto) se minimiza por separado. **Al abrir la página todos empiezan minimizados**: solo quedan recuadros pequeños con los highlights (WAPE y SPP de la receta y del Consensus en la última foto del rango con esa ventana cerrada, y los pp ganados). Al pulsar un recuadro se expande su sector. Botón "Expandir todo" / "Minimizar todo" en la cabecera. Abrir o cerrar no desplaza la cabecera de Resultados en pantalla (transición de vista con muelle).
 - Escalas fijas para comparar códigos. Si un valor sale del rango, dibujarlo pegado al borde con un indicador.
 
 ### Sección "Detector"

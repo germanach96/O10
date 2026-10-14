@@ -231,41 +231,71 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .rango .r{font-size:15px;font-weight:700;color:var(--label);letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rango .r small{font-size:12px;font-weight:500;color:var(--label-2);margin-left:6px;letter-spacing:0}
 .rango .pista{position:relative;height:46px;touch-action:none;cursor:pointer}
-.rango .linea{position:absolute;left:14px;right:14px;top:15px;height:4px;border-radius:2px;background:var(--fill-2)}
-.rango .lleno{position:absolute;left:0;top:15px;width:1px;height:4px;border-radius:2px;background:var(--blue);transform-origin:0 50%}
-.rango .tic{position:absolute;top:12px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--label-3);pointer-events:none}
-.rango .tic.med{background:var(--label-3);box-shadow:none}
-.rango .tic.dentro.med{background:var(--blue)}
-.rango .tic.dentro:not(.med){box-shadow:inset 0 0 0 1.5px var(--blue)}
-.rango .lbl{position:absolute;top:29px;transform:translateX(-50%);font-size:10.5px;color:var(--label-3);white-space:nowrap;font-variant-numeric:tabular-nums;pointer-events:none}
+.rango .linea{position:absolute;left:14px;top:15px;height:4px;border-radius:2px;background:var(--fill-2)}
+.rango .lleno{position:absolute;left:0;top:15px;width:0;height:4px;border-radius:2px;background:var(--blue)}
+.rango .tic{position:absolute;left:0;top:12px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--label-3);pointer-events:none}
+.rango .tic.abierta{width:6px;height:6px;margin-left:-3px;top:14px;background:transparent;box-shadow:inset 0 0 0 1.25px var(--label-3);opacity:.7}
+.rango .sin-medir{position:absolute;left:0;top:16px;height:0;border-top:2px dashed var(--sep-fuerte);pointer-events:none}
+.rango .sin-medir-t{position:absolute;left:0;top:-4px;font-size:10px;font-weight:600;color:var(--label-3);white-space:nowrap;pointer-events:none}
+.rango .tic.dentro{background:var(--blue)}
+.rango .lbl{position:absolute;left:0;top:29px;font-size:10.5px;color:var(--label-3);white-space:nowrap;font-variant-numeric:tabular-nums;pointer-events:none}
 .rango .lbl.dentro{color:var(--label);font-weight:600}
+.rango .lbl.abierta{opacity:.6}
 .rango .pomo{position:absolute;left:0;top:3px;width:26px;height:26px;margin-left:-13px;padding:0;border:0;border-radius:50%;background:#fff;box-shadow:0 3px 9px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);cursor:grab;touch-action:none}
 .rango .pomo::after{content:"";position:absolute;inset:-9px}   /* zona táctil de 44 px */
 .rango .pomo:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .rango .pomo.arr{cursor:grabbing;box-shadow:0 6px 16px rgba(0,0,0,.22),0 0 0 .5px rgba(0,0,0,.08)}
 .rango .burbuja{position:absolute;left:0;top:-26px;background:var(--label);color:var(--card);font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:8px;white-space:nowrap;pointer-events:none;font-variant-numeric:tabular-nums}
 .rango .presets{display:flex;gap:6px}
-#vistaInicio .mapa,#vistaInicio .hoja-ins{top:162px}
-.vistas #vistaDetalle{padding-top:172px}
-/* resultados plegables */
+.rango-txt{grid-area:txt}.rango .pista{grid-area:pista}.rango .presets{grid-area:pres}
+.rango{grid-template-areas:"txt pista pres"}
+/* barra estrecha (zoom alto, ventana pequeña): resumen y atajos arriba, la pista a todo el ancho debajo */
+@media (max-width:1220px){
+  .rango{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"txt pres" "pista pista";row-gap:2px}
+  .rango .pista{margin-top:16px}
+}
+#vistaInicio .hoja-ins{top:calc(var(--alto-barra, 154px) + 8px)}
+#vistaInicio .mapa{top:calc(var(--alto-barra, 154px) + 8px)}
+.vistas #vistaDetalle{padding-top:calc(var(--alto-barra, 154px) + 18px)}
+/* al saltar a una sección (enlaces del panel, scrollIntoView) su cabecera queda debajo de la barra fija, no tapada */
+.seccion{scroll-margin-top:calc(var(--alto-barra, 154px) + 12px)}
+/* resultados por sectores */
 .sec-cab{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .plegar{display:inline-flex;align-items:center;gap:6px;font-size:13px}
 .plegar .ico{width:14px;height:14px;transition:transform 220ms var(--ease-out)}
 .plegar.plegado .ico{transform:rotate(180deg)}
-.res-mini{width:min(100%,340px);border-radius:var(--r-l);padding:14px 16px;transform-origin:top left}
-.res-mini .rm-cab{font-size:11.5px;color:var(--label-2);margin-bottom:8px;font-variant-numeric:tabular-nums}
-.res-mini .rm-fila{display:grid;grid-template-columns:1fr auto auto;align-items:baseline;gap:10px;padding:5px 0;border-top:1px solid var(--sep);font-size:13px}
-.res-mini .rm-fila b{font-size:17px;font-variant-numeric:tabular-nums}
-.res-mini .rm-fila small{font-size:11.5px;color:var(--label-2);font-variant-numeric:tabular-nums;min-width:86px;text-align:right}
-.res-mini .rm-pie{font-size:12px;color:var(--label-2);margin-top:8px}
-.res-mini .rm-pie b{color:var(--label)}
+.minis{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 18px}
+.mini{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:208px;min-height:84px;padding:11px 13px 10px;border:0;border-radius:16px;text-align:left;color:var(--label);font:inherit;cursor:pointer;transition:transform 160ms var(--ease-out)}
+.mini:active{transform:scale(.97)}
+.mini .mn-t{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:12px;font-weight:600;color:var(--label-2)}
+.mini .mn-t .ico{width:13px;height:13px;color:var(--label-3)}
+.mini .mn-v{display:inline-flex;align-items:baseline;gap:5px;margin-right:10px}
+.mini .mn-v b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.mini .mn-v small{font-size:11px;color:var(--label-2)}
+.mini .mn-s{font-size:11.5px;color:var(--label-2);font-variant-numeric:tabular-nums}
+.mini .mn-v + .mn-v{margin-top:-2px}
+@media (hover:hover) and (pointer:fine){.mini:hover .mn-t .ico{color:var(--blue)}}
+.min-sec{float:right;width:24px;height:24px;margin:-1px -4px 0 0;padding:0;border:0;border-radius:50%;background:var(--fill);color:var(--label-2);display:inline-grid;place-items:center;cursor:pointer;transition:background-color 140ms ease,transform 140ms var(--ease-out)}
+.min-sec .ico{width:13px;height:13px}
+.min-sec:active{transform:scale(.92)}
+@media (hover:hover) and (pointer:fine){.min-sec:hover{background:var(--fill-2);color:var(--label)}}
+.ant-cab{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ant-cab h3{margin:0;font-size:14.5px}
+.anteriores[data-sec]{margin-top:20px}
+/* transición recuadro ↔ tarjeta: solo se mueven los sectores, sin fundido de toda la página */
+html.vt-res::view-transition-old(root),html.vt-res::view-transition-new(root){animation:none}
+html.vt-res::view-transition-group(*){animation-duration:420ms;animation-timing-function:cubic-bezier(0.32, 0.72, 0, 1)}
+html.vt-res::view-transition-old(*){animation:vt-fuera 120ms ease both;height:100%;width:100%;object-fit:none;object-position:left top}
+html.vt-res::view-transition-new(*){animation:vt-dentro 260ms 60ms ease both;height:100%;width:100%;object-fit:none;object-position:left top}
+@keyframes vt-fuera{to{opacity:0}}
+@keyframes vt-dentro{from{opacity:0}}
 .pop-pie{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--sep);margin-top:14px;padding-top:12px}
 
 /* ============ Vistas ============ */
 .vistas{position:absolute;inset:0}
 main{position:absolute;inset:0;overflow:auto}
 main[hidden]{display:none}
-#vistaInicio{overflow:hidden}
+#vistaInicio{overflow:visible}
 ::view-transition-old(root){animation:vt-salir 160ms var(--ease-out) both}
 ::view-transition-new(root){animation:vt-entrar 260ms var(--ease-out) both}
 @keyframes vt-salir{to{opacity:0;filter:blur(4px)}}
@@ -274,8 +304,9 @@ main[hidden]{display:none}
 /* ============ Mapa sobre el fondo + inspector de cristal ============ */
 .mesa{position:absolute;inset:0}
 .mapa{position:absolute;top:84px;left:0;right:344px;bottom:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:0}
-.lienzo{position:relative;width:min(100%,calc(100dvh - 150px));aspect-ratio:1/1;overflow:hidden;border-radius:50%;isolation:isolate}
-.lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;touch-action:manipulation}
+/* sin recorte: al hacer zoom las burbujas siguen visibles en toda la ventana y pasan por debajo de las piezas de cristal */
+.lienzo{position:relative;width:min(100%,calc(100dvh - 150px));aspect-ratio:1/1;overflow:visible;isolation:isolate}
+.lienzo svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;touch-action:manipulation}
 #mundo{transform-origin:0 0;transition:transform 640ms var(--muelle)}
 #mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
 .n-casa{fill:var(--b-casa);stroke:none}
@@ -368,7 +399,7 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco) .brillo{opacity:0}
 .aviso{color:#b85700}
 :root[data-theme="dark"] .aviso{color:var(--orange)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .aviso{color:var(--orange)}}
-.seccion{margin-top:40px;scroll-margin-top:90px}
+.seccion{margin-top:40px}
 .seccion > h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.025em;line-height:1.2;margin:0 0 2px}
 .seccion > .sub{color:var(--label-2);margin:0 0 14px;font-size:13px}
 .ancho{border-radius:var(--r-l);padding:16px 18px;overflow-x:auto}
@@ -470,7 +501,7 @@ details[open] summary::before{transform:rotate(45deg)}
 /* ============ iPhone: una columna, pestañas abajo, inspector como hoja ============ */
 .velo{display:none}
 @media (max-width:900px){
-  .rango{grid-template-columns:1fr;gap:4px;padding:10px 14px}
+  .rango{grid-template-columns:1fr;grid-template-areas:"txt" "pista" "pres";gap:4px;padding:10px 14px}
   .rango .r{font-size:14px}.rango .r small{display:block;margin:2px 0 0}
   .rango .pista{margin-top:14px;height:44px}
   .rango .presets .chip{flex:1;padding:5px 0}
@@ -489,6 +520,13 @@ details[open] summary::before{transform:rotate(45deg)}
   .velo.ver{opacity:1;pointer-events:auto}
   .barra{position:sticky;top:0;right:0;padding:max(12px,env(safe-area-inset-top)) 12px 8px;flex-wrap:wrap;align-items:center}
   .barra.titulo-oculto .titulo{display:none}
+  .minis{gap:8px}.mini{width:calc(50% - 4px);padding:10px 11px 9px}
+  .barra.compacta .capsulas,.barra.compacta .rango .presets,.barra.compacta .rango .t,.barra.compacta .rango .r small{display:none}
+  .barra.compacta h1{font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .barra.compacta .titulo{min-width:0;flex:1}
+  .barra.compacta .migas{display:none}
+  .barra.compacta .rango{padding:6px 14px 2px}
+  .barra.compacta .rango .pista{margin-top:12px}
   .barra h1{font-size:28px}
   .capsulas{width:100%;order:3}
   #segVista,#btnFiltros{display:none}
@@ -499,6 +537,7 @@ details[open] summary::before{transform:rotate(45deg)}
   .pop[data-cerrado]{transform:translateY(100%);filter:none}
   .pop{transition:opacity 200ms ease,transform 420ms var(--ease-drawer),visibility 0s linear 0s}
   .mapa{position:static;padding:4px 12px 0}
+  #vistaInicio{overflow-x:clip}
   .lienzo{width:100%}
   .leyenda{max-width:none;border-radius:var(--r-l)}
   /* inspector: hoja inferior con dos posiciones (asomada / abierta), se arrastra */
@@ -743,18 +782,16 @@ details[open] summary::before{transform:rotate(45deg)}
 
   <section class="seccion" id="sResultados">
     <div class="sec-cab"><h2>Resultados de las fotos anteriores</h2>
-      <button type="button" class="btn btn-fant plegar" id="plegarRes" aria-expanded="true" aria-controls="resCuerpo"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg><span>Minimizar</span></button></div>
-    <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana.</p>
-    <div class="res-mini vidrio" id="resMini" hidden></div>
-    <div id="resCuerpo">
-    <div class="rejilla">
-      <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
-      <div class="tarjeta res vidrio"><h3>SPP6 · WAPE180</h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
-      <div class="tarjeta res vidrio"><h3>SPP · WAPE (9M)</h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
-      <div class="tarjeta res vidrio"><h3>Cómo leerlas</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
+      <button type="button" class="btn btn-fant plegar" id="plegarRes"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg><span>Expandir todo</span></button></div>
+    <p class="sub">Lo que pasó (Consensus real) frente a la mejor receta, por ventana. Cada sector se abre o se minimiza por separado.</p>
+    <div class="minis" id="resMinis"></div>
+    <div class="rejilla" id="resRejilla">
+      <div class="tarjeta res vidrio" data-sec="r90"><h3>SPP3 · WAPE90<button type="button" class="min-sec" data-min="r90" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt">Meses F+1 a F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
+      <div class="tarjeta res vidrio" data-sec="r180"><h3>SPP6 · WAPE180<button type="button" class="min-sec" data-min="r180" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt">Meses F+1 a F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
+      <div class="tarjeta res vidrio" data-sec="r9M"><h3>SPP · WAPE (9M)<button type="button" class="min-sec" data-min="r9M" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt">Meses F+1 a F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
+      <div class="tarjeta res vidrio" data-sec="leer"><h3>Cómo leerlas<button type="button" class="min-sec" data-min="leer" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
     </div>
-    <div class="ancho anteriores vidrio" id="anteriores" style="margin-top:20px"></div>
-    </div>
+    <div class="ancho anteriores vidrio" data-sec="ant"><div class="ant-cab"><h3>Detalle por foto</h3><button type="button" class="min-sec" data-min="ant" aria-label="Minimizar"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 8h8"/></svg></button></div><div id="anteriores"></div></div>
   </section>
 
   <section class="seccion" id="sDetector">
@@ -863,7 +900,8 @@ function V(){
   const b = Vbase(), n = b.fotos.length;
   if (!RANGO || !b.rangos) return b;
   const ini = Math.max(0, Math.min(RANGO.ini, n - 1)), fin = Math.max(ini, Math.min(RANGO.fin, n - 1));
-  if (ini === 0 && fin === n - 1) return b;
+  const med = b.fotos.map((f, i) => f.hay_tramos_cerrados ? i : -1).filter(i => i >= 0);
+  if (!med.length || (ini <= med[0] && fin >= med[med.length - 1])) return b;
   const clave = estado.casa + "|" + [...AJ.ignorar].sort().join(",") + "|" + ini + "-" + fin;
   if (cacheRango.has(clave)) return cacheRango.get(clave);
   const rg = b.rangos, fotos = b.fotos.slice(ini, fin + 1);
@@ -1295,6 +1333,9 @@ const bordeBarra = () => {
   const det = !$("vistaDetalle").hidden, y = det ? Math.max($("vistaDetalle").scrollTop, window.scrollY) : window.scrollY;
   $("barra").classList.toggle("borde", y > 4);
   $("barra").classList.toggle("titulo-oculto", det && y < 150);
+  // iPhone: al bajar, la barra se compacta como en iOS (sin buscador ni atajos); umbrales separados para que no tiemble
+  const c = $("barra").classList.contains("compacta");
+  if (!c && y > 170) $("barra").classList.add("compacta"); else if (c && y < 110) $("barra").classList.remove("compacta");
 };
 $("vistaDetalle").addEventListener("scroll", bordeBarra, {passive: true});
 window.addEventListener("scroll", bordeBarra, {passive: true});
@@ -2182,137 +2223,186 @@ $("calor").addEventListener("change", () => {
   try { localStorage.setItem("o10-calor", CALOR ? "1" : "0"); } catch(e) {}
   pintarDecisiones();
 });
+// la barra superior cambia de alto (una o dos filas): el mapa, el inspector y el detalle se colocan debajo
+new ResizeObserver(([e]) => document.documentElement.style.setProperty("--alto-barra", Math.round(e.target.getBoundingClientRect().height) + "px")).observe($("barra"));
 // ================= Barra de rango =================
+// Solo se eligen fotos MEDIDAS (las que ya tienen actuals cerrados); las más recientes, sin medir aún, se ven al final
+// en un tramo discontinuo y no se pueden seleccionar. Las marcas se construyen una vez; durante el arrastre solo cambian
+// clases y transforms (sin layout), y el recálculo de toda la página espera a que arranque el muelle de encaje.
 const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const etMes = (m, primero) => { const k = +m.slice(6) - 1; return MESES[k] + (k === 0 || primero ? " " + m.slice(2, 4) : ""); };
 function leerRango(){ try { const g = JSON.parse(localStorage.getItem("o10-rango") || "null"); if (g && g.casa === estado.casa) return {ini: g.ini, fin: g.fin}; } catch(e) {} return null; }
-function guardarRango(){ try { localStorage.setItem("o10-rango", JSON.stringify({casa: estado.casa, ...(RANGO || {ini: 0, fin: Vbase().fotos.length - 1})})); } catch(e) {} }
+function guardarRango(){ try { localStorage.setItem("o10-rango", JSON.stringify({casa: estado.casa, ...(RANGO || {})})); } catch(e) {} }
 const RG = {arrastre: null};
-function rangoActual(){ const n = Vbase().fotos.length; return RANGO ? {ini: Math.min(RANGO.ini, n - 1), fin: Math.min(RANGO.fin, n - 1)} : {ini: 0, fin: n - 1}; }
-function posRango(i, n, W){ return 14 + (W - 28) * (n > 1 ? i / (n - 1) : 0.5); }
+const medidasIdx = () => Vbase().fotos.map((f, i) => f.hay_tramos_cerrados ? i : -1).filter(i => i >= 0);
+function rangoActual(){
+  const m = medidasIdx(); if (!m.length) return {ini: 0, fin: 0};
+  const cl = i => m.reduce((a, b) => Math.abs(b - i) < Math.abs(a - i) ? b : a, m[0]);
+  return RANGO ? {ini: cl(RANGO.ini), fin: cl(RANGO.fin)} : {ini: m[0], fin: m[m.length - 1]};
+}
+const posRango = (i, n, W) => 14 + (W - 28) * (n > 1 ? i / (n - 1) : 0.5);
+function construirPista(){
+  const fotos = Vbase().fotos, n = fotos.length, W = $("rangoPista").clientWidth || 600, m = medidasIdx();
+  const ultMed = m.length ? m[m.length - 1] : -1, x = i => posRango(i, n, W);
+  RG.W = W; RG.n = n;
+  // etiquetas: solo las que caben (≥ 34 px entre una y otra), siempre la primera y la última
+  const conEt = [];
+  fotos.forEach((_, i) => { if (!conEt.length || x(i) - x(conEt[conEt.length - 1]) >= 34) conEt.push(i); });
+  if (conEt[conEt.length - 1] !== n - 1) { if (x(n - 1) - x(conEt[conEt.length - 1]) < 34) conEt.pop(); conEt.push(n - 1); }
+  let h = "";
+  fotos.forEach((f, i) => {
+    const med = f.hay_tramos_cerrados;
+    h += `<span class="tic${med ? " med" : " abierta"}" data-i="${i}" style="transform:translateX(${x(i)}px)" title="${f.foto}${med ? "" : " · sin actuals cerrados: no se puede medir todavía"}"></span>`;
+    if (conEt.includes(i)) h += `<span class="lbl${med ? "" : " abierta"}" data-i="${i}" style="transform:translateX(${x(i)}px) translateX(-50%)">${etMes(f.foto, i === 0)}</span>`;
+  });
+  // tramo sin medir: línea discontinua y su rótulo
+  if (ultMed >= 0 && ultMed < n - 1) h += `<span class="sin-medir" style="transform:translateX(${x(ultMed)}px);width:${x(n - 1) - x(ultMed)}px"></span><span class="sin-medir-t" style="transform:translateX(${(x(ultMed + 1) + x(n - 1)) / 2}px) translateX(-50%)">Sin medir aún</span>`;
+  $("rangoTics").innerHTML = h;
+  $("rangoPista").querySelector(".linea").style.width = Math.max(0, x(Math.max(0, ultMed)) - 14) + "px";
+  pintarRango();
+}
 function pintarRango(vivo){
-  const fotos = Vbase().fotos, n = fotos.length, W = $("rangoPista").clientWidth || 600;
-  const {ini, fin} = vivo || rangoActual(), estrecho = W < 520;
-  const paso = estrecho ? 3 : (W < 760 ? 2 : 1);
-  $("rangoTics").innerHTML = fotos.map((f, i) => { const d = i >= ini && i <= fin, x = posRango(i, n, W);
-    return `<span class="tic${f.hay_tramos_cerrados ? " med" : ""}${d ? " dentro" : ""}" style="left:${x}px" title="${f.foto}${f.hay_tramos_cerrados ? " · medida" : " · sin actuals cerrados todavía"}"></span>`
-      + ((i % paso === 0 || i === n - 1) ? `<span class="lbl${d ? " dentro" : ""}" style="left:${x}px">${etMes(f.foto, i === 0)}</span>` : ""); }).join("");
-  const a = posRango(ini, n, W), b = posRango(fin, n, W);
-  $("rangoLleno").style.transform = `translateX(${a}px) scaleX(${Math.max(0.001, b - a)})`;
-  if (!RG.arrastre) { $("pomoIni").style.transform = `translateX(${a}px)`; $("pomoFin").style.transform = `translateX(${b}px)`; }
+  if (!RG.W) return;
+  const fotos = Vbase().fotos, n = RG.n, W = RG.W, m = medidasIdx();
+  const {ini, fin} = vivo || rangoActual(), x = i => posRango(i, n, W);
+  $("rangoTics").querySelectorAll(".tic,.lbl").forEach(t => { const i = +t.dataset.i; t.classList.toggle("dentro", i >= ini && i <= fin && fotos[i].hay_tramos_cerrados); });
+  const L = $("rangoLleno"); L.style.left = x(ini) + "px"; L.style.width = Math.max(0, x(fin) - x(ini)) + "px";
+  if (!RG.arrastre) { $("pomoIni").style.transform = `translateX(${x(ini)}px)`; $("pomoFin").style.transform = `translateX(${x(fin)}px)`; }
   [["pomoIni", ini], ["pomoFin", fin]].forEach(([id, i]) => { const el = $(id);
-    el.setAttribute("aria-valuemin", 0); el.setAttribute("aria-valuemax", n - 1); el.setAttribute("aria-valuenow", i); el.setAttribute("aria-valuetext", fotos[i].foto); });
-  const sel = fotos.slice(ini, fin + 1), med = sel.filter(f => f.hay_tramos_cerrados).length;
-  $("rangoR").innerHTML = `${fotos[ini].foto} → ${fotos[fin].foto}<small>${med} foto${med === 1 ? "" : "s"} medida${med === 1 ? "" : "s"}${sel.length - med ? ` · ${sel.length - med} abierta${sel.length - med === 1 ? "" : "s"}` : ""}</small>`;
-  const ultMed = fotos.map((f, i) => f.hay_tramos_cerrados ? i : -1).filter(i => i >= 0);
-  const pres = {todo: ini === 0 && fin === n - 1};
-  [6, 3].forEach(k => { pres[k] = fin === n - 1 && ultMed.length >= k && ini === ultMed[ultMed.length - k]; });
+    el.setAttribute("aria-valuemin", m[0]); el.setAttribute("aria-valuemax", m[m.length - 1]); el.setAttribute("aria-valuenow", i); el.setAttribute("aria-valuetext", fotos[i].foto); });
+  if (vivo) return;
+  const med = m.filter(i => i >= ini && i <= fin).length;
+  $("rangoR").innerHTML = `${fotos[ini].foto} → ${fotos[fin].foto}<small>${med} de ${m.length} fotos medidas</small>`;
+  const pres = {todo: ini === m[0] && fin === m[m.length - 1]};
+  [6, 3].forEach(k => { pres[k] = m.length >= k && ini === m[m.length - k] && fin === m[m.length - 1]; });
   document.querySelectorAll("#rangoPresets .chip").forEach(c => c.setAttribute("aria-pressed", String(!!pres[c.dataset.p])));
 }
 function aplicarRango(ini, fin){
-  const n = Vbase().fotos.length;
+  const m = medidasIdx();
   if (ini > fin) [ini, fin] = [fin, ini];
-  const nuevo = ini === 0 && fin === n - 1 ? null : {ini, fin};
+  const nuevo = ini === m[0] && fin === m[m.length - 1] ? null : {ini, fin};
   const igual = JSON.stringify(nuevo) === JSON.stringify(RANGO);
   RANGO = nuevo; guardarRango(); pintarRango();
-  if (igual) return;
-  refrescarTodo(false);
+  if (!igual) refrescarTodo(false);
 }
 $("rangoPresets").addEventListener("click", ev => {
   const b = ev.target.closest(".chip"); if (!b) return;
-  const fotos = Vbase().fotos, n = fotos.length, med = fotos.map((f, i) => f.hay_tramos_cerrados ? i : -1).filter(i => i >= 0);
-  if (b.dataset.p === "todo") aplicarRango(0, n - 1);
-  else { const k = +b.dataset.p; aplicarRango(med[Math.max(0, med.length - k)], n - 1); }
+  const m = medidasIdx();
+  aplicarRango(b.dataset.p === "todo" ? m[0] : m[Math.max(0, m.length - +b.dataset.p)], m[m.length - 1]);
 });
-// arrastre 1:1 con captura del puntero; al soltar se proyecta la inercia y encaja en la foto más cercana con un muelle
 (function(){
   const pista = $("rangoPista");
-  const indice = (x, n, W) => Math.max(0, Math.min(n - 1, Math.round((x - 14) / ((W - 28) / Math.max(1, n - 1)))));
-  const empezar = (ev, cual) => {
-    const n = Vbase().fotos.length, W = pista.clientWidth, r = pista.getBoundingClientRect(), act = rangoActual();
-    const el = $(cual === "ini" ? "pomoIni" : "pomoFin"), x0 = posRango(act[cual], n, W);
+  // índice de la foto MEDIDA más cercana a una x, dentro de [lo, hi]
+  const medidaCerca = (x, lo, hi) => { const m = medidasIdx().filter(i => i >= lo && i <= hi), n = RG.n, W = RG.W;
+    return m.reduce((a, b) => Math.abs(posRango(b, n, W) - x) < Math.abs(posRango(a, n, W) - x) ? b : a, m[0]); };
+  const empezar = (ev, cual, xAgarre) => {
+    const act = rangoActual(), el = $(cual === "ini" ? "pomoIni" : "pomoFin"), r = pista.getBoundingClientRect();
     el.getAnimations().forEach(a => a.cancel());
-    RG.arrastre = {cual, el, n, W, left: r.left, agarre: ev.clientX - r.left - x0, hist: [{x: ev.clientX, t: ev.timeStamp}], act: {...act}};
+    const x0 = posRango(act[cual], RG.n, RG.W), m = medidasIdx();
+    // tope duro: el inicio no pasa del final ni de la primera foto medida; el final, igual hacia el otro lado
+    const min = posRango(cual === "ini" ? m[0] : act.ini, RG.n, RG.W), max = posRango(cual === "ini" ? act.fin : m[m.length - 1], RG.n, RG.W);
+    RG.arrastre = {cual, el, left: r.left, agarre: (xAgarre ?? ev.clientX) - r.left - x0, hist: [{x: ev.clientX, t: ev.timeStamp}], act: {...act}, min, max, x: x0};
     el.setPointerCapture(ev.pointerId); el.classList.add("arr"); $("rangoBurbuja").hidden = false; mover(ev);
   };
   const mover = ev => {
     const A = RG.arrastre; if (!A) return;
-    let x = ev.clientX - A.left - A.agarre;
-    const lo = cual => posRango(0, A.n, A.W), hi = posRango(A.n - 1, A.n, A.W);
-    const otro = posRango(A.act[A.cual === "ini" ? "fin" : "ini"], A.n, A.W);
-    const min = A.cual === "ini" ? lo() : otro, max = A.cual === "ini" ? otro : hi;
-    // resistencia progresiva en los topes, sin parada seca
-    if (x < min) x = min - Math.sqrt(min - x) * 2; if (x > max) x = max + Math.sqrt(x - max) * 2;
-    A.x = x; A.el.style.transform = `translateX(${x}px) scale(1.12)`;   // crece un poco mientras se sostiene
+    const x = Math.max(A.min, Math.min(A.max, ev.clientX - A.left - A.agarre));
+    A.x = x; A.el.style.transform = `translateX(${x}px) scale(1.12)`;
     A.hist.push({x: ev.clientX, t: ev.timeStamp}); if (A.hist.length > 6) A.hist.shift();
-    const i = Math.max(A.cual === "ini" ? 0 : A.act.ini, Math.min(A.cual === "ini" ? A.act.fin : A.n - 1, indice(x, A.n, A.W)));
-    const viv = {...A.act, [A.cual]: i}; A.i = i;
-    const b = $("rangoBurbuja"); b.textContent = Vbase().fotos[i].foto; b.style.transform = `translateX(${x}px) translateX(-50%)`;
-    pintarRango(viv);
+    const i = A.cual === "ini" ? medidaCerca(x, 0, A.act.fin) : medidaCerca(x, A.act.ini, RG.n - 1);
+    if (i !== A.i) { A.i = i; $("rangoBurbuja").textContent = Vbase().fotos[i].foto; pintarRango({...A.act, [A.cual]: i}); }
+    $("rangoBurbuja").style.transform = `translateX(${x}px) translateX(-50%)`;
   };
-  const soltar = ev => {
+  const soltar = () => {
     const A = RG.arrastre; if (!A) return;
     const h = A.hist, v = (h[h.length - 1].x - h[0].x) / Math.max(1, h[h.length - 1].t - h[0].t) * 1000;
-    const proy = A.x + (v / 1000) * 0.99 / (1 - 0.99);   // proyección de Apple (desaceleración 0,99, más corta)
-    let i = indice(proy, A.n, A.W);
-    i = A.cual === "ini" ? Math.min(i, A.act.fin) : Math.max(i, A.act.ini);
-    const destino = posRango(i, A.n, A.W);
+    const proy = Math.max(A.min, Math.min(A.max, A.x + (v / 1000) * 0.99 / (1 - 0.99)));   // proyección de Apple, dentro de los topes
+    const i = A.cual === "ini" ? medidaCerca(proy, 0, A.act.fin) : medidaCerca(proy, A.act.ini, RG.n - 1);
+    const destino = posRango(i, RG.n, RG.W);
     A.el.classList.remove("arr"); $("rangoBurbuja").hidden = true; RG.arrastre = null;
-    const curva = getComputedStyle(document.documentElement).getPropertyValue("--muelle").trim() || "ease-out";
     A.el.style.transform = `translateX(${destino}px)`;
-    if (!reducir.matches) A.el.animate([{transform: `translateX(${A.x}px) scale(1.12)`}, {transform: `translateX(${destino}px)`}], {duration: 380, easing: curva});
-    aplicarRango(A.cual === "ini" ? i : A.act.ini, A.cual === "fin" ? i : A.act.fin);
+    if (!reducir.matches) A.el.animate([{transform: `translateX(${A.x}px) scale(1.12)`}, {transform: `translateX(${destino}px)`}],
+      {duration: 380, easing: getComputedStyle(document.documentElement).getPropertyValue("--muelle").trim() || "ease-out"});
+    pintarRango({...A.act, [A.cual]: i});
+    // el recálculo (~100 ms) va después del primer fotograma del muelle, que corre en el compositor
+    requestAnimationFrame(() => setTimeout(() => aplicarRango(A.cual === "ini" ? i : A.act.ini, A.cual === "fin" ? i : A.act.fin), 0));
   };
   ["pomoIni", "pomoFin"].forEach(id => { const el = $(id), cual = id === "pomoIni" ? "ini" : "fin";
-    el.addEventListener("pointerdown", ev => { ev.preventDefault(); empezar(ev, cual); });
+    el.addEventListener("pointerdown", ev => { ev.preventDefault(); ev.stopPropagation(); empezar(ev, cual); });
     el.addEventListener("pointermove", mover); el.addEventListener("pointerup", soltar); el.addEventListener("pointercancel", soltar);
-    // teclado: flechas, Inicio y Fin, sin animación
-    el.addEventListener("keydown", ev => { const act = rangoActual(), n = Vbase().fotos.length; let i = act[cual];
-      if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") i--; else if (ev.key === "ArrowRight" || ev.key === "ArrowUp") i++;
-      else if (ev.key === "Home") i = 0; else if (ev.key === "End") i = n - 1; else return;
-      ev.preventDefault(); i = cual === "ini" ? Math.max(0, Math.min(i, act.fin)) : Math.min(n - 1, Math.max(i, act.ini));
+    // teclado: flechas, Inicio y Fin, de foto medida en foto medida y sin animación
+    el.addEventListener("keydown", ev => { const act = rangoActual(), m = medidasIdx(); let k = m.indexOf(act[cual]);
+      if (ev.key === "ArrowLeft" || ev.key === "ArrowDown") k--; else if (ev.key === "ArrowRight" || ev.key === "ArrowUp") k++;
+      else if (ev.key === "Home") k = 0; else if (ev.key === "End") k = m.length - 1; else return;
+      ev.preventDefault(); k = Math.max(0, Math.min(m.length - 1, k)); let i = m[k];
+      i = cual === "ini" ? Math.min(i, act.fin) : Math.max(i, act.ini);
       aplicarRango(cual === "ini" ? i : act.ini, cual === "fin" ? i : act.fin); });
   });
-  // pulsar en la pista mueve el tirador más cercano y empieza a arrastrarlo
+  // pulsar en la pista: el tirador más cercano salta ahí y se sigue arrastrando
   pista.addEventListener("pointerdown", ev => {
     if (ev.target.closest(".pomo")) return;
-    const n = Vbase().fotos.length, W = pista.clientWidth, x = ev.clientX - pista.getBoundingClientRect().left, act = rangoActual();
-    const cual = Math.abs(x - posRango(act.ini, n, W)) <= Math.abs(x - posRango(act.fin, n, W)) ? "ini" : "fin";
-    const el = $(cual === "ini" ? "pomoIni" : "pomoFin"); ev.preventDefault();
-    empezar({clientX: posRango(act[cual], n, W) + pista.getBoundingClientRect().left, timeStamp: ev.timeStamp, pointerId: ev.pointerId}, cual);
-    mover(ev);
+    const x = ev.clientX - pista.getBoundingClientRect().left, act = rangoActual();
+    const cual = Math.abs(x - posRango(act.ini, RG.n, RG.W)) <= Math.abs(x - posRango(act.fin, RG.n, RG.W)) ? "ini" : "fin";
+    ev.preventDefault(); empezar(ev, cual, posRango(act[cual], RG.n, RG.W) + pista.getBoundingClientRect().left);
+    $(cual === "ini" ? "pomoIni" : "pomoFin").addEventListener("pointerup", soltar, {once: true});
   });
-  new ResizeObserver(() => { if (!RG.arrastre) pintarRango(); }).observe(pista);
+  new ResizeObserver(() => { if (!RG.arrastre && Math.abs((pista.clientWidth || 0) - (RG.W || 0)) > 0.5) construirPista(); }).observe(pista);
 })();
 
-// ================= Resultados plegables =================
-let RES_MIN = false;
-try { RES_MIN = localStorage.getItem("o10-res-min") === "1"; } catch(e) {}
-function pintarResMini(){
-  const f = fotoUltCerrada(), e = f && entidad(f);
-  if (!e || !e.kpi_receta) { $("resMini").innerHTML = `<p class="pequeño">Sin fotos medidas en el rango.</p>`; return; }
-  const v = "9M", kr = e.kpi_receta[v] || e.kpi_receta["180"] || e.kpi_receta["90"], kc = e.kpi_consensus[v] || e.kpi_consensus["180"] || e.kpi_consensus["90"];
-  if (!kr || !kc) { $("resMini").innerHTML = `<p class="pequeño">Sin ventana cerrada en ${f.foto}.</p>`; return; }
-  const gan = (kc.wape - kr.wape) * 100, meta = w => w <= CFG.metas.wape_max, sppOk = s => Math.abs(s) <= CFG.metas.spp_abs_max;
-  const n = fotosCerradas().length;
-  $("resMini").innerHTML = `<div class="rm-cab">Foto ${f.foto} · WAPE ${e.kpi_receta[v] ? "9M" : (e.kpi_receta["180"] ? "180" : "90")}${n > 1 ? ` · ${n} fotos en el rango` : ""}</div>
-    <div class="rm-fila"><span>${esRegla() ? "Regla" : "Receta"}</span><b class="${meta(kr.wape) ? "bueno" : "malo"}">${pct(kr.wape)}</b><small>SPP <span class="${sppOk(kr.spp) ? "bueno" : "malo"}">${pct(kr.spp)}</span></small></div>
-    <div class="rm-fila"><span>Consensus</span><b class="${meta(kc.wape) ? "bueno" : "malo"}">${pct(kc.wape)}</b><small>SPP <span class="${sppOk(kc.spp) ? "bueno" : "malo"}">${pct(kc.spp)}</span></small></div>
-    <div class="rm-pie">${gan > 0.05 ? `La receta habría bajado el WAPE <b>${gan.toLocaleString("es-ES", {maximumFractionDigits: 1})} pp</b>` : gan < -0.05 ? `El Consensus fue <b>${(-gan).toLocaleString("es-ES", {maximumFractionDigits: 1})} pp</b> mejor` : "Receta y Consensus empatan"}</div>`;
+// ================= Resultados por sectores =================
+// Al abrir la página todos los sectores están minimizados: solo se ve una fila de recuadros pequeños con lo esencial.
+// Cada uno se expande por separado (el recuadro crece hasta convertirse en su tarjeta: View Transition con el mismo
+// nombre, curva de cajón de iOS) y hay un botón para expandir o minimizar todo.
+const SECTORES = ["r90", "r180", "r9M", "leer", "ant"];
+const ABIERTOS = new Set();
+// la última foto del rango en la que TODA la ventana está cerrada (si no, WAPE180 y 9M serían solo los meses cerrados)
+function kpiVentana(v){
+  const nt = {"90": 1, "180": 2, "9M": 3}[v];
+  const fs = fotosCerradas().filter(f => (f.tramos_cerrados || []).slice(0, nt).every(Boolean));
+  for (let i = fs.length - 1; i >= 0; i--) { const f = fs[i], e = entidad(f);
+    if (e && e.kpi_receta && e.kpi_receta[v] && e.kpi_consensus && e.kpi_consensus[v]) return {f, r: e.kpi_receta[v], c: e.kpi_consensus[v]}; }
+  return null;
 }
-function aplicarResMin(animar){
-  $("resCuerpo").hidden = RES_MIN; $("resMini").hidden = !RES_MIN;
-  $("plegarRes").setAttribute("aria-expanded", String(!RES_MIN));
-  $("plegarRes").querySelector("span").textContent = RES_MIN ? "Mostrar todo" : "Minimizar";
-  $("plegarRes").classList.toggle("plegado", RES_MIN);
-  if (RES_MIN) pintarResMini();
-  if (animar && !reducir.matches) {
-    const el = RES_MIN ? $("resMini") : $("resCuerpo");
-    el.animate([{opacity: 0, transform: RES_MIN ? "scale(.96)" : "translateY(-6px)"}, {opacity: 1, transform: "none"}], {duration: 240, easing: MOV.curva});
+function miniSector(k){
+  const T = {r90: "SPP3 · WAPE90", r180: "SPP6 · WAPE180", r9M: "SPP · WAPE 9M", leer: "Cómo leerlas", ant: "Detalle por foto"}[k];
+  let cuerpo;
+  if (k === "leer") cuerpo = `<span class="mn-s">Ejes, zona meta y colores</span>`;
+  else if (k === "ant") { const n = fotosCerradas().length; cuerpo = `<span class="mn-s">${n} foto${n === 1 ? "" : "s"} medida${n === 1 ? "" : "s"} en el rango</span>`; }
+  else {
+    const d = kpiVentana(k.slice(1));
+    if (!d) cuerpo = `<span class="mn-s">Ninguna foto del rango tiene esta ventana cerrada</span>`;
+    else { const g = (d.c.wape - d.r.wape) * 100, ok = w => w <= CFG.metas.wape_max ? "bueno" : "malo";
+      cuerpo = `<span class="mn-v"><b class="${ok(d.r.wape)}">${pct(d.r.wape)}</b><small>${esRegla() ? "regla" : "receta"}</small></span>
+        <span class="mn-v"><b class="${ok(d.c.wape)}">${pct(d.c.wape)}</b><small>Consensus</small></span>
+        <span class="mn-s">${Math.abs(g) < 0.05 ? "Empatan" : (g > 0 ? "−" : "+") + Math.abs(g).toLocaleString("es-ES", {maximumFractionDigits: 1}) + " pp con la receta"} · ${d.f.foto}</span>`; }
   }
-  if (!RES_MIN) requestAnimationFrame(revisarPendientes);
+  return `<button type="button" class="mini vidrio" data-sec="${k}" style="view-transition-name:res-${k}" aria-label="Expandir ${T}"><span class="mn-t">${T}<svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>${cuerpo}</button>`;
 }
-$("plegarRes").addEventListener("click", () => { RES_MIN = !RES_MIN; try { localStorage.setItem("o10-res-min", RES_MIN ? "1" : "0"); } catch(e) {} aplicarResMin(true); });
+function pintarSectores(){
+  $("resMinis").innerHTML = SECTORES.filter(k => !ABIERTOS.has(k)).map(miniSector).join("");
+  $("resMinis").hidden = ABIERTOS.size === SECTORES.length;
+  document.querySelectorAll("#sResultados [data-sec]:not(.mini)").forEach(el => {
+    const k = el.dataset.sec, ab = ABIERTOS.has(k);
+    el.hidden = !ab; el.style.viewTransitionName = ab ? "res-" + k : "";
+  });
+  $("resRejilla").hidden = !["r90", "r180", "r9M", "leer"].some(k => ABIERTOS.has(k));
+  const todo = ABIERTOS.size === SECTORES.length;
+  $("plegarRes").querySelector("span").textContent = todo ? "Minimizar todo" : "Expandir todo";
+  $("plegarRes").classList.toggle("plegado", todo);
+}
+function cambiarSectores(f){
+  // la cabecera de Resultados se queda donde estaba en pantalla: abrir o cerrar no desplaza la página
+  const cab = document.querySelector("#sResultados .sec-cab"), y0 = cab.getBoundingClientRect().top;
+  const hecho = () => { f(); pintarSectores(); const dy = cab.getBoundingClientRect().top - y0; $("vistaDetalle").scrollBy({top: dy, behavior: "instant"});
+    const dy2 = cab.getBoundingClientRect().top - y0; if (Math.abs(dy2) > 1) window.scrollBy({top: dy2, behavior: "instant"}); requestAnimationFrame(revisarPendientes); };
+  if (!document.startViewTransition || reducir.matches) { hecho(); return; }
+  document.documentElement.classList.add("vt-res");
+  const vt = document.startViewTransition(hecho);
+  vt.finished.finally(() => document.documentElement.classList.remove("vt-res"));
+}
+$("resMinis").addEventListener("click", ev => { const b = ev.target.closest(".mini"); if (b) cambiarSectores(() => ABIERTOS.add(b.dataset.sec)); });
+$("sResultados").addEventListener("click", ev => { const b = ev.target.closest(".min-sec"); if (b) cambiarSectores(() => ABIERTOS.delete(b.dataset.min)); });
+$("plegarRes").addEventListener("click", () => cambiarSectores(() => { if (ABIERTOS.size === SECTORES.length) ABIERTOS.clear(); else SECTORES.forEach(k => ABIERTOS.add(k)); }));
 
 function pintarDecisiones(){
   brujula("b1", "s", "w", ["Media plana", "Mismo mes año pasado", "Sin trend", "Trend completo"]);
@@ -2326,7 +2416,7 @@ function pintar(){
   fotoActual();
   pintarDecisiones();
   ["90", "180", "9M"].forEach(v => mediaBrujula("r" + v, v));
-  aplicarResMin(false);
+  pintarSectores();
   anteriores();
   detector();
 }
@@ -2338,7 +2428,10 @@ $("leer").innerHTML = `<p><b>X = SPP</b> (bias, ${CFG.spp_signo < 0 ? "Σ(A−F)
   <p>Solo se miden fotos con actuals posteriores. La foto actual no se mide: se compara su Consensus con la receta elegida.</p>`;
 $("notas").innerHTML = `Rejilla gruesa: ${(D.ejes.s.length**5 * D.ejes.N.length * CELDAS.length).toLocaleString("es-ES")} recetas por código y foto. Pesos por tramo ${CFG.peso_tramo.join("-")}. Tope del trend ±${pct(CFG.tope_trend,0)}. Parámetros en brujulas/config.json.`;
 
-$("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-ir]"); if (!a) return; ev.preventDefault(); $(a.dataset.ir).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"}); });
+$("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-ir]"); if (!a) return; ev.preventDefault();
+  // la barra compacta mide menos: se compacta antes de medir, así la sección queda justo debajo de ella
+  if (a.dataset.ir !== "sFoto") $("barra").classList.add("compacta");
+  requestAnimationFrame(() => requestAnimationFrame(() => $(a.dataset.ir).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"}))); });
 $("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
 $("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
 ["soloGrupo", "verTodos", "filtro"].forEach(id => $(id).addEventListener("input", detector));
@@ -2354,7 +2447,7 @@ document.addEventListener("click", ev => {
 function cargarCasa(){
   RANGO = leerRango(); cacheRango.clear();
   pintarAjustes();
-  requestAnimationFrame(() => pintarRango());
+  RG.W = 0; requestAnimationFrame(() => construirPista());
   estado.sel = "R|Casa: " + estado.casa;
   M.foco = null; M.sel = null; M.primera = true;
   M.hojas = calcularHojas();
