@@ -301,7 +301,12 @@ th.ord{cursor:pointer}
 @media (hover:hover) and (pointer:fine){th.ord:hover{color:var(--label)}}
 td.izq,th.izq{text-align:left}
 td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
-#detector td.desc{max-width:280px;overflow:hidden;text-overflow:ellipsis}
+#detector td.desc{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.sub-mes{display:block;color:var(--label-2);font-size:11px;margin-top:1px;overflow:hidden;text-overflow:ellipsis}
+.t-det .c-mes,.t-det th:nth-child(9){display:none}
+#detector td,#detector th{padding:6px 8px}
+@media (max-width:1700px){.t-det .c-grupo,.t-det .c-edad,.t-det th:nth-child(4),.t-det th:last-child{display:none}}
+@media (max-width:1240px) and (min-width:901px){.t-det .c-brand,.t-det th:nth-child(3){display:none}}
 #detector td.meses{white-space:normal;max-width:190px;font-size:11.5px;line-height:1.35}
 .matriz{table-layout:fixed;width:326px;margin-top:4px;border-collapse:separate;border-spacing:3px}
 .matriz td{text-align:center;height:40px;padding:2px;border:0;font-size:12px;font-weight:600;cursor:default;position:relative;border-radius:7px}
@@ -379,9 +384,9 @@ details[open] summary::before{transform:rotate(45deg)}
   .t-det .c-ean{grid-column:1;grid-row:2;font-size:11px}
   .t-det .c-u{grid-column:2;grid-row:1;text-align:right}
   .t-det .c-p{grid-column:2;grid-row:2;text-align:right;color:var(--label-2);font-size:11.5px}
-  .t-det .c-mes{grid-column:1 / -1;grid-row:3;max-width:none;margin-top:3px;color:var(--label-2)}
-  .t-det .c-mes br{display:none}
-  .t-det .c-mes br + *{margin-left:6px}
+  .t-det .sub-mes{display:none}
+  .t-det .c-mes{display:block;grid-column:1 / -1;grid-row:3;max-width:none;margin-top:3px;color:var(--label-2)}
+  .anteriores table{display:block;overflow-x:auto;max-width:100%}
   .tarjeta{width:100%;max-width:360px}
   .pop{position:fixed;top:auto;bottom:0;right:0;left:0;width:auto;border-radius:16px 16px 0 0;padding-bottom:max(16px,env(safe-area-inset-bottom));transform-origin:bottom center}
   .pop[data-cerrado]{transform:translateY(100%);filter:none}
@@ -1196,7 +1201,11 @@ function selector(){
       const w = e.ejes ? e.ejes.g[gi] : null;
       const al = 0.06 + 0.8 * t;
       const fondo = oscuro ? `rgba(10,132,255,${al})` : `rgba(0,113,227,${al})`;
-      const col = (oscuro || al >= 0.8) ? "#ffffff" : "var(--label)";
+      // color del texto según el contraste real de la celda (azul mezclado con la tarjeta)
+      const base = oscuro ? [10,132,255] : [0,113,227], fondoT = oscuro ? [44,44,46] : [255,255,255];
+      const mez = base.map((c, k) => c * al + fondoT[k] * (1 - al)), lum = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; };
+      const L = .2126 * lum(mez[0]) + .7152 * lum(mez[1]) + .0722 * lum(mez[2]);
+      const col = 1.05 / (L + .05) >= (L + .05) / .0627 ? "#ffffff" : "#1d1d1f";
       h += `<td class="${gi === gan ? "elegida" : ""}" style="background:${fondo};color:${col}" title="${a} · ${cr}${gi === gan ? " (elegido)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}">${esRegla() ? n.toFixed(0) : n}</td>`;
     });
     h += "</tr>";
@@ -1264,7 +1273,7 @@ function marcas(max){
 }
 function grafico(meses, ev){
   const W = Math.max(300, Math.round($("actual").clientWidth || 1000)), estrecho = W < 640;
-  const H = estrecho ? 240 : 290, L = estrecho ? 44 : 60, Rm = 12, T = 14, B = estrecho ? 26 : 42;
+  const H = estrecho ? 240 : 290, L = estrecho ? 54 : 60, Rm = 12, T = 14, B = estrecho ? 26 : 42;
   const {paso, tope} = marcas(Math.max(1, ...ev.map(e => Math.max(e.hi, e.C))) * 1.04);
   const x = i => L + (W - L - Rm) * (i + 0.5) / meses.length, y = v => T + (H - T - B) * (1 - v / tope);
   let h = "";
@@ -1377,7 +1386,7 @@ function detector(){
     const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + e.R, 0);
     const fm = (f) => ev.map((e, i) => e.dev > 0.5 && f(e) ? det.meses[i].slice(5) : null).filter(Boolean);
     const bajo = fm(e => e.C < e.lo), alto = fm(e => e.C > e.hi);
-    const meses = [bajo.length ? "Bajo " + bajo.join(" ") : "", alto.length ? "Alto " + alto.join(" ") : ""].filter(Boolean);
+    const meses = [bajo.length ? "Bajo " + bajo.join(" ") : "", alto.length ? "Alto " + alto.join(" ") : ""].filter(Boolean).join(" · ");
     filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
   const fuera = filas.filter(x => x.u > 0.5).length;
@@ -1391,8 +1400,8 @@ function detector(){
   let h = `<table class="t-det"><tr class="cab"><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Brand</th><th class="izq">Edad</th>${th("sR","Σ Receta")}${th("sC","Σ Consensus")}${th("u","Desvío uds")}${th("p","Desvío %")}<th class="izq">Meses fuera</th><th class="izq">Grupo del trend</th></tr>`;
   const tope = estado.detTodos ? vis.length : 30;
   vis.slice(0, tope).forEach(x => {
-    h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq desc" title="${esc(x.r.desc)}">${esc(x.r.desc)}</td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${x.r.edad}</td>
-      <td class="c-sr">${num(x.sR)}</td><td class="c-sc">${num(x.sC)}</td><td class="c-u"><b>${num(x.u)}</b></td><td class="c-p">${pct(x.p)}</td><td class="izq pequeño meses c-mes">${x.meses.join("<br>")}</td>
+    h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq desc" title="${esc(x.r.desc)} · ${x.r.edad} · grupo del trend: ${esc(x.rec.txt.grupo)}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}</td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${x.r.edad}</td>
+      <td class="c-sr">${num(x.sR)}</td><td class="c-sc">${num(x.sC)}</td><td class="c-u"><b>${num(x.u)}</b></td><td class="c-p">${pct(x.p)}</td><td class="izq pequeño meses c-mes">${x.meses}</td>
       <td class="izq pequeño meses c-grupo" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
   });
   if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--label-2)">Ningún EAN se sale de su estrategia con esta tolerancia.</td></tr>`;
