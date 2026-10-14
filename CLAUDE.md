@@ -246,6 +246,12 @@ El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el 
 
 Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 
+### Barra de rango de cálculo (fija arriba, en el mapa y en el detalle)
+- Un punto por cada foto cargada de la casa (lleno = medida, hueco = aún sin actuals cerrados) y dos tiradores para elegir la primera y la última foto. Atajos: Todo, Últimas 6, Últimas 3 (las últimas fotos medidas hasta la foto actual).
+- Arrastre 1:1 con captura del puntero; al soltar se proyecta la inercia y encaja en la foto más cercana con un muelle sin rebote. Con teclado: flechas, Inicio y Fin, sin animación.
+- **Todo cambia con el rango:** solo las fotos medidas del rango eligen la receta de cada código y de cada grupo (y, con ella, el detector y el color de las burbujas); brújulas, mapa de calor, selector y resultados muestran solo esas fotos. El detector sigue comparando el Consensus de la foto más reciente.
+- La página no calcula: el pipeline precalcula cada rango contiguo de fotos medidas (n·(n+1)/2; 55 con 10 fotos) guardando solo índices de receta, y el forecast de la foto actual una vez por (código, receta) usada. El rango se recuerda en el navegador.
+
 ### Sección "Decisiones" — rejilla 2 × 2
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.
 - **Las cuatro tarjetas exactamente del mismo tamaño y alineadas.** Los prototipos fallaron aquí: usar un tamaño fijo en px para el lienzo de cada brújula y una altura fija para los títulos.
@@ -268,6 +274,7 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Dos trayectorias por foto: gris discontinua = lo que pasó (Consensus real), azul = mejor receta. La distancia entre ambas es lo que se habría ganado.
   - Debajo, los valores de la última foto.
 - Cuarto cuadro: cómo leerlas.
+- **Minimizar:** botón en la cabecera de la sección. Minimizada, solo queda un recuadro pequeño con los highlights de la última foto medida del rango: WAPE 9M y SPP de la receta (o regla) y del Consensus, y cuántos pp habría ganado la receta.
 - Escalas fijas para comparar códigos. Si un valor sale del rango, dibujarlo pegado al borde con un indicador.
 
 ### Sección "Detector"
