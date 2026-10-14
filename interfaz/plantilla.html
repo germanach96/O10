@@ -1203,11 +1203,18 @@ function dibujarMapa(){
     if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" data-k="${esc(d.hoja.ean)}-b" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
     return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
   };
-  // FLIP en coordenadas de PANTALLA: cada burbuja que ya estaba sale de donde se veía (con la cámara de antes) y llega a
-  // su sitio nuevo (con la cámara nueva). Solo se animan las que se ven; el resto cambia sin coste. WAAPI, solo transform.
+  // Coreografía al reordenar (skills animate + apple-design): 1) se van las que dejan de contar, 2) las que siguen se mueven
+  // a su sitio nuevo, 3) entran las nuevas. FLIP en coordenadas de PANTALLA y desde lo que se VE (getBoundingClientRect:
+  // incluye la flotación y una animación anterior a medio camino, así un segundo clic retoma sin saltos). Se animan
+  // TODAS las burbujas visibles con el mismo muelle, para que ninguna llegue antes que su grupo.
   const previas = new Map();
-  if (conAncla) $("mundo").querySelectorAll("circle[data-k]").forEach(c => { const x = +c.getAttribute("cx"), y = +c.getAttribute("cy"), r = +c.getAttribute("r"), k = ancla.cam;
-    previas.set(c.dataset.k, {sx: x * k.k + k.tx, sy: y * k.k + k.ty, sr: r * k.k, el: c}); });
+  if (conAncla) {
+    const lr0 = $("lienzo").getBoundingClientRect(), e0 = W / (lr0.width || W);
+    $("mundo").querySelectorAll("circle[data-k]").forEach(c => { const b = c.getBoundingClientRect();
+      previas.set(c.dataset.k, {sx: (b.left + b.width / 2 - lr0.left) * e0, sy: (b.top + b.height / 2 - lr0.top) * e0, sr: b.width / 2 * e0, el: c}); });
+    $("mundo").getAnimations({subtree: true}).forEach(a => a.cancel());
+  }
+  $("fantasmas").innerHTML = "";
   M.W0 = W;
   $("mundo").innerHTML = pinta(raiz);
   if (ancla) {
@@ -1218,35 +1225,47 @@ function dibujarMapa(){
     // sin transición y sin forzar un reflow: la transición CSS de la cámara se repone en el fotograma siguiente
     const g = $("mundo"); g.style.transition = "none"; aplicarCam(); requestAnimationFrame(() => requestAnimationFrame(() => { g.style.transition = ""; }));
   }
-  if (previas.size && !reducir.matches) {
-    const curva = getComputedStyle(document.documentElement).getPropertyValue("--muelle").trim() || "ease-out";
+  M.coreo = 0;
+  if (previas.size) {
     const lr = $("lienzo").getBoundingClientRect(), mr = document.querySelector("#vistaInicio .mapa").getBoundingClientRect(), e = W / (lr.width || W);
-    const vis = {x0: (mr.left - lr.left) * e - 40, x1: (mr.right - lr.left) * e + 40, y0: (mr.top - lr.top) * e - 40, y1: (mr.bottom - lr.top) * e + 40};
-    const seVe = (x, y, r) => x + r > vis.x0 && x - r < vis.x1 && y + r > vis.y0 && y - r < vis.y1 && r > 0.8;
-    // presupuesto: como mucho ~240 animaciones a la vez (las burbujas más grandes en pantalla, con su brillo); las diminutas
-    // cambian sin animar. Cientos de animaciones SVG a la vez se comen el fotograma en cualquier equipo.
+    const vis = {x0: (mr.left - lr.left) * e - 30, x1: (mr.right - lr.left) * e + 30, y0: (mr.top - lr.top) * e - 30, y1: (mr.bottom - lr.top) * e + 30};
+    const seVe = (x, y, r) => x + r > vis.x0 && x - r < vis.x1 && y + r > vis.y0 && y - r < vis.y1 && r > 0.4;
     const cam = M.cam, mover = [], entrar = [];
     $("mundo").querySelectorAll("circle[data-k]").forEach(c => {
       const o = previas.get(c.dataset.k);
       const x = +c.getAttribute("cx"), y = +c.getAttribute("cy"), r = +c.getAttribute("r") || 1, sx = x * cam.k + cam.tx, sy = y * cam.k + cam.ty, sr = r * cam.k;
-      if (!o) { if (seVe(sx, sy, sr)) entrar.push({c, t: sr}); return; }
+      if (!o) { if (seVe(sx, sy, sr)) entrar.push(c); return; }
       previas.delete(c.dataset.k);
       if (!seVe(sx, sy, sr) && !seVe(o.sx, o.sy, o.sr)) return;
-      if (Math.abs(o.sx - sx) < .5 && Math.abs(o.sy - sy) < .5 && Math.abs(o.sr - sr) < .5) return;
-      mover.push({c, o, sx, sy, sr, t: Math.max(sr, o.sr)});
+      if (Math.abs(o.sx - sx) < .4 && Math.abs(o.sy - sy) < .4 && Math.abs(o.sr - sr) < .4) return;
+      mover.push({c, d: `translate(${((o.sx - sx) / cam.k).toFixed(3)}px, ${((o.sy - sy) / cam.k).toFixed(3)}px) scale(${(o.sr / sr).toFixed(4)})`});
     });
-    mover.sort((a, b) => b.t - a.t).slice(0, 240).forEach(({c, o, sx, sy, sr}) =>
-      // el desplazamiento va en unidades del mundo (el grupo #mundo ya está escalado por la cámara nueva)
-      c.animate([{transform: `translate(${((o.sx - sx) / cam.k).toFixed(3)}px, ${((o.sy - sy) / cam.k).toFixed(3)}px) scale(${(o.sr / sr).toFixed(4)})`}, {transform: "none"}], {duration: 560, easing: curva}));
-    entrar.sort((a, b) => b.t - a.t).slice(0, 80).forEach(({c}) =>
-      c.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}], {duration: 240, delay: 140, easing: MOV.curva, fill: "backwards"}));
-    // las que desaparecen (tipos que dejan de contar) se desvanecen donde se veían, en un clon fuera del mundo escalado
-    const fant = $("fantasmas"); fant.innerHTML = "";
-    let n = 0;
-    [...previas.values()].sort((a, b) => b.sr - a.sr).forEach(o => { if (o.el.classList.contains("brillo") || !seVe(o.sx, o.sy, o.sr) || n++ > 80) return;
-      const c = o.el.cloneNode(); c.removeAttribute("data-k"); c.removeAttribute("data-i"); c.setAttribute("cx", o.sx.toFixed(2)); c.setAttribute("cy", o.sy.toFixed(2)); c.setAttribute("r", o.sr.toFixed(2));
-      fant.appendChild(c);
-      c.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: "scale(.9)"}], {duration: 200, easing: "ease-out", fill: "forwards"}).onfinish = () => c.remove(); });
+    const salen = [...previas.values()].filter(o => seVe(o.sx, o.sy, o.sr));
+    if (reducir.matches) {
+      // movimiento reducido: sin desplazamientos, solo un fundido corto de lo nuevo
+      entrar.forEach(c => c.animate([{opacity: 0}, {opacity: 1}], {duration: 180, easing: "ease"}));
+      M.coreo = 180;
+    } else {
+      // tiempos: salida corta (más rápida que la entrada), movimiento con el muelle críticamente amortiguado de la cámara
+      // y entrada cuando el movimiento ya casi se asentó (≈70%); si no hay fase previa, la siguiente empieza ya
+      const curva = getComputedStyle(document.documentElement).getPropertyValue("--muelle").trim() || "ease-out";
+      const T = {sal: 180, mov: 560, ent: 260};
+      const tMov = salen.length ? 120 : 0, tEnt = mover.length ? tMov + Math.round(T.mov * 0.7) : (salen.length ? 120 : 0);
+      // 1) las que se van: un clon en coordenadas de pantalla (fuera del mundo escalado) que se desvanece y encoge un poco
+      const fant = $("fantasmas");
+      salen.forEach(o => { const c = o.el.cloneNode(); c.removeAttribute("data-k"); c.removeAttribute("data-i"); c.classList.remove("encima", "activo");
+        c.setAttribute("cx", o.sx.toFixed(2)); c.setAttribute("cy", o.sy.toFixed(2)); c.setAttribute("r", o.sr.toFixed(2)); fant.appendChild(c);
+        c.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: "scale(.9)"}], {duration: T.sal, easing: MOV.curva, fill: "forwards"}).onfinish = () => c.remove(); });
+      // 2) las que siguen: esperan en su sitio de antes (fill backwards) y luego van todas juntas al nuevo
+      // los círculos de grupo (casa, brand, línea) se vuelven translúcidos mientras viajan (apple-design: los objetos grandes
+      // en movimiento no tapan lo que cruzan) y recuperan su cristal al llegar
+      mover.forEach(({c, d}) => c.animate(c.classList.contains("n-grupo")
+        ? [{transform: d, opacity: 1}, {opacity: .22, offset: .18}, {opacity: .22, offset: .78}, {transform: "none", opacity: 1}]
+        : [{transform: d}, {transform: "none"}], {duration: T.mov, delay: tMov, easing: curva, fill: "backwards"}));
+      // 3) las nuevas: ocultas hasta su turno, entran con fundido y escala 0,92 → 1 (nada aparece de la nada)
+      entrar.forEach(c => c.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}], {duration: T.ent, delay: tEnt, easing: MOV.curva, fill: "backwards"}));
+      M.coreo = Math.max(salen.length ? T.sal : 0, mover.length ? tMov + T.mov : 0, entrar.length ? tEnt + T.ent : 0);
+    }
   }
   M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
   marcarSeleccion();
@@ -1257,8 +1276,10 @@ function dibujarMapa(){
     setTimeout(() => $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = ""), 900);
     M.primera = false;
   } else $("mundo").querySelectorAll(".n-anim").forEach(c => c.style.transitionDelay = "");
-  if (ancla) { pintarMigas(); pintarPanel(); tocarCam(); } else enfocar(M.foco, false);
+  if (ancla) { pintarMigas(); pintarPanel(); } else enfocar(M.foco, false);
   aplicarFiltros();
+  // las etiquetas no se adelantan: aparecen cuando las burbujas ya llegaron
+  if (ancla) { $("etiquetas").classList.add("fuera"); clearTimeout(G.te); G.te = setTimeout(() => { pintarEtiquetas(); $("etiquetas").classList.remove("fuera"); marcarVerTodo(); }, (M.coreo || 0) + 60); }
 }
 
 // ================= Flotación =================
