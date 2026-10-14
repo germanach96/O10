@@ -35,7 +35,7 @@
   --r0:#6c6e75; --r1:#a37f00; --r2:#b86a00; --r3:#c4170c; --r4:#7a0012; --tinte:.62;
   --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#ffffff;
   --hueco:rgba(60,60,67,.38); --sinrec:rgba(255,255,255,.6);
-  --c-os:#af52de; --c-in:#30b0c7; --a-tipo:.34;
+  --c-os:#a2845e; --c-in:#32ade6; --a-tipo:.34;
   --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:transparent;
   --borde-burbuja:rgba(255,255,255,.85);
   --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
@@ -63,7 +63,7 @@
   --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
   --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
   --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
-  --c-os:#bf5af2; --c-in:#40c8e0; --a-tipo:.4;
+  --c-os:#ac8e68; --c-in:#64d2ff; --a-tipo:.4;
   --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
   --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
   color-scheme:dark;
@@ -84,7 +84,7 @@
     --r0:#a6a6aa; --r1:#ffe680; --r2:#ffc56b; --r3:#ff9c80; --r4:#ff8aa3; --tinte:.6;
     --t0:#f5f5f7; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
     --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
-    --c-os:#bf5af2; --c-in:#40c8e0; --a-tipo:.4;
+    --c-os:#ac8e68; --c-in:#64d2ff; --a-tipo:.4;
     --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
     --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
     color-scheme:dark;
@@ -328,7 +328,7 @@ main[hidden]{display:none}
 .n-hoja.sinrec{fill-opacity:1}
 .n-hoja[data-bin="3"]{fill-opacity:.74}.n-hoja[data-bin="4"]{fill-opacity:.9}
 .n-hoja.hueco{fill:transparent !important;stroke:var(--hueco);stroke-width:1}
-/* One Shot e innovaciones (meses 1-6): fuera de scope, pero con su propio color */
+/* One Shot (marrón) e innovaciones en sus meses 1-6 (cian): fuera de scope, con su propio color, discreto frente a la escala de desvío */
 .n-hoja.hueco.t-os{fill:var(--c-os) !important;fill-opacity:var(--a-tipo);stroke:var(--c-os);stroke-width:1.25}
 .n-hoja.hueco.t-in{fill:var(--c-in) !important;fill-opacity:var(--a-tipo);stroke:var(--c-in);stroke-width:1.25}
 .n-hoja.sinrec{stroke:var(--hueco);stroke-dasharray:2 2;stroke-width:1}
@@ -351,10 +351,11 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .etq.grupo .c{color:var(--label-2);font-weight:500;font-variant-numeric:tabular-nums}
 .etq.hoja{font-size:11.5px;font-weight:600;line-height:1.2}
 .etq.hoja .t{display:block;overflow:hidden;text-overflow:ellipsis}
-.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;margin-top:12px;color:var(--label-2);font-size:11.5px;font-weight:500;max-width:min(100%,calc(100dvh - 150px));padding:7px 14px;border-radius:999px}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:center;margin-top:12px;color:var(--label-2);font-size:11.5px;font-weight:500;max-width:calc(100% - 24px);padding:7px 14px;border-radius:18px;position:relative;z-index:2}
 .leyenda .it{display:flex;align-items:center;gap:5px}
 .leyenda .sw{width:10px;height:10px;border-radius:50%;display:inline-block}
 .leyenda .tam{display:none}
+@media (min-width:901px){#vistaInicio .leyenda{position:absolute;bottom:0;left:50%;transform:translateX(-50%);margin:0;width:max-content}}
 .leyenda .pista-gesto{color:var(--label-3);padding-right:6px;border-right:1px solid var(--sep)}
 
 .hoja-ins{position:absolute;z-index:12;top:84px;right:0;bottom:12px;width:332px;border-radius:var(--r-xl);display:flex;flex-direction:column;overflow:hidden}
@@ -1559,12 +1560,12 @@ $("ladoBrands").addEventListener("click", ev => {
 $("ladoBrands").addEventListener("keydown", ev => { if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains("fila")) { ev.preventDefault(); ev.target.click(); } });
 
 function pintarLeyenda(){
-  $("leyenda").innerHTML = `<span class="it pista-gesto">${matchMedia("(pointer: coarse)").matches ? "Arrastra para moverte · pellizca para acercar" : "Arrastra para moverte · rueda para acercar"}</span><span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
+  $("leyenda").innerHTML = `<span class="it pista-gesto">${matchMedia("(pointer: coarse)").matches ? "Arrastra · pellizca para acercar" : "Arrastra · rueda para acercar"}</span><span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
     + BINS.map((b, k) => `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(${b.v}) 62%,transparent);box-shadow:inset 0 0 0 1.25px var(--r${k})"></span>${b.txt}</span>`).join("")
     + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
     + `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(--c-os) 40%,transparent);border:1px solid var(--c-os)"></span>One Shot</span>`
-    + `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(--c-in) 40%,transparent);border:1px solid var(--c-in)"></span>Innovación 1-6 meses</span>`
-    + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Otros fuera de scope</span>`;
+    + `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(--c-in) 40%,transparent);border:1px solid var(--c-in)"></span>Innovación (1-6 m)</span>`
+    + `<span class="it"><span class="sw" style="border:1px solid var(--hueco)"></span>Otro fuera de scope</span>`;
 }
 
 function pintarChips(){
