@@ -258,6 +258,8 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - La página no calcula: el pipeline precalcula cada rango contiguo de fotos medidas (n·(n+1)/2; 55 con 10 fotos) guardando solo índices de receta, y el forecast de la foto actual una vez por (código, receta) usada. El rango se recuerda en el navegador.
 
 ### Detalle en 4 grupos
+- **Cabecera:** migas, título y, junto al título, un botón **?** con los detalles (tipo de regla o atributos del código, fotos medidas y avisos de las fotos). No se muestran de base: aparecen al pasar el puntero y, al pulsar el ?, quedan fijos hasta volver a pulsarlo, Escape o un clic fuera.
+- **Esquema de la selección** arriba de la columna de resumen (fija al hacer scroll): el mapa de burbujas completo en pequeño, con los códigos que entran en el reporte en azul (y un aro en el grupo o el código elegido) y "N de M códigos". Al pulsarlo vuelve al mapa enfocado en esa selección.
 - El detalle se agrupa en **cuatro grupos, y solo cuatro**: Foto actual, Decisiones, Resultados y Detector. No se parten en subsectores.
 - **Al abrir la página los cuatro empiezan plegados:** cada grupo deja su título y una tira de cristal con lo esencial (Foto actual: desvío, % sobre la receta, meses o códigos fuera; Decisiones: la receta elegida; Resultados: WAPE90 y WAPE 9M de la receta frente al Consensus y la mejora; Detector: EANs fuera, desvío total y el mayor). Al pulsar el título o la tira, el grupo se expande (la tira crece hasta ser el contenido, View Transition con curva de cajón de iOS) y su cabecera no se mueve en pantalla. Botón "Expandir todo" / "Plegar todo" junto al título. El índice lateral abre el grupo antes de ir a él.
 

@@ -265,8 +265,33 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 /* resultados por sectores */
 /* ---- Detalle en 4 grupos (Foto actual, Decisiones, Resultados, Detector). Al abrir, todos plegados: cada grupo
    deja su título y una tira de cristal con lo esencial; la tira se convierte en el contenido al expandir. ---- */
-.det-tit{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.det-tit .plegar{flex:none;margin-top:6px}
+.det-tit{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.det-tit-txt{position:relative;min-width:0;flex:1}
+.det-tit-txt .plegar{margin-top:2px}
+/* "?" junto al título: los detalles (regla, fotos, avisos) solo aparecen al pasar el puntero o al pulsarlo (queda fijo) */
+.ayuda{display:inline-grid;place-items:center;width:24px;height:24px;margin:0 0 0 10px;padding:0;border:0;border-radius:50%;vertical-align:.32em;background:var(--fill);color:var(--label-2);font:600 14px/1 var(--font);letter-spacing:0;cursor:pointer;transition:background-color 140ms ease,color 140ms ease,transform 140ms var(--ease-out)}
+.ayuda::before{content:"?"}
+.ayuda:active{transform:scale(.92)}
+.ayuda[aria-expanded="true"]{background:var(--blue);color:var(--on-blue)}
+@media (hover:hover) and (pointer:fine){.ayuda:hover{background:var(--fill-2);color:var(--label)}.ayuda[aria-expanded="true"]:hover{background:var(--blue);color:var(--on-blue)}}
+.ayuda:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.info-pop{position:absolute;z-index:20;left:0;top:auto;margin-top:-4px;width:min(640px,100%);padding:14px 16px;border-radius:var(--r-l);opacity:0;visibility:hidden;transform:translateY(-4px) scale(.98);transform-origin:top left;transition:opacity 160ms var(--ease-out),transform 160ms var(--ease-out),visibility 0s linear 160ms;pointer-events:none}
+.info-pop.ver{opacity:1;visibility:visible;transform:none;transition:opacity 160ms var(--ease-out),transform 160ms var(--ease-out),visibility 0s;pointer-events:auto}
+.info-pop.fijo{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--blue) 45%,transparent),var(--sombra-cristal,0 10px 30px rgba(0,0,0,.12))}
+/* esquema del mapa completo con los círculos que entran en este reporte */
+.mini-mapa{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;margin:0 0 14px;padding:4px 0 12px;border:0;border-bottom:1px solid var(--sep);border-radius:0;background:transparent;color:var(--label-2);font:inherit;cursor:pointer;transition:transform 160ms var(--ease-out)}
+.mini-mapa:active{transform:scale(.97)}
+.mini-mapa svg{width:150px;height:150px;display:block;overflow:visible}
+.mini-mapa .mm-t{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;text-align:center;line-height:1.3}
+.mini-mapa .mm-t b{color:var(--label)}
+.mini-mapa circle{vector-effect:non-scaling-stroke}
+.mm-grupo{fill:var(--b-brand);stroke:var(--borde-burbuja);stroke-width:.6}
+.mm-casa{fill:var(--b-casa);stroke:var(--borde-burbuja);stroke-width:.8}
+.mm-fuera{fill:var(--label-3);fill-opacity:.22}
+.mm-dentro{fill:var(--blue);fill-opacity:.92}
+.mm-marco{fill:none;stroke:var(--blue);stroke-width:1.6}
+@media (hover:hover) and (pointer:fine){.mini-mapa:hover .mm-t{color:var(--blue-txt)}}
+@media (prefers-reduced-motion:reduce){.info-pop{transform:none !important}}
 .sec-cab{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;-webkit-user-select:none;user-select:none}
 .seccion > .sec-cab h2{font-family:var(--font-display);font-weight:700;font-size:24px;letter-spacing:-.025em;line-height:1.2;margin:0 0 2px}
 .plegar{display:inline-flex;align-items:center;gap:6px;font-size:13px}
@@ -559,8 +584,11 @@ details[open] summary::before{transform:rotate(45deg)}
   .barra{position:sticky;top:0;right:0;padding:max(12px,env(safe-area-inset-top)) 12px 8px;flex-wrap:wrap;align-items:center}
   .barra.titulo-oculto .titulo{display:none}
   .sec-mini{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;padding:12px 14px}
-  .det-tit{flex-direction:column;gap:4px}
-  .det-tit .plegar{margin:0 0 6px}
+  .det-tit{gap:12px}
+  .det-tit-txt .plegar{margin:0 0 6px}
+  .mini-mapa{flex-direction:row;justify-content:flex-start;gap:14px;text-align:left}
+  .mini-mapa svg{width:96px;height:96px}
+  .mini-mapa .mm-t{text-align:left}
   .barra.compacta .capsulas,.barra.compacta .rango .presets,.barra.compacta .rango .t,.barra.compacta .rango .r small{display:none}
   .barra.compacta h1{font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .barra.compacta .titulo{min-width:0;flex:1}
@@ -783,10 +811,14 @@ details[open] summary::before{transform:rotate(45deg)}
 <main id="vistaDetalle" hidden tabindex="-1">
   <div class="det-cab">
     <button type="button" class="enlace volver" id="volver">Mapa</button>
-    <div class="det-migas" id="detMigas"></div>
-    <div class="det-tit"><h1 id="detTitulo"></h1>
-      <button type="button" class="btn btn-fant plegar" id="plegarTodo" aria-expanded="false"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg><span>Expandir todo</span></button></div>
-    <div class="info" id="info"></div>
+    <div class="det-tit">
+      <div class="det-tit-txt">
+        <div class="det-migas" id="detMigas"></div>
+        <h1 id="detTitulo"><span id="detTituloTxt"></span><button type="button" class="ayuda" id="btnInfo" aria-expanded="false" aria-controls="info" aria-label="Detalles: regla, fotos y avisos"></button></h1>
+        <div class="info info-pop vidrio" id="info" role="dialog" aria-label="Detalles de la selección"></div>
+        <button type="button" class="btn btn-fant plegar" id="plegarTodo" aria-expanded="false"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg><span>Expandir todo</span></button>
+      </div>
+    </div>
   </div>
 
   <div class="det-cuerpo">
@@ -861,7 +893,10 @@ details[open] summary::before{transform:rotate(45deg)}
   </section>
   <div class="notas" id="notas"></div>
   </div>
-  <aside class="rail vidrio" id="rail" aria-label="Resumen"></aside>
+  <aside class="rail vidrio" aria-label="Resumen">
+    <button type="button" class="mini-mapa" id="miniMapa" aria-label="Ver la selección en el mapa"><svg id="miniSvg" aria-hidden="true"></svg><span class="mm-t" id="miniTxt"></span></button>
+    <div id="rail"></div>
+  </aside>
   </div>
 </main>
   </div>
@@ -2506,10 +2541,65 @@ function info(){
   h += `<br>Fotos: ${v.fotos.map(f => f.foto + (f.hay_tramos_cerrados ? " (medida)" : " (actual)")).join(" · ")}. ` +
        v.fotos.flatMap(f => f.avisos.map(a => `<span class="aviso">${f.foto}: ${esc(a)}</span>`)).join(" · ");
   $("info").innerHTML = h;
-  $("detTitulo").textContent = titulo;
+  $("detTituloTxt").textContent = titulo;
+  pintarMiniMapa();
   $("detMigas").innerHTML = migas.map((m, i) => `${i ? '<span style="color:var(--label-3)">/</span>' : ""}<button type="button" data-sel="${esc(m[0])}" ${i === migas.length - 1 ? 'aria-current="true"' : ""} ${m[0].startsWith("R|") && !existeRegla(m[0].slice(2)) ? "disabled" : ""}>${esc(m[1])}</button>`).join("");
   $("decSub").textContent = `Inputs ganadores en cada foto medida (${fotosCerradas().map(f => f.foto).join(", ")}).`;
 }
+
+// ---- Esquema del mapa en la cabecera del detalle: el mapa completo, con los códigos de este reporte en azul ----
+function eansDelReporte(){
+  if (!esRegla()) return [estado.sel];
+  if (esSel()) return miembros();
+  const ini = casa().inicio.codigos;
+  return eansDeClave(estado.sel.slice(2)).filter(e => !ini[e] || cuenta(ini[e]));
+}
+function pintarMiniMapa(){
+  const svg = $("miniSvg");
+  if (!M.raiz) { $("miniMapa").hidden = true; return; }
+  $("miniMapa").hidden = false;
+  const set = new Set(eansDelReporte()), claves = new Set(esSel() ? estado.sel.slice(2).split("¦") : esRegla() ? [estado.sel.slice(2)] : []);
+  const t = transformDe(M.raiz), S = M.W;
+  let h = "", n = 0, mar = [];
+  M.nodos.forEach(nd => {
+    if (!nd.depth) return;
+    const d = nd.data, x = nd.x.toFixed(1), y = nd.y.toFixed(1), r = Math.max(nd.r, .5).toFixed(1);
+    if (d.nivel === "hoja") { const si = set.has(d.hoja.ean); if (si) n++; h += `<circle class="${si ? "mm-dentro" : "mm-fuera"}" cx="${x}" cy="${y}" r="${r}"/>`; }
+    else h += `<circle class="${d.nivel === "casa" ? "mm-casa" : "mm-grupo"}" cx="${x}" cy="${y}" r="${r}"${d.nivel === "pl" ? ' style="fill:none;stroke-opacity:.5"' : ""}/>`;
+    // marco azul en los grupos elegidos y, si es un código, un anillo visible aunque la burbuja sea diminuta
+    if (claves.has(d.clave) && d.nivel !== "casa") mar.push(`<circle class="mm-marco" cx="${x}" cy="${y}" r="${(nd.r + 3 / t.k).toFixed(1)}"/>`);
+    if (!esRegla() && d.hoja && d.hoja.ean === estado.sel) mar.push(`<circle class="mm-marco" cx="${x}" cy="${y}" r="${Math.max(nd.r + 3 / t.k, 7 / t.k).toFixed(1)}"/>`);
+  });
+  // encuadre: el mapa completo (lo que hay dentro de la raíz)
+  svg.setAttribute("viewBox", `${(-t.tx / t.k).toFixed(1)} ${(-t.ty / t.k).toFixed(1)} ${(S / t.k).toFixed(1)} ${(S / t.k).toFixed(1)}`);
+  svg.innerHTML = h + mar.join("");
+  const tot = M.hojas.length;
+  $("miniTxt").innerHTML = esRegla() ? `<b>${n}</b> de ${tot} códigos<br>Ver en el mapa` : `1 código de ${tot}<br>Ver en el mapa`;
+}
+$("miniMapa").addEventListener("click", () => {
+  // vuelve al mapa enfocado en lo que se está viendo
+  const k = esSel() ? null : esRegla() ? estado.sel.slice(2) : null;
+  const n = k ? M.nodos.find(x => x.data.clave === k) : !esRegla() ? M.nodos.find(x => x.data.hoja && x.data.hoja.ean === estado.sel) : null;
+  location.hash = "inicio";
+  setTimeout(() => { if (!n) return; if (n.data.hoja) { enfocar(n.parent); seleccionar(n.data.hoja.ean); } else enfocar(n); }, 280);
+});
+// ---- "?" del título: al pasar el puntero se ve; al pulsarlo queda fijo hasta volver a pulsarlo, Escape o un clic fuera ----
+(function(){
+  const b = $("btnInfo"), pop = $("info"); let t = 0, fijo = false;
+  const ver = v => { pop.classList.toggle("ver", v); };
+  const fijar = v => { fijo = v; pop.classList.toggle("fijo", v); b.setAttribute("aria-expanded", String(v)); ver(v); };
+  const fino = matchMedia("(hover: hover) and (pointer: fine)");
+  b.addEventListener("pointerenter", () => { if (!fino.matches || fijo) return; clearTimeout(t); t = setTimeout(() => ver(true), 90); });
+  b.addEventListener("pointerleave", () => { if (fijo) return; clearTimeout(t); t = setTimeout(() => ver(false), 140); });
+  pop.addEventListener("pointerenter", () => { if (!fijo) clearTimeout(t); });
+  pop.addEventListener("pointerleave", () => { if (!fijo) t = setTimeout(() => ver(false), 140); });
+  b.addEventListener("focus", () => { if (!fijo && b.matches(":focus-visible")) ver(true); });
+  b.addEventListener("blur", () => { if (!fijo) ver(false); });
+  b.addEventListener("click", ev => { ev.stopPropagation(); clearTimeout(t); fijar(!fijo); });
+  document.addEventListener("click", ev => { if (fijo && !pop.contains(ev.target)) fijar(false); });
+  document.addEventListener("keydown", ev => { if (ev.key === "Escape" && pop.classList.contains("ver")) { fijar(false); b.focus(); } });
+  window.addEventListener("hashchange", () => fijar(false));
+})();
 
 $("calor").checked = CALOR;
 $("calor").addEventListener("change", () => {
