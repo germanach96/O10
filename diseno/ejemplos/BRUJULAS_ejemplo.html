@@ -20,6 +20,7 @@
   --mancha-1:#ffffff; --mancha-2:#c6cad1; --mancha-3:#fafbfc; --mancha-4:#babfc7;
   /* cristal */
   --cristal:rgba(255,255,255,.46); --cristal-fuerte:rgba(255,255,255,.72);
+  --sombra-nivel:#000; --velo-nivel:#fff; --k-velo:2.7;
   --borde-cristal:rgba(255,255,255,.66); --brillo-cristal:rgba(255,255,255,.9);
   --sombra-cristal:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);
   --blur:28px;
@@ -50,7 +51,7 @@
 }
 :root[data-theme="dark"]{
   --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
-  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
+  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78); --sombra-nivel:#fff; --velo-nivel:#000; --k-velo:2.4;
   --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
   --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
   --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141414;
@@ -71,7 +72,7 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
-    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
+    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78); --sombra-nivel:#fff; --velo-nivel:#000; --k-velo:2.4;
     --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
     --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
     --card:#2c2c2e; --card-2:rgba(255,255,255,.07); --bg:#141414;
@@ -95,6 +96,14 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--fondo);color:var(--label);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;overflow:hidden;caret-color:var(--blue);-webkit-tap-highlight-color:transparent}
+/* Profundidad por nivel: una capa fija sobre el papel tapiz oscurece (claro) o aclara (oscuro) el fondo según lo hondo
+   que se esté: Todas las casas = nada; EAN = lo más lejos. Solo cambia la opacidad de UNA capa (compuesta en GPU), con una
+   curva larga y suave. Los paneles de cristal llevan un velo inverso con la misma curva, así los menús no cambian de tono. */
+:root{--o-nivel:0}
+:root[data-nivel="1"]{--o-nivel:.045} :root[data-nivel="2"]{--o-nivel:.09} :root[data-nivel="3"]{--o-nivel:.135} :root[data-nivel="4"]{--o-nivel:.18}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-nivel="1"]{--o-nivel:.025} :root:not([data-theme="light"])[data-nivel="2"]{--o-nivel:.05} :root:not([data-theme="light"])[data-nivel="3"]{--o-nivel:.075} :root:not([data-theme="light"])[data-nivel="4"]{--o-nivel:.1}}
+:root[data-theme="dark"][data-nivel="1"]{--o-nivel:.025} :root[data-theme="dark"][data-nivel="2"]{--o-nivel:.05} :root[data-theme="dark"][data-nivel="3"]{--o-nivel:.075} :root[data-theme="dark"][data-nivel="4"]{--o-nivel:.1}
+#sombraNivel{position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--sombra-nivel);opacity:var(--o-nivel);transition:opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)}
 /* el "papel tapiz": manchas grises muy suaves, difuminadas y quietas (nada de fondos en movimiento) */
 body::before{content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
   background:
@@ -120,8 +129,9 @@ button{cursor:default}
 svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
 /* ============ Material de cristal ============ */
-.vidrio{position:relative;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);
+.vidrio{position:relative;isolation:isolate;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);
   border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),inset 0 -1px 1px rgba(255,255,255,.08),var(--sombra-cristal)}
+.vidrio::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:var(--velo-nivel);opacity:min(.9, calc(var(--o-nivel) * var(--k-velo)));transition:opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1)}
 /* reflejo especular en el borde superior, como el cristal líquido */
 .vidrio::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:linear-gradient(160deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.12) 100%);mix-blend-mode:soft-light}
@@ -351,7 +361,9 @@ main[hidden]{display:none}
 .niv-seg button[aria-disabled="true"]{color:var(--label-3);cursor:default}
 .niv-seg button[aria-pressed="true"]{color:var(--label)}
 @media (hover:hover) and (pointer:fine){.niv-seg button:not([aria-disabled="true"]):not([aria-pressed="true"]):hover{color:var(--blue-txt)}}
-#mundo circle.n-grupo.objetivo{stroke:var(--blue);stroke-width:2;stroke-opacity:.9}
+#mundo circle.n-grupo.objetivo{stroke:var(--blue);stroke-width:1.75;stroke-opacity:.55}
+/* el nivel en el que se está (foco) lleva un aro azul firme; el EAN elegido, aro grueso y un halo suave */
+#mundo circle.n-grupo.foco{stroke:var(--blue);stroke-width:2.5;stroke-opacity:.95;transition:stroke-width 260ms var(--ease-out),stroke-opacity 260ms ease}
 /* "Ver todo": vuelve al encuadre completo con el muelle de la cámara */
 .ver-todo{position:absolute;z-index:3;top:6px;right:12px;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 12px;border:0;border-radius:999px;color:var(--label);font:600 13px/1 var(--font);cursor:pointer;transition:transform 140ms var(--ease-out),opacity 200ms ease}
 .ver-todo .ico{width:14px;height:14px}
@@ -382,7 +394,7 @@ main[hidden]{display:none}
 g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) .brillo{opacity:0}
 #mundo circle.apagado{opacity:.16}
 #mundo circle.n-hoja.apagado:not(.hueco){fill:var(--d-apag) !important;fill-opacity:.12;stroke:var(--hueco);stroke-width:.75}
-#mundo circle.activo{stroke:var(--blue);stroke-width:3}
+#mundo circle.activo{stroke:var(--blue);stroke-width:3.5;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--blue) 70%,transparent)) drop-shadow(0 0 10px color-mix(in srgb,var(--blue) 35%,transparent))}
 /* la burbuja señalada crece un poco (respuesta al puntero, 200 ms ease-out) */
 @media (hover:hover) and (pointer:fine){#mundo circle.n-hoja.encima{transform:scale(1.07);stroke:#ffffff;stroke-width:2.5;transition:transform 200ms var(--ease-out),stroke 140ms ease,opacity 220ms ease,fill 220ms ease}}
 .entrando #mundo .n-hoja,.entrando #mundo .n-pl,.entrando #mundo .n-brand,.entrando #mundo .brillo{opacity:0}
@@ -690,6 +702,7 @@ details[open] summary::before{transform:rotate(45deg)}
 </style>
 </head>
 <body>
+<div id="sombraNivel" aria-hidden="true"></div>
 <a class="saltar" href="#vistas">Saltar al contenido</a>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -1313,6 +1326,7 @@ function dibujarMapa(){
     }
   }
   M.els = []; $("mundo").querySelectorAll("circle[data-i]").forEach(c => M.els[+c.dataset.i] = c);
+  marcarFoco();
   marcarSeleccion();
   prepararFlotacion();
   if (M.primera) {
@@ -1828,6 +1842,18 @@ function destinoClic(n){
   return {tipo: sig.data.nivel === "hoja" ? "elegir" : "entrar", nodo: sig};
 }
 const NOMBRE_NIVEL = {todo: "Todas las casas", casa: "Casa", brand: "Brand", pl: "Línea", hoja: "EAN"};
+// profundidad del fondo: 0 todas las casas … 4 EAN (en el detalle, la de lo que se está viendo)
+function pintarFondoNivel(){
+  let n = 0;
+  if (!$("vistaDetalle").hidden) { const k = estado.sel || ""; n = !esRegla() ? 4 : esSel() ? 2 : k.startsWith("R|PL: ") ? 3 : k.startsWith("R|Brand: ") ? 2 : 1; }
+  else if (M.foco) n = M.sel ? 4 : {todo: 0, casa: 1, brand: 2, pl: 3}[M.foco.data.nivel] || 0;
+  if (document.documentElement.dataset.nivel !== String(n)) document.documentElement.dataset.nivel = String(n);
+}
+function marcarFoco(){
+  if (!M.els) return;
+  $("mundo").querySelectorAll("circle.foco").forEach(c => c.classList.remove("foco"));
+  if (M.foco && M.foco.depth) { const c = M.els[M.nodos.indexOf(M.foco)]; if (c) c.classList.add("foco"); }
+}
 // indicador: nivel actual (el EAN si hay uno elegido), niveles de arriba pulsables, de abajo apagados
 function pintarNivel(){
   if (!M.foco) return;
@@ -1836,6 +1862,7 @@ function pintarNivel(){
     b.setAttribute("aria-pressed", String(i === ia)); b.setAttribute("aria-disabled", String(i > ia));
     b.title = i < ia ? "Subir a " + NOMBRE_NIVEL[b.dataset.nv].toLowerCase() : i === ia ? "Estás aquí" : ""; });
   moverPulgar($("nivSeg"));
+  marcarFoco(); pintarFondoNivel();
 }
 $("nivSeg").addEventListener("click", ev => {
   const b = ev.target.closest("button[data-nv]"); if (!b || b.getAttribute("aria-disabled") === "true" || b.getAttribute("aria-pressed") === "true") return;
@@ -2052,6 +2079,8 @@ function irA(vista, sel){
   const cambio = () => {
     const ini = vista === "inicio";
     $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini;
+    if (!ini && sel) estado.sel = sel;
+    pintarFondoNivel();
     $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
     $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
     moverPulgar($("segVista"));
