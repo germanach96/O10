@@ -191,7 +191,7 @@ main[hidden]{display:none}
 .ficha .kpis div{display:flex;flex-direction:column;gap:6px}
 .ficha .kpis b{font-family:var(--font-display);font-weight:500;font-size:21px;letter-spacing:-.01em}
 .lista-cab{display:flex;justify-content:space-between;color:var(--mute);padding:10px 0;border-top:1px solid var(--hairline)}
-.lista{list-style:none;margin:0;padding:0 0 8px;overflow:auto;flex:1;min-height:120px}
+.lista{list-style:none;margin:0;padding:0 0 24px;overflow:auto;flex:1;min-height:120px;-webkit-mask-image:linear-gradient(#000 calc(100% - 28px),transparent);mask-image:linear-gradient(#000 calc(100% - 28px),transparent)}
 .lista li button{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:10px 8px;border-radius:var(--r-btn);transition:background-color 120ms ease}
 @media (hover:hover) and (pointer:fine){.lista li button:hover{background:var(--canvas)}}
 .lista li button[aria-current="true"]{background:var(--mist)}
@@ -242,6 +242,8 @@ th{color:var(--mute);font-weight:400;font-family:var(--font-mono);font-size:11px
 th.ord{cursor:pointer}
 @media (hover:hover) and (pointer:fine){th.ord:hover{color:var(--ink)}}
 td.izq,th.izq{text-align:left}
+td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
+#detector td.desc{white-space:normal;min-width:180px;max-width:260px}
 .matriz{table-layout:fixed;width:326px;margin-top:4px}
 .matriz td{text-align:center;height:42px;padding:2px;border:2px solid var(--paper);font-family:var(--font-mono);font-size:12px;cursor:default;position:relative;border-radius:6px}
 .matriz th{font-size:9.5px;padding:2px;white-space:normal;letter-spacing:.04em;line-height:1.2;border:0}
@@ -251,7 +253,6 @@ td.izq,th.izq{text-align:left}
 .pequeño{font-size:12.5px;color:var(--mute)}
 a.ean{color:var(--ink);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--hairline)}
 tr.fuera td.dv{color:var(--ember-ink);font-weight:700}
-tr.fuera td:first-child{box-shadow:inset 2px 0 0 var(--ember)}
 details summary{cursor:pointer;margin:10px 0;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--hairline);width:max-content;list-style:none;display:flex;align-items:center;gap:8px}
 details summary::-webkit-details-marker{display:none}
 details summary::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform 160ms var(--ease-out)}
@@ -613,6 +614,13 @@ function dibujarMapa(){
 }
 
 function transformDe(n){
+  if (n.depth === 0 && n.children) {
+    // en la raíz se encuadra lo que hay dentro (las brands), no el círculo vacío de la casa
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    n.children.forEach(c => { x0 = Math.min(x0, c.x - c.r); y0 = Math.min(y0, c.y - c.r); x1 = Math.max(x1, c.x + c.r); y1 = Math.max(y1, c.y + c.r); });
+    const k = M.W / (Math.max(x1 - x0, y1 - y0) * 1.08);
+    return {k, tx: M.W / 2 - (x0 + x1) / 2 * k, ty: M.W / 2 - (y0 + y1) / 2 * k};
+  }
   const k = M.W / (2 * n.r * 1.03);
   return {k, tx: M.W / 2 - n.x * k, ty: M.W / 2 - n.y * k};
 }
@@ -650,8 +658,15 @@ function pintarEtiquetas(){
   let h = "";
   // prefijo de palabras que comparten todos los códigos de la línea (p. ej. "GUCCI GUILT H"): no distingue, se quita
   const descs = (f.children || []).filter(n => n.data.nivel === "hoja").map(n => n.data.nombre.split(" "));
-  let pref = 0;
-  if (descs.length > 1) while (pref < descs[0].length - 1 && descs.every(d => d[pref] === descs[0][pref] && d.length > pref + 1)) pref++;
+  // palabras iniciales que repite la mayoría de la línea (p. ej. "GUCCI GUILT H"): no distinguen, se quitan
+  const comunes = new Set();
+  for (let i = 0; i < 4 && descs.length > 1; i++) {
+    const cnt = {}; descs.forEach(d => { if (d[i]) cnt[d[i]] = (cnt[d[i]] || 0) + 1; });
+    const [w, c] = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0] || [];
+    if (!w || c < descs.length * 0.5) break;
+    comunes.add(i + "|" + w);
+  }
+  const limpio = d => { const ws = d.split(" "); let i = 0; while (i < ws.length - 1 && comunes.has(i + "|" + ws[i])) i++; return ws.slice(i).join(" "); };
   (f.children || []).slice().sort((a, b) => b.r - a.r).forEach(n => {
     const p = aEscala(n);
     if (n.data.nivel === "hoja") {
@@ -661,7 +676,7 @@ function pintarEtiquetas(){
       if (!libre(rc)) return; puestos.push(rc);
       // color del texto por tramo y tema, para pasar AA sobre el relleno de la burbuja
       const col = x.sinrec ? "var(--ink)" : `var(--t${binDe(x.p)})`;
-      h += `<div class="etq hoja" style="left:${p.x * k}px;top:${p.y * k}px;max-width:${w}px;color:${col}"><span class="t">${esc(n.data.nombre.split(" ").slice(pref).join(" "))}</span></div>`;
+      h += `<div class="etq hoja" style="left:${p.x * k}px;top:${p.y * k}px;max-width:${w}px;color:${col}"><span class="t">${esc(limpio(n.data.nombre))}</span></div>`;
     } else {
       if (p.r < 42) return;
       const hs = n.leaves().map(l => l.data.hoja), vis = hs.filter(coincide).length;
@@ -982,7 +997,7 @@ function mediaBrujula(id, ventana){
     <rect x="${X(-CFG.metas.spp_abs_max)}" y="${Y(CFG.metas.wape_max)}" width="${X(CFG.metas.spp_abs_max)-X(-CFG.metas.spp_abs_max)}" height="${base-Y(CFG.metas.wape_max)}" fill="var(--meta)"/>
     <line x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--forest)" stroke-dasharray="4 3"/>
     <line x1="${cx}" y1="${base}" x2="${cx}" y2="15" stroke="var(--hairline)"/>
-    <text x="${cx-R+40}" y="${Y(CFG.metas.wape_max)-4}" text-anchor="start" style="fill:var(--ok)">WAPE 40%</text>
+    <text x="${cx-R}" y="${Y(CFG.metas.wape_max)+13}" text-anchor="start" style="fill:var(--ok)">WAPE 40%</text>
     <text x="${cx-R}" y="${base+15}">-30% sobre-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+30% bajo-forecast</text>
     <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx+4}" y="24">WAPE 60%</text>`;
   const series = [["kpi_consensus", "var(--cons)", "4 3", "Consensus real"], ["kpi_receta", "var(--receta)", "", esRegla() ? "Regla del grupo" : "Mejor receta (oráculo)"]];
@@ -1132,7 +1147,9 @@ function detector(){
     if (!rec) { sinReceta++; return; }
     const ev = evaluar(rec.fc, r.consensus, tol);
     const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + e.R, 0);
-    const meses = ev.map((e, i) => e.dev > 0.5 ? det.meses[i].slice(2) + (e.C > e.hi ? " alto" : " bajo") : null).filter(Boolean);
+    const fm = (f) => ev.map((e, i) => e.dev > 0.5 && f(e) ? det.meses[i].slice(5) : null).filter(Boolean);
+    const bajo = fm(e => e.C < e.lo), alto = fm(e => e.C > e.hi);
+    const meses = [bajo.length ? "Bajo " + bajo.join(" ") : "", alto.length ? "Alto " + alto.join(" ") : ""].filter(Boolean);
     filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
   const fuera = filas.filter(x => x.u > 0.5).length;
@@ -1146,9 +1163,9 @@ function detector(){
   let h = `<table><tr><th class="izq">EAN</th><th class="izq">Descripción</th><th class="izq">Brand</th><th class="izq">Edad</th>${th("sR","Σ Receta")}${th("sC","Σ Consensus")}${th("u","Desvío uds")}${th("p","Desvío %")}<th class="izq">Meses fuera</th><th class="izq">Grupo del trend</th></tr>`;
   const tope = estado.detTodos ? vis.length : 30;
   vis.slice(0, tope).forEach(x => {
-    h += `<tr><td class="izq"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq">${esc(x.r.desc)}</td><td class="izq">${esc(corto(x.r.brand))}</td><td class="izq">${x.r.edad}</td>
-      <td>${num(x.sR)}</td><td>${num(x.sC)}</td><td><b>${num(x.u)}</b></td><td>${pct(x.p)}</td><td class="izq pequeño">${x.meses.join(" ")}</td>
-      <td class="izq pequeño" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
+    h += `<tr><td class="izq"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a></td><td class="izq desc">${esc(x.r.desc)}</td><td class="izq">${esc(corto(x.r.brand))}</td><td class="izq">${x.r.edad}</td>
+      <td>${num(x.sR)}</td><td>${num(x.sC)}</td><td><b>${num(x.u)}</b></td><td>${pct(x.p)}</td><td class="izq pequeño meses">${x.meses.join("<br>")}</td>
+      <td class="izq pequeño meses" title="${recetaTxt(x.rec.txt)}">${x.rec.txt.grupo}${x.rec.sin_trend ? " (sin trend hoy)" : ""}</td></tr>`;
   });
   if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--mute)">Ningún EAN se sale de su estrategia con esta tolerancia.</td></tr>`;
   $("detector").innerHTML = h + "</table>" + (vis.length > tope ? `<p><button type="button" class="btn btn-fant mono" id="detMas">Ver los ${vis.length} EANs</button></p>` : "");
