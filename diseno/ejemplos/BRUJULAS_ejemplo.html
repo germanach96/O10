@@ -402,6 +402,8 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 .tarjeta svg text.num-calor{fill:var(--label) !important;opacity:1 !important;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
 .calor-img{image-rendering:auto}
 svg [data-k]{transform-box:fill-box;transform-origin:center}
+.calor-img{transform-box:fill-box;transform-origin:center}
+svg[data-pendiente] [data-k],svg[data-pendiente] .calor-img,svg[data-pendiente] .cods,svg[data-pendiente] .en-celda,svg[data-pendiente] .datos{opacity:0}
 .elegidaTxt{color:var(--blue-txt);font-weight:600}
 .bueno{color:var(--green-txt)} .malo{color:var(--red-txt)}
 .pequeño{font-size:12px;color:var(--label-2)}
@@ -1463,13 +1465,23 @@ function irA(vista, sel){
     document.querySelectorAll("#pestanas button").forEach(b => b.setAttribute("aria-current", (ini ? b.dataset.tab === "mapa" : b.dataset.tab === "detalle") ? "page" : "false"));
     ocultarTip();
     if (ini) arrancarFlotacion();
-    if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false; pintar(); $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"}); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
+    if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false;
+      // al llegar desde el mapa no se vio el detalle anterior: todos los gráficos se construyen de cero
+      if (actual !== "detalle") document.querySelectorAll("#vistaDetalle [data-dibujado]").forEach(e => delete e.dataset.dibujado);
+      $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"});
+      pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esRegla() ? "Regla del grupo" : "Código " + estado.sel}</span>`; }
     else { $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
     bordeBarra();
   };
   const actual = $("vistaInicio").hidden ? "detalle" : "inicio";
   if (actual === vista && !sel) return;
-  if (document.startViewTransition && !reducir.matches && actual !== vista) document.startViewTransition(cambio); else cambio();
+  // durante la transición de página no se pinta nada y el IntersectionObserver no ve los gráficos:
+  // al terminar se construyen a mano los que ya están en pantalla
+  if (document.startViewTransition && !reducir.matches && actual !== vista) document.startViewTransition(cambio).finished.then(revisarPendientes, revisarPendientes);
+  else { cambio(); requestAnimationFrame(revisarPendientes); }
+}
+function revisarPendientes(){
+  document.querySelectorAll("svg[data-pendiente]").forEach(svg => { if (enVista(svg)) { if (OBS) OBS.unobserve(svg); construir(svg); } else if (OBS) { OBS.unobserve(svg); OBS.observe(svg); } });
 }
 function abrirDetalle(sel){ location.hash = "detalle/" + encodeURIComponent(sel); }
 function leerHash(){
@@ -1616,7 +1628,51 @@ function pintarSVG(svg, html){
   const antes = capturar(svg), capas = [...svg.querySelectorAll(":scope > .calor-img, :scope > .cods, :scope > .en-celda")];
   const viejas = capas.map(c => c.cloneNode(true));
   svg.innerHTML = html;
-  transicion(svg, antes, {fundir: viejas});
+  presentar(svg, antes, viejas);
+}
+// ---- Construcción al llegar con el scroll ----
+// Un gráfico que está a la vista cuando cambia la selección se transforma (transicion). Uno que está fuera de la
+// vista se queda con su marco y sin datos, y se construye la primera vez que entra en pantalla (una sola vez por
+// selección, no en cada pasada). Propósito: explicación (se ve cómo se forma la serie). Ocasional.
+const enVista = el => { if (!el || !el.isConnected || el.closest("[hidden]")) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.top < innerHeight * 0.88 && r.bottom > innerHeight * 0.08; };
+const OBS = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting && e.intersectionRatio >= 0.3 && e.target.hasAttribute("data-pendiente")) { OBS.unobserve(e.target); construir(e.target); }
+}), {threshold: [0.3, 0.6]}) : null;
+function presentar(svg, antes, viejas, ancla = svg){
+  const sel = estado.sel + (CALOR ? "|calor" : ""), previo = ancla.dataset.dibujado, pendiente = svg.hasAttribute("data-pendiente");
+  ancla.dataset.dibujado = sel;
+  if (pendiente && OBS) { OBS.observe(svg); return; }   // sigue esperando su scroll
+  if (previo && (previo.split("|calor")[0] === estado.sel || enVista(svg))) { transicion(svg, antes, {fundir: viejas}); return; }
+  if (enVista(svg) || !OBS) { construir(svg); return; }
+  svg.setAttribute("data-pendiente", ""); OBS.observe(svg);
+}
+function construir(svg){
+  svg.removeAttribute("data-pendiente");
+  if (reducir.matches) { svg.animate([{opacity: .4}, {opacity: 1}], {duration: 200, easing: "ease"}); return; }
+  const io = "cubic-bezier(0.77, 0, 0.175, 1)";
+  // serie de la foto actual: barrido de izquierda a derecha; cada mes aparece cuando el barrido pasa por él
+  const datos = svg.querySelector(".datos");
+  if (datos) {
+    datos.animate([{clipPath: "inset(0 100% 0 0)"}, {clipPath: "inset(0 0 0 0)"}], {duration: 900, easing: io});
+    const cs = [...datos.querySelectorAll("circle, text")];
+    const W = svg.viewBox.baseVal && svg.viewBox.baseVal.width || 1000;
+    cs.forEach(c => { const x = +(c.getAttribute("cx") || c.getAttribute("x")) || 0;
+      c.animate([{opacity: 0, transform: "scale(.7)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: 900 * Math.min(1, x / W) * 0.85, easing: MOV.curva, fill: "backwards"}); });
+  }
+  svg.querySelectorAll(".calor-img").forEach(im => im.animate([{opacity: 0, transform: "scale(.97)"}, {opacity: 1, transform: "none"}], {duration: 520, easing: MOV.curva, fill: "backwards"}));
+  svg.querySelectorAll(".cods, .en-celda").forEach(g => g.animate([{opacity: 0}, {opacity: 1}], {duration: 420, delay: 120, easing: "ease", fill: "backwards"}));
+  // trayectorias: la línea se dibuja de la primera foto a la última; las discontinuas aparecen con un fundido
+  svg.querySelectorAll(":scope > polyline[data-k]").forEach(l => {
+    if (l.getAttribute("stroke-dasharray")) { l.animate([{opacity: 0}, {opacity: 1}], {duration: 500, delay: 200, easing: "ease", fill: "backwards"}); return; }
+    const L = l.getTotalLength ? l.getTotalLength() : 0; if (!L) return;
+    l.animate([{strokeDasharray: `${L} ${L}`, strokeDashoffset: L}, {strokeDasharray: `${L} ${L}`, strokeDashoffset: 0}], {duration: 700, easing: io});
+  });
+  // puntos en el orden de las fotos, celdas del selector por columnas, etiquetas al final
+  let i = 0;
+  svg.querySelectorAll(":scope > circle[data-k], :scope > path[data-k^='kpi'], :scope > g > circle[data-k]").forEach(c =>
+    c.animate([{opacity: 0, transform: "scale(.7)"}, {opacity: 1, transform: "none"}], {duration: 280, delay: 80 + Math.min(i++ * 55, 600), easing: MOV.curva, fill: "backwards"}));
+  svg.querySelectorAll("rect[data-k^='c-']").forEach((r, k) => r.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: (+r.dataset.k.slice(2) || 0) * 14, easing: MOV.curva, fill: "backwards"}));
+  svg.querySelectorAll("text[data-k^='l-']").forEach(t => t.animate([{opacity: 0}, {opacity: 1}], {duration: 240, delay: 700, easing: "ease", fill: "backwards"}));
 }
 
 // ---- Mapa de calor de los inputs elegidos: cuántas veces (fotos, o códigos × fotos en un grupo) la mejor
@@ -1643,45 +1699,54 @@ function turbo(t){
   const b = 27.2 + t * (3211.1 - t * (15327.97 - t * (27814 - t * (22569.18 - t * 6838.66))));
   return [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))));
 }
-// densidad gaussiana de los puntos {x, y, w} en un lienzo W×H; devuelve la imagen como data URL
+// Densidad de los puntos {x, y, w} en un lienzo W×H con rejilla de 1 px: cada punto cae en su píxel
+// (repartido entre los 4 vecinos) y el histograma se difumina con una gaussiana separable (filas y columnas).
+// Coste W·H·radio, independiente del nº de puntos, así que un grupo con 1.500 códigos × fotos sigue siendo instantáneo.
 function imagenCalor(pts, W, H, sigma){
-  const esc = 0.5, w = Math.ceil(W * esc), h = Math.ceil(H * esc), s2 = 2 * (sigma * esc) ** 2;
-  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
-  const ctx = cv.getContext("2d"), img = ctx.createImageData(w, h), d = new Float32Array(w * h);
-  let max = 0;
-  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-    let v = 0; for (const p of pts) { const dx = i - p.x * esc, dy = j - p.y * esc; v += p.w * Math.exp(-(dx * dx + dy * dy) / s2); }
-    d[j * w + i] = v; if (v > max) max = v;
+  const w = Math.ceil(W), h = Math.ceil(H), hist = new Float32Array(w * h), tmp = new Float32Array(w * h);
+  pts.forEach(p => {
+    const x = Math.max(0, Math.min(w - 1.001, p.x)), y = Math.max(0, Math.min(h - 1.001, p.y)), i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, m = p.w || 1;
+    hist[j * w + i] += m * (1 - fx) * (1 - fy); hist[j * w + i + 1] += m * fx * (1 - fy);
+    hist[(j + 1) * w + i] += m * (1 - fx) * fy; hist[(j + 1) * w + i + 1] += m * fx * fy;
+  });
+  const rad = Math.ceil(sigma * 3), k = new Float32Array(2 * rad + 1);
+  for (let t = -rad; t <= rad; t++) k[t + rad] = Math.exp(-(t * t) / (2 * sigma * sigma));
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {          // filas
+    let v = 0; for (let t = -rad; t <= rad; t++) { const ii = i + t; if (ii >= 0 && ii < w) v += hist[j * w + ii] * k[t + rad]; } tmp[j * w + i] = v;
   }
-  for (let k = 0; k < d.length; k++) {
-    const v = max ? d[k] / max : 0, [r, g, b] = turbo(0.1 + 0.88 * v);
-    const a = v < 0.03 ? 0 : Math.min(1, (v - 0.03) / 0.32);    // el borde se funde con el fondo, como en el ejemplo
-    img.data.set([r, g, b, Math.round(a * 230)], k * 4);
+  let max = 0;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {          // columnas
+    let v = 0; for (let t = -rad; t <= rad; t++) { const jj = j + t; if (jj >= 0 && jj < h) v += tmp[jj * w + i] * k[t + rad]; } hist[j * w + i] = v; if (v > max) max = v;
+  }
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const ctx = cv.getContext("2d"), img = ctx.createImageData(w, h);
+  for (let q = 0; q < hist.length; q++) {
+    // escala logarítmica: muchos puntos apilados en el mismo sitio no esconden al resto de la nube
+    const v = max ? Math.log1p(40 * hist[q] / max) / Math.log1p(40) : 0, [r, g, bb] = turbo(0.08 + 0.9 * v);
+    const a = v < 0.06 ? 0 : Math.min(1, (v - 0.06) / 0.3);      // el borde se funde con el fondo
+    img.data[q * 4] = r; img.data[q * 4 + 1] = g; img.data[q * 4 + 2] = bb; img.data[q * 4 + 3] = Math.round(a * 230);
   }
   ctx.putImageData(img, 0, 0);
   return cv.toDataURL();
 }
+// radio del difuminado según cuántos puntos hay: muchos puntos → más fino
+const sigmaCalor = n => n >= 200 ? 6 : n >= 60 ? 8 : n >= 20 ? 10 : 13;
 // leyenda: la rampa turbo de menos a más elegido
 const leyendaCalor = (x, y) => `<g class="ley-sel"><defs><linearGradient id="gTurbo" x1="0" x2="1">${[0, .25, .5, .75, 1].map(t => `<stop offset="${t}" stop-color="rgb(${turbo(0.1 + 0.88 * t).join(",")})"/>`).join("")}</linearGradient></defs>
-  <text x="${x}" y="${y}">Menos elegido</text><rect x="${x + 82}" y="${y - 9}" width="90" height="10" rx="3" fill="url(#gTurbo)"/><text x="${x + 178}" y="${y}">Más elegido</text></g>`;
-function capaCalorBrujula(ex, ey, c, R){
-  const cal = conteoCalor(r => { const i = EJ[ex].indexOf(r[ex]), j = EJ[ey].indexOf(r[ey]); return i < 0 || j < 0 ? null : i + "," + j; });
-  const L = 2 * R / 3, pts = [];
-  cal.n.forEach((v, k) => { const [i, j] = k.split(",").map(Number); pts.push({x: (i + 0.5) * L, y: 2 * R - (j + 0.5) * L, w: v}); });
-  const url = pts.length ? imagenCalor(pts, 2 * R, 2 * R, L * 0.42) : "";
-  let h = `<defs><clipPath id="clip-${ex}${ey}"><rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8"/></clipPath></defs>`;
-  if (url) h += `<image class="calor-img" href="${url}" x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" clip-path="url(#clip-${ex}${ey})" preserveAspectRatio="none"/>`;
-  // zonas invisibles con el detalle al pasar el puntero (el % no se escribe encima del calor)
-  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
-    const v = cal.n.get(i + "," + j) || 0, share = cal.tot ? v / cal.tot : 0;
-    h += `<rect x="${(c - R + i * L).toFixed(1)}" y="${(c + R - (j + 1) * L).toFixed(1)}" width="${L.toFixed(1)}" height="${L.toFixed(1)}" fill="transparent"><title>${ex} ${vtxt(ex, EJ[ex][i])} · ${ey} ${vtxt(ey, EJ[ey][j])}\n${v} de ${cal.tot} ${unidadCalor()} (${pct(share, 0)})</title></rect>`;
-  }
-  return h;
+  <text x="${x}" y="${y}">Menos</text><rect x="${x + 42}" y="${y - 9}" width="90" height="10" rx="3" fill="url(#gTurbo)"/><text x="${x + 138}" y="${y}">Más concentración</text></g>`;
+// el calor sale de los mismos puntos que se dibujan: cada código × foto en un grupo, cada foto en un código
+function capaCalorBrujula(tr, id, c, R){
+  const fuente = esRegla() ? [...tr.cods.values()].flat() : tr.media;
+  const pts = fuente.map(q => ({x: (q.x + 1) * R, y: (1 - q.y) * R, w: 1}));
+  if (!pts.length) return "";
+  const url = imagenCalor(pts, 2 * R, 2 * R, sigmaCalor(pts.length));
+  return `<defs><clipPath id="clip-${id}"><rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8"/></clipPath></defs>`
+    + `<image class="calor-img" href="${url}" x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" clip-path="url(#clip-${id})" preserveAspectRatio="none"><title>Concentración de ${pts.length} ${esRegla() ? "códigos × fotos" : "fotos"}: rojo = donde más se juntan</title></image>`;
 }
 
 function brujula(svgId, ex, ey, polos){
   const svg = $(svgId), S = 326, c = S/2, R = 124;
-  let h = (CALOR ? capaCalorBrujula(ex, ey, c, R) : "") + `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--sep-fuerte)"/>
+  let h = `__CALOR__<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--sep-fuerte)"/>
     <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--sep-fuerte)"/>
     <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--sep-fuerte)"/>
     __POLOS_X__
@@ -1693,6 +1758,7 @@ function brujula(svgId, ex, ey, polos){
     return x == null || y == null ? null : {x, y};
   });
   const PX = q => (c + q.x * R).toFixed(1), PY = q => (c - q.y * R).toFixed(1);
+  h = h.replace("__CALOR__", CALOR ? capaCalorBrujula(tr, svgId, c, R) : "");
   const pts = tr.media.map(p => ({...p, px: c + p.x * R, py: c - p.y * R}));
   // si algún punto está pegado al eje horizontal, los polos X pasan al otro lado del eje
   const abajo = pts.some(p => p.py > c && p.py - c < 26), arriba = pts.some(p => p.py <= c && c - p.py < 26);
@@ -1736,7 +1802,7 @@ function selector(){
   const rec = recetaElegida(), gan = rec ? rec.g : -1;
   const cal = CALOR ? conteoCalor(r => r.g >= 0 ? r.g : null) : null;
   let capaCal = "";
-  $("selSubt").textContent = cal ? `Arriba, nº de códigos del grupo. Color: veces elegido, de azul (poco) a rojo (mucho), sobre ${cal.tot} ${unidadCalor()}.` : "X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).";
+  $("selSubt").textContent = cal ? `Arriba, nº de códigos del grupo. Color: dónde se concentran los ${cal.tot} ${unidadCalor()}, de azul (poco) a rojo (mucho).` : "X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).";
   const celda = gi => ({col: AMPL.indexOf(CELDAS[gi][0]), fila: CRIT.indexOf(CELDAS[gi][1])});
   const cx = col => L + col * CW + CW / 2, cy = fila => T + fila * CH + CH / 2;
   let h = AMPL.map((a, k) => `<text x="${cx(k)}" y="${T - 10}" text-anchor="middle">${a === "Product Line" ? "Línea" : a}</text>`).join("")
@@ -1752,18 +1818,19 @@ function selector(){
       <text x="${x + 6}" y="${y + 14}" class="${cal ? "num-calor" : ""}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text></g>`;
     if (gi === gan) h += `<rect data-k="c-elegida" x="${x - 1.5}" y="${y - 1.5}" width="${CW - gap + 3}" height="${CH - gap + 3}" rx="10.5" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
   });
-  if (cal && cal.tot) {
-    const pts = []; cal.n.forEach((v, gi) => { const q = celda(gi); pts.push({x: cx(q.col) - L, y: cy(q.fila) - T, w: v}); });
-    const W = AMPL.length * CW, H = CRIT.length * CH, url = imagenCalor(pts, W, H, CW * 0.48);
+  const hacerCalor = (fuente) => {
+    const pts = fuente.map(q => ({x: cx(q.x) - L, y: cy(q.y) - T, w: 1}));
+    const W = AMPL.length * CW, H = CRIT.length * CH, url = imagenCalor(pts, W, H, sigmaCalor(pts.length) * 1.15);
     capaCal = `<defs><clipPath id="clip-sel">${CELDAS.map((_, gi) => { const q = celda(gi); return `<rect x="${L + q.col * CW + gap / 2}" y="${T + q.fila * CH + gap / 2}" width="${CW - gap}" height="${CH - gap}" rx="9"/>`; }).join("")}</clipPath></defs>`
       + `<image class="calor-img" href="${url}" x="${L}" y="${T}" width="${W}" height="${H}" clip-path="url(#clip-sel)" preserveAspectRatio="none" style="pointer-events:none"/>`;
-  }
+  };
   // posición = centro de la celda ganadora; los códigos de un grupo se reparten dentro de su celda
   const tr = trayectorias((x) => { const r = x.oraculo_receta || x.receta_txt; if (!r || r.g == null || r.g < 0) return null; const q = celda(r.g); return {x: q.col, y: q.fila}; });
   const hash = s => { let v = 2166136261; for (const ch of s) v = Math.imul(v ^ ch.charCodeAt(0), 16777619); return (v >>> 0) / 4294967296; };
   // reparto estable dentro de la celda (ángulo áureo sobre un hash del EAN), sin solaparse en diagonal
   const jit = ean => { const u = hash(ean), v = hash(ean.split("").reverse().join("") + "·"), ang = u * 2 * Math.PI, rad = 0.12 + 0.2 * Math.sqrt(v); return {x: Math.cos(ang) * rad, y: Math.sin(ang) * rad * 1.15}; };
   const cods = new Map(); tr.cods.forEach((l, ean) => { const j = jit(ean); cods.set(ean, l.map(q => ({x: q.x + j.x, y: q.y + j.y}))); });
+  if (cal) hacerCalor(esRegla() ? [...cods.values()].flat() : tr.media.map((q, i) => ({x: q.x + Math.cos(i * 2.4) * 0.18, y: q.y + Math.sin(i * 2.4) * 0.2})));
   const PX = q => cx(q.x).toFixed(1), PY = q => (cy(q.y) + 4).toFixed(1);
   h += CALOR ? leyendaCalor(L, 318) : `<g class="en-celda">${capaCodigos(cods, PX, PY)}</g>` + leyendaGrupo(tr, L, 318);
   h += capaMedia(tr.media, PX, PY, p => {
@@ -1778,7 +1845,7 @@ function selector(){
     h += `<text data-k="l-${i === 0 ? "ini" : "fin"}" x="${der ? x + 13 : x - 13}" y="${y + 4}" text-anchor="${der ? "start" : "end"}" class="et-mes et-halo">${p.mes}</text>`;
   });
   // el calor va sobre las celdas y bajo la trayectoria
-  if (capaCal) { const k = h.indexOf('<g class="en-celda">') >= 0 ? h.indexOf('<g class="en-celda">') : h.indexOf("<polyline data-k=\"m-linea\""); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
+  if (capaCal) { const k = h.search(/<g class="en-celda">|<polyline data-k="m-linea"|<circle class="media"/); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
   pintarSVG(svg, h);
   const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? r.grupo : "-"}`; });
   $("matrizp").innerHTML = (rec ? `<span class="elegidaTxt">Elegido: ${rec.grupo} (${esRegla() ? "tamaño medio " + tam[gan].toFixed(1) : tam[gan] + " códigos"})</span><br>Mejor grupo por foto: ${gans.join(" · ")}` : "Sin receta elegida");
@@ -1809,7 +1876,7 @@ function mediaBrujula(id, ventana){
     if (pts.length > 1) h += `<polyline data-k="${k}-linea" points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
     pts.forEach((p, i) => {
       const u = i === pts.length - 1;
-      h += p.out ? `<path d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala. SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
+      h += p.out ? `<path data-k="${k}-${p.mes}" d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: fuera de escala. SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
                  : `<circle data-k="${k}-${p.mes}" cx="${p.x}" cy="${p.y}" r="${u ? 7 : 4}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="2"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
       if (u) ult[k] = p;
     });
@@ -1849,6 +1916,7 @@ function grafico(meses, ev){
   for (let v = 0; v <= tope + 1e-9; v += paso)
     h += `<line x1="${L}" x2="${W-Rm}" y1="${y(v)}" y2="${y(v)}" stroke="var(--sep)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${num(v)}</text>`;
   meses.forEach((m, i) => h += `<text x="${x(i)}" y="${H-B+18}" text-anchor="middle">${estrecho ? m.slice(5) : m}</text>` + (estrecho ? "" : `<text x="${x(i)}" y="${H-B+33}" text-anchor="middle" style="fill:var(--label-3)">±${pct(ev[i].t,1)}</text>`));
+  h += `<g class="datos">`;
   h += `<polygon data-k="g-banda" points="${ev.map((e,i)=>x(i)+","+y(e.hi)).join(" ")} ${ev.map((e,i)=>x(i)+","+y(e.lo)).reverse().join(" ")}" fill="var(--banda)"/>`;
   h += `<polyline data-k="g-rec" points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--receta)" stroke-width="2" stroke-linejoin="round"/>`;
   h += `<polyline data-k="g-cons" points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
@@ -1857,6 +1925,7 @@ function grafico(meses, ev){
     h += `<circle data-k="g-c${i}" cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5 : 3.5}" fill="${out ? "var(--red)" : "var(--cons)"}" stroke="var(--card)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · receta ${num(e.R)} · rango ${num(e.lo)} a ${num(e.hi)}${out ? " · desvío " + num(e.dev) + (e.C > e.hi ? " por encima" : " por debajo") : ""}</title></circle>`;
     if (out && !estrecho) h += `<text x="${x(i)}" y="${y(e.C) + (e.C < e.lo ? 18 : -10)}" text-anchor="middle" style="fill:var(--red-txt);font-weight:600">${num(e.dev)}</text>`;
   });
+  h += `</g>`;
   const sw = (c) => `<span class="ley-it">${c}</span>`;
   return `<div class="ley-graf">${sw('<i style="background:var(--banda);box-shadow:inset 0 0 0 1px var(--sep-fuerte)"></i>Rango de tolerancia')}${sw('<i style="height:2px;background:var(--receta)"></i>Receta elegida')}${sw('<i style="height:0;border-top:1.5px dashed var(--cons)"></i>Consensus de la foto')}${sw('<i style="border-radius:50%;width:9px;height:9px;background:var(--red)"></i>Mes fuera del rango, desvío en uds')}</div>`
     + `<svg id="grafActual" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%">${h}</svg>`;
@@ -1905,9 +1974,10 @@ function fotoActual(){
   ev.forEach((e, i) => {
     h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td class="c-x">${i+1}</td><td class="c-x">±${pct(e.t)}</td><td>${num(e.R)}</td><td class="c-x">${num(e.lo)}</td><td class="c-x">${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td class="c-x">${e.R > 0 ? pct(e.C / e.R - 1) : "-"}</td><td class="dv">${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
   });
-  const antesG = capturar($("grafActual"));
+  const antesG = capturar($("grafActual")), pend = $("grafActual") && $("grafActual").hasAttribute("data-pendiente");
   $("actual").innerHTML = h + "</table>";
-  transicion($("grafActual"), antesG);
+  if (pend) $("grafActual").setAttribute("data-pendiente", "");
+  presentar($("grafActual"), antesG, [], $("actual"));
 }
 
 function anteriores(){
