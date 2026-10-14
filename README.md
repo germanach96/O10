@@ -30,7 +30,8 @@ O10/
 │   ├── PRODUCT.md            para quién es y qué tiene que transmitir
 │   ├── SKILLS-DISENO.md      skills de diseño obligatorias (lo importa CLAUDE.md)
 │   ├── referencia/           guías antiguas, ya no se aplican
-│   └── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
+│   ├── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
+│   └── versiones/            copias fijas de versiones aprobadas: O10_first_version.html (primera versión)
 ├── data/                     datos de entrada, una carpeta por casa
 │   ├── Gucci/
 │   │   ├── Consensus/        fotos mensuales: Gucci_2025_11.csv, Gucci_2026_09.csv
