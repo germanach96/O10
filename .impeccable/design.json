@@ -1,668 +1,842 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-14T00:10:14+00:00",
+  "generatedAt": "2026-10-14T01:02:40.279927+00:00",
   "title": "Design System: Brújulas de Demand",
   "extensions": {
     "colorMeta": {
-      "ink": {
-        "role": "primary",
-        "displayName": "Tinta",
-        "canonical": "#141414",
+      "window-bg": {
+        "role": "neutral",
+        "displayName": "Gris de ventana",
+        "canonical": "#f5f5f7",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0c",
+          "#242425",
+          "#3f3f41",
+          "#5d5d5f",
+          "#808082",
+          "#a4a4a6",
+          "#cacacc",
+          "#eeeef0"
         ]
       },
-      "paper": {
+      "surface": {
         "role": "neutral",
-        "displayName": "Papel",
+        "displayName": "Superficie",
         "canonical": "#ffffff",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#808080",
+          "#a4a4a4",
+          "#cacaca",
+          "#eeeeee"
         ]
       },
-      "canvas": {
+      "surface-secondary": {
         "role": "neutral",
-        "displayName": "Lienzo",
-        "canonical": "#f5f5f5",
+        "displayName": "Superficie secundaria",
+        "canonical": "#f5f5f7",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0c",
+          "#242425",
+          "#3f3f41",
+          "#5d5d5f",
+          "#808082",
+          "#a4a4a6",
+          "#cacacc",
+          "#eeeef0"
         ]
       },
-      "mist": {
+      "sidebar": {
         "role": "neutral",
-        "displayName": "Niebla",
-        "canonical": "#e9e9e9",
+        "displayName": "Barra lateral",
+        "canonical": "#ececef",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0d",
+          "#242426",
+          "#3f3f42",
+          "#5d5d60",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
         ]
       },
-      "hairline": {
+      "control-fill": {
         "role": "neutral",
-        "displayName": "Filete",
-        "canonical": "#d9d9d9",
+        "displayName": "Relleno de control",
+        "canonical": "rgba(118,118,128,.12)"
+      },
+      "control-fill-strong": {
+        "role": "neutral",
+        "displayName": "Relleno de control fuerte",
+        "canonical": "rgba(118,118,128,.20)"
+      },
+      "separator": {
+        "role": "neutral",
+        "displayName": "Separador",
+        "canonical": "rgba(60,60,67,.16)"
+      },
+      "separator-strong": {
+        "role": "neutral",
+        "displayName": "Separador fuerte",
+        "canonical": "rgba(60,60,67,.29)"
+      },
+      "label": {
+        "role": "neutral",
+        "displayName": "Etiqueta",
+        "canonical": "#1d1d1f",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0d",
+          "#242426",
+          "#3f3f42",
+          "#5d5d60",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
         ]
       },
-      "grid": {
+      "label-secondary": {
         "role": "neutral",
-        "displayName": "Rejilla",
-        "canonical": "#e4e4e4",
+        "displayName": "Etiqueta secundaria",
+        "canonical": "#6e6e73",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0e",
+          "#242428",
+          "#3f3f44",
+          "#5d5d62",
+          "#808085",
+          "#a4a4a9",
+          "#cacacf",
+          "#eeeef4"
         ]
       },
-      "mute": {
+      "label-tertiary": {
         "role": "neutral",
-        "displayName": "Gris apagado",
-        "canonical": "#5c5c5c",
+        "displayName": "Etiqueta terciaria",
+        "canonical": "#76767b",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0e",
+          "#242428",
+          "#3f3f44",
+          "#5d5d62",
+          "#808085",
+          "#a4a4a9",
+          "#cacacf",
+          "#eeeef3"
         ]
       },
-      "mute-2": {
-        "role": "neutral",
-        "displayName": "Gris apagado 2",
-        "canonical": "#8a8a8a",
+      "system-blue": {
+        "role": "primary",
+        "displayName": "Azul del sistema",
+        "canonical": "#0071e3",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#00003b",
+          "#001b65",
+          "#003893",
+          "#0057c4",
+          "#197df0",
+          "#4ba4ff",
+          "#81cdff",
+          "#b0f2ff"
+        ]
+      },
+      "system-blue-text": {
+        "role": "primary",
+        "displayName": "Azul de texto",
+        "canonical": "#0066cc",
+        "tonalRamp": [
+          "#000137",
+          "#001d61",
+          "#003a8d",
+          "#0059bc",
+          "#287ee7",
+          "#53a5ff",
+          "#86cdff",
+          "#b4f2ff"
+        ]
+      },
+      "on-blue": {
+        "role": "primary",
+        "displayName": "Texto sobre azul",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#808080",
+          "#a4a4a4",
+          "#cacaca",
+          "#eeeeee"
         ]
       },
       "consensus-gray": {
-        "role": "neutral",
+        "role": "secondary",
         "displayName": "Gris Consensus",
-        "canonical": "#7a7a7a",
+        "canonical": "#8e8e93",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0e",
+          "#242427",
+          "#3f3f44",
+          "#5d5d62",
+          "#808084",
+          "#a4a4a9",
+          "#cacacf",
+          "#eeeef3"
         ]
       },
-      "highlight-yellow": {
+      "recipe-band": {
+        "role": "primary",
+        "displayName": "Banda de receta",
+        "canonical": "rgba(0,113,227,.10)"
+      },
+      "goal-green": {
         "role": "tertiary",
-        "displayName": "Amarillo rotulador",
-        "canonical": "#fecc33",
+        "displayName": "Verde meta",
+        "canonical": "#34c759",
         "tonalRamp": [
-          "#4c3900",
-          "#866501",
-          "#c09101",
-          "#fabd01",
-          "#fecd38",
-          "#fedc72",
-          "#ffeaac",
-          "#fff9e6"
+          "#001500",
+          "#003300",
+          "#005400",
+          "#007700",
+          "#009d2e",
+          "#37c359",
+          "#79e78b",
+          "#acffb8"
         ]
       },
-      "ember": {
-        "role": "secondary",
-        "displayName": "Brasa",
-        "canonical": "#ff8400",
-        "tonalRamp": [
-          "#4c2800",
-          "#874600",
-          "#c16400",
-          "#fb8200",
-          "#ff9e37",
-          "#ffba71",
-          "#ffd7ab",
-          "#fff3e6"
-        ]
-      },
-      "ember-ink": {
-        "role": "secondary",
-        "displayName": "Brasa tinta",
-        "canonical": "#b45400",
-        "tonalRamp": [
-          "#4c2400",
-          "#873f00",
-          "#c15a00",
-          "#fb7500",
-          "#ff9437",
-          "#ffb371",
-          "#ffd2ab",
-          "#fff1e6"
-        ]
-      },
-      "forest": {
+      "goal-green-text": {
         "role": "tertiary",
-        "displayName": "Bosque",
-        "canonical": "#21935b",
+        "displayName": "Verde meta (texto)",
+        "canonical": "#248a3d",
         "tonalRamp": [
-          "#0e3e27",
-          "#196e44",
-          "#239e62",
-          "#2ecd7f",
-          "#5bda9c",
-          "#8be5b9",
-          "#bbf0d6",
-          "#eafaf2"
+          "#001300",
+          "#003100",
+          "#00500c",
+          "#007225",
+          "#349749",
+          "#5dbd6d",
+          "#8fe19a",
+          "#bcffc4"
         ]
       },
-      "ok-green": {
+      "goal-zone": {
         "role": "tertiary",
-        "displayName": "Verde OK",
-        "canonical": "#16703f",
+        "displayName": "Zona meta",
+        "canonical": "rgba(52,199,89,.14)"
+      },
+      "warning-orange": {
+        "role": "tertiary",
+        "displayName": "Naranja de aviso",
+        "canonical": "#ff9500",
         "tonalRamp": [
-          "#0d4024",
-          "#16713f",
-          "#20a15b",
-          "#29d276",
-          "#58de95",
-          "#88e8b4",
-          "#b9f1d3",
-          "#eafbf1"
+          "#260000",
+          "#4b0400",
+          "#732100",
+          "#9d3c00",
+          "#c66100",
+          "#ee8700",
+          "#ffb359",
+          "#ffdb92"
         ]
       },
-      "dev-inside": {
-        "role": "neutral",
+      "alert-red": {
+        "role": "tertiary",
+        "displayName": "Rojo de alerta",
+        "canonical": "#ff3b30",
+        "tonalRamp": [
+          "#310000",
+          "#5c0000",
+          "#8a0000",
+          "#bb0000",
+          "#eb201b",
+          "#ff5c4c",
+          "#ff9380",
+          "#ffc2af"
+        ]
+      },
+      "alert-red-text": {
+        "role": "tertiary",
+        "displayName": "Rojo de alerta (texto)",
+        "canonical": "#d70015",
+        "tonalRamp": [
+          "#310000",
+          "#5b0000",
+          "#890000",
+          "#b90000",
+          "#e82728",
+          "#ff5e54",
+          "#ff9586",
+          "#ffc3b4"
+        ]
+      },
+      "desvio-inside": {
+        "role": "tertiary",
         "displayName": "Desvío: dentro",
-        "canonical": "#d6d6d6",
+        "canonical": "#d1d1d6",
         "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
+          "#0b0b0e",
+          "#242427",
+          "#3f3f43",
+          "#5d5d61",
+          "#808084",
+          "#a4a4a9",
+          "#cacacf",
+          "#eeeef3"
         ]
       },
-      "dev-low": {
-        "role": "neutral",
-        "displayName": "Desvío: hasta 5%",
-        "canonical": "#b3b3b3",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "dev-mid": {
-        "role": "secondary",
-        "displayName": "Desvío: 5-15%",
-        "canonical": "#ffb366",
-        "tonalRamp": [
-          "#4c2600",
-          "#874400",
-          "#c16100",
-          "#fb7e00",
-          "#ff9b37",
-          "#ffb871",
-          "#ffd5ab",
-          "#fff2e6"
-        ]
-      },
-      "dev-high": {
-        "role": "secondary",
-        "displayName": "Desvío: 15-30%",
-        "canonical": "#ff8400",
-        "tonalRamp": [
-          "#4c2800",
-          "#874600",
-          "#c16400",
-          "#fb8200",
-          "#ff9e37",
-          "#ffba71",
-          "#ffd7ab",
-          "#fff3e6"
-        ]
-      },
-      "dev-extreme": {
-        "role": "primary",
-        "displayName": "Desvío: más de 30%",
-        "canonical": "#141414",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "ink-dark": {
-        "role": "primary",
-        "displayName": "Tinta (oscuro)",
-        "canonical": "#f0f0ee",
-        "tonalRamp": [
-          "#292924",
-          "#48483f",
-          "#67675b",
-          "#868676",
-          "#a1a195",
-          "#bcbcb4",
-          "#d8d8d2",
-          "#f3f3f1"
-        ]
-      },
-      "paper-dark": {
-        "role": "neutral",
-        "displayName": "Papel (oscuro)",
-        "canonical": "#1b1b1b",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "canvas-dark": {
-        "role": "neutral",
-        "displayName": "Lienzo (oscuro)",
-        "canonical": "#111111",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "mist-dark": {
-        "role": "neutral",
-        "displayName": "Niebla (oscuro)",
-        "canonical": "#262626",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "hairline-dark": {
-        "role": "neutral",
-        "displayName": "Filete (oscuro)",
-        "canonical": "#333333",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "grid-dark": {
-        "role": "neutral",
-        "displayName": "Rejilla (oscuro)",
-        "canonical": "#1c1c1c",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "mute-dark": {
-        "role": "neutral",
-        "displayName": "Gris apagado (oscuro)",
-        "canonical": "#a9a9a9",
-        "tonalRamp": [
-          "#262626",
-          "#434343",
-          "#616161",
-          "#7e7e7e",
-          "#9b9b9b",
-          "#b8b8b8",
-          "#d5d5d5",
-          "#f2f2f2"
-        ]
-      },
-      "ember-ink-dark": {
-        "role": "secondary",
-        "displayName": "Brasa tinta (oscuro)",
-        "canonical": "#ff9a33",
-        "tonalRamp": [
-          "#4c2700",
-          "#874400",
-          "#c16100",
-          "#fb7f00",
-          "#ff9c37",
-          "#ffb971",
-          "#ffd6ab",
-          "#fff2e6"
-        ]
-      },
-      "ok-green-dark": {
+      "desvio-1": {
         "role": "tertiary",
-        "displayName": "Verde OK (oscuro)",
-        "canonical": "#4cc985",
+        "displayName": "Desvío hasta 5%",
+        "canonical": "#ffcc00",
         "tonalRamp": [
-          "#123b24",
-          "#1f6840",
-          "#2d945c",
-          "#3ac178",
-          "#65d196",
-          "#92deb5",
-          "#bfecd3",
-          "#ebf9f2"
+          "#1c0300",
+          "#3c1b00",
+          "#5e3700",
+          "#835400",
+          "#a87800",
+          "#ce9d00",
+          "#f0c642",
+          "#ffeb84"
+        ]
+      },
+      "desvio-2": {
+        "role": "tertiary",
+        "displayName": "Desvío 5-15%",
+        "canonical": "#ff9500",
+        "tonalRamp": [
+          "#260000",
+          "#4b0400",
+          "#732100",
+          "#9d3c00",
+          "#c66100",
+          "#ee8700",
+          "#ffb359",
+          "#ffdb92"
+        ]
+      },
+      "desvio-3": {
+        "role": "tertiary",
+        "displayName": "Desvío 15-30%",
+        "canonical": "#ff3b30",
+        "tonalRamp": [
+          "#310000",
+          "#5c0000",
+          "#8a0000",
+          "#bb0000",
+          "#eb201b",
+          "#ff5c4c",
+          "#ff9380",
+          "#ffc2af"
+        ]
+      },
+      "desvio-4": {
+        "role": "tertiary",
+        "displayName": "Desvío más de 30%",
+        "canonical": "#b3001b",
+        "tonalRamp": [
+          "#2d0000",
+          "#560000",
+          "#820005",
+          "#b00a1d",
+          "#dd3e3f",
+          "#ff6a65",
+          "#ff9c93",
+          "#ffc8bf"
+        ]
+      },
+      "bubble-empty": {
+        "role": "neutral",
+        "displayName": "Burbuja hueca",
+        "canonical": "#aeaeb2",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242427",
+          "#3f3f43",
+          "#5d5d61",
+          "#808083",
+          "#a4a4a8",
+          "#cacace",
+          "#eeeef2"
+        ]
+      },
+      "bubble-norecipe": {
+        "role": "neutral",
+        "displayName": "Burbuja sin receta",
+        "canonical": "#e5e5ea",
+        "tonalRamp": [
+          "#0b0b0e",
+          "#242427",
+          "#3f3f43",
+          "#5d5d61",
+          "#808084",
+          "#a4a4a9",
+          "#cacacf",
+          "#eeeef3"
+        ]
+      },
+      "bubble-pl": {
+        "role": "neutral",
+        "displayName": "Burbuja de product line",
+        "canonical": "#f2f2f5",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242426",
+          "#3f3f42",
+          "#5d5d60",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
+        ]
+      },
+      "toolbar-material": {
+        "role": "neutral",
+        "displayName": "Material de barra",
+        "canonical": "rgba(245,245,247,.72)"
+      },
+      "dark-window-bg": {
+        "role": "neutral",
+        "displayName": "Gris de ventana (oscuro)",
+        "canonical": "#1c1c1e",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242426",
+          "#3f3f42",
+          "#5d5d60",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
+        ]
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Superficie (oscuro)",
+        "canonical": "#2c2c2e",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242426",
+          "#3f3f42",
+          "#5d5d60",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
+        ]
+      },
+      "dark-surface-secondary": {
+        "role": "neutral",
+        "displayName": "Superficie secundaria (oscuro)",
+        "canonical": "#3a3a3c",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242426",
+          "#3f3f41",
+          "#5d5d5f",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
+        ]
+      },
+      "dark-sidebar": {
+        "role": "neutral",
+        "displayName": "Barra lateral (oscuro)",
+        "canonical": "#252527",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242426",
+          "#3f3f42",
+          "#5d5d60",
+          "#808082",
+          "#a4a4a7",
+          "#cacacd",
+          "#eeeef1"
+        ]
+      },
+      "dark-label": {
+        "role": "neutral",
+        "displayName": "Etiqueta (oscuro)",
+        "canonical": "#f5f5f7",
+        "tonalRamp": [
+          "#0b0b0c",
+          "#242425",
+          "#3f3f41",
+          "#5d5d5f",
+          "#808082",
+          "#a4a4a6",
+          "#cacacc",
+          "#eeeef0"
+        ]
+      },
+      "dark-label-secondary": {
+        "role": "neutral",
+        "displayName": "Etiqueta secundaria (oscuro)",
+        "canonical": "#aeaeb2",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#242427",
+          "#3f3f43",
+          "#5d5d61",
+          "#808083",
+          "#a4a4a8",
+          "#cacace",
+          "#eeeef2"
+        ]
+      },
+      "dark-system-blue": {
+        "role": "primary",
+        "displayName": "Azul del sistema (oscuro)",
+        "canonical": "#0a72e8",
+        "tonalRamp": [
+          "#00003c",
+          "#001967",
+          "#003795",
+          "#0056c6",
+          "#1c7cf3",
+          "#4ca3ff",
+          "#81ccff",
+          "#b0f1ff"
+        ]
+      },
+      "dark-system-blue-text": {
+        "role": "primary",
+        "displayName": "Azul de texto (oscuro)",
+        "canonical": "#4ea1ff",
+        "tonalRamp": [
+          "#000433",
+          "#00205b",
+          "#003d86",
+          "#005cb4",
+          "#2c81dc",
+          "#55a7ff",
+          "#88cfff",
+          "#b6f3ff"
+        ]
+      },
+      "dark-goal-green": {
+        "role": "tertiary",
+        "displayName": "Verde meta (oscuro)",
+        "canonical": "#30d158",
+        "tonalRamp": [
+          "#001500",
+          "#003400",
+          "#005500",
+          "#007800",
+          "#009e21",
+          "#29c451",
+          "#74e885",
+          "#a8ffb3"
+        ]
+      },
+      "dark-alert-red-text": {
+        "role": "tertiary",
+        "displayName": "Rojo de alerta (texto) (oscuro)",
+        "canonical": "#ff6961",
+        "tonalRamp": [
+          "#2c0000",
+          "#540000",
+          "#7f0007",
+          "#ac191f",
+          "#d84541",
+          "#ff6f67",
+          "#ff9f94",
+          "#ffcbbf"
+        ]
+      },
+      "dark-desvio-3": {
+        "role": "tertiary",
+        "displayName": "Desvío 15-30% (oscuro)",
+        "canonical": "#ff6a3d",
+        "tonalRamp": [
+          "#2c0000",
+          "#550000",
+          "#800000",
+          "#ad1c00",
+          "#da4713",
+          "#ff7246",
+          "#ffa27c",
+          "#ffcdac"
+        ]
+      },
+      "dark-desvio-4": {
+        "role": "tertiary",
+        "displayName": "Desvío más de 30% (oscuro)",
+        "canonical": "#ff375f",
+        "tonalRamp": [
+          "#310000",
+          "#5b0004",
+          "#890019",
+          "#ba002f",
+          "#e9174e",
+          "#ff5774",
+          "#ff90a0",
+          "#ffbfc9"
         ]
       }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "Display",
-        "purpose": "Solo el nombre de la herramienta en la cabecera de la portada."
+      "large-title": {
+        "displayName": "Large title",
+        "purpose": "Título del código o grupo en el detalle; colapsa a la barra al salir de vista."
+      },
+      "metric-hero": {
+        "displayName": "Cifra principal",
+        "purpose": "Desvío grande del rail del detalle."
+      },
+      "title-1": {
+        "displayName": "Title 1",
+        "purpose": "Título del inspector y de las secciones del detalle."
+      },
+      "metric": {
+        "displayName": "Métrica",
+        "purpose": "KPIs de ficha y rail (17-20px)."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Título del código en el detalle y cifra grande del rail."
+        "purpose": "Título de ventana en la barra de herramientas."
       },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Títulos de sección del detalle."
-      },
-      "title-sm": {
-        "displayName": "Title pequeño",
-        "purpose": "Título del panel lateral y cifras de cabecera y rail."
-      },
-      "card-title": {
-        "displayName": "Título de tarjeta",
-        "purpose": "Títulos de brújula y resultado, una línea de altura fija."
+      "title-3": {
+        "displayName": "Title 3",
+        "purpose": "Títulos de tarjeta de brújula, alto fijo 22px."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Texto base."
+        "purpose": "Texto base de la app, 13px como macOS."
       },
-      "body-sm": {
-        "displayName": "Body pequeño",
-        "purpose": "Tablas, tooltip y notas."
+      "callout": {
+        "displayName": "Callout",
+        "purpose": "Segmentados, tablas y valores de lista."
       },
-      "label": {
-        "displayName": "Etiqueta mono",
-        "purpose": "Navegación, chips, botones, controles, migas y cabeceras de tabla, en mayúsculas."
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Migas, leyendas, etiquetas de burbuja."
       },
-      "chart-label": {
-        "displayName": "Rótulo de gráfico",
-        "purpose": "Todo texto dentro de los SVG."
+      "section-header": {
+        "displayName": "Encabezado de sección",
+        "purpose": "Encabezados de lista de fuentes y de grupos, sin mayúsculas forzadas."
+      },
+      "code": {
+        "displayName": "Código",
+        "purpose": "Solo EAN y códigos."
       }
     },
     "shadows": [
       {
-        "name": "none",
-        "value": "none",
-        "purpose": "Sistema plano: la profundidad es filete de 1 px y contraste lienzo/papel."
+        "name": "sombra-s",
+        "value": "0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04)",
+        "purpose": "Reposo: tarjetas, fichas, botones, siempre con el filo inset .5px."
       },
       {
-        "name": "anillo-elegida",
-        "value": "inset 0 0 0 2px #141414",
-        "purpose": "Anillo interior de la celda elegida de la matriz; es un borde, no una elevación."
+        "name": "sombra-m",
+        "value": "0 4px 14px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.06)",
+        "purpose": "Lienzo del mapa."
+      },
+      {
+        "name": "sombra-l",
+        "value": "0 12px 40px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08)",
+        "purpose": "Flotantes: popover, tooltip, hoja lateral."
+      },
+      {
+        "name": "sombra-s-dark",
+        "value": "0 1px 2px rgba(0,0,0,.4)",
+        "purpose": "Reposo en oscuro."
+      },
+      {
+        "name": "sombra-m-dark",
+        "value": "0 4px 14px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.3)",
+        "purpose": "Lienzo en oscuro."
+      },
+      {
+        "name": "sombra-l-dark",
+        "value": "0 12px 40px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.35)",
+        "purpose": "Flotantes en oscuro."
+      },
+      {
+        "name": "filo",
+        "value": "inset 0 0 0 .5px rgba(60,60,67,.16)",
+        "purpose": "Borde de media línea de toda superficie agrupada."
+      },
+      {
+        "name": "material",
+        "value": "backdrop-filter: saturate(180%) blur(20px)",
+        "purpose": "Barra de herramientas, tooltip (20px) y popover (30px); solo con contenido debajo."
       }
     ],
     "motion": [
       {
+        "name": "muelle",
+        "value": "linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1)",
+        "purpose": "Muelle críticamente amortiguado (~0,4 s de respuesta, sin rebote): pulgar del segmentado (320ms), burbujas (420ms), zoom del mapa (620ms)."
+      },
+      {
         "name": "ease-out",
         "value": "cubic-bezier(0.23,1,0.32,1)",
-        "purpose": "Pulsación de botones y chips, transición de vistas, entrada de burbujas."
+        "purpose": "Respuesta al pulsar (120ms), popover (180-220ms), flecha de despliegue (200ms)."
       },
       {
-        "name": "ease-in-out",
-        "value": "cubic-bezier(0.77,0,0.175,1)",
-        "purpose": "Zoom entre niveles del mapa (560 ms)."
+        "name": "ease-drawer",
+        "value": "cubic-bezier(0.32,0.72,0,1)",
+        "purpose": "Hoja lateral y hoja inferior en ventanas estrechas (380ms)."
       },
       {
-        "name": "duracion-estado",
-        "value": "160ms",
-        "purpose": "Cambios de color, filete y opacidad; escala 0,97 al pulsar."
+        "name": "press",
+        "value": "scale(.97) brightness(.92) 120ms",
+        "purpose": "Botones; chips a scale(.96), botones de icono a scale(.94)."
       },
       {
-        "name": "duracion-tooltip",
-        "value": "120ms",
-        "purpose": "Fundido del tooltip y de las filas de lista."
-      },
-      {
-        "name": "vista-entrar",
-        "value": "260ms",
-        "purpose": "View transition: entrada con fundido y 8 px de subida."
+        "name": "view-transition",
+        "value": "salida 150ms opacidad, entrada 240ms opacidad + scale(.995)",
+        "purpose": "Cambio entre Mapa y Detalle."
       }
     ],
     "breakpoints": [
       {
-        "name": "movil",
-        "value": "700px"
+        "name": "narrow",
+        "value": "900px"
       },
       {
-        "name": "brujulas-una-columna",
-        "value": "820px"
+        "name": "detector-compact",
+        "value": "1240px"
       },
       {
-        "name": "mesa-una-columna",
-        "value": "1100px"
+        "name": "rail",
+        "value": "1360px"
       },
       {
-        "name": "rail-lateral",
-        "value": "1280px"
+        "name": "detector-full",
+        "value": "1700px"
       }
-    ],
-    "themes": {
-      "toggle": [
-        "Claro",
-        "Oscuro",
-        "Auto"
-      ],
-      "darkSelectors": [
-        ":root[data-theme=\"dark\"]",
-        "@media (prefers-color-scheme:dark) :root:not([data-theme=\"light\"])"
-      ]
-    }
+    ]
   },
   "components": [
     {
-      "name": "Botón primario",
+      "name": "Botón principal",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "El único botón relleno: tinta con texto en papel (p. ej. Buscar).",
-      "html": "<button class=\"ds-btn\">Buscar <span class=\"ds-kbd\">⌘K</span></button>",
-      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:8px;background:var(--ink,#141414);color:var(--paper,#fff);padding:10px 16px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:transform 160ms cubic-bezier(0.23,1,0.32,1),opacity 160ms ease}.ds-btn:active{transform:scale(.97)}.ds-btn:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}.ds-btn[disabled]{opacity:.35;cursor:not-allowed}.ds-kbd{border:1px solid currentColor;border-radius:4px;padding:2px 5px;opacity:.7}"
+      "description": "Acción principal de un bloque, en azul del sistema.",
+      "html": "<button class=\"ds-btn\">Abrir brújulas del código</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:6px;background:#0071e3;color:#fff;padding:5px 12px;font:500 13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04);transition:transform 120ms cubic-bezier(0.23,1,0.32,1),filter 120ms ease} .ds-btn:hover{filter:brightness(1.05)} .ds-btn:active{transform:scale(.97);filter:brightness(.92)} .ds-btn:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:1px}"
     },
     {
-      "name": "Botón fantasma",
+      "name": "Botón secundario",
       "kind": "button",
-      "refersTo": "button-ghost",
-      "description": "Acción secundaria: transparente con filete.",
-      "html": "<button class=\"ds-btn-fant\">Ver regla del grupo</button>",
-      "css": ".ds-btn-fant{border:1px solid var(--hairline,#d9d9d9);background:transparent;color:var(--ink,#141414);border-radius:8px;padding:10px 16px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:border-color 160ms ease,transform 160ms cubic-bezier(0.23,1,0.32,1)}.ds-btn-fant:hover{border-color:var(--ink,#141414)}.ds-btn-fant:active{transform:scale(.97)}.ds-btn-fant:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}"
+      "refersTo": "button-secondary",
+      "description": "Acción secundaria, superficie blanca con filo de media línea.",
+      "html": "<button class=\"ds-btn-fant\">Subir un nivel</button>",
+      "css": ".ds-btn-fant{border:0;border-radius:6px;background:#fff;color:#1d1d1f;padding:5px 12px;font:500 13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;box-shadow:0 1px 2px rgba(0,0,0,.06),inset 0 0 0 .5px rgba(60,60,67,.29);transition:transform 120ms cubic-bezier(0.23,1,0.32,1),filter 120ms ease} .ds-btn-fant:hover{background:#fafafa} .ds-btn-fant:active{transform:scale(.97);filter:brightness(.92)} .ds-btn-fant:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:1px}"
     },
     {
-      "name": "Chips de filtro",
+      "name": "Control segmentado",
+      "kind": "custom",
+      "refersTo": "segmented-control",
+      "description": "Mapa/Detalle y Claro/Oscuro/Auto; pulgar blanco que se desliza con muelle.",
+      "html": "<div class=\"ds-seg\"><span class=\"ds-pulgar\"></span><button>Mapa</button><button>Detalle</button></div>",
+      "css": ".ds-seg{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:rgba(118,118,128,.12);border-radius:8px;padding:2px;font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif} .ds-seg button{position:relative;z-index:1;border:0;background:transparent;padding:3px 12px;border-radius:6px;font-size:12.5px;font-weight:500;color:#1d1d1f} .ds-seg button:focus-visible{outline:3px solid rgba(0,113,227,.55)} .ds-pulgar{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);border-radius:6px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);transition:transform 320ms linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1)} .ds-seg:has(button:nth-of-type(2):hover) .ds-pulgar{transform:translateX(100%)}"
+    },
+    {
+      "name": "Campo de búsqueda",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "Buscador de la barra con pista ⌘K; halo azul al enfocar.",
+      "html": "<label class=\"ds-buscar\"><svg viewBox=\"0 0 16 16\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><circle cx=\"7\" cy=\"7\" r=\"4.75\"/><path d=\"M10.5 10.5 14 14\"/></svg><input type=\"search\" placeholder=\"Buscar\"><span>⌘K</span></label>",
+      "css": ".ds-buscar{display:flex;align-items:center;gap:6px;background:rgba(118,118,128,.12);border-radius:7px;padding:0 8px;width:240px;height:28px;color:#6e6e73;font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;transition:box-shadow 150ms ease,background-color 150ms ease} .ds-buscar:focus-within{background:#fff;box-shadow:0 0 0 3px rgba(0,113,227,.45)} .ds-buscar input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:13px;color:#1d1d1f} .ds-buscar span{font-size:11px}"
+    },
+    {
+      "name": "Chip de filtro",
       "kind": "chip",
       "refersTo": "chip",
-      "description": "Filtros en píldora; pulsado se invierte a tinta.",
-      "html": "<div class=\"ds-grupo\"><span class=\"ds-lbl\">Scope</span><button class=\"ds-chip\" aria-pressed=\"true\">Central</button><button class=\"ds-chip\" aria-pressed=\"false\">Todos</button></div>",
-      "css": ".ds-grupo{display:flex;align-items:center;gap:8px}.ds-lbl{font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;color:var(--mute,#5c5c5c);margin-right:4px}.ds-chip{border:1px solid var(--hairline,#d9d9d9);background:var(--paper,#fff);color:var(--ink,#141414);border-radius:160px;padding:8px 12px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease,transform 160ms cubic-bezier(0.23,1,0.32,1)}.ds-chip:hover{border-color:var(--ink,#141414)}.ds-chip:active{transform:scale(.97)}.ds-chip:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}.ds-chip[aria-pressed=\"true\"]{background:var(--ink,#141414);color:var(--paper,#fff);border-color:var(--ink,#141414)}"
+      "description": "Filtros del popover; activo en azul.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Central</button><button class=\"ds-chip\" aria-pressed=\"false\">Todos</button>",
+      "css": ".ds-chip{border:0;background:rgba(118,118,128,.12);border-radius:999px;padding:3px 10px;margin-right:6px;font:12px -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;color:#1d1d1f;transition:background-color 120ms ease,transform 120ms cubic-bezier(0.23,1,0.32,1)} .ds-chip:hover:not([aria-pressed=true]){background:rgba(118,118,128,.20)} .ds-chip:active{transform:scale(.96)} .ds-chip[aria-pressed=true]{background:#0071e3;color:#fff} .ds-chip:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:1px}"
     },
     {
-      "name": "Buscador en píldora",
-      "kind": "input",
-      "refersTo": "search-pill",
-      "description": "Entrada principal de la portada: píldora con lupa y botón acoplado.",
-      "html": "<form class=\"ds-buscador\" role=\"search\" onsubmit=\"return false\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><circle cx=\"7.5\" cy=\"7.5\" r=\"5.75\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"M11.8 11.8 16 16\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg><input type=\"search\" placeholder=\"Buscar EAN, descripción, brand o línea\" aria-label=\"Buscar\"><button type=\"submit\">Buscar</button></form>",
-      "css": ".ds-buscador{display:flex;align-items:center;gap:12px;background:var(--paper,#fff);border:1px solid var(--hairline,#d9d9d9);border-radius:160px;padding:8px 8px 8px 22px;max-width:640px;color:var(--ink,#141414)}.ds-buscador svg{flex:none;color:var(--mute,#5c5c5c)}.ds-buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;padding:10px 0;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:15px;letter-spacing:.06em;color:inherit}.ds-buscador input::placeholder{color:var(--mute,#5c5c5c);text-transform:uppercase}.ds-buscador:focus-within{border-color:var(--ink,#141414)}.ds-buscador button{border:0;border-radius:8px;background:var(--ink,#141414);color:var(--paper,#fff);padding:10px 16px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer}.ds-buscador button:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px}"
-    },
-    {
-      "name": "Navegación y tema",
+      "name": "Fila de barra lateral",
       "kind": "nav",
-      "refersTo": null,
-      "description": "Barra superior: marca, enlaces mono fantasma y selector de tema segmentado.",
-      "html": "<header class=\"ds-barra\"><a class=\"ds-marca\" href=\"#\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"9.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/><circle cx=\"13.5\" cy=\"8.5\" r=\"2.6\" fill=\"#ff8400\"/></svg>Brújulas</a><nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Inicio</a><a href=\"#\">Detalle</a></nav><div class=\"ds-tema\"><button aria-pressed=\"true\">Claro</button><button aria-pressed=\"false\">Oscuro</button><button aria-pressed=\"false\">Auto</button></div></header>",
-      "css": ".ds-barra{display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;color:var(--ink,#141414)}.ds-marca{font-family:\"Schibsted Grotesk\",ui-sans-serif,sans-serif;font-weight:600;font-size:21px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}.ds-nav{display:flex;gap:20px}.ds-nav a{font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;color:inherit;text-decoration:none;padding:6px 0;opacity:.55;transition:opacity 160ms ease}.ds-nav a:hover{opacity:1}.ds-nav a[aria-current=\"page\"]{opacity:1;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}.ds-nav a:focus-visible,.ds-tema button:focus-visible{outline:2px solid var(--ink,#141414);outline-offset:2px;border-radius:4px}.ds-tema{margin-left:auto;display:flex;border:1px solid var(--hairline,#d9d9d9);border-radius:160px;padding:3px;background:var(--paper,#fff)}.ds-tema button{border:0;background:transparent;color:inherit;border-radius:160px;padding:7px 12px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;cursor:pointer;transition:background-color 160ms ease,color 160ms ease}.ds-tema button[aria-pressed=\"true\"]{background:var(--ink,#141414);color:var(--paper,#fff)}"
+      "refersTo": "sidebar-row",
+      "description": "Lista de fuentes con icono, contador y fila seleccionada en azul.",
+      "html": "<div class=\"ds-lado\"><div class=\"ds-h\">Códigos</div><button class=\"ds-fila\" aria-current=\"true\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><circle cx=\"8\" cy=\"8\" r=\"6\"/><circle cx=\"8\" cy=\"8\" r=\"2.5\"/></svg><span class=\"t\">En scope</span><span class=\"ds-badge\">312</span></button><button class=\"ds-fila\"><svg viewBox=\"0 0 16 16\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"><circle cx=\"5\" cy=\"5\" r=\"2.5\"/><circle cx=\"11\" cy=\"5\" r=\"2.5\"/><circle cx=\"5\" cy=\"11\" r=\"2.5\"/><circle cx=\"11\" cy=\"11\" r=\"2.5\"/></svg><span class=\"t\">Todos</span><span class=\"ds-badge\">524</span></button></div>",
+      "css": ".ds-lado{background:#ececef;padding:10px;width:240px;font:13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif} .ds-h{font-size:11px;font-weight:600;color:#6e6e73;margin:4px 8px} .ds-fila{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;text-align:left;padding:5px 8px;border-radius:6px;min-height:28px;color:#1d1d1f;font:inherit;transition:background-color 120ms ease} .ds-fila svg{color:#0071e3} .ds-fila .t{flex:1} .ds-fila:hover{background:rgba(118,118,128,.12)} .ds-fila[aria-current=true]{background:#0071e3;color:#fff} .ds-fila[aria-current=true] svg{color:#fff} .ds-fila[aria-current=true] .ds-badge{color:#fff;background:rgba(255,255,255,.22)} .ds-fila:focus-visible{outline:3px solid rgba(0,113,227,.55)} .ds-badge{font-size:11px;font-variant-numeric:tabular-nums;color:#6e6e73;background:rgba(118,118,128,.12);border-radius:999px;padding:1px 7px}"
     },
     {
-      "name": "Panel con ficha",
+      "name": "Ficha del inspector",
       "kind": "card",
-      "refersTo": "panel",
-      "description": "Panel lateral en papel con la ficha del código seleccionado (filete en tinta) y KPIs.",
-      "html": "<aside class=\"ds-panel\"><h2>Gucci Bloom</h2><p class=\"ds-res\"><b>38</b> EANs fuera de estrategia de 212 en scope.</p><div class=\"ds-ficha\"><div class=\"ds-kpis\"><div><span class=\"ds-lbl\">WAPE90</span><b>31,4%</b></div><div><span class=\"ds-lbl\">SPP3</span><b class=\"ds-malo\">−7,2%</b></div><div><span class=\"ds-lbl\">Desvío</span><b>12%</b></div></div></div></aside>",
-      "css": ".ds-panel{background:var(--paper,#fff);border:1px solid var(--hairline,#d9d9d9);border-radius:16px;padding:20px;max-width:400px;color:var(--ink,#141414);font-family:Arial,Helvetica,sans-serif}.ds-panel h2{font-family:\"Schibsted Grotesk\",ui-sans-serif,sans-serif;font-weight:500;font-size:27px;line-height:1.05;letter-spacing:-.02em;margin:0 0 10px}.ds-res{color:var(--mute,#5c5c5c);font-size:15px;line-height:1.45;margin:0 0 16px}.ds-res b{color:var(--ink,#141414)}.ds-ficha{border:1px solid var(--ink,#141414);border-radius:16px;padding:16px}.ds-kpis{display:flex;gap:18px}.ds-kpis div{display:flex;flex-direction:column;gap:6px}.ds-lbl{font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;line-height:1;color:var(--mute,#5c5c5c)}.ds-kpis b{font-family:\"Schibsted Grotesk\",ui-sans-serif,sans-serif;font-weight:500;font-size:21px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.ds-malo{color:var(--ember-ink,#b45400)}"
+      "refersTo": "inspector-sheet",
+      "description": "Ficha con tira de tres KPIs sobre superficie secundaria.",
+      "html": "<div class=\"ds-ficha\"><p class=\"d\">Gucci Bloom EDP 50 ML</p><div class=\"ds-kpis\"><div><span>WAPE90</span><b>28,4%</b></div><div><span>WAPE180</span><b>34,1%</b></div><div><span>Desvío</span><b class=\"r\">1.240 u</b></div></div></div>",
+      "css": ".ds-ficha{background:#fff;border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 1px 1px rgba(0,0,0,.04),inset 0 0 0 .5px rgba(60,60,67,.16);padding:14px;width:288px;font:13px/1.45 -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;color:#1d1d1f} .ds-ficha .d{font-weight:600;margin:0 0 10px} .ds-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#f5f5f7;border-radius:8px;padding:10px} .ds-kpis span{display:block;font-size:11px;color:#6e6e73} .ds-kpis b{font-family:-apple-system,BlinkMacSystemFont,\"SF Pro Display\",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em;font-variant-numeric:tabular-nums} .ds-kpis .r{color:#d70015}"
     },
     {
-      "name": "Marcador y celda elegida",
+      "name": "Leyenda de desvío",
       "kind": "custom",
-      "refersTo": "marker",
-      "description": "Amarillo rotulador: detrás de palabras y en la celda elegida de la matriz del selector.",
-      "html": "<p class=\"ds-claim\">Mira <span class=\"ds-marcador\">quién se sale</span> de su receta.</p><table class=\"ds-matriz\"><tr><td style=\"background:#d6d6d6\">212</td><td class=\"ds-elegida\">58</td><td style=\"background:#ededed\">9</td></tr></table>",
-      "css": ".ds-claim{font-family:Arial,Helvetica,sans-serif;font-size:20px;line-height:1.3;color:var(--ink,#141414)}.ds-marcador{background:#fecc33;color:#141414;border-radius:25px;padding:0 .25em;box-decoration-break:clone;-webkit-box-decoration-break:clone}.ds-matriz{border-collapse:separate;border-spacing:2px}.ds-matriz td{width:60px;height:42px;text-align:center;border-radius:6px;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:12px;color:#141414}.ds-matriz td.ds-elegida{background:#fecc33;box-shadow:inset 0 0 0 2px #141414}"
-    },
-    {
-      "name": "Tooltip",
-      "kind": "custom",
-      "refersTo": "tooltip",
-      "description": "Capa superior invertida a tinta, sin sombra.",
-      "html": "<div class=\"ds-tip\"><span class=\"ds-tip-c\">2026.M05</span>Consensus 1.240 · receta 1.050 · fuera +78 uds</div>",
-      "css": ".ds-tip{display:inline-block;background:var(--ink,#141414);color:var(--paper,#fff);border-radius:8px;padding:10px 12px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.45;max-width:300px}.ds-tip-c{display:block;margin-bottom:6px;opacity:.7;font-family:\"JetBrains Mono\",ui-monospace,monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase}"
+      "refersTo": "desvio-1",
+      "description": "Escala ordinal del desvío; cada tono con su tramo escrito.",
+      "html": "<div class=\"ds-ley\"><span><i style=\"background:#d1d1d6\"></i>Dentro</span><span><i style=\"background:#ffcc00\"></i>Hasta 5%</span><span><i style=\"background:#ff9500\"></i>5-15%</span><span><i style=\"background:#ff3b30\"></i>15-30%</span><span><i style=\"background:#b3001b\"></i>Más de 30%</span></div>",
+      "css": ".ds-ley{display:flex;flex-wrap:wrap;gap:6px 14px;font:11.5px -apple-system,BlinkMacSystemFont,\"SF Pro Text\",\"Helvetica Neue\",\"Segoe UI\",Roboto,Arial,sans-serif;color:#6e6e73} .ds-ley span{display:flex;align-items:center;gap:5px} .ds-ley i{width:10px;height:10px;border-radius:50%;display:inline-block}"
     }
   ],
   "narrative": {
-    "northStar": "La mesa de trabajo del planner",
-    "overview": "**Creative North Star: \"La mesa de trabajo del planner\"**\n\nBrújulas de Demand se presenta como un cuaderno de ingeniería sobre una mesa: un lienzo gris claro cuadriculado (rejilla de 40 px) donde se apoyan, sin flotar, paneles blancos de esquinas suaves con un filete de pelo. Todo es tinta casi negra sobre papel. El color aparece solo cuando significa algo: el naranja brasa marca lo que se sale de la estrategia, el verde marca la zona meta y el amarillo rotulador señala lo elegido. El mundo viene fijado por la guía de estilo del usuario (`DESIGN html.md`, referencia \"Flim\"), adaptada a una herramienta de operación con densidad de datos alta.\n\nLa superficie es de **operación**, no de escaparate: filtrar primero, leer después. La portada combina una cabecera con el nombre a gran escala, un buscador en píldora, filas de chips de filtro y un mapa de burbujas anidadas (casa → brand → product line → EAN) junto a un panel lateral fijo con la lista ordenada. El detalle de un código apila secciones (Foto actual, Decisiones, Resultados, Detector) con un rail de resumen pegajoso a partir de 1280 px. Los números van en mono o con cifras tabulares; los gráficos son SVG dibujados a mano con la misma tinta y los mismos grises que el texto.\n\nHay tema claro y oscuro con selector manual (Claro / Oscuro / Auto); el oscuro invierte la tinta y el papel y conserva la cuadrícula y los acentos funcionales.",
+    "northStar": "La app de Mac recién salida de Cupertino",
+    "overview": "Brújulas de Demand se ve y se comporta como una app nativa de macOS nueva. No imita el estilo de Apple como decoración: usa sus convenciones de ventana. Barra lateral con lista de fuentes y vistas inteligentes, barra de herramientas translúcida, contenido central sobre superficies agrupadas y una columna de inspector a la derecha. Todo lo que el planner conoce de Finder, Notas o Música le sirve aquí sin aprender nada.\n\nLa densidad es la de una herramienta de trabajo. El cuerpo es de 13px, como en macOS. Las filas de la barra lateral miden 28px, los controles son compactos y los números van siempre en cifras tabulares. La jerarquía no la da el tamaño sino el peso y el color de la etiqueta (primaria, secundaria, terciaria). El único gesto grande es el título del detalle, que pasa a la barra cuando sale de la vista.\n\nEl color sigue los colores del sistema de Apple y cada uno tiene un solo trabajo. Azul para la receta y para la selección, gris para el Consensus, verde para la meta y una escala ordinal amarillo → naranja → rojo para el desvío. Hay modo claro, modo oscuro y Auto, que se eligen a mano en la barra lateral. El movimiento es un muelle críticamente amortiguado, sin rebote.",
     "keyCharacteristics": [
-      "Lienzo cuadriculado como superficie de toda la página, nunca como adorno de un bloque.",
-      "Monocromo de tinta: el color es señal (desvío, meta, elección), nunca decoración.",
-      "Tres voces tipográficas: grotesca de display, mono de etiquetas en mayúsculas, Arial para leer.",
-      "Tres radios estructurales (8 / 16 / 160 px) y cero sombras.",
-      "Tarjetas de brújula de tamaño fijo en px, alineadas en rejilla 2 × 2."
+      "Ventana en tres columnas: barra lateral (260px), contenido y un inspector de 320px.",
+      "Fuente del sistema (SF Pro vía `-apple-system`), cuerpo de 13px y cifras tabulares en todos los datos.",
+      "Superficies agrupadas blancas sobre el gris de ventana, separadas por un filo de media línea y no por bordes gruesos.",
+      "Material translúcido solo donde el contenido pasa por debajo (barra de herramientas, popover, tooltip, etiquetas de burbuja).",
+      "Muelle críticamente amortiguado para el zoom del mapa y el pulgar de los segmentados; respeta movimiento y transparencia reducidos."
     ],
     "rules": [
       {
-        "name": "La regla de la señal",
-        "body": "Ningún color que no sea neutro aparece sin significado de dato: brasa = fuera de estrategia, verde = meta, amarillo = elegido. Si un elemento no comunica uno de esos tres estados, va en tinta o gris.",
+        "name": "La regla de un color, un trabajo",
+        "body": "El azul es la receta y la selección, el gris es el Consensus, el verde es la meta, y la escala amarilla-roja es el desvío. Ningún color cambia de papel entre vistas.",
         "section": "colors"
       },
       {
-        "name": "La regla de la doble pista",
-        "body": "El color nunca es la única señal: cada desvío lleva su cifra, su tooltip o su texto de leyenda; el Consensus además se distingue por el trazo discontinuo.",
+        "name": "La regla del color acompañado",
+        "body": "El desvío nunca se comunica solo con color: cada tono va con su tramo en la leyenda, una cifra en la lista y un tooltip. El Consensus además de gris es discontinuo.",
         "section": "colors"
       },
       {
-        "name": "La regla del amarillo sin superficie",
-        "body": "El amarillo marca palabras o una celda elegida; no rellena paneles ni tarjetas.",
-        "section": "colors"
-      },
-      {
-        "name": "La regla de las tres voces",
-        "body": "Display para nombres y cifras, mono para etiquetas y controles, Arial para frases. No se introduce una cuarta familia.",
+        "name": "La regla de las cifras tabulares",
+        "body": "Cualquier número (KPI, desvío, contador o eje) lleva `font-variant-numeric: tabular-nums`, para que las columnas no bailen al ordenar ni al cambiar de foto.",
         "section": "typography"
       },
       {
-        "name": "La regla de la cifra tabular",
-        "body": "Toda cifra comparable (tablas, lista, KPIs) usa cifras tabulares o mono para que las columnas se alineen.",
+        "name": "La regla de la fuente del sistema",
+        "body": "No se carga ninguna fuente web. Si el SO no tiene SF Pro, la cadena cae a la fuente nativa de cada plataforma.",
         "section": "typography"
       },
       {
         "name": "La regla del tamaño fijo",
-        "body": "Las cuatro tarjetas de cada rejilla 2 × 2 tienen exactamente el mismo tamaño en px (360 × 480 para Decisiones, 360 × 410 para Resultados), con lienzo SVG fijo (326 × 326 y 326 × 230) y título de altura fija. Nunca se dimensionan por contenido.",
+        "body": "Las tarjetas de brújula tienen ancho, alto y altura de título fijos en px. Ningún contenido las estira.",
         "section": "layout"
       },
       {
-        "name": "La regla del papel apoyado",
-        "body": "Ninguna superficie flota. Si algo debe destacar, se invierte a tinta o se le cambia el filete a tinta (ficha del código seleccionado, buscador con foco), nunca se le añade sombra.",
+        "name": "La regla del material con motivo",
+        "body": "El desenfoque translúcido solo existe donde hay contenido debajo. Con `prefers-reduced-transparency`, todos los materiales pasan a un fondo opaco.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do apoyar toda la página sobre el lienzo (canvas) con la cuadrícula de 40 px en líneas de 1 px (grid).",
-      "Do usar solo los radios 8 / 16 / 160 px para botones, tarjetas y píldoras, y reservar 4 / 6 / 25 px a foco, celdas de matriz y marcador.",
-      "Do escribir etiquetas, controles y rótulos de gráfico en JetBrains Mono en mayúsculas con 0,06em (0,04em dentro de SVG).",
-      "Do fijar en px el tamaño de las tarjetas de brújula y su lienzo SVG, y la altura del título.",
-      "Do acompañar cada color de desvío con su cifra, tooltip o leyenda en texto.",
-      "Do dibujar el Consensus en gris discontinuo (4/3) y la receta en tinta continua en todos los gráficos.",
-      "Do redefinir los tokens en `[data-theme=\"dark\"]` y en `prefers-color-scheme: dark` sin `[data-theme=\"light\"]`, manteniendo el selector Claro / Oscuro / Auto.",
-      "Do respetar `prefers-reduced-motion`: sin zoom animado del mapa ni escalado de entrada."
+      "**Do** usar los tokens de color del sistema en las dos apariencias; cada token claro tiene su par oscuro y se cambian juntos con `data-theme` o `prefers-color-scheme`.",
+      "**Do** separar las superficies por tono y por el filo `inset 0 0 0 .5px` del separador, y guardar las sombras grandes para lo que flota.",
+      "**Do** animar con el muelle críticamente amortiguado (`--muelle`, 320–620ms) para lo que se mueve en el espacio y con `cubic-bezier(0.23,1,0.32,1)` en 120–220ms para la respuesta al pulsar y los popovers.",
+      "**Do** desactivar transformaciones y desenfoques con `prefers-reduced-motion`, y quitar materiales con `prefers-reduced-transparency`.",
+      "**Do** dibujar el Consensus en gris discontinuo y la receta en azul continuo en todos los gráficos.",
+      "**Do** dibujar los iconos como SVG de trazo de 1.6px en una caja de 16px."
     ],
     "donts": [
-      "Don't añadir sombras de elevación a ningún panel, tarjeta o control; la profundidad es filete y contraste de superficie.",
-      "Don't usar #000000 como color de diseño; la tinta es #141414.",
-      "Don't rellenar botones con color: el único botón relleno es el de tinta.",
-      "Don't usar el amarillo como fondo de paneles o tarjetas; marca palabras, la celda elegida o la burbuja activa.",
-      "Don't usar brasa ni verde como decoración: brasa es fuera de estrategia, verde es meta (la única excepción es el punto brasa del logotipo).",
-      "Don't introducir una cuarta familia tipográfica ni pesos de display por encima de 600.",
-      "Don't dimensionar las tarjetas de una rejilla 2 × 2 por su contenido."
+      "**Don't** cargar fuentes web ni usar una fuente de display distinta de la del sistema.",
+      "**Don't** usar el azul para algo que no sea la receta, la selección, el foco o un enlace.",
+      "**Don't** usar la escala amarilla-roja fuera del desvío, ni dejar el desvío sin su cifra o su tooltip.",
+      "**Don't** poner desenfoque translúcido en superficies que no tienen contenido debajo.",
+      "**Don't** dejar que una tarjeta de brújula cambie de tamaño con su contenido.",
+      "**Don't** poner bordes de 1px opacos alrededor de las tarjetas; el filo es de media línea y semitransparente."
     ]
   }
 }
