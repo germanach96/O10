@@ -48,8 +48,11 @@ def _clave_grupo(cod: pd.DataFrame, amp: str, crit: str) -> np.ndarray:
 class MotorFoto:
     """Precalcula historia limpia, bases y trends de una foto; produce forecasts por receta."""
 
-    def __init__(self, foto: Foto, cfg: dict, rejilla: Rejilla, epos_externo: np.ndarray | None = None):
+    def __init__(self, foto: Foto, cfg: dict, rejilla: Rejilla, epos_externo: np.ndarray | None = None,
+                 cuenta: np.ndarray | None = None):
         self.foto, self.cfg, self.R = foto, cfg, rejilla
+        # códigos que suman en los trends de grupo (filtro general de tipos); None = todos
+        self.cuenta = np.ones(len(foto.eans), bool) if cuenta is None else np.asarray(cuenta, bool)
         F = foto.mes
         self.F = F
         hz = cfg["horizonte"]
@@ -138,9 +141,10 @@ class MotorFoto:
             clave = _clave_grupo(cod, amp, crit)
             self.claves.append(clave)
             u, inv = np.unique(clave, return_inverse=True)
-            self.tam_grupo[gi] = np.bincount(inv)[inv]
+            # los códigos ignorados por el filtro de tipos no suman en el grupo
+            self.tam_grupo[gi] = np.bincount(inv, weights=self.cuenta).astype(int)[inv]
             onehot = np.zeros((len(u), n))
-            onehot[inv, np.arange(n)] = 1.0
+            onehot[inv, np.arange(n)] = self.cuenta.astype(float)
             HG = np.einsum("gk,cpkt->cpgt", onehot, self.H)                 # (c, p, grupos, meses)
             dispG = (onehot @ (~self.disponible).astype(float)) == 0       # todos los miembros con historia
             for ni, N in enumerate(Nv):

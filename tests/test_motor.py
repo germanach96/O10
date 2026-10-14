@@ -4,9 +4,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from brujulas.lector import ErrorFoto, extraer_tamano, leer_foto
-from brujulas.motor import CELDAS, EJES, MotorFoto, Rejilla
-from brujulas.pipeline import cargar_config, kpis
+from motor.lector import ErrorFoto, extraer_tamano, leer_foto
+from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
+from motor.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
 
 RAIZ = Path(__file__).resolve().parent.parent
 COLS = ("Sub-Division;House;Brand;Product Line;Article Type;Article Sub Type;EAN;Planning Item Description;"
@@ -120,6 +120,24 @@ def test_forecast_a_mano(foto_simple, cfg):
     assert val[indice(R, s=0, w=0, m=0.5, N=12, c=0, p=0, g=("Propio", "Jerarquía"))]
 
 
+def test_filtro_tipos(foto_simple, cfg):
+    """Un tipo ignorado no suma en el trend de grupo: sin el código 2 (Local), la PL vale lo mismo que el propio."""
+    f = foto_simple
+    f.codigos.loc["2000000000030", "Final Responsibility"] = "Local"
+    assert mascara_cuenta(f.codigos).all()
+    cuenta = mascara_cuenta(f.codigos, ["Local"])
+    assert cuenta.tolist() == [f.eans[k] != "2000000000030" for k in range(2)]
+    assert not mascara_cuenta(f.codigos, ["Regular"]).any()
+    R = Rejilla(cfg)
+    M = MotorFoto(f, cfg, R, cuenta=cuenta)
+    i = f.eans.index("1000000000050")
+    Fc, _ = M.forecasts(i)
+    r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Product Line", "Jerarquía"))
+    np.testing.assert_allclose(Fc[r][1], 110 * 1.10)
+    assert M.tam_grupo[CELDAS.index(("Product Line", "Jerarquía")), i] == 1
+    assert len(variantes_tipos(cfg)) == 4
+
+
 def test_tope_trend(tmp_path, cfg):
     filas = []
     for a in (2023, 2024):
@@ -144,9 +162,12 @@ def test_kpis_grupo(cfg):
     assert k["90"]["spp"] == pytest.approx(-0.2)
 
 
-@pytest.mark.skipif(not (RAIZ / "Gucci_2025_11.csv").exists(), reason="sin CSV de ejemplo")
+CSV_GUCCI = RAIZ / "data" / "Gucci" / "Consensus" / "Gucci_2025_11.csv"
+
+
+@pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")
 def test_csv_gucci(cfg):
-    f = leer_foto(RAIZ / "Gucci_2025_11.csv", cfg)
+    f = leer_foto(CSV_GUCCI, cfg)
     assert f.etiqueta == "2025.M11"
     assert f.codigos["scope"].sum() > 100
     assert not f.codigos.loc[f.codigos["Article Type"] == "One Shot/Promo", "scope"].any()

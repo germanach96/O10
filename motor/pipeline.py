@@ -1,6 +1,8 @@
 """Pipeline: lee todas las fotos de una casa, calcula recetas, cubo, resúmenes, score y detector.
 
-Uso:  python -m brujulas.pipeline [carpeta_csv] [carpeta_salida] [--sin-cubo]
+Uso:  python -m motor.pipeline [carpeta_datos] [carpeta_salida] [--sin-cubo]
+
+Por defecto lee data/<Casa>/Consensus/<Casa>_AAAA_MM.csv y escribe el HTML en diseno/ejemplos/.
 """
 from __future__ import annotations
 
@@ -13,9 +15,11 @@ import numpy as np
 import pandas as pd
 
 from .lector import Foto, int_a_mes, leer_foto
-from .motor import CELDAS, EJES, MotorFoto, Rejilla
+from .recetas import CELDAS, EJES, MotorFoto, Rejilla
 
 RAIZ = Path(__file__).resolve().parent.parent
+DATOS = RAIZ / "data"                                   # data/<Casa>/Consensus/*.csv
+HTML_EJEMPLO = RAIZ / "diseno" / "ejemplos" / "BRUJULAS_ejemplo.html"
 
 
 def cargar_config(ruta: Path | None = None) -> dict:
@@ -66,24 +70,58 @@ def epos_externo(foto: Foto, fotos: list[Foto], motor_t_hist: np.ndarray) -> np.
     return out if hay else None
 
 
+# ------------------------------------------------------------------ filtro general de tipos
+TIPOS = ("Regular", "One Shot", "Central", "Local")
+
+
+def clases(cod: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    """Tipo de artículo (Regular / One Shot) y responsable (Central / Local; vacío = Central)."""
+    art = np.where(cod["Article Type"].eq("Regular Item"), "Regular", "One Shot")
+    resp = np.where(cod["Final Responsibility"].isin(["Central", ""]), "Central", "Local")
+    return art, resp
+
+
+def mascara_cuenta(cod: pd.DataFrame, ignorar=()) -> np.ndarray:
+    """True = el código cuenta en los cálculos (trends de grupo y scope)."""
+    art, resp = clases(cod)
+    ign = set(ignorar)
+    return ~np.isin(art, list(ign)) & ~np.isin(resp, list(ign))
+
+
+def variantes_tipos(cfg: dict) -> list[tuple[str, ...]]:
+    """Combinaciones de tipos ignorados que se precalculan. Ignorar Regular o Central vacía el scope,
+    así que solo cambian los cálculos las combinaciones de One Shot y Local."""
+    ign = cfg.get("filtro_tipos", {}).get("precalcular", ["One Shot", "Local"])
+    out = [()]
+    for t in ign:
+        out += [v + (t,) for v in out]
+    return [tuple(sorted(v)) for v in out]
+
+
+def clave_variante(ignorar) -> str:
+    return ",".join(sorted(ignorar))
+
+
 # ------------------------------------------------------------------ cálculo por foto
 class ResultadoFoto:
     pass
 
 
-def calcular_foto(foto: Foto, fotos: list[Foto], cfg: dict, R: Rejilla) -> ResultadoFoto:
+def calcular_foto(foto: Foto, fotos: list[Foto], cfg: dict, R: Rejilla, ignorar=()) -> ResultadoFoto:
     hz = cfg["horizonte"]
     ext = None
     if cfg.get("epos_historico_de_foto_mas_reciente") and np.isnan(
             foto.mat["EPOS"][:, foto.meses < foto.mes]).all():
         t_hist = np.arange(foto.mes - 36, foto.mes)
         ext = epos_externo(foto, fotos, t_hist)
-        if ext is not None:
-            foto.avisos.append("La foto no trae EPOS: el EPOS histórico se toma de la foto más reciente")
-    M = MotorFoto(foto, cfg, R, epos_externo=ext)
-    A = actuals_futuros(foto, fotos, hz)
+        aviso = "La foto no trae EPOS: el EPOS histórico se toma de la foto más reciente"
+        if ext is not None and aviso not in foto.avisos:
+            foto.avisos.append(aviso)
     cod = foto.codigos
-    scope = np.where(cod["scope"].to_numpy())[0]
+    cuenta = mascara_cuenta(cod, ignorar)
+    M = MotorFoto(foto, cfg, R, epos_externo=ext, cuenta=cuenta)
+    A = actuals_futuros(foto, fotos, hz)
+    scope = np.where(cod["scope"].to_numpy() & cuenta)[0]
     tramos = cfg["tramos"]
     nt = len(tramos)
 
@@ -381,13 +419,13 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     sin_cubo = "--sin-cubo" in argv
     argv = [a for a in argv if not a.startswith("--")]
-    carpeta = Path(argv[0]) if argv else RAIZ
+    carpeta = Path(argv[0]) if argv else DATOS
     salida = Path(argv[1]) if len(argv) > 1 else RAIZ / "salida"
     salida.mkdir(parents=True, exist_ok=True)
     cfg = cargar_config()
     R = Rejilla(cfg)
     t0 = time.time()
-    archivos = sorted(carpeta.glob("*_[0-9][0-9][0-9][0-9]_[0-9][0-9].csv"))
+    archivos = sorted(carpeta.rglob("*_[0-9][0-9][0-9][0-9]_[0-9][0-9].csv"))
     casas = {}
     for a in archivos:
         f = leer_foto(a, cfg)
@@ -397,20 +435,31 @@ def main(argv=None):
              "casas": {}}
     for casa, fotos in casas.items():
         fotos.sort(key=lambda f: f.mes)
-        resultados = []
-        for f in fotos:
-            res = calcular_foto(f, fotos, cfg, R)
-            resultados.append(res)
-            print(f"  {casa} {f.etiqueta}: {len(res.scope)} códigos × {R.n} recetas; "
-                  f"tramos cerrados {res.cerrado.any(0).tolist()} ({time.time()-t0:.1f}s)")
-            if not sin_cubo:
-                escribir_cubo(res, R, salida / "cubo")
-            (salida / "logs").mkdir(exist_ok=True)
-            (salida / "logs" / f"{casa}_{f.etiqueta}_invalidas.json").write_text(
-                json.dumps(res.log, ensure_ascii=False, indent=1), encoding="utf-8")
-        resumenes = [resumen_foto(r, cfg, R) for r in resultados]
-        elegida, num, sgn, den = score_multifoto(resultados, cfg, R)
-        det = detector(resultados[-1], elegida, num, sgn, den, cfg, R)
+        # una variante por combinación de tipos ignorados (filtro general de la página);
+        # el cubo, los logs y los resúmenes en disco son los de la variante base (no se ignora nada)
+        variantes = {}
+        for ignorar in variantes_tipos(cfg):
+            base = not ignorar
+            resultados = []
+            for f in fotos:
+                res = calcular_foto(f, fotos, cfg, R, ignorar)
+                resultados.append(res)
+                print(f"  {casa} {f.etiqueta} [{clave_variante(ignorar) or 'todos'}]: {len(res.scope)} códigos × {R.n} recetas; "
+                      f"tramos cerrados {res.cerrado.any(0).tolist()} ({time.time()-t0:.1f}s)")
+                if base and not sin_cubo:
+                    escribir_cubo(res, R, salida / "cubo")
+                if base:
+                    (salida / "logs").mkdir(exist_ok=True)
+                    (salida / "logs" / f"{casa}_{f.etiqueta}_invalidas.json").write_text(
+                        json.dumps(res.log, ensure_ascii=False, indent=1), encoding="utf-8")
+            resumenes = [resumen_foto(r, cfg, R) for r in resultados]
+            elegida, num, sgn, den = score_multifoto(resultados, cfg, R)
+            det = detector(resultados[-1], elegida, num, sgn, den, cfg, R)
+            variantes[clave_variante(ignorar)] = {"fotos": resumenes, "elegida": elegida, "detector": det}
+            if base:
+                for rsm in resumenes:
+                    (salida / f"resumen_{casa}_{rsm['foto']}.json").write_text(
+                        json.dumps(rsm, ensure_ascii=False), encoding="utf-8")
         atributos = {}
         for f in fotos:
             for e, row in f.codigos.iterrows():
@@ -424,23 +473,24 @@ def main(argv=None):
         fut = (fu.meses > fu.mes) & (fu.meses <= fu.mes + cfg["horizonte"])
         vol12 = np.nansum(fu.mat["Actuals"][:, ult12], axis=1)
         cons9 = np.nansum(fu.mat["Consensus - Final"][:, fut], axis=1)
+        art, resp = clases(fu.codigos)
         inicio = {}
         for i, (e, row) in enumerate(fu.codigos.iterrows()):
             inicio[e] = {"vol12": round(float(vol12[i]), 1), "cons9": round(float(cons9[i]), 1),
                          "scope": bool(row["scope"]), "motivo": row["fuera_scope_motivo"],
-                         "edad": row["tramo_edad"], "tipo": row["Article Type"]}
-        for rsm in resumenes:
-            (salida / f"resumen_{casa}_{rsm['foto']}.json").write_text(
-                json.dumps(rsm, ensure_ascii=False), encoding="utf-8")
+                         "edad": row["tramo_edad"], "tipo": row["Article Type"],
+                         "art": str(art[i]), "resp": str(resp[i])}
         datos["casas"][casa] = {
-            "fotos": resumenes, "elegida": elegida, "detector": det, "atributos": atributos,
-            "inicio": {"foto": fu.etiqueta, "codigos": inicio},
+            **variantes[""], "variantes": {k: v for k, v in variantes.items() if k},
+            "atributos": atributos, "inicio": {"foto": fu.etiqueta, "codigos": inicio},
         }
-        print(f"  {casa}: score multi-foto con {len(elegida)} códigos ({time.time()-t0:.1f}s)")
+        print(f"  {casa}: score multi-foto con {len(variantes['']['elegida'])} códigos, "
+              f"{len(variantes)} variantes de tipos ({time.time()-t0:.1f}s)")
     tabla_recetas(R).to_csv(salida / "recetas.csv")
     (salida / "datos.json").write_text(json.dumps(datos, ensure_ascii=False), encoding="utf-8")
-    from .html import generar_html
-    ruta = generar_html(datos, RAIZ / "BRUJULAS_ejemplo.html")
+    from interfaz.html import generar_html
+    HTML_EJEMPLO.parent.mkdir(parents=True, exist_ok=True)
+    ruta = generar_html(datos, HTML_EJEMPLO)
     print(f"HTML: {ruta} ({time.time()-t0:.1f}s)")
 
 

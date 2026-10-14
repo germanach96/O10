@@ -8,7 +8,9 @@ Fase 1 (esta especificación): encontrar, en cada foto, los parámetros que mini
 
 Idioma de la interfaz y de los comentarios: español.
 
-Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @SKILLS-DISENO.md
+Mapa del repo: `README.md`. Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/`.
+
+Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @diseno/SKILLS-DISENO.md
 
 ---
 
@@ -35,7 +37,7 @@ Visto desde una foto F: forecast de los meses F+1 … F+9. SPP3/WAPE90 = meses F
 
 ## 2. Datos de entrada
 
-Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucci, foto S&OP 2026.M04).
+Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucci, foto S&OP 2026.M04). Se guardan en `data/<Casa>/Consensus/` (por ejemplo `data/Gucci/Consensus/Gucci_2026_04.csv`).
 
 ### Formato
 - Separador `;`, codificación UTF-8 con BOM.
@@ -97,6 +99,7 @@ Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucc
   - One Shot/Promo, aunque el responsable esté vacío.
   - Innovaciones en sus meses 1–6.
 - **Pero los volúmenes de los códigos local sí cuentan** en los trends de grupo y en los cálculos agregados (puede haber canibalismo o efecto halo).
+- **Filtro general de tipos** (barra lateral de inicio, "Cuentan en los cálculos"): Regular / One Shot (Article Type) y Central (o vacío) / Local (Final Responsibility). Por defecto cuentan todos. Un tipo apagado no suma en los trends de grupo ni en el tamaño de los grupos, y desaparece del mapa y del detector. Al menos un tipo de cada pareja queda encendido. Se precalcula cada combinación de One Shot y Local (`filtro_tipos` en la configuración); apagar Regular o Central deja el scope vacío y no necesita cálculo. El cubo, los logs y los resúmenes en disco son los de la variante base (no se ignora nada).
 
 El scope se evalúa en cada foto: un código puede entrar en la foto de octubre porque ya cumplió 7 meses.
 
@@ -195,7 +198,7 @@ Score(receta) = Σ_fotos dₓ · Σ_tramos cerrados wₕ · abs_err
 
 Compara el **Consensus - Final de la foto más actual** con el forecast de la **receta elegida** para cada código, mes a mes, en los 9 meses futuros.
 
-- **Tolerancia** definida por el usuario. Por defecto 5% en todo el horizonte. Opción gradual lineal:
+- **Tolerancia** definida por el usuario. Por defecto 5% en todo el horizonte. **Primero se fija una tolerancia general en la pantalla de inicio** (barra lateral, "Ajustes generales") y después, en el detalle de un EAN, se le puede poner una **tolerancia propia** que sustituye a la general solo para ese EAN (se marca con ● en el detector). En un grupo, cada código usa la suya. Se guarda en el navegador del usuario. Opción gradual lineal:
   `tol(h) = inicio + (fin − inicio) · (h − 1) / 8`, h = 1…9. Ejemplo: 5% → 10% da 7,5% en el mes 5.
 - **Desvío de un mes:** solo el exceso fuera del rango. Tolerancia 5% y Consensus 8% por encima de la receta → desvío 3%. Dentro del rango → 0.
 - **Resultado por EAN, como el WAPE:** suma en **valor absoluto** de los desvíos de todos los meses. No es bias: un mes por encima y otro por debajo no se compensan.
@@ -230,7 +233,7 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `DESIGN.md` (la guía `DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
@@ -252,7 +255,8 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Hacia el valor ganador, normalizado a −1…+1.
   - Distancia al centro proporcional a cuánto mejora frente al extremo contrario: `tanh(ΔWAPE / 5 pp)`, ajustable.
   - Diferencia menor de ~1 pp → zona indiferente, cerca del centro.
-- **Selector:** matriz de 17 celdas con el nº de códigos del grupo (más oscuro = grupo más grande), la celda elegida con recuadro, y debajo el ganador de cada foto. Tooltip con el WAPE del grupo.
+- **Selector:** rejilla del mismo tamaño que una brújula (X = amplitud, Y = criterio) con 17 celdas que muestran el nº de códigos del grupo (más oscuro = grupo más grande). La celda elegida lleva recuadro. Encima va la trayectoria del grupo ganador foto a foto, igual que en las brújulas. Debajo, el ganador de cada foto. Tooltip con el WAPE del grupo.
+- **Selección de un grupo (casa, brand, product line):** en las tres brújulas y en el selector, el **punto grande es el promedio simple de las posiciones de todos los códigos del grupo** en cada foto, y su trayectoria se mueve foto a foto. Debajo, cada código del grupo se dibuja con un punto y una línea pequeños; al pasar el puntero por un código se resalta su línea. En el selector, los códigos se reparten dentro de la celda de su grupo ganador. Los valores del pie siguen siendo los de la regla del grupo.
 
 ### Sección "Resultados" — rejilla 2 × 2
 - Tres **medias brújulas**: SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE(9M).

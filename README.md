@@ -1,16 +1,40 @@
-# O10 · Brújulas de Demand — ejemplo fase 1
+# O10 · Brújulas de Demand — fase 1
 
-Especificación completa en `CLAUDE.md`.
+Especificación completa en `CLAUDE.md` (empieza por ahí).
 
 ```bash
 pip install -r requirements.txt
-python -m brujulas.pipeline            # lee *_AAAA_MM.csv de la raíz, genera BRUJULAS_ejemplo.html
-python -m brujulas.pipeline --sin-cubo # igual, sin escribir el cubo Parquet
+python -m motor.pipeline            # lee data/<Casa>/Consensus/*.csv y genera diseno/ejemplos/BRUJULAS_ejemplo.html
+python -m motor.pipeline --sin-cubo # igual, sin escribir el cubo Parquet
 python -m pytest tests
 ```
 
-- `brujulas/config.json`: rejillas, tope del trend, pesos por tramo, tolerancias y decisiones abiertas.
-- `brujulas/lector.py`: lectura y validación de fotos (EAN, mes, scope, edad, tamaño).
-- `brujulas/motor.py`: forecast de las 12.393 recetas por código y foto.
-- `brujulas/pipeline.py`: actuals posteriores, tramos, cubo Parquet (`salida/cubo`), resúmenes, score multi-foto y detector.
-- `BRUJULAS_ejemplo.html`: página autocontenida con los datos precalculados (se abre sin servidor). Plantilla en `brujulas/plantilla.html`; sistema de diseño en `DESIGN.md`.
+## Mapa del repo
+
+```
+O10/
+├── CLAUDE.md                 especificación (KPIs, datos, recetas, detector, interfaz)
+├── README.md                 este mapa
+├── requirements.txt
+├── motor/                    cálculo en Python (sin nada de interfaz)
+│   ├── config.json           rejillas, tope del trend, pesos, tolerancia inicial, filtro de tipos
+│   ├── lector.py             lectura y validación de una foto (EAN, mes, scope, edad, tamaño)
+│   ├── recetas.py            forecast de las 12.393 recetas por código y foto (MotorFoto, Rejilla)
+│   └── pipeline.py           actuals posteriores, tramos, cubo, resúmenes, score multi-foto, detector
+├── interfaz/                 código de la página
+│   ├── plantilla.html        HTML + CSS + JS de O10; el pipeline incrusta los datos
+│   ├── html.py               genera el HTML autocontenido a partir de la plantilla
+│   └── vendor/               d3-hierarchy incrustado (licencia ISC)
+├── diseno/                   decisiones de diseño y ejemplos
+│   ├── DESIGN.md             sistema de diseño vigente (iOS / iPadOS 26, cristal líquido)
+│   ├── PRODUCT.md            para quién es y qué tiene que transmitir
+│   ├── SKILLS-DISENO.md      skills de diseño obligatorias (lo importa CLAUDE.md)
+│   ├── referencia/           guías antiguas, ya no se aplican
+│   └── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
+├── data/                     datos de entrada: data/<Casa>/Consensus/<Casa>_AAAA_MM.csv
+│   └── Gucci/Consensus/      fotos de Gucci
+├── tests/                    tests del lector, el motor y los KPIs
+└── salida/                   (no versionada) cubo Parquet, resúmenes JSON, logs
+```
+
+Una foto nueva se añade dejando su CSV en `data/<Casa>/Consensus/` con el nombre `<Casa>_AAAA_MM.csv` y volviendo a ejecutar el pipeline. La casa sale del nombre del archivo.
