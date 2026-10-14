@@ -36,7 +36,7 @@
   --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#ffffff;
   --hueco:rgba(60,60,67,.38); --sinrec:rgba(255,255,255,.6);
   --c-os:#a2845e; --c-in:#32ade6; --a-tipo:.34;
-  --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:transparent;
+  --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:rgba(255,255,255,.2);
   --borde-burbuja:rgba(255,255,255,.85);
   --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
@@ -64,7 +64,7 @@
   --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
   --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
   --c-os:#ac8e68; --c-in:#64d2ff; --a-tipo:.4;
-  --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
+  --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --b-casa:rgba(255,255,255,.03); --borde-burbuja:rgba(255,255,255,.16);
   --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
   color-scheme:dark;
 }
@@ -85,7 +85,7 @@
     --t0:#1d1d1f; --t1:#1d1d1f; --t2:#1d1d1f; --t3:#1d1d1f; --t4:#1d1d1f;
     --hueco:rgba(255,255,255,.28); --sinrec:rgba(255,255,255,.1);
     --c-os:#ac8e68; --c-in:#64d2ff; --a-tipo:.4;
-    --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --borde-burbuja:rgba(255,255,255,.16);
+    --b-brand:rgba(255,255,255,.05); --b-pl:rgba(255,255,255,.06); --b-casa:rgba(255,255,255,.03); --borde-burbuja:rgba(255,255,255,.16);
     --cons:#98989d; --banda:rgba(10,132,255,.2); --meta:rgba(48,209,88,.16);
     color-scheme:dark;
   }
@@ -320,7 +320,8 @@ main[hidden]{display:none}
 #vistaInicio .mapa .leyenda{cursor:auto}
 #mundo{transform-origin:0 0;transition:transform 640ms var(--muelle)}
 #mundo circle{vector-effect:non-scaling-stroke;transition:opacity 220ms ease,fill 220ms ease,stroke 160ms ease}
-.n-casa{fill:var(--b-casa);stroke:none}
+.n-todo{fill:transparent;stroke:none}
+.n-casa{fill:var(--b-casa);stroke:var(--borde-burbuja);stroke-width:1.25}
 .n-brand{fill:var(--b-brand);stroke:var(--borde-burbuja);stroke-width:1}
 .n-pl{fill:var(--b-pl);stroke:var(--borde-burbuja);stroke-width:.75}
 .n-hoja{fill-opacity:var(--tinte);stroke-width:1.25;transform-box:fill-box;transform-origin:center}
@@ -1087,11 +1088,13 @@ function construirArbol(hojas){
     if (!brands.has(h.brand)) brands.set(h.brand, new Map());
     const pls = brands.get(h.brand); if (!pls.has(h.pl)) pls.set(h.pl, []); pls.get(h.pl).push(h);
   });
-  const raiz = {nombre: estado.casa, clave: "Casa: " + estado.casa, nivel: "casa", children: []};
+  // la casa es un círculo más (como las brands): la raíz, invisible, es el lugar donde convivirán las demás casas
+  const nc = {nombre: estado.casa, clave: "Casa: " + estado.casa, nivel: "casa", children: []};
+  const raiz = {nombre: "Todas las casas", clave: "Todas", nivel: "todo", children: [nc]};
   brands.forEach((pls, b) => {
     const nb = {nombre: b, clave: "Brand: " + b, nivel: "brand", children: []};
     pls.forEach((hs, pl) => nb.children.push({nombre: pl, clave: "PL: " + pl, nivel: "pl", children: hs.map(h => ({nombre: h.desc, nivel: "hoja", hoja: h, valor: Math.max(h.vol, minVis)}))}));
-    raiz.children.push(nb);
+    nc.children.push(nb);
   });
   return d3.hierarchy(raiz).sum(d => d.valor || 0).sort((a, b) => b.value - a.value);
 }
@@ -1118,20 +1121,22 @@ function dibujarMapa(){
   if (!W) return;
   M.W = W;
   const raiz = construirArbol(M.hojas);
-  d3.pack().size([W, W]).padding(n => n.depth === 0 ? 14 : n.depth === 1 ? 6 : 2)(raiz);
+  d3.pack().size([W, W]).padding(n => n.depth === 0 ? 10 : n.depth === 1 ? 14 : n.depth === 2 ? 6 : 2)(raiz);
   M.raiz = raiz; M.nodos = raiz.descendants();
   M.minR = Math.min(...raiz.leaves().map(l => l.r).filter(r => r > 0.6), 4);
   const clave = M.foco && M.foco.data.clave;
-  M.foco = (clave && M.nodos.find(n => n.data.clave === clave)) || raiz;
+  // M.casaN = el círculo de la casa abierta; se empieza enfocado en ella (con una sola casa, la raíz no aporta nada)
+  M.casaN = raiz.children.find(c => c.data.clave === "Casa: " + estado.casa) || raiz.children[0];
+  M.foco = (clave && M.nodos.find(n => n.data.clave === clave)) || (raiz.children.length === 1 ? M.casaN : raiz);
   const svg = $("pack");
   svg.setAttribute("viewBox", `0 0 ${W} ${W}`);
   // índice de brand para la entrada en cascada
-  const iBrand = new Map(); raiz.children.forEach((b, i) => iBrand.set(b, i));
+  const iBrand = new Map(); M.casaN.children.forEach((b, i) => iBrand.set(b, i));
   // grupos anidados (brand > línea > código): cada grupo puede flotar sin romper el orden de M.nodos
   const pinta = (n) => {
     const i = M.nodos.indexOf(n), d = n.data;
-    const brand = n.depth >= 1 ? n.ancestors().find(a => a.depth === 1) : null;
-    const delay = brand ? Math.min(iBrand.get(brand), 9) * 45 + (n.depth - 1) * 40 : 0;
+    const brand = n.depth >= 2 ? n.ancestors().find(a => a.depth === 2) : null;
+    const delay = brand ? Math.min(iBrand.get(brand) || 0, 9) * 45 + (n.depth - 2) * 40 : 0;
     const cls = d.nivel === "hoja"
       ? `n-hoja n-anim${!d.hoja.scope ? " hueco" : ""}${d.hoja.tipo ? " t-" + d.hoja.tipo : ""}${d.hoja.sinrec ? " sinrec" : ""}`
       : `n-${d.nivel} n-grupo${n.depth ? " n-anim" : ""}`;
@@ -1226,7 +1231,7 @@ function transformDe(n){
     const k = M.W / (Math.max(x1 - x0, y1 - y0) * 1.08);
     return {k, tx: M.W / 2 - (x0 + x1) / 2 * k, ty: M.W / 2 - (y0 + y1) / 2 * k};
   }
-  const k = M.W / (2 * n.r * 1.03);
+  const k = M.W / (2 * n.r * (n.data.nivel === "casa" ? 1.1 : 1.03));
   return {k, tx: M.W / 2 - n.x * k, ty: M.W / 2 - n.y * k};
 }
 
@@ -1435,7 +1440,8 @@ function aplicarFiltros(){
 function pintarMigas(){
   const camino = M.foco.ancestors().reverse();
   if (!$("vistaInicio").hidden) $("barraTitulo").textContent = corto(M.foco.data.nombre);
-  if (camino.length === 1) { $("migas").innerHTML = `<span>Foto ${casa().inicio.foto} · ${M.hojas.length} códigos</span>`; pintarLado(); return; }
+  if (camino.length === 1) { $("migas").innerHTML = `<span>${M.raiz.children.length} casa${M.raiz.children.length === 1 ? "" : "s"} · ${M.hojas.length} códigos</span>`; pintarLado(); return; }
+  if (camino.length === 2) { $("migas").innerHTML = `<button type="button" data-clave="Todas">Todas las casas</button><span class="sep">›</span><span>Foto ${casa().inicio.foto} · ${M.hojas.length} códigos</span>`; pintarLado(); return; }
   camino.pop();
   $("migas").innerHTML = camino.map((n, i) => `${i ? '<span class="sep">›</span>' : ""}<button type="button" data-clave="${esc(n.data.clave)}" >${esc(corto(n.data.nombre))}</button>`).join("");
   pintarLado();
@@ -1450,11 +1456,11 @@ function resumenGrupo(n){
 
 function pintarPanel(){
   const n = M.foco, r = resumenGrupo(n), clave = n.data.clave, hayRegla = existeRegla(clave);
-  const tipo = {casa: "Casa", brand: "Brand", pl: "Product Line"}[n.data.nivel];
+  const tipo = {todo: "Todas las casas", casa: "Casa", brand: "Brand", pl: "Product Line"}[n.data.nivel];
   let h = `<h2>${esc(corto(n.data.nombre))}</h2>
     <p class="resumen">${n.parent ? `${tipo}. <b>${r.hs.length}</b> códigos, <b>${r.sc.length}</b> en scope central, <b>${r.fuera.length}</b> fuera de su estrategia.<br>` : ""}
     Desvío del Consensus: <b class="marcador">${num(r.u)} uds</b>, <b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b> del forecast de las recetas.</p>
-    <div class="acciones">${SEL.modo ? botonAgregar(clave, n.data.nombre, n.data.nivel) : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>
+    <div class="acciones">${!n.parent ? `<p class="resumen" style="margin:0">Entra en una casa para ver sus brújulas.</p>` : `${SEL.modo ? botonAgregar(clave, n.data.nombre, n.data.nivel) : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="R|${esc(clave)}" ${hayRegla ? "" : 'disabled title="Sin códigos en scope en las fotos medidas"'}>Ver brújulas del grupo</button>`}
     ${n.parent ? `<button type="button" class="btn btn-fant" data-subir="1">Subir un nivel</button>` : ""}</div>`;
   if (SEL.modo) h += bandeja();
   const s = M.sel && M.hojas.find(x => x.ean === M.sel);
@@ -1536,7 +1542,7 @@ function pintarLado(){
     if (tieneHijos) h += `<ul class="sub-lista" ${abierta ? "" : "hidden"}>` + n.children.map(c => fila(c, "pl")).join("") + `</ul>`;
     return h + `</li>`;
   };
-  $("ladoBrands").innerHTML = (M.raiz.children || []).map(b => fila(b, "brand")).join("");
+  $("ladoBrands").innerHTML = (M.casaN.children || []).map(b => fila(b, "brand")).join("");
 }
 $("cifras").addEventListener("click", ev => {
   const b = ev.target.closest(".fila"); if (!b) return;
@@ -1620,7 +1626,7 @@ function contenidoTip(n){
       <div class="nota">${estado}${x.scope ? " Clic para verlo en el panel." : ""}</div>`;
   }
   const r = resumenGrupo(n);
-  return `<span class="mono">${{brand: "Brand", pl: "Product Line"}[d.nivel]}</span><div class="tt">${esc(corto(d.nombre))}</div>
+  return `<span class="mono">${{casa: "Casa", brand: "Brand", pl: "Product Line"}[d.nivel]}</span><div class="tt">${esc(corto(d.nombre))}</div>
     <div class="kk"><div><span>Códigos</span><b>${r.hs.length}</b></div><div><span>En scope</span><b>${r.sc.length}</b></div>
     <div><span>Fuera</span><b>${r.fuera.length}</b></div><div><span>Desvío</span><b>${pct(r.sR > 0 ? r.u / r.sR : null)}</b></div></div>
     <div class="nota">Clic para entrar.</div>`;
