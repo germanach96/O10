@@ -385,6 +385,19 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 }
 /* sobre las celdas azules del selector, los códigos llevan un halo para no perderse */
 .en-celda .cod circle{fill-opacity:.75;stroke:var(--card);stroke-width:.9}
+/* cabecera de Decisiones con el interruptor del mapa de calor */
+.dec-cab{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.interruptor{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--label);cursor:pointer;user-select:none}
+.interruptor input{position:absolute;opacity:0;width:1px;height:1px}
+.interruptor .pista{position:relative;width:42px;height:26px;border-radius:999px;background:var(--fill-2);transition:background-color 200ms ease}
+.interruptor .pista::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.2),0 0 0 .5px rgba(0,0,0,.06);transition:transform 260ms var(--muelle)}
+.interruptor input:checked + .pista{background:var(--blue)}
+.interruptor input:checked + .pista::after{transform:translateX(16px)}
+.interruptor:active .pista::after{width:26px}
+.interruptor input:checked + .pista:active::after{transform:translateX(12px)}
+.interruptor input:focus-visible + .pista{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.interruptor .pista::after{transition:none}}
+.calor-v{font-size:11px !important;font-weight:600;font-variant-numeric:tabular-nums}
 .elegidaTxt{color:var(--blue-txt);font-weight:600}
 .bueno{color:var(--green-txt)} .malo{color:var(--red-txt)}
 .pequeño{font-size:12px;color:var(--label-2)}
@@ -655,12 +668,15 @@ details[open] summary::before{transform:rotate(45deg)}
 
   <section class="seccion" id="sDecisiones">
     <h2>Decisiones</h2>
-    <p class="sub" id="decSub"></p>
+    <div class="dec-cab">
+      <p class="sub" id="decSub"></p>
+      <label class="interruptor"><input type="checkbox" id="calor" role="switch"><span class="pista" aria-hidden="true"></span>Mapa de calor</label>
+    </div>
     <div class="rejilla">
       <div class="tarjeta vidrio"><h3>Brújula 1 · ¿Cuánto me alejo de la media?</h3><div class="subt">X: peso estacional s. Y: peso del trend w.</div><svg id="b1" width="326" height="326"></svg><div class="pie" id="b1p"></div></div>
       <div class="tarjeta vidrio"><h3>Brújula 2 · ¿Qué señal sigo?</h3><div class="subt">X: mezcla sell-in / sell-out m. Y: duración del trend N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
       <div class="tarjeta vidrio"><h3>Brújula 3 · ¿Cómo limpio la historia?</h3><div class="subt">X: cortes sumados c. Y: promos restadas p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
-      <div class="tarjeta vidrio"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt">X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).</div><svg id="bsel" width="326" height="326"></svg><div class="pie" id="matrizp"></div></div>
+      <div class="tarjeta vidrio"><h3>Selector · ¿De quién copio el trend?</h3><div class="subt" id="selSubt">X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).</div><svg id="bsel" width="326" height="326"></svg><div class="pie" id="matrizp"></div></div>
     </div>
   </section>
 
@@ -1498,14 +1514,47 @@ function capaMedia(pts, X, Y, etiqueta){
   });
   return h;
 }
+// leyenda del mapa de calor: rampa de 5 pasos de menos a más veces elegido
+const leyendaCalor = (x, y) => `<g class="ley-sel"><text x="${x}" y="${y}">Menos elegido</text>${[0.1, 0.28, 0.46, 0.64, 0.82].map((a, k) => `<rect x="${x + 82 + k * 15}" y="${y - 9}" width="13" height="10" rx="2" fill="var(--blue)" fill-opacity="${a}"/>`).join("")}<text x="${x + 82 + 5 * 15 + 4}" y="${y}">Más elegido</text></g>`;
 // leyenda dentro del lienzo (la tarjeta tiene altura fija)
 const leyendaGrupo = (tr, x, y) => esRegla() && tr.media.length
   ? `<g class="ley-sel"><circle cx="${x + 5}" cy="${y - 4}" r="5" fill="var(--receta)"/><text x="${x + 15}" y="${y}">Promedio de ${tr.media[tr.media.length - 1].n} códigos</text>
      <circle cx="${x + 148}" cy="${y - 4}" r="2.5" fill="var(--receta)" fill-opacity=".45"/><text x="${x + 156}" y="${y}">Cada código</text></g>` : "";
 
+// ---- Mapa de calor de los inputs elegidos: cuántas veces (fotos, o códigos × fotos en un grupo) la mejor
+// receta usó cada combinación de valores. Escala secuencial de un solo tono (azul = receta).
+let CALOR = false;
+try { CALOR = localStorage.getItem("o10-calor") === "1"; } catch(e) {}
+function conteoCalor(clave){
+  const n = new Map(); let tot = 0;
+  const suma = r => { if (!r) return; const k = clave(r); if (k == null) return; n.set(k, (n.get(k) || 0) + 1); tot++; };
+  V().fotos.forEach(f => {
+    const e = entidad(f); if (!e) return;
+    if (!esRegla()) suma(e.oraculo_receta);
+    else (e.eans || []).forEach(ean => { const c = f.codigos[ean]; suma(c && c.oraculo_receta); });
+  });
+  return {n, tot, max: Math.max(0, ...n.values())};
+}
+const unidadCalor = () => esRegla() ? "códigos × fotos" : "fotos";
+// intensidad: lineal sobre el máximo, con un suelo visible para las celdas no vacías
+const alfaCalor = (v, max) => v > 0 && max > 0 ? 0.1 + 0.72 * v / max : 0;
+function capaCalorBrujula(ex, ey, c, R){
+  const cal = conteoCalor(r => { const i = EJ[ex].indexOf(r[ex]), j = EJ[ey].indexOf(r[ey]); return i < 0 || j < 0 ? null : i + "," + j; });
+  const L = 2 * R / 3, g = 2;
+  let h = `<g class="calor">`;
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) {
+    const v = cal.n.get(i + "," + j) || 0, al = alfaCalor(v, cal.max);
+    const x = c - R + i * L, y = c + R - (j + 1) * L, share = cal.tot ? v / cal.tot : 0;
+    const tt = `${ex} ${vtxt(ex, EJ[ex][i])} · ${ey} ${vtxt(ey, EJ[ey][j])}\n${v} de ${cal.tot} ${unidadCalor()} (${pct(share, 0)})`;
+    h += `<g><title>${tt}</title><rect x="${(x + g/2).toFixed(1)}" y="${(y + g/2).toFixed(1)}" width="${(L - g).toFixed(1)}" height="${(L - g).toFixed(1)}" rx="${i === 0 && j === 2 || i === 2 && j === 2 || i === 0 && j === 0 || i === 2 && j === 0 ? 7 : 3}" fill="var(--blue)" fill-opacity="${al.toFixed(3)}"/>`
+      + (v ? `<text x="${(x + 7).toFixed(1)}" y="${(y + 15).toFixed(1)}" class="calor-v" style="fill:${al > 0.5 ? "#fff" : "var(--label)"}">${pct(share, 0)}</text>` : "") + `</g>`;
+  }
+  return h + `</g>`;
+}
+
 function brujula(svgId, ex, ey, polos){
   const svg = $(svgId), S = 326, c = S/2, R = 124;
-  let h = `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--sep-fuerte)"/>
+  let h = (CALOR ? capaCalorBrujula(ex, ey, c, R) : "") + `<rect x="${c-R}" y="${c-R}" width="${2*R}" height="${2*R}" rx="8" fill="none" stroke="var(--sep-fuerte)"/>
     <line x1="${c-R}" y1="${c}" x2="${c+R}" y2="${c}" stroke="var(--sep-fuerte)"/>
     <line x1="${c}" y1="${c-R}" x2="${c}" y2="${c+R}" stroke="var(--sep-fuerte)"/>
     __POLOS_X__
@@ -1522,7 +1571,7 @@ function brujula(svgId, ex, ey, polos){
   const abajo = pts.some(p => p.py > c && p.py - c < 26), arriba = pts.some(p => p.py <= c && c - p.py < 26);
   const yPolo = abajo && !arriba ? c - 7 : c + 15;
   h = h.replace("__POLOS_X__", `<text x="${c-R+6}" y="${yPolo}" text-anchor="start">${polos[0]}</text><text x="${c+R-6}" y="${yPolo}" text-anchor="end">${polos[1]}</text>`);
-  h += capaCodigos(tr.cods, PX, PY) + leyendaGrupo(tr, c - R, S - 4);
+  h += CALOR ? leyendaCalor(c - R, S - 4) : capaCodigos(tr.cods, PX, PY) + leyendaGrupo(tr, c - R, S - 4);
   h += capaMedia(pts, PX, PY, p => esRegla()
     ? `${p.mes} · promedio de ${p.n} códigos`
     : `${p.mes}\n${ex}: ${EJ[ex].map((v,k)=>vtxt(ex,v)+" → "+pct(p.e.ejes[ex][k])).join(", ")}\n${ey}: ${EJ[ey].map((v,k)=>vtxt(ey,v)+" → "+pct(p.e.ejes[ey][k])).join(", ")}`);
@@ -1555,16 +1604,20 @@ function selector(){
   const L = 74, T = 46, CW = 48.4, CH = 62, gap = 3;
   const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos, max = Math.max(...tam);
   const rec = recetaElegida(), gan = rec ? rec.g : -1;
+  const cal = CALOR ? conteoCalor(r => r.g >= 0 ? r.g : null) : null;
+  $("selSubt").textContent = cal ? `Arriba, nº de códigos del grupo. Intensidad y %: veces elegido (${cal.tot} ${unidadCalor()}).` : "X: amplitud. Y: criterio. Nº de códigos del grupo en cada celda (más intenso, más grande).";
   const celda = gi => ({col: AMPL.indexOf(CELDAS[gi][0]), fila: CRIT.indexOf(CELDAS[gi][1])});
   const cx = col => L + col * CW + CW / 2, cy = fila => T + fila * CH + CH / 2;
   let h = AMPL.map((a, k) => `<text x="${cx(k)}" y="${T - 10}" text-anchor="middle">${a === "Product Line" ? "Línea" : a}</text>`).join("")
         + CRIT.map((cr, k) => `<text x="${L - 8}" y="${cy(k) + 4}" text-anchor="end">${cr === "Jerarquía" ? "Jerarquía" : "+ " + cr}</text>`).join("");
   CELDAS.forEach((_, gi) => {
-    const {col, fila} = celda(gi), n = tam[gi], t = max > 0 ? Math.log(1 + n) / Math.log(1 + max) : 0, al = 0.07 + 0.78 * t;
+    const {col, fila} = celda(gi), n = tam[gi], t = max > 0 ? Math.log(1 + n) / Math.log(1 + max) : 0;
+    // con el mapa de calor la intensidad pasa a ser cuántas veces se eligió el grupo (el nº de códigos queda arriba)
+    const vc = cal ? (cal.n.get(gi) || 0) : 0, al = cal ? Math.max(0.05, alfaCalor(vc, cal.max)) : 0.07 + 0.78 * t;
     const x = L + col * CW + gap / 2, y = T + fila * CH + gap / 2, w = e.ejes ? e.ejes.g[gi] : null;
-    h += `<g class="celda"><title>${CELDAS[gi][0]} · ${CELDAS[gi][1]}${gi === gan ? " (elegido)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}</title>
+    h += `<g class="celda"><title>${CELDAS[gi][0]} · ${CELDAS[gi][1]}${gi === gan ? " (elegido)" : ""}\n${esRegla() ? "tamaño medio" : "códigos"}: ${esRegla() ? n.toFixed(1) : n}\nmejor WAPE con este grupo: ${pct(w)}${cal ? `\nelegido ${vc} de ${cal.tot} ${unidadCalor()}` : ""}</title>
       <rect x="${x}" y="${y}" width="${CW - gap}" height="${CH - gap}" rx="9" fill="var(--blue)" fill-opacity="${al.toFixed(3)}"/>
-      <text x="${x + 6}" y="${y + 14}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text></g>`;
+      <text x="${x + 6}" y="${y + 14}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text>${cal && vc ? `<text x="${x + CW - gap - 6}" y="${y + CH - gap - 7}" text-anchor="end" class="calor-v" style="fill:${al > 0.5 ? "#fff" : "var(--label)"}">${pct(vc / cal.tot, 0)}</text>` : ""}</g>`;
     if (gi === gan) h += `<rect x="${x - 1.5}" y="${y - 1.5}" width="${CW - gap + 3}" height="${CH - gap + 3}" rx="10.5" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
   });
   // posición = centro de la celda ganadora; los códigos de un grupo se reparten dentro de su celda
@@ -1574,7 +1627,7 @@ function selector(){
   const jit = ean => { const u = hash(ean), v = hash(ean.split("").reverse().join("") + "·"), ang = u * 2 * Math.PI, rad = 0.12 + 0.2 * Math.sqrt(v); return {x: Math.cos(ang) * rad, y: Math.sin(ang) * rad * 1.15}; };
   const cods = new Map(); tr.cods.forEach((l, ean) => { const j = jit(ean); cods.set(ean, l.map(q => ({x: q.x + j.x, y: q.y + j.y}))); });
   const PX = q => cx(q.x).toFixed(1), PY = q => (cy(q.y) + 4).toFixed(1);
-  h += `<g class="en-celda">${capaCodigos(cods, PX, PY)}</g>` + leyendaGrupo(tr, L, 318);
+  h += CALOR ? leyendaCalor(L, 318) : `<g class="en-celda">${capaCodigos(cods, PX, PY)}</g>` + leyendaGrupo(tr, L, 318);
   h += capaMedia(tr.media, PX, PY, p => {
     if (esRegla()) return `${p.mes} · promedio de ${p.n} códigos`;
     const r = p.e.oraculo_receta; return `${p.mes} · mejor grupo: ${r ? r.grupo : "-"}`;
@@ -1811,14 +1864,23 @@ function info(){
   $("decSub").textContent = `Inputs ganadores en cada foto medida (${fotosCerradas().map(f => f.foto).join(", ")}).`;
 }
 
-function pintar(){
-  info();
-  pintarTolDet();
-  fotoActual();
+$("calor").checked = CALOR;
+$("calor").addEventListener("change", () => {
+  CALOR = $("calor").checked;
+  try { localStorage.setItem("o10-calor", CALOR ? "1" : "0"); } catch(e) {}
+  pintarDecisiones();
+});
+function pintarDecisiones(){
   brujula("b1", "s", "w", ["Media plana", "Mismo mes año pasado", "Sin trend", "Trend completo"]);
   brujula("b2", "m", "N", ["100% sell-in", "100% sell-out", "Trend 6M", "Trend 12M"]);
   brujula("b3", "c", "p", ["Sin sumar cortes", "Sumar 100% cortes", "Sin restar promos", "Restar 100% promos"]);
   selector();
+}
+function pintar(){
+  info();
+  pintarTolDet();
+  fotoActual();
+  pintarDecisiones();
   ["90", "180", "9M"].forEach(v => mediaBrujula("r" + v, v));
   anteriores();
   detector();
