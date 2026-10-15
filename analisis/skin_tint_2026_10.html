@@ -76,6 +76,8 @@ h2+.lead{color:var(--label2);margin:0 0 14px;max-width:80ch}
 .sw-cut{width:10px;height:10px;border-radius:3px;background:repeating-linear-gradient(45deg,var(--cut) 0 2px,transparent 2px 4px);outline:1px solid var(--cut);outline-offset:-1px}
 .sw-cons{width:18px;border-top:2px dashed var(--cons)}
 .sw-rec{width:18px;border-top:2px solid var(--blue)}
+.sw-tol{width:14px;height:10px;border-radius:3px;background:var(--band);box-shadow:inset 0 0 0 1px rgba(0,113,227,.3)}
+.sw-out{width:8px;height:8px;border-radius:50%;background:var(--d3)}
 .sw-h{width:18px;border-top:2px dotted var(--blue)}
 .chart{position:relative}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
@@ -203,13 +205,13 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
     <div class="card glass">
       <h3 id="t-cons">Current Consensus - Final</h3>
       <p class="cs">What is in the system today: Demand Assumptions plus Reasonability Adjustments on top of a flow that is blocked by ISFF 1.</p>
-      <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span></div>
+      <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span><span><i class="sw-out"></i>Consensus outside</span></div>
       <div class="chart" id="ch-cons"></div>
     </div>
     <div class="card glass">
       <h3 id="t-rec">Proposed forecast</h3>
       <p class="cs" id="cs-rec"></p>
-      <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>History used: actuals + c · cuts</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span></div>
+      <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>History used</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span></div>
       <div class="chart" id="ch-rec"></div>
     </div>
   </div>
@@ -348,10 +350,15 @@ function chart(el,opt){
         if(a+c===Math.max(...opt.A.map((v,t)=>t>=X0&&t<=FOTO?v+opt.C[t]:0)))s+=`<text x="${x(i)+6}" y="${pt+3}" style="font-size:9.5px;fill:var(--label2)">${k(a+c)}</text>`}}
   }
   const path=(pts)=>pts.map((p,j)=>(j?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join('');
+  if(opt.tol){const up=[],dn=[];for(let i=FOTO+1;i<=X1;i++){up.push([x(i),y(opt.tol.hi[i])]);dn.unshift([x(i),y(opt.tol.lo[i])])}
+    s+=`<path d="${path(up.concat(dn))}Z" fill="var(--band)"/><path d="${path(up)}" fill="none" stroke="var(--blue)" stroke-width="1" opacity=".35"/><path d="${path(dn.slice().reverse())}" fill="none" stroke="var(--blue)" stroke-width="1" opacity=".35"/>`;
+    const lab=opt.tol.a===opt.tol.b?`±${Math.round(opt.tol.a*100)}%`:`±${Math.round(opt.tol.a*100)}→${Math.round(opt.tol.b*100)}%`;
+    s+=`<text x="${x(X1)+bw/2-2}" y="${y(opt.tol.hi[X1])-6}" text-anchor="end" style="font-size:9.5px;fill:var(--blue-text);paint-order:stroke;stroke:var(--card);stroke-width:3px">${lab}</text>`}
   for(const L of opt.lines){
     const pts=[];for(let i=L.a;i<=L.b;i++)pts.push([x(i),y(Math.max(0,L.v[i]))]);
     s+=`<path d="${path(pts)}" fill="none" stroke="${L.c}" stroke-width="2" ${L.dash?`stroke-dasharray="${L.dash}"`:''} stroke-linejoin="round" stroke-linecap="round" opacity="${L.o||1}"/>`;
-    if(L.dots)for(const p of pts)s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${L.c}" stroke="var(--card)" stroke-width="1.5"/>`;
+    if(L.dots)pts.forEach((p,j)=>{const i=L.a+j,out=opt.flag===L.v&&opt.tol&&(L.v[i]>opt.tol.hi[i]+.5||L.v[i]<opt.tol.lo[i]-.5);
+      s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${out?3.5:3}" fill="${out?'var(--d3)':L.c}" stroke="var(--card)" stroke-width="1.5"/>`});
   }
   if(opt.band)s+=`<line x1="${x(opt.band.a)-bw/2}" x2="${x(opt.band.b)+bw/2}" y1="${y(opt.band.v)}" y2="${y(opt.band.v)}" stroke="var(--blue)" stroke-width="1" stroke-dasharray="2 3" opacity=".7"/><text x="${x(opt.band.a)-bw/2}" y="${y(opt.band.v)-5}" style="fill:var(--blue-text);font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:3px">12M base ${k(opt.band.v)}</text>`;
   for(let i=X0;i<=X1;i++){const mm=+M[i].slice(-2);if(mm%3===1)s+=`<text x="${x(i)}" y="${Hh-8}" text-anchor="middle">${mlab(i)}</text>`}
@@ -414,18 +421,23 @@ function scope(i){
     base:sl(H,FOTO-12,FOTO)/12,a12:sl(A,FOTO-12,FOTO),c12:sl(C,FOTO-12,FOTO),run:sl(A,FOTO-4,FOTO)/4,
     wos:i<0?NaN:WOS[E[i].ean]};
 }
+/* Banda de tolerancia del detector alrededor de la receta, mes a mes */
+function tolArr(F){const a=(+document.getElementById('tol-a').value||0)/100, b=(+document.getElementById('tol-b').value||0)/100;
+  const lo=Array(M.length).fill(0),hi=Array(M.length).fill(0);
+  for(let j=0;j<H9;j++){const t=FOTO+1+j,tol=a+(b-a)*j/8;lo[t]=F[t]*(1-tol);hi[t]=F[t]*(1+tol)}return {lo,hi,a,b}}
 function drawPair(elC,elR,sd,id){
-  const vis=[...sd.A.slice(X0,FOTO+1),...sd.K.slice(FOTO+1,X1+1),...sd.F.slice(FOTO+1,X1+1),...sd.H.slice(X0,FOTO).map(v=>Math.max(0,v))];
-  const top=Math.max(...sd.A.slice(X0,FOTO+1),...sd.K.slice(FOTO+1,X1+1),...sd.F.slice(FOTO+1,X1+1))*1.1;
-  const ymax=niceUp(Math.max(top,10));
+  const tl=tolArr(sd.F);
+  const vis=[...sd.A.slice(X0,FOTO+1).map((v,j)=>v+sd.C[X0+j]),...sd.K.slice(FOTO+1,X1+1),...tl.hi.slice(FOTO+1,X1+1),...sd.H.slice(X0,FOTO)];
+  const ymax=niceUp(Math.max(...vis,10)*1.04);
   const rowsBase=i=>{const r=[];if(i<=FOTO){r.push(['Actuals',k(sd.A[i])+(i===FOTO?' (partial)':'')]);if(sd.C[i])r.push(['Supply cuts',k(sd.C[i])])}return r};
   chart(elC,{id:id+'c',ymax,aria:'Actuals, supply cuts and Consensus by month',A:sd.A,C:sd.C,
+    tol:tl,flag:sd.K,
     lines:[{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',dots:1}],
-    rows:i=>{const r=rowsBase(i);if(i>FOTO)r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—']);return r}});
+    rows:i=>{const r=rowsBase(i);if(i>FOTO)r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—'],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])]);return r}});
   chart(elR,{id:id+'r',ymax,aria:'Actuals, history used and proposed forecast by month',A:sd.A,C:sd.C,
     lines:[{a:X0,b:FOTO-1,v:sd.H,c:'var(--blue)',dash:'1.5 3.5',o:.9},{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',o:.4},{a:FOTO+1,b:X1,v:sd.F,c:'var(--blue)',dots:1}],
-    band:{a:FOTO-12,b:FOTO-1,v:sd.base},
-    rows:i=>{const r=rowsBase(i);if(i<FOTO)r.push(['History used',k(sd.H[i])]);if(i>FOTO)r.push(['Proposal',k(sd.F[i])],['Consensus',k(sd.K[i])]);return r}});
+    band:{a:FOTO-12,b:FOTO-1,v:sd.base},tol:tl,
+    rows:i=>{const r=rowsBase(i);if(i<FOTO)r.push(['History used',k(sd.H[i])]);if(i>FOTO)r.push(['Proposal',k(sd.F[i])],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])],['Consensus',k(sd.K[i])]);return r}});
 }
 function monthsTable(sd){
   let h=`<thead><tr><th>Month</th><th>Consensus</th><th>of which DAs</th><th>Proposal</th><th>Gap</th><th>Gap %</th><th>Same month LY, history used</th></tr></thead><tbody>`;
@@ -498,7 +510,7 @@ document.getElementById('recipe').addEventListener('dblclick',ev=>{const el=ev.t
 
 function fillExp(i){
   const td=document.getElementById('exp'+i);if(!td)return;const sd=scope(i);
-  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card"><h3>Current Consensus</h3><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span></div><div class="chart" id="xc${i}"></div></div><div class="card"><h3>Proposed forecast</h3><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>History used</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span></div><div class="chart" id="xr${i}"></div></div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
+  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card"><h3>Current Consensus</h3><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span><span><i class="sw-out"></i>Consensus outside</span></div><div class="chart" id="xc${i}"></div></div><div class="card"><h3>Proposed forecast</h3><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>History used</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span></div><div class="chart" id="xr${i}"></div></div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
   drawPair(document.getElementById('xc'+i),document.getElementById('xr'+i),sd,'x'+i);
 }
 function toggleRow(tr){const i=+tr.dataset.i;OPEN.has(i)?OPEN.delete(i):OPEN.add(i);renderDetector(CUR.F)}
@@ -580,7 +592,7 @@ function renderDetector(F){
 document.getElementById('det').addEventListener('keydown',ev=>{const r=ev.target.closest('tr.row');if(r&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();toggleRow(r)}});
 document.getElementById('det').addEventListener('click',ev=>{const r=ev.target.closest('tr.row');if(r){toggleRow(r);return}const t=ev.target.closest('th[data-s]');if(!t)return;
   if(sortKey===t.dataset.s)sortAsc=!sortAsc;else{sortKey=t.dataset.s;sortAsc=false}renderDetector(CUR.F)});
-['tol-a','tol-b'].forEach(id=>document.getElementById(id).addEventListener('input',()=>renderDetector(CUR.F)));
+['tol-a','tol-b'].forEach(id=>document.getElementById(id).addEventListener('input',()=>queue()));
 
 /* Apariencia */
 const seg=document.querySelector('header .seg');
