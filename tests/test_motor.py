@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from motor.lector import ErrorFoto, extraer_tamano, leer_foto
+from motor.lector import ErrorFoto, extraer_tamano, leer_foto, leer_listas
 from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
 from motor.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
 
@@ -171,3 +171,24 @@ def test_csv_gucci(cfg):
     assert f.etiqueta == "2025.M11"
     assert f.codigos["scope"].sum() > 100
     assert not f.codigos.loc[f.codigos["Article Type"] == "One Shot/Promo", "scope"].any()
+
+
+def test_listas_de_filtros(tmp_path):
+    ruta = tmp_path / "filters.csv"
+    ruta.write_text("\ufeffRevenue Leaders;GUMU  Selected ;Vacía\r\n0001;0101;\r\n0002;0102;\r\n0001;;\r\n;0103;\r\n",
+                    encoding="utf-8")
+    listas = leer_listas(ruta)
+    assert [l["nombre"] for l in listas] == ["Revenue Leaders", "GUMU Selected", "Vacía"]
+    # EAN como texto (conserva los ceros a la izquierda), sin vacíos ni repetidos
+    assert listas[0]["eans"] == ["0001", "0002"]
+    assert listas[1]["eans"] == ["0101", "0102", "0103"]
+    assert listas[2]["eans"] == []
+    assert leer_listas(tmp_path / "no_existe.csv") == []
+    ruta.write_text("L1\n3.61423E+12\n", encoding="utf-8")
+    with pytest.raises(ErrorFoto, match="notación científica"):
+        leer_listas(ruta)
+
+
+def test_listas_del_repo():
+    listas = leer_listas(RAIZ / "data" / "filters.csv")
+    assert len(listas) == 5 and all(l["eans"] for l in listas)
