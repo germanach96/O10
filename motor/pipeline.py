@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .lector import Foto, int_a_mes, leer_foto, leer_listas
+from .lector import Foto, agregar_desaparecidos, int_a_mes, leer_foto, leer_listas
 from .recetas import CELDAS, EJES, MotorFoto, Rejilla
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -29,23 +29,28 @@ def cargar_config(ruta: Path | None = None) -> dict:
 
 # ------------------------------------------------------------------ actuals
 def actuals_futuros(foto: Foto, fotos: list[Foto], hz: int) -> np.ndarray:
-    """Actuals de F+1..F+hz por código de `foto`, tomados de la foto posterior más reciente.
-    NaN = todavía no se conoce (tramo abierto)."""
+    """Actuals de F+1..F+hz por código de `foto`. NaN = todavía no se conoce (tramo abierto).
+
+    Para cada código y mes t se usa la foto posterior más reciente que cubre t y trae el código. Si el código ya no
+    sale en ninguna de las fotos que cubren t (lo sacaron del export), su actual es 0: el export trae la historia
+    completa, así que un código que hubiera vendido en t aparecería. Así los códigos que se pierden siguen
+    midiéndose y sumando en sus grupos."""
     out = np.full((len(foto.eans), hz), np.nan)
+    posteriores = sorted((P for P in fotos if P.mes > foto.mes), key=lambda f: -f.mes)
+    filas = [{e: k for k, e in enumerate(P.eans)} for P in posteriores]
     for j in range(hz):
         t = foto.mes + 1 + j
-        for P in sorted(fotos, key=lambda f: -f.mes):
-            if P.mes <= t:          # el mes en curso de una foto nunca vale como actual
-                continue
-            if t < P.primer_mes_actuals:
-                continue
-            fila = {e: k for k, e in enumerate(P.eans)}
-            k = P.col(t)
-            for i, e in enumerate(foto.eans):
-                if np.isnan(out[i, j]) and e in fila:
-                    v = P.mat["Actuals"][fila[e], k]
+        # el mes en curso de una foto nunca vale como actual
+        cubren = [(P, fila) for P, fila in zip(posteriores, filas) if P.mes > t and t >= P.primer_mes_actuals]
+        if not cubren:
+            continue
+        out[:, j] = 0.0
+        for i, e in enumerate(foto.eans):
+            for P, fila in cubren:
+                if e in fila:
+                    v = P.mat["Actuals"][fila[e], P.col(t)]
                     out[i, j] = 0.0 if np.isnan(v) else v
-            break
+                    break
     return out
 
 
@@ -110,8 +115,9 @@ class ResultadoFoto:
 def calcular_foto(foto: Foto, fotos: list[Foto], cfg: dict, R: Rejilla, ignorar=()) -> ResultadoFoto:
     hz = cfg["horizonte"]
     ext = None
+    reales = ~foto.codigos["fantasma"].to_numpy() if "fantasma" in foto.codigos else slice(None)
     if cfg.get("epos_historico_de_foto_mas_reciente") and np.isnan(
-            foto.mat["EPOS"][:, foto.meses < foto.mes]).all():
+            foto.mat["EPOS"][reales][:, foto.meses < foto.mes]).all():
         t_hist = np.arange(foto.mes - 36, foto.mes)
         ext = epos_externo(foto, fotos, t_hist)
         aviso = "The snapshot has no EPOS: historical EPOS is taken from the most recent snapshot"
@@ -204,7 +210,7 @@ def con_respaldo(arr: np.ndarray, valido: np.ndarray, R: Rejilla) -> np.ndarray:
     forma = (arr.shape[0],) + R.forma + arr.shape[2:]
     a = arr.reshape(forma)
     v = valido.reshape((valido.shape[0],) + R.forma)
-    sin_trend = a[:, :, :1, :1, :1, :, :, :, :1]  # (s, w=0, m0, N0, c, p, g0)
+    sin_trend = a[(slice(None),) + tuple(slice(0, 1) if k in ("w", "m", "N", "g") else slice(None) for k in EJES)]
     sin_trend = np.broadcast_to(sin_trend, a.shape)
     vv = v.reshape(v.shape + (1,) * (a.ndim - v.ndim))
     return np.where(vv, a, sin_trend).reshape(arr.shape)
@@ -522,6 +528,8 @@ def main(argv=None):
              "listas": listas, "casas": {}}
     for casa, fotos in casas.items():
         fotos.sort(key=lambda f: f.mes)
+        # los códigos que salen del export siguen contando en los trends de sus grupos
+        agregar_desaparecidos(fotos)
         # una variante por combinación de tipos ignorados (filtro general de la página);
         # el cubo, los logs y los resúmenes en disco son los de la variante base (no se ignora nada)
         variantes = {}
@@ -551,6 +559,8 @@ def main(argv=None):
         atributos = {}
         for f in fotos:
             for e, row in f.codigos.iterrows():
+                if row["fantasma"]:
+                    continue
                 atributos[e] = {"desc": row["Planning Item Description"], "brand": row["Brand"],
                                 "pl": row["Product Line"], "segmento": row["Final Segment"],
                                 "tamano": row["tamano"], "flag": row["Ignore System Forecast Flag"],
@@ -570,6 +580,8 @@ def main(argv=None):
         art, resp = clases(fu.codigos)
         inicio = {}
         for i, (e, row) in enumerate(fu.codigos.iterrows()):
+            if row["fantasma"]:   # fuera del export: solo cuenta en los trends
+                continue
             inicio[e] = {"vol12": round(float(vol12[i]), 1), "cons9": round(float(cons9[i]), 1), "v6": round(float(v6[i]), 1), "p12": round(float(p12[i]), 1),
                          "scope": bool(row["scope"]), "motivo": row["fuera_scope_motivo"],
                          "edad": row["tramo_edad"], "tipo": row["Article Type"],

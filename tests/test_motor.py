@@ -4,9 +4,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from motor.lector import ErrorFoto, extraer_tamano, leer_foto, leer_listas
+from motor.lector import ErrorFoto, agregar_desaparecidos, extraer_tamano, leer_foto, leer_listas, mes_a_int
 from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
-from motor.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
+from motor.pipeline import actuals_futuros, cargar_config, kpis, mascara_cuenta, variantes_tipos
 
 RAIZ = Path(__file__).resolve().parent.parent
 COLS = ("Sub-Division;House;Brand;Product Line;Article Type;Article Sub Type;EAN;Planning Item Description;"
@@ -67,7 +67,7 @@ def indice(R, **v):
         if k == "g":
             ix.append(CELDAS.index(v["g"]))
         else:
-            ix.append(R.valores[k].index(v[k]))
+            ix.append(R.valores[k].index(v.get(k, R.valores[k][0])))
     return int(np.ravel_multi_index(tuple(ix), R.forma))
 
 
@@ -109,9 +109,15 @@ def test_forecast_a_mano(foto_simple, cfg):
     # cortes: c=1 suma 12 a 2024.M06 -> media (1320+12)/12 = 111, trend (1332/1200 − 1) = 11%
     r = indice(R, s=0, w=1, m=0, N=12, c=1, p=0, g=("Propio", "Jerarquía"))
     np.testing.assert_allclose(Fc[r][1], 111 * 1.11)
-    # sin trend, 100% estacional: H(2024.M02) = 110 (+5 de DA en el mes 1)
-    r = indice(R, s=1, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
+    # sin trend, 100% estacional de 1 año: H(2024.M02) = 110 (+5 de DA en h1)
+    r = indice(R, s=1, e=1, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
     np.testing.assert_allclose(Fc[r][:2], [115, 110])
+    # de 2 años: (H(2024.M02) + H(2023.M02)) / 2 = (110 + 100) / 2 = 105
+    r = indice(R, s=1, e=2, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
+    np.testing.assert_allclose(Fc[r][:2], [110, 105])
+    # 50% estacional de 2 años: 0.5·110 + 0.5·105
+    r = indice(R, s=0.5, e=2, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
+    np.testing.assert_allclose(Fc[r][1], 107.5)
     # trend de la Product Line (ambos códigos), N=12: (1320+600)/(1200+600) − 1 = 6.67%
     r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Product Line", "Jerarquía"))
     np.testing.assert_allclose(Fc[r][1], 110 * (1 + 120 / 1800))
@@ -142,14 +148,14 @@ def test_tope_trend(tmp_path, cfg):
     filas = []
     for a in (2023, 2024):
         for m in range(1, 13):
-            v = 100 if a == 2023 else 200       # +100% -> recortado a +30%
+            v = 100 if a == 2023 else 200       # +100% -> recortado al tope (±50%)
             filas.append({"ean": "1000000000050", "mes": mes(a, m), "Actuals": v})
     filas.append({"ean": "1000000000050", "mes": "2025.M05", "Consensus - Final": 1})
     f = leer_foto(escribir_csv(tmp_path / "Test_2025_01.csv", filas), cfg)
     R = Rejilla(cfg)
     Fc, _ = MotorFoto(f, cfg, R).forecasts(0)
     r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Propio", "Jerarquía"))
-    np.testing.assert_allclose(Fc[r][0], 200 * 1.3)
+    np.testing.assert_allclose(Fc[r][0], 200 * (1 + cfg["tope_trend"]))
 
 
 def test_kpis_grupo(cfg):
@@ -163,6 +169,100 @@ def test_kpis_grupo(cfg):
 
 
 CSV_GUCCI = RAIZ / "data" / "Gucci" / "Consensus" / "Gucci_2025_11.csv"
+
+
+def test_actuals_de_codigos_que_salen_del_export(tmp_path, foto_simple, cfg):
+    """Foto 2025.M01. La foto 2025.M03 trae los dos códigos; la 2025.M05 ya no trae el código 1.
+    Código 1: feb sale de 2025.M03 (la más reciente que lo tiene); mar y abr = 0 (fuera del export);
+    may en adelante sigue abierto. Código 2: feb–abr de 2025.M05."""
+    def foto_posterior(nombre, mes_foto, eans):
+        filas = []
+        for e in eans:
+            for a in (2022, 2023, 2024, 2025):
+                for m in range(1, 13):
+                    if (a, m) < (2025, mes_foto):
+                        v = 30 + m if e.startswith("1") else 50 + m
+                        filas.append({"ean": e, "mes": mes(a, m), "Actuals": v, "Consensus - Final": v})
+                    else:
+                        filas.append({"ean": e, "mes": mes(a, m), "Consensus - Final": 40})
+        d = tmp_path / nombre
+        d.mkdir()
+        return leer_foto(escribir_csv(d / f"Test_2025_{mes_foto:02d}.csv", filas, f"2025.M{mes_foto:02d}"), cfg)
+    p3 = foto_posterior("p3", 3, ["1000000000050", "2000000000030"])
+    p5 = foto_posterior("p5", 5, ["2000000000030"])
+    A = actuals_futuros(foto_simple, [foto_simple, p3, p5], cfg["horizonte"])
+    i1, i2 = foto_simple.eans.index("1000000000050"), foto_simple.eans.index("2000000000030")
+    np.testing.assert_array_equal(A[i1, :3], [32, 0, 0])
+    np.testing.assert_array_equal(A[i2, :3], [52, 53, 54])
+    assert np.isnan(A[:, 3:]).all()
+
+
+def test_codigo_desaparecido_cuenta_en_el_trend(tmp_path, foto_simple, cfg):
+    """El código 1 (100/mes en 2023, 110/mes en 2024) sale del export en la foto 2026.M01; el código 2 (mismo PL)
+    vende 50/mes siempre. En 2026.M01 el código 1 sigue en el grupo con su historia y 0 en 2025:
+    T(PL, N=12) = (0 + 600) / (1320 + 600) − 1 = −0.6875. No entra en el scope ni en el nº de códigos."""
+    filas = [{"ean": "2000000000030", "mes": mes(a, m), "Actuals": 50, "Consensus - Final": 50}
+             for a in (2022, 2023, 2024, 2025) for m in range(1, 13)]
+    filas += [{"ean": "2000000000030", "mes": mes(2026, m), "Consensus - Final": 50} for m in range(1, 11)]
+    d = tmp_path / "b"
+    d.mkdir()
+    b = leer_foto(escribir_csv(d / "Test_2026_01.csv", filas, "2026.M01"), cfg)
+    agregar_desaparecidos([foto_simple, b])
+    assert b.eans == ["2000000000030", "1000000000050"]
+    assert b.codigos["fantasma"].tolist() == [False, True] and not b.codigos["scope"].iat[1]
+    h = b.mat["hist"][1]
+    assert h[b.col(mes_a_int("2024.M06"))] == 110 and h[b.col(mes_a_int("2025.M06"))] == 0
+    assert np.isnan(b.mat["Consensus - Final"][1, b.col(mes_a_int("2026.M03"))])
+    R = Rejilla(cfg)
+    M = MotorFoto(b, cfg, R)
+    gi, ni = CELDAS.index(("Product Line", "Jerarquía")), R.valores["N"].index(12)
+    assert M.T_si[gi, ni, 0, 0, 0] == pytest.approx(600 / 1920 - 1)
+    assert M.tam_grupo[gi, 0] == 1
+
+
+def test_trend_sellout_por_meses_del_grupo(tmp_path, cfg):
+    """Foto 2025.M01, PL con dos códigos. A: EPOS 100 en 2023 (salvo M08) y en 2024 (salvo M12, aún no cargado).
+    B (nuevo): EPOS 50 solo en 2024 (salvo M12). N=6 (2024.M07–M12): M12 fuera (sin EPOS), M08 fuera (sin EPOS
+    hace un año). Quedan M07, M09, M10, M11: (4·150) / (4·100) − 1 = +50%."""
+    filas = []
+    for a in (2022, 2023, 2024):
+        for m in range(1, 13):
+            fa = {"ean": "1000000000050", "mes": mes(a, m), "Actuals": 100, "Consensus - Final": 100}
+            fb = {"ean": "2000000000050", "mes": mes(a, m), "Actuals": 50, "Consensus - Final": 50}
+            if (a == 2023 and m != 8) or (a == 2024 and m != 12):
+                fa["EPOS"] = 100
+            if a == 2024 and m != 12:
+                fb["EPOS"] = 50
+            filas += [fa, fb]
+    for m in range(1, 11):
+        filas += [{"ean": e, "mes": mes(2025, m), "Consensus - Final": 80} for e in ("1000000000050", "2000000000050")]
+    f = leer_foto(escribir_csv(tmp_path / "Test_2025_01.csv", filas), cfg)
+    R = Rejilla(cfg)
+    M = MotorFoto(f, cfg, R)
+    gi, ni = CELDAS.index(("Product Line", "Jerarquía")), R.valores["N"].index(6)
+    assert M.T_so[gi, ni, 0] == pytest.approx(0.5)
+
+
+def test_estacionalidad_del_grupo(tmp_path, cfg):
+    """PL con dos códigos. A: 100 todos los meses. B: 60 cada febrero, 0 el resto. Índice del PL en 2024:
+    feb = 160 / 105, resto = 100 / 105 (media 12M = (11·100 + 160) / 12 = 105). Con s=1, w=0 y estacionalidad
+    del PL, A en feb-25 = 100 · 160/105 y en mar-25 = 100 · 100/105; con 2 años igual (2023 es idéntico)."""
+    filas = []
+    for a in (2022, 2023, 2024):
+        for m in range(1, 13):
+            filas.append({"ean": "1000000000050", "mes": mes(a, m), "Actuals": 100, "Consensus - Final": 100})
+            v = 60 if m == 2 else 0
+            filas.append({"ean": "2000000000030", "mes": mes(a, m), "Actuals": v, "Consensus - Final": v})
+    for m in range(1, 11):
+        filas += [{"ean": e, "mes": mes(2025, m), "Consensus - Final": 90} for e in ("1000000000050", "2000000000030")]
+    f = leer_foto(escribir_csv(tmp_path / "Test_2025_01.csv", filas), cfg)
+    R = Rejilla(cfg)
+    Fc, _ = MotorFoto(f, cfg, R).forecasts(f.eans.index("1000000000050"))
+    for e in (1, 2):
+        r = indice(R, s=1, h="Product Line", e=e, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
+        np.testing.assert_allclose(Fc[r][:2], [100 * 160 / 105, 100 * 100 / 105])
+    # estacionalidad propia de A: plana (100)
+    np.testing.assert_allclose(Fc[indice(R, s=1, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))][:2], [100, 100])
 
 
 @pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")
