@@ -132,9 +132,9 @@ Una **receta** es una combinación de valores de estas variables. Horizonte: sho
 
 ### Selector — "¿De quién copio el trend?" (una sola opción, tipo botón)
 - Matriz **amplitud × criterio**:
-  - Columnas, amplitud: Propio (el código), Product Line, Brand, House, Todo.
+  - Columnas, amplitud: Propio (el código), Product Line, Brand, House. ("Todo" se quitó: con una casa por archivo daba lo mismo que House.)
   - Filas, criterio adicional: Solo jerarquía, + Segmento, + Tamaño, + Edad.
-  - "Propio" solo existe en la fila "Solo jerarquía" → 17 celdas.
+  - "Propio" solo existe en la fila "Solo jerarquía" → 13 celdas.
 - El grupo se forma con los códigos que comparten la amplitud y el criterio con el código evaluado (ejemplo: Brand + Edad = misma brand y mismo tramo de edad). Incluye códigos local.
 - **El valor que muestra cada celda es el nº de códigos del grupo**, para ver qué tan grande es el grupo que seguimos.
 
@@ -144,8 +144,8 @@ Una **receta** es una combinación de valores de estas variables. Horizonte: sho
   - `N` ∈ {6, 9, 12}
   - `e` ∈ {1, 2} años
   - `h` ∈ {Propio, Product Line, Brand, House}
-  - 17 grupos de trend
-  - Total: 3⁵ × 3 × 2 × 4 × 17 = **99.144 recetas** por código y foto.
+  - 13 grupos de trend
+  - Total: 3⁵ × 3 × 2 × 4 × 13 = **75.816 recetas** por código y foto.
 - **Fina (opcional):** pasos de 25% alrededor del ganador de la gruesa, calculada al vuelo. Pasos más finos no tienen sentido de negocio.
 - Las rejillas y el tope deben estar en un archivo de configuración, no en el código.
 
@@ -276,12 +276,12 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 ### Detalle en 4 grupos
 - **Cabecera:** migas, título y, junto al título, un botón **?** con los detalles (tipo de regla o atributos del código, fotos medidas y avisos de las fotos). No se muestran de base: aparecen al pasar el puntero y, al pulsar el ?, quedan fijos hasta volver a pulsarlo, Escape o un clic fuera.
 - **Esquema de la selección** arriba de la columna de resumen (fija al hacer scroll): el mapa de burbujas completo en pequeño, con los códigos que entran en el reporte en azul (y un aro en el grupo o el código elegido) y "N de M códigos". Al pulsarlo vuelve al mapa enfocado en esa selección.
-- El detalle se agrupa en **cuatro grupos, y solo cuatro**: Foto actual, Decisiones, Resultados y Detector. No se parten en subsectores.
-- **Al abrir la página los cuatro empiezan plegados:** cada grupo deja su título y una tira de cristal con lo esencial (Foto actual: desvío, % sobre la receta, meses o códigos fuera; Decisiones: la receta elegida; Resultados: WAPE90 y WAPE 9M de la receta frente al Consensus y la mejora; Detector: EANs fuera, desvío total y el mayor). Al pulsar el título o la tira, el grupo se expande (la tira crece hasta ser el contenido, View Transition con curva de cajón de iOS) y su cabecera no se mueve en pantalla. Botón "Expandir todo" / "Plegar todo" junto al título. El índice lateral abre el grupo antes de ir a él.
+- El detalle se agrupa en **cinco grupos, y solo cinco**: Foto actual, Actuals, Decisiones, Resultados y Detector. No se parten en subsectores.
+- **Al abrir la página los cinco empiezan plegados:** cada grupo deja su título y una tira de cristal con lo esencial (Foto actual: desvío, % sobre la receta, meses o códigos fuera; Actuals: actuals, cortes y DAs de los 12 meses cerrados y la foto; Decisiones: la receta elegida; Resultados: WAPE90 y WAPE 9M de la receta frente al Consensus y la mejora; Detector: EANs fuera, desvío total y el mayor). Al pulsar el título o la tira, el grupo se expande (la tira crece hasta ser el contenido, View Transition con curva de cajón de iOS) y su cabecera no se mueve en pantalla. Botón "Expandir todo" / "Plegar todo" junto al título. El índice lateral abre el grupo antes de ir a él.
 
 ### Sección "Decisiones" — rejilla 2 × 2
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.
-- **Años de estacionalidad `e`:** no es un eje. Debajo del lienzo de la Brújula 1 va una tira pequeña ("Years of seasonality · e") con un punto por foto entre 1 año (abajo) y 2 años (arriba), posicionado con la misma regla que los ejes (`tanh(ΔWAPE / 5 pp)`; la línea discontinua del medio = indiferente). Con `s = 0` en la receta elegida la tira queda atenuada ("No effect: flat mean").
+- **Años de estacionalidad `e`:** no es un eje y solo vale 1 o 2. Debajo del lienzo de la Brújula 1 va una tira pequeña ("Years of seasonality · e") con un punto por foto en el valor **elegido**: abajo 1 año, arriba 2 años, unidos en escalón (sin valores intermedios). Un código: su oráculo; un grupo: su regla; una selección: el valor que eligen más códigos. Si esa foto usa media plana el punto va hueco; con `s = 0` en la receta elegida la tira queda atenuada ("No effect: flat mean").
 - **Las cuatro tarjetas exactamente del mismo tamaño y alineadas.** Los prototipos fallaron aquí: usar un tamaño fijo en px para el lienzo de cada brújula y una altura fija para los títulos.
 - **Cada etiqueta en su extremo:** polos del eje X a izquierda y derecha, polos del eje Y arriba y abajo.
 - **Trayectoria del código:** un punto por foto, unidos en orden con una curva suave (Catmull-Rom al 60% de tensión: redondea las esquinas sin salirse de los puntos); el último punto más grande, los antiguos más tenues; etiqueta del mes en el primero y en el último.
@@ -289,7 +289,7 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Hacia el valor ganador, normalizado a −1…+1.
   - Distancia al centro proporcional a cuánto mejora frente al extremo contrario: `tanh(ΔWAPE / 5 pp)`, ajustable.
   - Diferencia menor de ~1 pp → zona indiferente, cerca del centro.
-- **Selector:** rejilla del mismo tamaño que una brújula (X = amplitud, Y = criterio) con 17 celdas que muestran el nº de códigos del grupo (más oscuro = grupo más grande). La celda elegida lleva recuadro. Encima va la trayectoria del grupo ganador foto a foto, igual que en las brújulas. Tooltip con el WAPE del grupo.
+- **Selector:** rejilla del mismo tamaño que una brújula (X = amplitud, Y = criterio) con 13 celdas (4 amplitudes × 4 criterios, "Propio" solo en Jerarquía) que muestran el nº de códigos del grupo (más oscuro = grupo más grande). La celda elegida lleva recuadro. Encima va la trayectoria del grupo ganador foto a foto, igual que en las brújulas. Tooltip con el WAPE del grupo.
 - **Grupo de estacionalidad `h`:** fila propia "Seasonality" debajo de la rejilla del trend, separada por una línea y alineada con las columnas Own · Line · Brand · House. Cada celda lleva el nº de códigos (Own = 1; las demás, el de la celda "· Jerarquía"), la elegida lleva recuadro y encima va su trayectoria foto a foto. Con `s = 0` la fila se atenúa. El pie dice el trend y la estacionalidad elegidos y cuántas veces cambió el ganador entre fotos.
 - Las cuatro tarjetas de Decisiones miden 360 × 548 px (la tira de `e` necesita el alto extra).
 - **Mapa de calor** (interruptor en la cabecera de Decisiones, apagado por defecto): densidad de **los mismos puntos que se dibujan** (cada código × foto en un grupo, cada foto en un código), calculada en una rejilla de 1 px (histograma + gaussiana separable, radio según el nº de puntos) y con escala logarítmica para que un montón de puntos apilados no esconda el resto de la nube. Paleta de mapa de calor "turbo" (azul → cian → verde → amarillo → rojo), transparente donde no hay puntos. El selector usa la misma densidad de los puntos repartidos en sus celdas. Con el mapa de calor activo se ocultan los puntos y líneas pequeños de cada código y queda el promedio encima.
@@ -304,8 +304,21 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Dos trayectorias por foto: gris discontinua = lo que pasó (Consensus real), azul = mejor receta. La distancia entre ambas es lo que se habría ganado.
   - Debajo, los valores de la última foto.
 - Tres tarjetas iguales de 260 px, en una fila cuando caben. Sin tarjeta de "cómo leerlas": una leyenda de una línea encima de las gráficas.
-- **Escala común a las tres y adaptada a la selección** (con el tope del trend en ±50% ya no caben en ±30% / 60%): SPP en pasos ±30, 50, 75, 100, 150, 200, 300%; WAPE en 60, 80, 100, 150, 200, 300, 400%. Si un valor sale del rango, se dibuja pegado al borde con un triángulo.
+- **Escala propia de cada gráfica, adaptada a sus valores y como mucho del 100%:** SPP en pasos ±30, 50, 75, 100%; WAPE en 60, 80, 100%. Si un valor sale del rango, se dibuja pegado al borde con un triángulo.
+- Al pasar el puntero por un punto sale una tarjeta de cristal pequeña con lo que se mira: serie, ventana, foto, código (EAN y descripción) o grupo, y WAPE y SPP. La misma tarjeta sustituye al tooltip nativo en todas las gráficas del detalle.
 - Debajo de cada una, una tabla corta con el WAPE y el SPP de la última foto medida (Consensus, receta y, en un grupo, oráculos), en verde o rojo según la meta.
+
+### Sección "Actuals"
+- Va después de "Foto actual". Gráfica de barras por mes de los últimos 24 meses cerrados de la foto elegida, más el mes en curso (tenue, "now"): **actuals** en gris, **Supply Cuts** encima en naranja rayado, **DAs** (Total Demand Assumption) en morado, encima si son positivos y por debajo de cero si son negativos (restan).
+- **Línea punteada azul = la historia usada**: H = A + c·Cortes − p·DA con la `c` y la `p` de la receta elegida (en un grupo, cada código con la suya). Línea discontinua = la base de los 12 meses cerrados ("12M base"). Separadores de año fiscal (empieza en julio) con su etiqueta FY.
+- Un desplegable "Snapshot" cambia la foto de la que salen los actuals (por defecto la más reciente); al cambiarla las barras se transforman hasta sus nuevas alturas.
+- Debajo de la leyenda, los totales de los 12 meses cerrados (actuals, cortes, DAs, historia usada) y qué receta se aplicó. La tira plegada enseña los mismos totales.
+- Datos: el pipeline guarda `actuals` por casa (por foto: meses, y por EAN las series de actuals, cortes y DAs).
+
+### Movimiento de la página (skills de Emil, animate y apple-design)
+- **Al abrir una sección** sus piezas entran en cascada (fundido + 10 px, 45 ms entre una y otra, 460 ms) y sus gráficos se vuelven a construir: barras que crecen desde cero de izquierda a derecha, trayectorias que se trazan, puntos en orden de foto. Pasa cada vez que se abre, no solo la primera.
+- **Al cambiar los datos** (selección, rango, filtro, foto de actuals) los gráficos a la vista se transforman desde lo que se veía con un muelle sin rebote; las cifras de las tiras, del raíl y de los totales cuentan desde su valor anterior (620 ms).
+- Tarjeta flotante de las gráficas: aparece en 140 ms desde el punto; mientras sigue visible cambia al instante. Con movimiento reducido, solo fundidos.
 
 ### Sección "Detector"
 - **Receta para el futuro**, arriba: la receta elegida escrita como fórmula (`Forecast(t) = [(1−s)·Mean12 + s·Season(t)] × (1 + w·T) + DA(t)`) con sus valores en azul, la explicación de cada término y una fila con todos los valores. En un grupo con recetas distintas se muestra la más repetida y la de cada código va en la columna "Recipe" de la tabla.

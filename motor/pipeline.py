@@ -503,6 +503,35 @@ def tabla_recetas(R: Rejilla) -> pd.DataFrame:
     return df
 
 
+# ------------------------------------------------------------------ actuals por foto (sección "Actuals" de la página)
+def historia_actuals(fotos, meses_atras: int = 24) -> dict:
+    """Actuals, Supply Cuts y Total Demand Assumption de los últimos `meses_atras` meses cerrados de cada foto,
+    tal como los trae esa foto, más el mes en curso (actuals parciales, solo para mostrar). Enteros; None = sin dato.
+    La página arma con esto la historia limpia H = A + c·Cortes − p·TDA con la receta de cada código."""
+    out = {}
+    for f in fotos:
+        ts = np.arange(f.mes - meses_atras, f.mes + 1)
+        cols = [int(np.where(f.meses == t)[0][0]) if (f.meses == t).any() else -1 for t in ts]
+        def serie(M, i, nan_none):
+            v = [M[i, k] if k >= 0 else np.nan for k in cols]
+            return [None if (nan_none and np.isnan(x)) else int(round(0 if np.isnan(x) else float(x))) for x in v]
+        A = f.mat["hist"].copy()
+        k_act = cols[-1]
+        cod = {}
+        for i, (e, row) in enumerate(f.codigos.iterrows()):
+            if row.get("fantasma", False):   # fuera del export: no se dibuja
+                continue
+            a = serie(A, i, True)
+            if k_act >= 0:   # el mes en curso no está en la historia útil: se toma tal cual (parcial)
+                x = f.mat["Actuals"][i, k_act]
+                a[-1] = None if np.isnan(x) else int(round(float(x)))
+            c, d = serie(f.mat["Supply Cuts"], i, False), serie(f.mat["Total Demand Assumption"], i, False)
+            if any(a) or any(c) or any(d):
+                cod[e] = [a, c, d]
+        out[f.etiqueta] = {"meses": [int_a_mes(t) for t in ts], "c": cod}
+    return out
+
+
 # ------------------------------------------------------------------ main
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -589,6 +618,7 @@ def main(argv=None):
         datos["casas"][casa] = {
             **variantes[""], "variantes": {k: v for k, v in variantes.items() if k},
             "atributos": atributos, "inicio": {"foto": fu.etiqueta, "codigos": inicio},
+            "actuals": historia_actuals(fotos),
         }
         print(f"  {casa}: score multi-foto con {len(variantes['']['elegida'])} códigos, "
               f"{len(variantes)} variantes de tipos ({time.time()-t0:.1f}s)")

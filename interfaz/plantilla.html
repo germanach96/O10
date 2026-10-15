@@ -39,6 +39,8 @@
   --b-brand:rgba(255,255,255,.34); --b-pl:rgba(255,255,255,.42); --b-casa:rgba(255,255,255,.2);
   --borde-burbuja:rgba(255,255,255,.85);
   --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
+  /* sección Actuals: barras de actuals (gris), cortes (naranja rayado) y DAs (morado del sistema) */
+  --act:rgba(142,142,147,.5); --act-borde:rgba(142,142,147,.85); --da:#af52de; --da-txt:#8e3bb3;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
@@ -57,6 +59,7 @@
   --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
   --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
   --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+  --act:rgba(174,174,178,.42); --act-borde:rgba(174,174,178,.8); --da:#bf5af2; --da-txt:#d48ef7;
   --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
   --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
   --d0:#30d158; --d-apag:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
@@ -78,6 +81,7 @@
     --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
     --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
     --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+    --act:rgba(174,174,178,.42); --act-borde:rgba(174,174,178,.8); --da:#bf5af2; --da-txt:#d48ef7;
     --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
     --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
     --d0:#30d158; --d-apag:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
@@ -539,6 +543,27 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .t-kpi td:first-child,.t-kpi th:first-child{padding-left:0;text-align:left;color:var(--label-2)}
 .t-kpi td b{font-weight:600}
 .t-kpi svg{vertical-align:middle;margin-right:5px}
+/* Tarjeta flotante de las gráficas: qué punto, de qué foto y de qué código se está mirando.
+   Aparece en 140 ms desde el punto (escala .96 → 1); mientras sigue visible, cambia al instante (tooltips de Apple). */
+.tip-graf{position:fixed;z-index:60;left:0;top:0;max-width:280px;padding:9px 12px 10px;border-radius:14px;pointer-events:none;
+  font-size:12px;line-height:1.45;color:var(--label);font-variant-numeric:tabular-nums;white-space:pre-line;
+  opacity:0;transform:scale(.96);transform-origin:var(--tip-o,0 0);transition:opacity 140ms var(--ease-out),transform 140ms var(--ease-out)}
+.tip-graf b{display:block;font-size:12.5px;font-weight:600;margin-bottom:1px}
+.tip-graf.ver{opacity:1;transform:none}
+.tip-graf.instante{transition:none}
+@media (prefers-reduced-motion: reduce){.tip-graf{transform:none}}
+/* punto bajo el puntero: crece un poco para confirmar qué se está leyendo */
+@media (hover: hover) and (pointer: fine){
+  #vistaDetalle svg circle[data-k]{transition:r 160ms var(--ease-out),stroke-width 160ms var(--ease-out)}
+  #vistaDetalle svg .apuntado{stroke-width:3px}
+}
+/* Sección Actuals */
+.act-cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin-bottom:6px}
+.act-cab .ley-graf{margin:0}
+.act-res{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--label-2);margin:2px 0 10px}
+.act-res b{color:var(--label);font-weight:600;font-variant-numeric:tabular-nums}
+#actuals svg text.fy{fill:var(--label-2);font-weight:600}
+#actuals svg text.base{fill:var(--blue-txt);font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
 /* Detector: la receta elegida para el futuro, escrita como fórmula */
 .formula{border-radius:var(--r-m);background:var(--fill);padding:14px 16px 12px;margin-bottom:16px}
 .formula h3{margin:0 0 2px;font-size:14px;font-weight:700;letter-spacing:-.01em}
@@ -948,6 +973,22 @@ details[open] summary::before{transform:rotate(45deg)}
     </div>
   </section>
 
+  <section class="seccion" id="sActuals">
+    <div class="sec-cab"><h2>Actuals</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expand Actuals"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+    <button type="button" class="sec-mini vidrio" aria-label="Expand Actuals"></button>
+    <div class="sec-cuerpo">
+    <p class="sub">The history the recipe learns from, as each snapshot exported it: actuals, supply cuts and demand assumptions. The dotted line is the history actually used, after adding cuts and removing DAs with the chosen recipe.</p>
+    <div class="ancho vidrio">
+      <div class="act-cab">
+        <div class="ley-graf" id="actLey"></div>
+        <div class="controles" style="margin:0"><label>Snapshot <select id="selActFoto"></select></label></div>
+      </div>
+      <div class="act-res" id="actRes"></div>
+      <div id="actuals"></div>
+    </div>
+    </div>
+  </section>
+
   <section class="seccion" id="sDecisiones">
     <div class="sec-cab"><h2>Decisions</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expand Decisions"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
     <button type="button" class="sec-mini vidrio" aria-label="Expand Decisions"></button>
@@ -969,7 +1010,7 @@ details[open] summary::before{transform:rotate(45deg)}
     <div class="sec-cab"><h2>Results of past snapshots</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expand Results"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
     <button type="button" class="sec-mini vidrio" aria-label="Expand Results"></button>
     <div class="sec-cuerpo">
-    <p class="sub">What happened (actual Consensus) against the best recipe, by window. The three charts share one scale, fitted to the selection.</p>
+    <p class="sub">What happened (actual Consensus) against the best recipe, by window. Each chart fits its own scale, up to 100%; anything beyond is pinned to the edge.</p>
     <div class="ley-graf" id="resLey"></div>
     <div class="rejilla-res" id="resRejilla">
       <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Months F+1 to F+3</div><svg id="r90" width="228" height="196"></svg><div class="pie" id="r90p"></div></div>
@@ -1025,7 +1066,8 @@ const num = x => x == null || !isFinite(x) ? "-" : Math.round(x).toLocaleString(
 const corto = s => (s || "").replace(/\s*\(\d+\)\s*$/, "");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const EJ = D.ejes, CELDAS = D.celdas, CFG = D.config;
-const AMPL = ["Propio","Product Line","Brand","House","Todo"], CRIT = ["Jerarquía","Segmento","Tamaño","Edad"];
+// columnas del selector desde los datos ("Todo" se quitó del motor: con una casa por archivo es igual que House)
+const AMPL = [...new Set(CELDAS.map(c => c[0]))], CRIT = ["Jerarquía","Segmento","Tamaño","Edad"];
 const vtxt = (k, v) => k === "N" ? v + "M" : k === "e" ? v + (v === 1 ? " year" : " years") : k === "h" ? tx(v) : Math.round(v*100) + "%";
 const reducir = matchMedia("(prefers-reduced-motion: reduce)");
 let estado = {casa: null, sel: null, orden: {col: "u", dir: -1}};
@@ -1903,7 +1945,9 @@ const bordeBarra = () => {
 };
 $("vistaDetalle").addEventListener("scroll", bordeBarra, {passive: true});
 window.addEventListener("scroll", bordeBarra, {passive: true});
-addEventListener("resize", () => { moverPulgar($("segVista")); moverPulgar($("segTema")); });
+addEventListener("resize", () => { moverPulgar($("segVista")); moverPulgar($("segTema"));
+  // las gráficas a lo ancho miden su contenedor: se rehacen al cambiar el tamaño (sin animar)
+  clearTimeout(addEventListener.tAncho); addEventListener.tAncho = setTimeout(() => { if (!$("vistaDetalle").hidden && estado.sel) { if (ABIERTOS.has("sActuals")) actuals(); } }, 180); });
 
 // ================= INICIO: interacción =================
 const tip = $("tip");
@@ -2410,6 +2454,12 @@ function construir(svg){
     cs.forEach(c => { const x = +(c.getAttribute("cx") || c.getAttribute("x")) || 0;
       c.animate([{opacity: 0, transform: "scale(.7)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: 900 * Math.min(1, x / W) * 0.85, easing: MOV.curva, fill: "backwards"}); });
   }
+  // barras (Actuals): crecen desde la línea de cero, de izquierda a derecha; los DAs negativos bajan
+  const barras = [...svg.querySelectorAll("rect[data-crece]")];
+  if (barras.length) { const W = svg.viewBox.baseVal && svg.viewBox.baseVal.width || 1000;
+    barras.forEach(b => { b.style.transformOrigin = b.dataset.crece === "abajo" ? "50% 0" : "50% 100%";
+      b.animate([{transform: "scaleY(.04)", opacity: 0}, {transform: "none", opacity: b.getAttribute("opacity") || 1}],
+        {duration: 520, delay: 520 * Math.min(1, (+b.getAttribute("x")) / W), easing: MOV.curva, fill: "backwards"}); }); }
   svg.querySelectorAll(".calor-img").forEach(im => im.animate([{opacity: 0, transform: "scale(.97)"}, {opacity: 1, transform: "none"}], {duration: 520, easing: MOV.curva, fill: "backwards"}));
   svg.querySelectorAll(".cods, .en-celda").forEach(g => g.animate([{opacity: 0}, {opacity: 1}], {duration: 420, delay: 120, easing: "ease", fill: "backwards"}));
   // trayectorias: la línea se dibuja de la primera foto a la última; las discontinuas aparecen con un fundido
@@ -2538,30 +2588,37 @@ function brujula(svgId, ex, ey, polos){
   $(svgId + "p").innerHTML = esSel() && pts.length ? `Large dot: average position of the ${pts[pts.length - 1].n} codes (${pts[pts.length - 1].mes}); each one with its own recipe.` : p && p.ejes ? `Best achievable WAPE at each axis value${esRegla() ? ", group rule" : ""} (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
 }
 
-// Años de estacionalidad (e): es un interruptor, no un eje. Esta tira lo enseña foto a foto debajo de la Brújula 1:
-// abajo 1 año, arriba 2 años, con la misma regla de posición que las brújulas (tanh de la mejora de WAPE; cerca de la
-// línea discontinua = da igual). Con s = 0 la estacionalidad no influye y la tira queda atenuada.
+// Años de estacionalidad (e): es un interruptor, no un eje, así que solo vale 1 o 2. La tira enseña, foto a foto, el
+// valor ELEGIDO: abajo 1 año, arriba 2 años. Un código: su oráculo; un grupo: su regla; una selección: el valor que
+// eligen más códigos. Si esa foto usa media plana (s = 0), e no influye y el punto va hueco. Con s = 0 en la receta
+// elegida, la tira entera queda atenuada.
 function tiraE(){
-  const svg = $("b1e"), W = 326, L = 52, Rm = 12, T = 22, B = 48, cy = (T + B) / 2;
-  const fotos = fotosCerradas().map(f => f.foto), idx = new Map(fotos.map((m, i) => [m, i]));
-  const tr = trayectorias(e => { if (!e.ejes || !e.ejes.e) return null; const y = posEje(e.ejes.e); return y == null ? null : {x: 0, y}; });
-  const X = q => (L + (W - L - Rm) * (fotos.length > 1 ? (idx.get(q.mes) ?? 0) / (fotos.length - 1) : 0.5)).toFixed(1);
-  const Y = q => (cy - q.y * (B - T) / 2).toFixed(1);
+  const svg = $("b1e"), W = 326, L = 52, Rm = 12, T = 22, B = 48;
+  const fotos = fotosCerradas();
+  const recFoto = f => { const e = entidad(f); if (!e) return null;
+    if (esSel()) { const n = {1: 0, 2: 0}, s = {si: 0, no: 0};
+      (e.eans || []).forEach(ean => { const r = f.codigos[ean] && f.codigos[ean].oraculo_receta; if (r && r.e != null) { n[r.e]++; s[r.s > 0 ? "si" : "no"]++; } });
+      return n[1] + n[2] ? {e: n[2] > n[1] ? 2 : 1, s: s.si >= s.no ? 1 : 0, n: n[1] + n[2], n2: n[2]} : null; }
+    return esRegla() ? e.receta_txt : e.oraculo_receta; };
+  const pts = fotos.map((f, i) => { const r = recFoto(f); return r && r.e != null ? {i, mes: f.foto, r} : null; }).filter(Boolean);
+  const X = i => (L + (W - L - Rm) * (fotos.length > 1 ? i / (fotos.length - 1) : 0.5)).toFixed(1);
+  const Y = e => e === 2 ? T : B;
   const rec = recetaElegida(), plano = !esSel() && rec && rec.s === 0;
   svg.classList.toggle("inerte", !!plano);
   const der = esSel() ? "Each code its own" : !rec || rec.e == null ? "" : plano ? "No effect: flat mean (s 0%)" : `Chosen: ${vtxt("e", rec.e)}`;
   let h = `<text class="t-cab" x="0" y="11">Years of seasonality · e</text>
     <text x="${W}" y="11" text-anchor="end" style="fill:${plano || esSel() ? "var(--label-2)" : "var(--blue-txt)"};font-weight:600">${der}</text>
-    <line x1="${L}" x2="${W - Rm + 6}" y1="${T}" y2="${T}" stroke="var(--sep)"/><line x1="${L}" x2="${W - Rm + 6}" y1="${B}" y2="${B}" stroke="var(--sep)"/>
-    <line x1="${L}" x2="${W - Rm + 6}" y1="${cy}" y2="${cy}" stroke="var(--sep-fuerte)" stroke-dasharray="2 3"/>
-    <text x="${L - 8}" y="${T + 4}" text-anchor="end">2 years</text><text x="${L - 8}" y="${B + 3}" text-anchor="end">1 year</text>`;
-  // en un grupo solo el promedio: con dos valores posibles, una línea por código no se lee
-  h += capaMedia(tr.media, X, Y, p => {
-    if (esRegla()) return `${p.mes} · average of ${p.n} codes`;
-    const w = p.e.ejes.e, r = p.e.oraculo_receta;
-    return `${p.mes}\n1 year → ${pct(w[0])} · 2 years → ${pct(w[1])}${r && r.s === 0 ? "\nFlat mean in this snapshot: e has no effect" : ""}`;
-  }, {pref: "e", r: [6, 3.5]});
-  if (!tr.media.length) h += `<text x="${(L + W) / 2}" y="${cy + 4}" text-anchor="middle">No snapshots with closed windows</text>`;
+    <line x1="${L}" x2="${W - Rm + 6}" y1="${T}" y2="${T}" stroke="var(--sep-fuerte)"/><line x1="${L}" x2="${W - Rm + 6}" y1="${B}" y2="${B}" stroke="var(--sep-fuerte)"/>
+    <text x="${L - 8}" y="${T + 4}" text-anchor="end">2 years</text><text x="${L - 8}" y="${B + 4}" text-anchor="end">1 year</text>`;
+  // escalón: el valor se mantiene hasta la foto siguiente (no hay valores intermedios entre 1 y 2)
+  if (pts.length > 1) { let d = `M ${X(pts[0].i)} ${Y(pts[0].r.e)}`; pts.slice(1).forEach(p => { d += ` H ${X(p.i)} V ${Y(p.r.e)}`; });
+    h += `<path data-k="e-linea" class="tray" d="${d}" fill="none" stroke="var(--receta)" stroke-opacity=".5" stroke-width="2" stroke-linejoin="round"/>`; }
+  pts.forEach((p, k) => {
+    const ult = k === pts.length - 1, op = ult ? 1 : 0.35 + 0.55 * k / Math.max(1, pts.length - 1), hueco = !(p.r.s > 0);
+    const tt = `${p.mes} · ${vtxt("e", p.r.e)}${esSel() ? ` (${p.r.n2} of ${p.r.n} codes chose 2 years)` : ""}${hueco ? "\nFlat mean in this snapshot: e has no effect" : ""}`;
+    h += `<circle class="media" data-k="e-${p.mes}" cx="${X(p.i)}" cy="${Y(p.r.e)}" r="${ult ? 6 : 4}" fill="${hueco ? "var(--card)" : "var(--receta)"}" fill-opacity="${hueco ? 1 : op.toFixed(2)}" stroke="${hueco ? "var(--receta)" : "var(--card)"}" stroke-width="${hueco ? 1.5 : 2}"><title>${esc(tt)}</title></circle>`;
+  });
+  if (!pts.length) h += `<text x="${(L + W) / 2}" y="${(T + B) / 2 + 4}" text-anchor="middle">No snapshots with closed windows</text>`;
   pintarSVG(svg, h);
 }
 
@@ -2577,7 +2634,7 @@ function recetaElegida(){
 function selector(){
   const svg = $("bsel"), f = fotoUltCerrada(), e = f && entidad(f);
   if (!e) { svg.innerHTML = `<text x="163" y="170" text-anchor="middle">No snapshots with closed windows</text>`; $("matrizp").innerHTML = ""; return; }
-  const L = 74, T = 40, CW = 48.4, CH = 50, gap = 3, TH = T + 4 * CH + 14, CHh = 46;
+  const L = 74, T = 40, CW = 242 / AMPL.length, CH = 50, gap = 4, TH = T + 4 * CH + 14, CHh = 46;
   const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos;
   const gJer = a => CELDAS.findIndex(c => c[0] === a && c[1] === "Jerarquía");
   const tamH = hv => hv === "Propio" ? 1 : tam[gJer(hv)];
@@ -2594,7 +2651,7 @@ function selector(){
   const caja = (col, fila) => fila < 4 ? {x: L + col * CW + gap / 2, y: T + fila * CH + gap / 2, w: CW - gap, h: CH - gap} : {x: L + col * CW + gap / 2, y: TH + gap / 2, w: CW - gap, h: CHh - gap};
   let h = AMPL.map((a, k) => `<text x="${cx(k)}" y="${T - 9}" text-anchor="middle">${a === "Product Line" ? "Line" : tx(a)}</text>`).join("")
         + CRIT.map((cr, k) => `<text x="${L - 8}" y="${cy(k) + 4}" text-anchor="end">${cr === "Jerarquía" ? "Hierarchy" : "+ " + tx(cr)}</text>`).join("")
-        + `<line x1="6" x2="${L + 5 * CW - gap / 2}" y1="${TH - 7}" y2="${TH - 7}" stroke="var(--sep)"/>`
+        + `<line x1="6" x2="${L + AMPL.length * CW - gap / 2}" y1="${TH - 7}" y2="${TH - 7}" stroke="var(--sep)"/>`
         + `<text x="${L - 7}" y="${cy(4) + 4}" text-anchor="end" style="fill:var(--label);font-weight:600">Seasonality</text>`;
   let numeros = "";   // los conteos van encima de los puntos de los códigos, con halo
   const pintaCelda = (k, q, n, w, nombre, elegida, vc, tot, op) => {
@@ -2647,7 +2704,7 @@ function selector(){
   const lejos = m.length > 1 && Math.hypot(+PX(m[0]) - +PX(m[m.length - 1]), +PY(m[0]) - +PY(m[m.length - 1])) >= 46;
   [0, m.length - 1].filter((v, i, a) => m.length && a.indexOf(v) === i && (v !== 0 || m.length === 1 || lejos)).forEach(i => {
     const p = m[i], x = +PX(p), y = +PY(p);
-    const der = x < cx(3);
+    const der = x < cx(AMPL.length / 2);
     h += `<text data-k="l-${i === 0 ? "ini" : "fin"}" x="${der ? x + 13 : x - 13}" y="${y + 4}" text-anchor="${der ? "start" : "end"}" class="et-mes et-halo">${p.mes}</text>`;
   });
   // el calor va sobre las celdas y bajo la trayectoria
@@ -2665,29 +2722,33 @@ function selector(){
     + (rs.length > 1 ? `<br>The best changed between snapshots: trend ${cambios("g")} of ${rs.length - 1} times, seasonality ${cambios("h")}.` : "");
 }
 
-// Resultados: tres medias brújulas (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M) con UNA escala común, para poder
-// compararlas. La escala se adapta a los valores de la selección (con el tope del trend en ±50% ya no caben en
-// ±30% / 60%) y salta por pasos redondos; lo que se sale se dibuja pegado al borde con un triángulo.
+// Resultados: tres medias brújulas (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M). Cada una ajusta su escala a sus valores
+// por pasos redondos y como mucho llega a ±100% de SPP y 100% de WAPE: lo que se sale se dibuja pegado al borde
+// con un triángulo.
 const VENTANAS = ["90", "180", "9M"];
 // una ventana cuenta en una foto solo si TODOS sus tramos están cerrados (si no, WAPE180 y 9M serían solo los meses cerrados)
 const ventanaCerrada = (f, v) => (f.tramos_cerrados || []).slice(0, {"90": 1, "180": 2, "9M": 3}[v]).every(Boolean);
-const ESC_SPP = [0.3, 0.5, 0.75, 1, 1.5, 2, 3], ESC_WAPE = [0.6, 0.8, 1, 1.5, 2, 3, 4];
+const ESC_SPP = [0.3, 0.5, 0.75, 1], ESC_WAPE = [0.6, 0.8, 1];
 const SERIES_RES = () => [["kpi_consensus", "var(--cons)", "4 3", "Actual Consensus"], ["kpi_receta", "var(--receta)", "", esSel() ? "Each code's recipe (oracle)" : esRegla() ? "Group rule" : "Best recipe (oracle)"]];
 function resultados(){
   const series = SERIES_RES();
-  const datos = {}; let mS = 0, mW = 0;
-  VENTANAS.forEach(v => { datos[v] = series.map(([k]) => {
-    const pts = [];
-    fotosCerradas().filter(f => ventanaCerrada(f, v)).forEach(f => { const e = entidad(f), x = e && e[k] && e[k][v]; if (x) { pts.push({x, mes: f.foto}); mS = Math.max(mS, Math.abs(x.spp)); mW = Math.max(mW, x.wape); } });
-    return pts;
-  }); });
-  const lim = {s: ESC_SPP.find(x => x >= mS * 1.06) || ESC_SPP[ESC_SPP.length - 1], w: ESC_WAPE.find(x => x >= mW * 1.06) || ESC_WAPE[ESC_WAPE.length - 1]};
-  VENTANAS.forEach(v => mediaBrujula(v, datos[v], series, lim));
+  const datos = {};
+  VENTANAS.forEach(v => { let mS = 0, mW = 0;
+    datos[v] = series.map(([k]) => {
+      const pts = [];
+      fotosCerradas().filter(f => ventanaCerrada(f, v)).forEach(f => { const e = entidad(f), x = e && e[k] && e[k][v]; if (x) { pts.push({x, mes: f.foto}); mS = Math.max(mS, Math.abs(x.spp)); mW = Math.max(mW, x.wape); } });
+      return pts;
+    });
+    const lim = {s: ESC_SPP.find(x => x >= mS * 1.06) || ESC_SPP[ESC_SPP.length - 1], w: ESC_WAPE.find(x => x >= mW * 1.06) || ESC_WAPE[ESC_WAPE.length - 1]};
+    mediaBrujula(v, datos[v], series, lim);
+  });
   const sw = c => `<span class="ley-it">${c}</span>`;
   $("resLey").innerHTML = sw('<i style="height:0;border-top:1.5px dashed var(--cons)"></i>Actual Consensus') + sw(`<i style="height:2px;background:var(--receta)"></i>${esSel() ? "Each code's recipe" : esRegla() ? "Group rule" : "Best recipe"}`)
     + sw('<i style="background:var(--meta);box-shadow:inset 0 0 0 1px var(--green)"></i>Target: WAPE ≤ ' + pct(CFG.metas.wape_max, 0) + ', SPP ±' + pct(CFG.metas.spp_abs_max, 0))
     + sw('Left = over-forecast · one dot per snapshot, the last one bigger');
 }
+// a quién pertenece lo que se mira: el EAN y su descripción, o el nombre del grupo o la selección
+const quienSel = () => esRegla() ? $("detTituloTxt").textContent : `${estado.sel} · ${(casa().atributos[estado.sel] || {}).desc || ""}`;
 function mediaBrujula(v, datos, series, lim){
   const id = "r" + v, svg = $(id), W = 228, cx = W/2, base = 160, top = 8, R = 104;
   const X = spp => cx + Math.max(-1, Math.min(1, spp / lim.s)) * R;
@@ -2711,7 +2772,7 @@ function mediaBrujula(v, datos, series, lim){
     const pts = datos[is].map(p => ({...p, px: X(p.x.spp), py: Y(p.x.wape), out: fuera(p.x.spp, p.x.wape)}));
     if (pts.length > 1) h += `<polyline data-k="${k}-linea" points="${pts.map(p=>p.px.toFixed(1)+","+p.py.toFixed(1)).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
     pts.forEach((p, i) => {
-      const u = i === pts.length - 1, tt = `<title>${nom} ${p.mes}: SPP ${pct(p.x.spp)}, WAPE ${pct(p.x.wape)}${p.out ? " (off the scale)" : ""}</title>`;
+      const u = i === pts.length - 1, tt = `<title>${esc(`${nom}\n${{"90": "SPP3 · WAPE90", "180": "SPP6 · WAPE180", "9M": "SPP · WAPE 9M"}[v]} · snapshot ${p.mes}\n${quienSel()}\nWAPE ${pct(p.x.wape)} · SPP ${pct(p.x.spp)}${p.out ? " (off the scale)" : ""}`)}</title>`;
       h += p.out ? `<path data-k="${k}-${p.mes}" d="M ${p.px.toFixed(1)} ${(p.py-6).toFixed(1)} l 5 9 l -10 0 z" fill="${col}" fill-opacity="${u?1:.4}">${tt}</path>`
                  : `<circle data-k="${k}-${p.mes}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="${u ? 6 : 3.5}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="1.5">${tt}</circle>`;
       if (u) ult[k] = p;
@@ -2773,7 +2834,7 @@ function grafico(meses, ev){
 
 function rail(r){
   RES.foto = r;
-  const nav = `<nav aria-label="Sections">${[["sFoto","Current snapshot"],["sDecisiones","Decisions"],["sResultados","Results"],["sDetector","Detector"]].map(([id, t]) => `<a href="javascript:void 0" data-ir="${id}">${t}</a>`).join("")}</nav>`;
+  const nav = `<nav aria-label="Sections">${[["sFoto","Current snapshot"],["sActuals","Actuals"],["sDecisiones","Decisions"],["sResultados","Results"],["sDetector","Detector"]].map(([id, t]) => `<a href="javascript:void 0" data-ir="${id}">${t}</a>`).join("")}</nav>`;
   if (!r) { $("rail").innerHTML = `<h2 class="rail-t">Current snapshot</h2><p class="pequeño" style="margin:0 0 14px">No recipe to compare with.</p>` + nav; return; }
   const fila = (k, v, cls = "") => `<div class="rail-f"><span>${k}</span><b class="num ${cls}">${v}</b></div>`;
   const p = r.totR > 0 ? r.totDev / r.totR : null;
@@ -2782,6 +2843,7 @@ function rail(r){
     + fila("Over the recipe", pct(p))
     + fila(esRegla() ? "Codes off" : "Months off", esRegla() ? r.nFuera + " of " + r.n : r.meses + " of 9")
     + `</div><h2 class="rail-t">Recipe</h2><p class="rec">${r.rec ? recetaTxt(r.rec) : "Each code uses its own recipe."}</p>` + nav;
+  contar($("rail"));
 }
 
 function fotoActual(){
@@ -3018,6 +3080,165 @@ $("calor").addEventListener("change", () => {
 });
 // la barra superior cambia de alto (una o dos filas): el mapa, el inspector y el detalle se colocan debajo
 new ResizeObserver(([e]) => document.documentElement.style.setProperty("--alto-barra", Math.round(e.target.getBoundingClientRect().height) + "px")).observe($("barra"));
+// ================= Actuals =================
+// Historia que la receta aprende, tal como la exportó la foto elegida: actuals (gris), Supply Cuts encima (naranja
+// rayado) y Total Demand Assumption (morado: los positivos suben, los negativos bajan, restando). La línea punteada
+// es la historia usada, H = A + c·Cortes − p·DA con la c y la p de la receta elegida de cada código, y la discontinua
+// la base de los 12 meses cerrados. El mes en curso va tenue y no entra en la historia.
+const mesCorto = m => { const [a, mm] = m.split(".M"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mm - 1] + " " + a.slice(2); };
+function eansSel(){
+  const c = casa(), at = c.atributos, ini = c.inicio.codigos, ok = e => !ini[e] || cuenta(ini[e]);
+  if (!esRegla()) return [estado.sel];
+  if (esSel()) return miembros().filter(ok);
+  const k = estado.sel.slice(2), todos = Object.keys(at).filter(ok);
+  if (k.startsWith("Casa: ")) return todos;
+  if (k.startsWith("Brand: ")) return todos.filter(e => at[e].brand === k.slice(7));
+  if (k.startsWith("PL: ")) return todos.filter(e => at[e].pl === k.slice(4));
+  return [];
+}
+function opcionesActuals(){
+  const h = casa().actuals || {}, fotos = Object.keys(h), sel = $("selActFoto");
+  if (!fotos.includes(estado.actFoto)) estado.actFoto = fotos[fotos.length - 1];
+  sel.innerHTML = fotos.slice().reverse().map(f => `<option value="${f}"${f === estado.actFoto ? " selected" : ""}>${f}${f === fotos[fotos.length - 1] ? " (latest)" : ""}</option>`).join("");
+}
+function actuals(){
+  const caja = $("actuals"), hist = casa().actuals;
+  if (!hist) { caja.innerHTML = `<p>This page was built without the actuals history. Run the pipeline again.</p>`; $("actRes").innerHTML = ""; $("actLey").innerHTML = ""; RES.act = null; return; }
+  opcionesActuals();
+  const h = hist[estado.actFoto], n = h.meses.length, eans = eansSel();
+  const A = Array(n).fill(0), C = Array(n).fill(0), D = Array(n).fill(0), H = Array(n).fill(0), hay = Array(n).fill(false);
+  let cMed = 0, pMed = 0, nRec = 0;
+  eans.forEach(e => {
+    const s = h.c[e]; if (!s) return;
+    const el = V().elegida[e], r = el && el.txt, c = r ? r.c : 0, p = r ? r.p : 0;
+    if (r) { cMed += c; pMed += p; nRec++; }
+    s[0].forEach((a, i) => { if (a != null) { A[i] += a; hay[i] = true; } C[i] += s[1][i]; D[i] += s[2][i];
+      if (i < n - 1) H[i] += (a || 0) + c * s[1][i] - p * s[2][i]; });
+  });
+  // recetas aplicadas: un código, la suya; un grupo, el promedio (cada código usa la suya)
+  const rTxt = !esRegla() ? (nRec ? `c ${vtxt("c", cMed)} of cuts added, p ${vtxt("p", pMed)} of DAs removed` : "no chosen recipe: raw actuals")
+    : `each code with its own recipe (average c ${vtxt("c", nRec ? cMed / nRec : 0)}, p ${vtxt("p", nRec ? pMed / nRec : 0)})`;
+  const base = H.slice(n - 13, n - 1).reduce((a, b) => a + b, 0) / 12;
+  const sum12 = arr => arr.slice(n - 13, n - 1).reduce((a, b) => a + b, 0);
+  RES.act = {foto: estado.actFoto, A: sum12(A), C: sum12(C), D: sum12(D), H: sum12(H)};
+  const W = Math.max(300, Math.round(caja.clientWidth || 1000)), estrecho = W < 640;
+  const Ht = estrecho ? 250 : 320, L = estrecho ? 46 : 56, Rm = 10, T = 22, B = 30;
+  const arriba = Math.max(1, ...A.map((a, i) => a + C[i] + Math.max(0, D[i])), ...H), abajo = Math.max(0, ...D.map(d => -d));
+  const {paso, tope} = marcas(arriba * 1.06), fondo = abajo > 0 ? Math.ceil(abajo * 1.1 / paso) * paso : 0;
+  const y = v => T + (Ht - T - B) * (tope - v) / (tope + fondo);
+  const bw = (W - L - Rm) / n, x = i => L + bw * i + bw * 0.14, ancho = bw * 0.72;
+  const k = v => Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.abs(v) >= 1e3 ? (v / 1e3).toFixed(Math.abs(v) >= 1e5 ? 0 : 1) + "k" : num(v);
+  let g = `<defs><pattern id="rayado" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--orange)" fill-opacity=".18"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--orange)" stroke-width="2.4" stroke-opacity=".8"/></pattern></defs>`;
+  for (let v = -fondo; v <= tope + 1e-9; v += paso)
+    g += `<line x1="${L}" x2="${W - Rm}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="${Math.abs(v) < 1e-9 ? "var(--sep-fuerte)" : "var(--sep)"}"/><text x="${L - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${k(v)}</text>`;
+  // años fiscales (empiezan en julio): línea fina y etiqueta FY
+  h.meses.forEach((m, i) => { const mm = +m.split(".M")[1], a = +m.slice(0, 4);
+    if (mm === 7 || i === 0) { const fy = "FY" + String(mm >= 7 ? a + 1 : a).slice(2), xx = i === 0 ? L : L + bw * i;
+      if (i > 0) g += `<line x1="${xx.toFixed(1)}" x2="${xx.toFixed(1)}" y1="${T - 12}" y2="${Ht - B}" stroke="var(--sep-fuerte)" stroke-dasharray="2 3"/>`;
+      g += `<text class="fy" x="${(xx + 5).toFixed(1)}" y="${T - 6}">${fy}</text>`; }
+    if (mm % 3 === 1 || n <= 13) g += `<text x="${(x(i) + ancho / 2).toFixed(1)}" y="${Ht - B + 17}" text-anchor="middle">${mesCorto(m)}</text>`; });
+  g += `<g class="barras">`;
+  h.meses.forEach((m, i) => {
+    const ahora = i === n - 1, op = ahora ? ` opacity=".45"` : "";
+    const tt = `${m}${ahora ? " (current month, partial)" : ""}\nActuals ${hay[i] ? num(A[i]) : "-"}\nSupply cuts ${num(C[i])}\nDemand assumptions ${num(D[i])}${ahora ? "" : "\nHistory used " + num(H[i])}`;
+    const r = (cls, k2, y0, y1, fill, crece) => y1 - y0 < 0.4 ? "" : `<rect class="barra ${cls}" data-k="${k2}${i}" data-crece="${crece}" x="${x(i).toFixed(1)}" y="${y0.toFixed(1)}" width="${ancho.toFixed(1)}" height="${(y1 - y0).toFixed(1)}" rx="${Math.min(4, ancho / 4).toFixed(1)}" fill="${fill}"${op}><title>${esc(tt)}</title></rect>`;
+    g += r("a", "a", y(A[i]), y(0), "var(--act)", "arriba");
+    g += r("c", "c", y(A[i] + C[i]), y(A[i]), "url(#rayado)", "arriba");
+    if (D[i] > 0) g += r("d", "d", y(A[i] + C[i] + D[i]), y(A[i] + C[i]), "var(--da)", "arriba");
+    if (D[i] < 0) g += r("d", "d", y(0), y(D[i]), "var(--da)", "abajo");
+  });
+  g += `</g><g class="datos">`;
+  const pts = H.slice(0, n - 1).map((v, i) => [x(i) + ancho / 2, y(v)]);
+  g += `<path data-k="h-linea" d="${curva(pts.map(([a, b]) => [a.toFixed(1), b.toFixed(1)]))}" fill="none" stroke="var(--receta)" stroke-width="2.2" stroke-dasharray="1.5 4" stroke-linecap="round"/>`;
+  pts.forEach(([a, b], i) => g += `<circle data-k="h-${i}" cx="${a.toFixed(1)}" cy="${b.toFixed(1)}" r="${estrecho ? 2.2 : 2.8}" fill="var(--receta)"><title>${esc(h.meses[i] + "\nHistory used " + num(H[i]))}</title></circle>`);
+  const xb0 = x(n - 13), xb1 = x(n - 2) + ancho;
+  g += `<line data-k="h-base" x1="${xb0.toFixed(1)}" x2="${xb1.toFixed(1)}" y1="${y(base).toFixed(1)}" y2="${y(base).toFixed(1)}" stroke="var(--receta)" stroke-width="1.2" stroke-dasharray="3 3" stroke-opacity=".75"/>`;
+  g += `<text class="base" data-k="h-base-t" x="${(xb0 + 4).toFixed(1)}" y="${(y(base) - 6).toFixed(1)}">12M base ${k(base)}</text>`;
+  g += `<text x="${(x(n - 1) + ancho / 2).toFixed(1)}" y="${T - 6}" text-anchor="middle" style="fill:var(--label-3)">now</text></g>`;
+  const sw = c => `<span class="ley-it">${c}</span>`;
+  $("actLey").innerHTML = sw('<i style="background:var(--act);box-shadow:inset 0 0 0 1px var(--act-borde)"></i>Actuals') + sw('<i style="background:repeating-linear-gradient(45deg,var(--orange) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--orange)"></i>Supply cuts')
+    + sw('<i style="background:var(--da)"></i>Demand assumptions (DAs)') + sw('<i style="height:0;border-top:2.2px dotted var(--receta)"></i>History used') + sw('<i style="height:0;border-top:1.5px dashed var(--receta)"></i>12M base');
+  $("actRes").innerHTML = `<span>Last 12 closed months: actuals <b>${num(RES.act.A)}</b></span><span>cuts <b>${num(RES.act.C)}</b></span><span>DAs <b>${num(RES.act.D)}</b></span><span>history used <b>${num(RES.act.H)}</b></span><span>${esRegla() ? eans.length + " codes, " : ""}${rTxt}</span>`;
+  contar($("actRes"));
+  const antes = capturar($("grafAct")), pend = $("grafAct") && $("grafAct").hasAttribute("data-pendiente");
+  caja.innerHTML = `<svg id="grafAct" viewBox="0 0 ${W} ${Ht}" width="${W}" height="${Ht}" style="display:block;max-width:100%" role="img" aria-label="Actuals, supply cuts and demand assumptions by month, snapshot ${estado.actFoto}">${g}</svg>`;
+  if (pend) $("grafAct").setAttribute("data-pendiente", "");
+  presentar($("grafAct"), antes, [], caja);
+}
+$("selActFoto").addEventListener("change", ev => { estado.actFoto = ev.target.value; actuals(); });
+
+// ================= Tarjeta flotante de las gráficas =================
+// Sustituye al tooltip nativo (<title>) de puntos, celdas y barras del detalle por una tarjeta de cristal con
+// qué se mira: serie, foto, código o grupo y el dato. Al pasar el puntero, el punto crece un poco.
+const TIP = document.createElement("div");
+TIP.className = "tip-graf vidrio"; TIP.setAttribute("role", "tooltip"); document.body.appendChild(TIP);
+let TIP_EL = null, TIP_FIN = 0;
+function textoTip(el){
+  const t = el.querySelector(":scope > title");
+  if (t) { el.dataset.tip = t.textContent; t.remove(); }
+  return el.dataset.tip;
+}
+function verTip(el, ev){
+  const txt = textoTip(el); if (!txt) return;
+  const [cab, ...resto] = txt.split("\n");
+  TIP.innerHTML = `<b>${esc(cab)}</b>${esc(resto.join("\n"))}`;
+  TIP.classList.toggle("instante", performance.now() - TIP_FIN < 400 || TIP.classList.contains("ver"));
+  const w = TIP.offsetWidth, hh = TIP.offsetHeight, izq = ev.clientX + 16 + w > innerWidth - 8, arr = ev.clientY + 18 + hh > innerHeight - 8;
+  TIP.style.left = (izq ? ev.clientX - 16 - w : ev.clientX + 16) + "px";
+  TIP.style.top = (arr ? ev.clientY - 14 - hh : ev.clientY + 18) + "px";
+  TIP.style.setProperty("--tip-o", `${izq ? "100%" : "0"} ${arr ? "100%" : "0"}`);
+  TIP.classList.add("ver");
+}
+function quitarTip(){
+  if (TIP_EL && TIP_EL.tagName === "circle") TIP_EL.style.removeProperty("r");
+  TIP_EL = null; if (TIP.classList.contains("ver")) TIP_FIN = performance.now(); TIP.classList.remove("ver");
+}
+$("vistaDetalle").addEventListener("pointerover", ev => {
+  let el = ev.target;
+  while (el && el.tagName !== "svg" && el.nodeType === 1 && !el.querySelector(":scope > title") && !el.dataset.tip) el = el.parentNode;
+  if (!el || el.nodeType !== 1 || el.tagName === "svg" || !el.closest("svg")) { if (TIP_EL) quitarTip(); return; }
+  if (el === TIP_EL) return;
+  if (TIP_EL && TIP_EL.tagName === "circle") TIP_EL.style.removeProperty("r");
+  TIP_EL = el; verTip(el, ev);
+  if (el.tagName === "circle" && matchMedia("(hover: hover) and (pointer: fine)").matches) el.style.r = (+el.getAttribute("r") + 1.5) + "px";
+});
+$("vistaDetalle").addEventListener("pointermove", ev => { if (TIP_EL) verTip(TIP_EL, ev); });
+$("vistaDetalle").addEventListener("pointerout", ev => { if (TIP_EL && !(ev.relatedTarget && TIP_EL.contains(ev.relatedTarget))) quitarTip(); });
+addEventListener("scroll", () => { if (TIP_EL) quitarTip(); }, {capture: true, passive: true});
+
+// ================= Vida: animaciones al abrir secciones y al cambiar datos =================
+// Al abrir una sección sus piezas entran en cascada (fundido + 10 px, 45 ms entre una y otra) y sus gráficos se
+// vuelven a construir (barras que crecen, trayectorias que se trazan, puntos en orden de foto). Las cifras de las
+// tiras y del raíl cuentan desde su valor anterior. Con movimiento reducido, solo fundidos.
+function reanimar(ids){
+  ids.forEach(id => {
+    const sec = $(id); if (!sec || sec.classList.contains("plegada")) return;
+    const piezas = sec.querySelectorAll(".sec-cuerpo > .sub, .sec-cuerpo > .ley-graf, .tarjeta, .sec-cuerpo > .ancho, .dec-cab");
+    piezas.forEach((c, i) => c.animate(reducir.matches ? [{opacity: 0}, {opacity: 1}] : [{opacity: 0, transform: "translateY(10px) scale(.985)"}, {opacity: 1, transform: "none"}],
+      {duration: reducir.matches ? 200 : 460, delay: Math.min(i * 45, 260), easing: MOV.curva, fill: "backwards"}));
+    sec.querySelectorAll("svg").forEach(svg => {
+      if (!svg.querySelector("[data-k]")) return;
+      if (enVista(svg) || !OBS) construir(svg); else { svg.setAttribute("data-pendiente", ""); OBS.observe(svg); }
+    });
+  });
+}
+const NUM_RE = /^(-?)([\d,]+(?:\.\d+)?)(%?)$/;
+function contar(raiz){
+  if (!raiz || reducir.matches) return;
+  raiz.querySelectorAll("b, .num").forEach((el, i) => {
+    const nodo = [...el.childNodes].find(n => n.nodeType === 3 && NUM_RE.test(n.textContent.trim())); if (!nodo) return;
+    const [, sg, cuerpo, pc] = nodo.textContent.trim().match(NUM_RE), dec = (cuerpo.split(".")[1] || "").length;
+    const fin = (sg ? -1 : 1) * parseFloat(cuerpo.replace(/,/g, "")), clave = (raiz.id || (raiz.closest(".seccion") || {}).id || "") + ":" + i, ini = contar.prev.get(clave) ?? 0;
+    contar.prev.set(clave, fin);
+    if (Math.abs(fin - ini) < 1e-9) return;
+    const t0 = performance.now(), dur = 620, fmt = v => (v < 0 ? "-" : "") + Math.abs(v).toLocaleString("en-US", {minimumFractionDigits: dec, maximumFractionDigits: dec}) + pc;
+    const paso = ahora => { const t = Math.min(1, (ahora - t0) / dur), e = 1 - Math.pow(1 - t, 4);
+      nodo.textContent = fmt(ini + (fin - ini) * e); if (t < 1) requestAnimationFrame(paso); };
+    nodo.textContent = fmt(ini); requestAnimationFrame(paso);
+  });
+}
+contar.prev = new Map();
+
 // ================= Barra de rango =================
 // Solo se eligen fotos MEDIDAS (las que ya tienen actuals cerrados); las más recientes, sin medir aún, se ven al final
 // en un tramo discontinuo y no se pueden seleccionar. Las marcas se construyen una vez; durante el arrastre solo cambian
@@ -3146,7 +3367,7 @@ $("rangoPresets").addEventListener("click", ev => {
 // Al abrir la página los cuatro grupos (Foto actual, Decisiones, Resultados, Detector) están plegados: cada uno
 // deja su título y una tira con lo esencial. La tira se convierte en el contenido (View Transition con el mismo
 // nombre, curva de cajón de iOS) y la cabecera del grupo pulsado se queda quieta en pantalla.
-const GRUPOS = ["sFoto", "sDecisiones", "sResultados", "sDetector"];
+const GRUPOS = ["sFoto", "sActuals", "sDecisiones", "sResultados", "sDetector"];
 const ABIERTOS = new Set();
 const RES = {};   // resúmenes que dejan fotoActual() y detector() para las tiras
 // la última foto del rango en la que TODA la ventana está cerrada (si no, WAPE180 y 9M serían solo los meses cerrados)
@@ -3165,6 +3386,10 @@ function miniGrupo(id){
     return mn("Deviation", `<span class="${r.totDev > 0.5 ? "malo" : "bueno"}">${num(r.totDev)}</span><small>units</small>`) + mn("Over the recipe", pct(r.totR > 0 ? r.totDev / r.totR : null))
       + (esRegla() ? mn("Codes off", `${r.nFuera}<small>of ${r.n}</small>`) : mn("Months off", `${r.meses}<small>of 9</small>`))
       + mn("Snapshot", r.foto, "txt");
+  }
+  if (id === "sActuals") {
+    const a = RES.act; if (!a) return mn("Actuals", "No actuals history", "txt");
+    return mn("Actuals 12M", `${num(a.A)}<small>units</small>`) + mn("Supply cuts 12M", num(a.C)) + mn("DAs 12M", num(a.D)) + mn("Snapshot", a.foto, "txt");
   }
   if (id === "sDecisiones") {
     const rec = recetaElegida(), n = fotosCerradas().length;
@@ -3192,7 +3417,7 @@ function pintarGrupos(){
     sec.classList.toggle("plegada", !ab);
     sec.querySelector(".sec-tog").setAttribute("aria-expanded", String(ab));
     sec.querySelector(".sec-tog").setAttribute("aria-label", (ab ? "Collapse " : "Expand ") + sec.querySelector("h2").textContent);
-    if (!ab) sec.querySelector(".sec-mini").innerHTML = miniGrupo(id);
+    if (!ab) { const mini = sec.querySelector(".sec-mini"); mini.innerHTML = miniGrupo(id); contar(mini); }
     // la tira y el contenido comparten nombre: la tira crece hasta ser el contenido
     sec.querySelector(".sec-cab").style.viewTransitionName = "cab-" + id;
     sec.querySelector(".sec-mini").style.viewTransitionName = ab ? "" : "cu-" + id;
@@ -3210,14 +3435,16 @@ function cambiarGrupos(f, ancla){
     f(); pintarGrupos();
     // el gráfico de la foto actual mide su ancho: se repinta al hacerse visible
     if (ABIERTOS.has("sFoto") && !antes.has("sFoto")) fotoActual();
+    if (ABIERTOS.has("sActuals") && !antes.has("sActuals")) actuals();
     const dy = cab.getBoundingClientRect().top - y0; $("vistaDetalle").scrollBy({top: dy, behavior: "instant"});
     const dy2 = cab.getBoundingClientRect().top - y0; if (Math.abs(dy2) > 1) window.scrollBy({top: dy2, behavior: "instant"});
     requestAnimationFrame(revisarPendientes);
   };
-  if (!document.startViewTransition || reducir.matches) { hecho(); return Promise.resolve(); }
+  const nuevas = () => GRUPOS.filter(id => ABIERTOS.has(id) && !antes.has(id));
+  if (!document.startViewTransition || reducir.matches) { hecho(); reanimar(nuevas()); return Promise.resolve(); }
   document.documentElement.classList.add("vt-res");
   const vt = document.startViewTransition(hecho);
-  vt.finished.finally(() => document.documentElement.classList.remove("vt-res"));
+  vt.finished.finally(() => { document.documentElement.classList.remove("vt-res"); reanimar(nuevas()); });
   return vt.updateCallbackDone;
 }
 $("vistaDetalle").addEventListener("click", ev => {
@@ -3239,6 +3466,7 @@ function pintar(){
   info();
   pintarTolDet();
   fotoActual();
+  actuals();
   pintarDecisiones();
   resultados();
   anteriores();
@@ -3252,7 +3480,7 @@ $("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-i
   // la barra compacta mide menos: se compacta antes de medir, así la sección queda justo debajo de ella
   if (a.dataset.ir !== "sFoto") $("barra").classList.add("compacta");
   const id = a.dataset.ir, ir = () => requestAnimationFrame(() => requestAnimationFrame(() => $(id).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"})));
-  if (!ABIERTOS.has(id)) { ABIERTOS.add(id); pintarGrupos(); if (id === "sFoto") fotoActual(); requestAnimationFrame(revisarPendientes); }
+  if (!ABIERTOS.has(id)) { ABIERTOS.add(id); pintarGrupos(); if (id === "sFoto") fotoActual(); if (id === "sActuals") actuals(); requestAnimationFrame(() => { revisarPendientes(); reanimar([id]); }); }
   ir(); });
 $("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
 $("selFuente").addEventListener("input", () => { fotoActual(); detector(); });

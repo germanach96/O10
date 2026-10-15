@@ -9,9 +9,9 @@ import pandas as pd
 
 from .lector import Foto
 
-AMPLITUDES = ["Propio", "Product Line", "Brand", "House", "Todo"]
+AMPLITUDES = ["Propio", "Product Line", "Brand", "House"]
 CRITERIOS = ["Jerarquía", "Segmento", "Tamaño", "Edad"]
-# 17 celdas: "Propio" solo en la fila "Jerarquía"
+# 13 celdas: "Propio" solo en la fila "Jerarquía" ("Todo" se quitó: con una casa por archivo es igual que House)
 CELDAS = [(a, c) for c in CRITERIOS for a in AMPLITUDES if not (a == "Propio" and c != "Jerarquía")]
 EJES = ["s", "h", "e", "w", "m", "N", "c", "p", "g"]
 # h = de quién copio la estacionalidad (Propio, Product Line, Brand, House); e = años de estacionalidad (1 o 2)

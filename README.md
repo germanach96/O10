@@ -19,7 +19,7 @@ O10/
 ├── motor/                    cálculo en Python (sin nada de interfaz)
 │   ├── config.json           rejillas, tope del trend, pesos, tolerancia inicial, filtro de tipos
 │   ├── lector.py             lectura y validación de una foto (EAN, mes, scope, edad, tamaño)
-│   ├── recetas.py            forecast de las 99.144 recetas por código y foto (MotorFoto, Rejilla)
+│   ├── recetas.py            forecast de las 75.816 recetas por código y foto (MotorFoto, Rejilla)
 │   └── pipeline.py           actuals posteriores, tramos, cubo, resúmenes, score multi-foto, detector
 ├── interfaz/                 código de la página
 │   ├── plantilla.html        HTML + CSS + JS de O10; el pipeline incrusta los datos
