@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from motor.lector import ErrorFoto, extraer_tamano, leer_foto, leer_listas
+from motor.lector import ErrorFoto, agregar_desaparecidos, extraer_tamano, leer_foto, leer_listas, mes_a_int
 from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
 from motor.pipeline import actuals_futuros, cargar_config, kpis, mascara_cuenta, variantes_tipos
 
@@ -189,6 +189,29 @@ def test_actuals_de_codigos_que_salen_del_export(tmp_path, foto_simple, cfg):
     np.testing.assert_array_equal(A[i1, :3], [32, 0, 0])
     np.testing.assert_array_equal(A[i2, :3], [52, 53, 54])
     assert np.isnan(A[:, 3:]).all()
+
+
+def test_codigo_desaparecido_cuenta_en_el_trend(tmp_path, foto_simple, cfg):
+    """El código 1 (100/mes en 2023, 110/mes en 2024) sale del export en la foto 2026.M01; el código 2 (mismo PL)
+    vende 50/mes siempre. En 2026.M01 el código 1 sigue en el grupo con su historia y 0 en 2025:
+    T(PL, N=12) = (0 + 600) / (1320 + 600) − 1 = −0.6875. No entra en el scope ni en el nº de códigos."""
+    filas = [{"ean": "2000000000030", "mes": mes(a, m), "Actuals": 50, "Consensus - Final": 50}
+             for a in (2022, 2023, 2024, 2025) for m in range(1, 13)]
+    filas += [{"ean": "2000000000030", "mes": mes(2026, m), "Consensus - Final": 50} for m in range(1, 11)]
+    d = tmp_path / "b"
+    d.mkdir()
+    b = leer_foto(escribir_csv(d / "Test_2026_01.csv", filas, "2026.M01"), cfg)
+    agregar_desaparecidos([foto_simple, b])
+    assert b.eans == ["2000000000030", "1000000000050"]
+    assert b.codigos["fantasma"].tolist() == [False, True] and not b.codigos["scope"].iat[1]
+    h = b.mat["hist"][1]
+    assert h[b.col(mes_a_int("2024.M06"))] == 110 and h[b.col(mes_a_int("2025.M06"))] == 0
+    assert np.isnan(b.mat["Consensus - Final"][1, b.col(mes_a_int("2026.M03"))])
+    R = Rejilla(cfg)
+    M = MotorFoto(b, cfg, R)
+    gi, ni = CELDAS.index(("Product Line", "Jerarquía")), R.valores["N"].index(12)
+    assert M.T_si[gi, ni, 0, 0, 0] == pytest.approx(600 / 1920 - 1)
+    assert M.tam_grupo[gi, 0] == 1
 
 
 @pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")

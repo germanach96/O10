@@ -137,12 +137,14 @@ class MotorFoto:
         self.claves = []
         ep = self.epos
         ep_ok = ~np.isnan(ep)
+        fantasma = cod["fantasma"].to_numpy(bool) if "fantasma" in cod else np.zeros(n, bool)
         for gi, (amp, crit) in enumerate(CELDAS):
             clave = _clave_grupo(cod, amp, crit)
             self.claves.append(clave)
             u, inv = np.unique(clave, return_inverse=True)
-            # los códigos ignorados por el filtro de tipos no suman en el grupo
-            self.tam_grupo[gi] = np.bincount(inv, weights=self.cuenta).astype(int)[inv]
+            # los códigos ignorados por el filtro de tipos no suman en el grupo; los que salieron del export
+            # suman en el trend pero no en el nº de códigos
+            self.tam_grupo[gi] = np.bincount(inv, weights=self.cuenta & ~fantasma).astype(int)[inv]
             onehot = np.zeros((len(u), n))
             onehot[inv, np.arange(n)] = self.cuenta.astype(float)
             HG = np.einsum("gk,cpkt->cpgt", onehot, self.H)                 # (c, p, grupos, meses)

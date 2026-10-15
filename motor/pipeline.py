@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .lector import Foto, int_a_mes, leer_foto, leer_listas
+from .lector import Foto, agregar_desaparecidos, int_a_mes, leer_foto, leer_listas
 from .recetas import CELDAS, EJES, MotorFoto, Rejilla
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -115,8 +115,9 @@ class ResultadoFoto:
 def calcular_foto(foto: Foto, fotos: list[Foto], cfg: dict, R: Rejilla, ignorar=()) -> ResultadoFoto:
     hz = cfg["horizonte"]
     ext = None
+    reales = ~foto.codigos["fantasma"].to_numpy() if "fantasma" in foto.codigos else slice(None)
     if cfg.get("epos_historico_de_foto_mas_reciente") and np.isnan(
-            foto.mat["EPOS"][:, foto.meses < foto.mes]).all():
+            foto.mat["EPOS"][reales][:, foto.meses < foto.mes]).all():
         t_hist = np.arange(foto.mes - 36, foto.mes)
         ext = epos_externo(foto, fotos, t_hist)
         aviso = "The snapshot has no EPOS: historical EPOS is taken from the most recent snapshot"
@@ -527,6 +528,8 @@ def main(argv=None):
              "listas": listas, "casas": {}}
     for casa, fotos in casas.items():
         fotos.sort(key=lambda f: f.mes)
+        # los códigos que salen del export siguen contando en los trends de sus grupos
+        agregar_desaparecidos(fotos)
         # una variante por combinación de tipos ignorados (filtro general de la página);
         # el cubo, los logs y los resúmenes en disco son los de la variante base (no se ignora nada)
         variantes = {}
@@ -556,6 +559,8 @@ def main(argv=None):
         atributos = {}
         for f in fotos:
             for e, row in f.codigos.iterrows():
+                if row["fantasma"]:
+                    continue
                 atributos[e] = {"desc": row["Planning Item Description"], "brand": row["Brand"],
                                 "pl": row["Product Line"], "segmento": row["Final Segment"],
                                 "tamano": row["tamano"], "flag": row["Ignore System Forecast Flag"],
@@ -575,6 +580,8 @@ def main(argv=None):
         art, resp = clases(fu.codigos)
         inicio = {}
         for i, (e, row) in enumerate(fu.codigos.iterrows()):
+            if row["fantasma"]:   # fuera del export: solo cuenta en los trends
+                continue
             inicio[e] = {"vol12": round(float(vol12[i]), 1), "cons9": round(float(cons9[i]), 1), "v6": round(float(v6[i]), 1), "p12": round(float(p12[i]), 1),
                          "scope": bool(row["scope"]), "motivo": row["fuera_scope_motivo"],
                          "edad": row["tramo_edad"], "tipo": row["Article Type"],

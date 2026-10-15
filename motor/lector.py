@@ -259,3 +259,49 @@ def leer_listas(ruta: Path) -> list[dict]:
                             "Reexportar con el EAN como texto.")
         listas.append({"nombre": nombre, "eans": list(dict.fromkeys(eans))})
     return listas
+
+
+def agregar_desaparecidos(fotos: list[Foto]) -> None:
+    """Añade a cada foto, como «fantasmas», los códigos de fotos anteriores que ya no salen en ella.
+
+    Un código que sale del export (por ejemplo, una línea de Flora discontinuada) sigue contando en los trends de
+    sus grupos: su historia se copia de la foto anterior y los meses desde que desapareció hasta la foto valen 0.
+    No tiene forecast futuro, no entra en el scope ni en el mapa, y no suma en el nº de códigos de los grupos.
+    Las fotos se procesan en orden: la foto anterior ya trae todos los códigos vistos hasta entonces.
+    """
+    fotos = sorted(fotos, key=lambda f: f.mes)
+    for prev, P in zip(fotos, fotos[1:]):
+        presentes = set(P.eans)
+        fant = [e for e in prev.eans if e not in presentes]
+        if not fant:
+            continue
+        fila_prev = {e: k for k, e in enumerate(prev.eans)}
+        rp = np.array([fila_prev[e] for e in fant])
+        n = len(fant)
+        # meses de P: < prev.mes -> dato de la foto anterior; [prev.mes, P.mes) -> 0; >= P.mes -> sin dato
+        k_prev = P.meses - int(prev.meses[0])
+        en_prev = (P.meses < prev.mes) & (k_prev >= 0) & (k_prev < len(prev.meses))
+        hueco = (P.meses >= prev.mes) & (P.meses < P.mes)
+        for c, M in P.mat.items():
+            G = np.full((n, len(P.meses)), np.nan)
+            G[:, en_prev] = prev.mat[c][rp][:, k_prev[en_prev]]
+            G[:, hueco] = 0.0
+            if c == "hist":   # misma regla que los códigos reales: dentro de la historia útil, vacío = 0
+                util = (P.meses >= P.inicio_historia) & (P.meses < P.mes)
+                G[:, util] = np.nan_to_num(G[:, util])
+                G[:, ~util] = np.nan
+            P.mat[c] = np.vstack([M, G])
+        filas = prev.codigos.loc[fant].copy()
+        filas["scope"] = False
+        filas["activo"] = False
+        filas["fuera_scope_motivo"] = "Fuera del export"
+        filas["fantasma"] = True
+        cod = P.codigos.copy()
+        cod["fantasma"] = cod.get("fantasma", False)
+        P.codigos = pd.concat([cod, filas])
+        P.eans = list(P.eans) + fant
+        P.avisos.append(f"{n} codes no longer in the export count in group trends with their past history (0 after they left)")
+    for f in fotos:
+        if "fantasma" not in f.codigos:
+            f.codigos["fantasma"] = False
+        f.codigos["fantasma"] = f.codigos["fantasma"].fillna(False).astype(bool)
