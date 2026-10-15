@@ -560,21 +560,23 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 /* Ficha emergente de un código (desde el detector de un grupo): se abre encima sin perder el grupo de debajo.
    Modal: centrada, el fondo se oscurece y difumina (atenuar para enfocar). Llega como material: escala .96 → 1,
    desenfoque 6 px → 0 y 12 px de subida, 340 ms con la curva de cajón de iOS; sale más rápido (200 ms). */
-.ficha{width:min(900px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow:auto;padding:22px 24px 24px;border:0;border-radius:var(--r-xl);color:var(--label);background:var(--cristal-fuerte);overscroll-behavior:contain}
+.ficha{width:min(1180px,calc(100vw - 32px));height:calc(100dvh - 32px);max-height:calc(100dvh - 32px);overflow:auto;padding:22px 24px 24px;border:0;border-radius:var(--r-xl);color:var(--label);background:var(--cristal-fuerte);overscroll-behavior:contain}
 .ficha::backdrop{background:rgba(0,0,0,.26);backdrop-filter:blur(6px) saturate(120%);-webkit-backdrop-filter:blur(6px) saturate(120%)}
 .ficha[open]::backdrop{animation:velo-in 300ms var(--ease-out)}
 .ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forwards}
 @keyframes velo-in{from{opacity:0}} @keyframes velo-out{to{opacity:0}}
-.ficha-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px}
-.ficha-cab h2{margin:2px 0 2px;font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
-.ficha-ean{margin:0;font-size:12px;color:var(--blue-txt);font-weight:600;font-variant-numeric:tabular-nums}
-.ficha-sub{margin:0;font-size:12.5px;color:var(--label-2)}
+.ficha-barra{position:sticky;top:-22px;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-22px -24px 8px;padding:14px 18px 12px 24px;
+  background:var(--cristal-fuerte);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--sep)}
+.ficha-ctx{font-size:12.5px;color:var(--label-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ficha-ctx b{color:var(--label);font-weight:600}
 .ficha-acc{display:flex;gap:8px;align-items:center;flex:none}
-.ficha-h{margin:18px 0 6px;font-size:15px;font-weight:700}
-.ficha .rejilla-res{margin-bottom:0}
+/* dentro de la ficha el detalle va a una columna: sin raíl, sin "volver al mapa" */
+.ficha .det-cuerpo{grid-template-columns:minmax(0,1fr) !important}
+.ficha .rail,.ficha .volver{display:none !important}
+.ficha .det-cab{padding-top:4px}
 @media (max-width:700px){
-  .ficha{width:100vw;max-width:100vw;max-height:92dvh;margin:auto 0 0;padding:18px 14px 28px;border-radius:var(--r-xl) var(--r-xl) 0 0}
-  .ficha-cab{flex-direction:column}
+  .ficha{width:100vw;max-width:100vw;max-height:94dvh;margin:auto 0 0;padding:18px 12px 28px;border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .ficha-barra{margin:-18px -12px 8px;top:-18px;padding:12px 12px 10px 16px}
 }
 @media (prefers-reduced-transparency: reduce){.ficha{background:var(--card)}}
 /* Sección Actuals */
@@ -1059,25 +1061,20 @@ details[open] summary::before{transform:rotate(45deg)}
   </section>
   <div class="notas" id="notas"></div>
   </div>
-  <dialog class="ficha vidrio" id="ficha" aria-labelledby="fichaTit">
-    <div class="ficha-cab">
-      <div><p class="ficha-ean" id="fichaEan"></p><h2 id="fichaTit"></h2><p class="ficha-sub" id="fichaSub"></p></div>
-      <div class="ficha-acc"><button type="button" class="btn btn-fant" id="fichaAbrir">Open full detail</button><button type="button" class="redondo" id="fichaCerrar" aria-label="Close"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
-    </div>
-    <div class="formula" id="fichaFormula"></div>
-    <h3 class="ficha-h">Results of past snapshots</h3>
-    <div class="ley-graf" id="fresLey"></div>
-    <div class="rejilla-res">
-      <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Months F+1 to F+3</div><svg id="fr90" width="228" height="196"></svg><div class="pie" id="fr90p"></div></div>
-      <div class="tarjeta res vidrio"><h3>SPP6 · WAPE180</h3><div class="subt">Months F+1 to F+6</div><svg id="fr180" width="228" height="196"></svg><div class="pie" id="fr180p"></div></div>
-      <div class="tarjeta res vidrio"><h3>SPP · WAPE (9M)</h3><div class="subt">Months F+1 to F+9</div><svg id="fr9M" width="228" height="196"></svg><div class="pie" id="fr9Mp"></div></div>
-    </div>
-  </dialog>
   <aside class="rail vidrio" aria-label="Summary">
     <button type="button" class="mini-mapa" id="miniMapa" aria-label="Show the selection on the map"><svg id="miniSvg" aria-hidden="true"></svg><span class="mm-t" id="miniTxt"></span></button>
     <div id="rail"></div>
   </aside>
   </div>
+  <!-- Ficha emergente: el detalle completo de un código encima del grupo. Al abrirla, la cabecera y el cuerpo del
+       detalle se mudan aquí dentro y en su sitio queda una copia quieta del grupo; al cerrarla vuelven. -->
+  <dialog class="ficha vidrio" id="ficha" aria-label="Code detail">
+    <div class="ficha-barra">
+      <span class="ficha-ctx" id="fichaCtx"></span>
+      <div class="ficha-acc"><button type="button" class="btn btn-fant" id="fichaAbrir">Open as page</button><button type="button" class="redondo" id="fichaCerrar" aria-label="Close and go back to the group"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+    </div>
+    <div id="fichaCuerpo"></div>
+  </dialog>
 </main>
   </div>
 </div>
@@ -1105,6 +1102,8 @@ const AMPL = [...new Set(CELDAS.map(c => c[0]))], CRIT = ["Jerarquía","Segmento
 const vtxt = (k, v) => k === "N" ? v + "M" : k === "e" ? v + (v === 1 ? " year" : " years") : k === "h" ? tx(v) : Math.round(v*100) + "%";
 const reducir = matchMedia("(prefers-reduced-motion: reduce)");
 let estado = {casa: null, sel: null, orden: {col: "u", dir: -1}};
+// ficha emergente de un código (detalle completo encima del grupo) y repintado sin animar al cerrarla
+let FICHA = null, SIN_ANIM = false;
 
 // ================= Tema (claro / oscuro / auto) =================
 function aplicarTema(t){
@@ -2298,7 +2297,7 @@ function irA(vista, sel){
 function revisarPendientes(){
   document.querySelectorAll("svg[data-pendiente]").forEach(svg => { if (enVista(svg)) { if (OBS) OBS.unobserve(svg); construir(svg); } else if (OBS) { OBS.unobserve(svg); OBS.observe(svg); } });
 }
-function abrirDetalle(sel){ location.hash = "detalle/" + encodeURIComponent(sel); }
+function abrirDetalle(sel){ if (FICHA) { cerrarFicha(() => abrirDetalle(sel)); return; } location.hash = "detalle/" + encodeURIComponent(sel); }
 function leerHash(){
   const h = decodeURIComponent(location.hash.slice(1));
   if (h.startsWith("detalle")) { const s = h.slice(8); irA("detalle", s || estado.sel || "R|Casa: " + estado.casa); }
@@ -2470,6 +2469,7 @@ const OBS = "IntersectionObserver" in window ? new IntersectionObserver(es => es
 function presentar(svg, antes, viejas, ancla = svg){
   const sel = estado.sel + (CALOR ? "|calor" : ""), previo = ancla.dataset.dibujado, pendiente = svg.hasAttribute("data-pendiente");
   ancla.dataset.dibujado = sel;
+  if (SIN_ANIM) { svg.removeAttribute("data-pendiente"); return; }
   if (pendiente && OBS) { OBS.observe(svg); return; }   // sigue esperando su scroll
   if (previo && (previo.split("|calor")[0] === estado.sel || enVista(svg))) { transicion(svg, antes, {fundir: viejas}); return; }
   if (enVista(svg) || !OBS) { construir(svg); return; }
@@ -2629,8 +2629,7 @@ function brujula(svgId, ex, ey, polos){
 // Un código: su oráculo; un grupo: su regla; una selección: el valor que eligen más códigos. Si una foto usa media
 // plana (s = 0), e no influye y su punto va hueco; con s = 0 en la receta elegida la sub-brújula entera se atenúa.
 function tiraE(){
-  const svg = $("b1e"), W = 326, L = 52, Rm = 6, T = 20, RH = 24, G = 4, cw = W - L - Rm;
-  const numE = [];   // conteos de cada fila: van encima de los puntos
+  const svg = $("b1e"), W = 326, L = 74, Rm = 6, T = 20, RH = 24, G = 4, cw = W - L - Rm;
   const fotos = fotosCerradas(), nf = fotos.length, idx = new Map(fotos.map((f, i) => [f.foto, i]));
   const fila = e => e === 2 ? 0 : 1, cyF = f => T + f * (RH + G) + RH / 2;
   const X = i => L + 14 + (cw - 28) * (nf > 1 ? i / (nf - 1) : 0.5);
@@ -2653,11 +2652,10 @@ function tiraE(){
   let capaCal = "";
   [2, 1].forEach(e => {
     const f = fila(e), y0 = T + f * (RH + G), n = cuentas[f], t = pts.length ? n / pts.length : 0, al = CALOR ? 0.06 : 0.07 + 0.5 * t;
-    h += `<text x="${L - 8}" y="${y0 + RH / 2 + 4}" text-anchor="end">${e === 2 ? "2 years" : "1 year"}</text>
+    h += `<text x="${L - 8}" y="${y0 + RH / 2 + 4}" text-anchor="end">${e === 2 ? "2 years" : "1 year"}<tspan style="fill:var(--label-3)"> · ${n}</tspan></text>
       <g class="celda"><title>${e === 2 ? "2 years: mean of the same month in the last 2 years" : "1 year: same month last year"}\nChosen in ${n} of ${pts.length} snapshots${rec && rec.e === e && !esSel() ? "\nChosen for the future" : ""}</title>
       <rect data-k="c-e${e}" x="${L}" y="${y0}" width="${cw}" height="${RH}" rx="8" fill="${CALOR ? "var(--label)" : "var(--blue)"}" fill-opacity="${al.toFixed(3)}"/></g>`;
     if (!esSel() && rec && rec.e === e) h += `<rect data-k="c-elegida" x="${L - 1.5}" y="${y0 - 1.5}" width="${cw + 3}" height="${RH + 3}" rx="9.5" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
-    numE[f] = `<text x="${L + cw - 6}" y="${y0 + RH / 2 + 4}" text-anchor="end" class="num-calor" style="font-size:10px;font-weight:600">${n} of ${pts.length}</text>`;
   });
   if (CALOR) {
     const fuente = esRegla() ? [...cods.values()].flat() : pts.map(p => ({px: X(p.i), py: cyF(fila(p.r.e))}));
@@ -2667,7 +2665,6 @@ function tiraE(){
   }
   h += capaCal;
   if (esRegla() && !CALOR) h += `<g class="en-celda">${capaCodigos(cods, q => q.px.toFixed(1), q => q.py.toFixed(1))}</g>`;
-  h += numE.join("");
   // trayectoria del valor elegido: escalón (no hay valores intermedios entre 1 y 2 años)
   if (pts.length > 1) { let d = `M ${X(pts[0].i).toFixed(1)} ${cyF(fila(pts[0].r.e))}`; pts.slice(1).forEach(p => { d += ` H ${X(p.i).toFixed(1)} V ${cyF(fila(p.r.e))}`; });
     h += `<path data-k="e-linea" class="tray" d="${d}" fill="none" stroke="var(--receta)" stroke-opacity=".6" stroke-width="2" stroke-linejoin="round"/>`; }
@@ -3282,7 +3279,10 @@ function reanimar(ids){
 }
 const NUM_RE = /^(-?)([\d,]+(?:\.\d+)?)(%?)$/;
 function contar(raiz){
-  if (!raiz || reducir.matches) return;
+  if (!raiz || reducir.matches || SIN_ANIM) {   // sin animar: solo se recuerda el valor para la próxima vez
+    if (raiz) raiz.querySelectorAll("b, .num").forEach((el, i) => { const n = [...el.childNodes].find(x => x.nodeType === 3 && NUM_RE.test(x.textContent.trim()));
+      if (n) { const [, sg, c] = n.textContent.trim().match(NUM_RE); contar.prev.set((raiz.id || (raiz.closest(".seccion") || {}).id || "") + ":" + i, (sg ? -1 : 1) * parseFloat(c.replace(/,/g, ""))); } });
+    return; }
   raiz.querySelectorAll("b, .num").forEach((el, i) => {
     const nodo = [...el.childNodes].find(n => n.nodeType === 3 && NUM_RE.test(n.textContent.trim())); if (!nodo) return;
     const [, sg, cuerpo, pc] = nodo.textContent.trim().match(NUM_RE), dec = (cuerpo.split(".")[1] || "").length;
@@ -3298,44 +3298,50 @@ function contar(raiz){
 contar.prev = new Map();
 
 // ================= Ficha emergente de un código =================
-// Desde el detector de un grupo (o la lista de códigos de una foto), pulsar un EAN abre encima su ficha: la receta
-// para el futuro y sus resultados. Cerrar (botón, Escape o clic fuera) devuelve al grupo tal como estaba.
-let FICHA_EAN = null;
+// En un grupo, pulsar un EAN abre encima el detalle COMPLETO de ese código (las mismas cinco secciones), sin perder el
+// grupo: la cabecera y el cuerpo del detalle se mudan dentro de la ficha y en su sitio queda una copia quieta del grupo
+// (sin ids). Al cerrar (botón, Escape o clic fuera) vuelven a su sitio y el grupo se repinta sin animar, con sus
+// secciones abiertas y su scroll como estaban. Modal: el fondo se atenúa y difumina; llega como material.
 function abrirFicha(ean){
-  const dlg = $("ficha"), at = casa().atributos[ean] || {}, prev = estado.sel;
-  FICHA_EAN = ean;
-  $("fichaEan").textContent = ean; $("fichaTit").textContent = at.desc || ean;
-  $("fichaSub").textContent = [at.brand, at.pl, at.tamano].filter(Boolean).map(corto).join(" · ");
-  if (!dlg.open) { dlg.showModal(); dlg.appendChild(TIP); }
-  dlg.scrollTop = 0;
-  estado.sel = ean;   // los gráficos se dibujan con la selección del código y se devuelve la del grupo
-  try {
-    const fuente = $("selFuente").value, fila = V().detector.filas.find(r => r.ean === ean);
-    formulaDetector(fila && fila.recetas[fuente] ? [{rec: fila.recetas[fuente]}] : [], fuente, $("fichaFormula"));
-    resultados("f");
-  } finally { estado.sel = prev; }
-  const piezas = dlg.querySelectorAll(".formula, .ficha-h, .ley-graf, .tarjeta");
-  if (reducir.matches) { dlg.animate([{opacity: 0}, {opacity: 1}], {duration: 200, easing: "ease"}); }
-  else {
-    dlg.animate([{opacity: 0, transform: "translateY(12px) scale(.96)", filter: "blur(6px)"}, {opacity: 1, transform: "none", filter: "blur(0)"}], {duration: 340, easing: "cubic-bezier(0.32, 0.72, 0, 1)"});
-    piezas.forEach((c, i) => c.animate([{opacity: 0, transform: "translateY(8px)"}, {opacity: 1, transform: "none"}], {duration: 380, delay: 80 + i * 45, easing: MOV.curva, fill: "backwards"}));
-  }
-  dlg.querySelectorAll("svg[id]").forEach(svg => { svg.removeAttribute("data-pendiente"); construir(svg); });
+  const vd = $("vistaDetalle"), dlg = $("ficha");
+  if (FICHA) { estado.sel = ean; pintar(); dlg.scrollTop = 0; return; }
+  const cab = vd.querySelector(":scope > .det-cab"), cu = vd.querySelector(":scope > .det-cuerpo");
+  FICHA = {ean, prev: estado.sel, abiertos: new Set(ABIERTOS), y: window.scrollY, vy: vd.scrollTop, cab, cu, nombre: $("detTituloTxt").textContent};
+  // copia quieta del grupo detrás del velo (sin ids, para no duplicarlos)
+  const quieta = n => { const c = n.cloneNode(true); c.removeAttribute("id"); c.querySelectorAll("[id]").forEach(e => e.removeAttribute("id")); c.setAttribute("aria-hidden", "true"); c.inert = true; return c; };
+  FICHA.c1 = quieta(cab); FICHA.c2 = quieta(cu);
+  cab.replaceWith(FICHA.c1); cu.replaceWith(FICHA.c2);
+  $("fichaCuerpo").append(cab, cu);
+  $("fichaCtx").innerHTML = `Code in <b>${esc(corto(FICHA.nombre))}</b>`;
+  dlg.showModal(); dlg.appendChild(TIP); dlg.scrollTop = 0;
+  estado.sel = ean;
+  pintar();
+  if (reducir.matches) dlg.animate([{opacity: 0}, {opacity: 1}], {duration: 200, easing: "ease"});
+  else dlg.animate([{opacity: 0, transform: "translateY(14px) scale(.96)", filter: "blur(6px)"}, {opacity: 1, transform: "none", filter: "blur(0)"}], {duration: 360, easing: "cubic-bezier(0.32, 0.72, 0, 1)"});
+  requestAnimationFrame(() => reanimar(GRUPOS.filter(id => ABIERTOS.has(id))));
   $("fichaCerrar").focus({preventScroll: true});
 }
-function cerrarFicha(){
-  const dlg = $("ficha"); if (!dlg.open || dlg.classList.contains("cerrando")) return;
+function cerrarFicha(despues){
+  const dlg = $("ficha"); if (!FICHA || dlg.classList.contains("cerrando")) return;
   quitarTip();
-  const fin = () => { dlg.classList.remove("cerrando"); dlg.close(); document.body.appendChild(TIP); FICHA_EAN = null; };
+  const fin = () => {
+    const F = FICHA; FICHA = null;
+    dlg.classList.remove("cerrando"); dlg.close(); document.body.appendChild(TIP);
+    F.c1.replaceWith(F.cab); F.c2.replaceWith(F.cu);
+    estado.sel = F.prev; ABIERTOS.clear(); F.abiertos.forEach(k => ABIERTOS.add(k));
+    if (despues) { despues(); return; }
+    SIN_ANIM = true; try { pintar(); } finally { SIN_ANIM = false; }
+    $("vistaDetalle").scrollTop = F.vy; window.scrollTo({top: F.y, behavior: "instant"});
+  };
   if (reducir.matches) { fin(); return; }
   dlg.classList.add("cerrando");
-  dlg.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: "translateY(8px) scale(.97)"}], {duration: 200, easing: MOV.curva, fill: "forwards"}).onfinish = fin;
+  dlg.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: "translateY(10px) scale(.97)"}], {duration: 200, easing: MOV.curva, fill: "forwards"}).onfinish = fin;
 }
-$("fichaCerrar").addEventListener("click", cerrarFicha);
+$("fichaCerrar").addEventListener("click", () => cerrarFicha());
 $("ficha").addEventListener("cancel", ev => { ev.preventDefault(); cerrarFicha(); });
-$("ficha").addEventListener("click", ev => { if (ev.target === $("ficha")) { const r = $("ficha").getBoundingClientRect();
-  if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) cerrarFicha(); } });
-$("fichaAbrir").addEventListener("click", () => { const e = FICHA_EAN; cerrarFicha(); if (e) setTimeout(() => abrirDetalle(e), reducir.matches ? 0 : 200); });
+$("ficha").addEventListener("click", ev => { if (ev.target !== $("ficha")) return; const r = $("ficha").getBoundingClientRect();
+  if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) cerrarFicha(); });
+$("fichaAbrir").addEventListener("click", () => { const e = FICHA && FICHA.ean; if (e) cerrarFicha(() => abrirDetalle(e)); });
 
 // ================= Barra de rango =================
 // Solo se eligen fotos MEDIDAS (las que ya tienen actuals cerrados); las más recientes, sin medir aún, se ven al final
@@ -3534,7 +3540,7 @@ function cambiarGrupos(f, ancla){
     // el gráfico de la foto actual mide su ancho: se repinta al hacerse visible
     if (ABIERTOS.has("sFoto") && !antes.has("sFoto")) fotoActual();
     if (ABIERTOS.has("sActuals") && !antes.has("sActuals")) actuals();
-    const dy = cab.getBoundingClientRect().top - y0; $("vistaDetalle").scrollBy({top: dy, behavior: "instant"});
+    const dy = cab.getBoundingClientRect().top - y0; (FICHA ? $("ficha") : $("vistaDetalle")).scrollBy({top: dy, behavior: "instant"});
     const dy2 = cab.getBoundingClientRect().top - y0; if (Math.abs(dy2) > 1) window.scrollBy({top: dy2, behavior: "instant"});
     requestAnimationFrame(revisarPendientes);
   };
