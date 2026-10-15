@@ -87,8 +87,25 @@ h2+.lead{color:var(--label2);margin:0 0 14px;max-width:80ch}
 .tip b{display:block;margin-bottom:4px;font-weight:700}
 .tip .r{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums;color:var(--label2)}
 .tip .r span:last-child{color:var(--label);font-weight:600}
-.recipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:14px;align-items:end;padding:16px}
+.recipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:22px;align-items:center;padding:16px 20px}
 .ctl label{display:block;font-size:11.5px;font-weight:500;color:var(--label2);margin-bottom:6px}
+.ctl label{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl output{font:700 13px var(--font);color:var(--label);font-variant-numeric:tabular-nums}
+.ctl output.mod{color:var(--blue-text)}
+.sl{position:relative;height:28px;--thumb:24px}
+.sl input{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:transparent;cursor:pointer;touch-action:none}
+.sl input:focus{outline:none}
+.sl input::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--blue) 0 calc(var(--p)*(100% - var(--thumb)) + var(--thumb)/2),var(--fill-strong) 0)}
+.sl input::-moz-range-track{height:6px;border-radius:999px;background:var(--fill-strong)}
+.sl input::-moz-range-progress{height:6px;border-radius:999px;background:var(--blue)}
+.sl input::-webkit-slider-thumb{-webkit-appearance:none;width:var(--thumb);height:var(--thumb);margin-top:-9px;border-radius:50%;background:#fff;border:0;
+  box-shadow:0 2px 7px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);transition:transform .16s var(--ease-out)}
+.sl input::-moz-range-thumb{width:var(--thumb);height:var(--thumb);border-radius:50%;background:#fff;border:0;box-shadow:0 2px 7px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);transition:transform .16s var(--ease-out)}
+.sl input:active::-webkit-slider-thumb{transform:scale(1.12)}
+.sl input:active::-moz-range-thumb{transform:scale(1.12)}
+.sl input:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--band),0 2px 7px rgba(0,0,0,.18)}
+.sl .tick{position:absolute;top:22px;left:calc(var(--d)*(100% - var(--thumb)) + var(--thumb)/2 - 1px);width:2px;height:6px;border-radius:1px;background:var(--label3);pointer-events:none}
+.ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--label3);margin-top:1px;font-variant-numeric:tabular-nums}
 .ctl .seg{display:flex;background:var(--fill)}
 .ctl .seg button{flex:1;padding:6px 6px;font-variant-numeric:tabular-nums}
 .btn{border:0;border-radius:999px;padding:8px 16px;font:600 12.5px var(--font);cursor:pointer;background:var(--fill);color:var(--label);transition:transform .16s var(--ease-out),background-color .2s ease}
@@ -177,7 +194,7 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
   <div class="card glass" style="margin-top:12px"><h3>Month by month</h3><p class="cs" style="min-height:0">Consensus split into what drives it, against the proposal. Same scope as the charts.</p><div class="tbl"><table id="months"></table></div></div>
 
   <h2>Recipe</h2>
-  <p class="lead">O10 recipe on this snapshot. Highlighted values are the recommendation; change them to see how every chart and table moves.</p>
+  <p class="lead">O10 recipe on this snapshot. Drag any slider to the value you want; every chart and table follows. The small mark under each track is the recommendation (double-click a slider to go back to it).</p>
   <div class="recipe glass" id="recipe"></div>
   <p class="note" id="trend-note"></p>
 
@@ -408,17 +425,32 @@ sel.innerHTML=`<option value="-1">Skin Tint family · 24 EANs</option>`+E.map((e
 sel.value=String(SEL);
 sel.addEventListener('change',()=>{SEL=+sel.value;try{localStorage.setItem('o10-skintint-scope',SEL)}catch(e){}renderScope()});
 
-function renderRecipe(){
-  const ctl=[['r','Cuts re-ordered (r)',[0,.5,1],v=>v*100+'%'],['s','Seasonal weight (s)',[0,.5,1],v=>v*100+'%'],['w','Trend weight (w)',[0,.5,1],v=>v*100+'%'],['m','Sell-in ↔ sell-out (m)',[0,.5,1],v=>v*100+'%'],['N','Trend length (N)',[6,9,12],v=>v+'M']];
-  const el=document.getElementById('recipe');
-  el.innerHTML=ctl.map(([key,lab,vals,f])=>`<div class="ctl"><label>${lab}</label><div class="seg" role="group" aria-label="${lab}">${vals.map(v=>`<button data-k="${key}" data-v="${v}" aria-pressed="${P[key]===v}" ${DEF[key]===v?'style="font-weight:700"':''}>${f(v)}</button>`).join('')}</div></div>`).join('')
-    +`<button class="btn" id="reset" ${JSON.stringify(P)===JSON.stringify(DEF)?'disabled':''}>Reset</button>`;
+/* Controles de la receta: deslizadores continuos. Se construyen una vez; render() solo actualiza el estado */
+const CTL=[['r','Cuts re-ordered (r)',0,1,.01,v=>Math.round(v*100)+'%'],['s','Seasonal weight (s)',0,1,.01,v=>Math.round(v*100)+'%'],
+  ['w','Trend weight (w)',0,1,.01,v=>Math.round(v*100)+'%'],['m','Sell-in ↔ sell-out (m)',0,1,.01,v=>Math.round(v*100)+'%'],['N','Trend length (N)',3,12,1,v=>v+'M']];
+const frac=(c,v)=>(v-c[2])/(c[3]-c[2]);
+function buildRecipe(){
+  document.getElementById('recipe').innerHTML=CTL.map(c=>{const [key,lab,mn,mx,st]=c;
+    return `<div class="ctl"><label for="sl-${key}"><span>${lab}</span><output id="o-${key}"></output></label>
+      <div class="sl" style="--d:${frac(c,DEF[key])}"><input type="range" id="sl-${key}" data-k="${key}" min="${mn}" max="${mx}" step="${st}" value="${P[key]}"><span class="tick" title="Recommended: ${c[5](DEF[key])}"></span></div>
+      <div class="ends"><span>${c[5](mn)}</span><span>${c[5](mx)}</span></div></div>`}).join('')
+    +`<button class="btn" id="reset">Reset</button>`;
 }
-document.getElementById('recipe').addEventListener('click',ev=>{
-  const b=ev.target.closest('button');if(!b)return;
-  if(b.id==='reset')P={...DEF};else P[b.dataset.k]=+b.dataset.v;
-  requestAnimationFrame(render);
-});
+function renderRecipe(){
+  for(const c of CTL){const el=document.getElementById('sl-'+c[0]);if(+el.value!==P[c[0]])el.value=P[c[0]];
+    el.style.setProperty('--p',frac(c,P[c[0]]));
+    const o=document.getElementById('o-'+c[0]);o.textContent=c[5](P[c[0]]);o.classList.toggle('mod',P[c[0]]!==DEF[c[0]])}
+  document.getElementById('reset').disabled=CTL.every(c=>P[c[0]]===DEF[c[0]]);
+}
+buildRecipe();
+let rafR=0;const queue=()=>{if(!rafR)rafR=requestAnimationFrame(()=>{rafR=0;render()})};
+document.getElementById('recipe').addEventListener('input',ev=>{const el=ev.target.closest('input[type=range]');if(!el)return;
+  P[el.dataset.k]=+el.value;
+  const c=CTL.find(c=>c[0]===el.dataset.k);el.style.setProperty('--p',frac(c,P[c[0]]));document.getElementById('o-'+c[0]).textContent=c[5](P[c[0]]);
+  queue()});
+document.getElementById('recipe').addEventListener('click',ev=>{if(ev.target.id==='reset'){P={...DEF};queue()}});
+/* Doble clic sobre un deslizador: vuelve al valor recomendado */
+document.getElementById('recipe').addEventListener('dblclick',ev=>{const el=ev.target.closest('input[type=range]');if(el){P[el.dataset.k]=DEF[el.dataset.k];queue()}});
 
 function fillExp(i){
   const td=document.getElementById('exp'+i);if(!td)return;const sd=scope(i);
