@@ -524,8 +524,36 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .controles input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px}
 .rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:20px}
 @media (max-width:820px){.rejilla{grid-template-columns:360px}}
-.tarjeta{border-radius:var(--r-l);padding:16px;width:360px;height:500px;overflow:hidden}
-.tarjeta.res{height:410px}
+.tarjeta{border-radius:var(--r-l);padding:16px;width:360px;height:548px;overflow:hidden}
+.tarjeta.res{height:470px}
+/* Brújula 1: debajo del lienzo, la tira de años de estacionalidad (e), de 1 a 2 años foto a foto */
+.tarjeta svg.tira-e{display:block;margin-top:4px}
+.tira-e.inerte{opacity:.42}
+.tarjeta svg text.t-cab{fill:var(--label);font-weight:600;font-size:11px}
+/* Resultados: una sola media brújula con las tres ventanas; el segmentado elige cuál se resalta */
+.res-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;height:30px}
+.res-cab h3{flex:1;min-width:0}
+.seg.seg-ven{background:var(--fill)}
+.seg.seg-ven button{padding:4px 12px;font-size:12px}
+.tarjeta.res .subt{height:28px;margin-top:4px}
+#rRes [data-v]{transition:opacity 200ms var(--ease-out)}
+@media (prefers-reduced-motion: reduce){#rRes [data-v]{transition:none}}
+/* Detector: la receta elegida para el futuro, escrita como fórmula */
+.formula{border-radius:var(--r-m);background:var(--fill);padding:14px 16px 12px;margin-bottom:16px}
+.formula h3{margin:0 0 2px;font-size:14px;font-weight:700;letter-spacing:-.01em}
+.formula .fx{font-size:15px;line-height:1.6;color:var(--label);margin:8px 0 6px;font-variant-numeric:tabular-nums;text-wrap:balance}
+.formula .fx i{font-style:italic}
+.formula .fx b{color:var(--blue-txt);font-weight:700}
+.formula .fx .op{color:var(--label-2)}
+.formula .fx .nulo{color:var(--label-3);text-decoration:line-through;text-decoration-thickness:1px}
+.formula .def{font-size:12.5px;line-height:1.55;color:var(--label-2);margin:0}
+.formula .def b{color:var(--label);font-weight:600}
+.formula .pars{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.formula .pars li{border-radius:999px;background:var(--card);padding:3px 10px;font-size:12px;color:var(--label-2);font-variant-numeric:tabular-nums}
+.formula .pars li b{color:var(--blue-txt);font-weight:600;margin-left:3px}
+.formula .pars li.nulo{opacity:.5}
+.c-rec .rec-g{color:var(--label);display:block}
+.c-rec .rec-v{color:var(--label-2);font-size:11px}
 .tarjeta h3{height:22px;margin:0;font-size:14.5px;font-weight:700;letter-spacing:-.01em;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tarjeta .subt{color:var(--label-2);font-size:12px;height:36px;line-height:1.4;margin-top:1px}
 .tarjeta .pie{font-size:12px;color:var(--label-2);margin-top:6px;line-height:1.5}
@@ -547,7 +575,8 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 .sub-mes{display:block;color:var(--label-2);font-size:11px;margin-top:1px;overflow:hidden;text-overflow:ellipsis}
 .t-det .c-mes,.t-det th:nth-child(9){display:none}
 #detector td,#detector th{padding:6px 8px}
-@media (max-width:1700px){.t-det .c-grupo,.t-det .c-edad,.t-det th:nth-child(4),.t-det th:last-child{display:none}}
+@media (max-width:1700px){.t-det .c-edad,.t-det th:nth-child(4){display:none}}
+@media (max-width:1360px){.t-det .c-grupo,.t-det th:last-child{display:none}}
 @media (max-width:1240px) and (min-width:901px){.t-det .c-brand,.t-det th:nth-child(3){display:none}}
 .matriz{table-layout:fixed;width:326px;margin-top:4px;border-collapse:separate;border-spacing:3px}
 .matriz td{text-align:center;height:40px;padding:2px;border:0;font-size:12px;font-weight:700;cursor:default;position:relative;border-radius:10px}
@@ -925,10 +954,10 @@ details[open] summary::before{transform:rotate(45deg)}
       <label class="interruptor"><input type="checkbox" id="calor" role="switch"><span class="pista" aria-hidden="true"></span>Heat map</label>
     </div>
     <div class="rejilla">
-      <div class="tarjeta vidrio"><h3>Compass 1 · How far do I move from the mean?</h3><div class="subt">X: seasonal weight s. Y: trend weight w.</div><svg id="b1" width="326" height="326"></svg><div class="pie" id="b1p"></div></div>
+      <div class="tarjeta vidrio"><h3>Compass 1 · How far do I move from the mean?</h3><div class="subt">X: seasonal weight s. Y: trend weight w.</div><svg id="b1" width="326" height="326"></svg><svg id="b1e" class="tira-e" width="326" height="62" role="img" aria-label="Years of seasonality e, snapshot by snapshot"></svg><div class="pie" id="b1p"></div></div>
       <div class="tarjeta vidrio"><h3>Compass 2 · Which signal do I follow?</h3><div class="subt">X: sell-in / sell-out mix m. Y: trend length N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
       <div class="tarjeta vidrio"><h3>Compass 3 · How do I clean the history?</h3><div class="subt">X: supply cuts added c. Y: promos removed p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
-      <div class="tarjeta vidrio"><h3>Selector · Whose trend do I copy?</h3><div class="subt" id="selSubt">X: breadth. Y: criterion. Number of codes in the group in each cell (darker, bigger).</div><svg id="bsel" width="326" height="326"></svg><div class="pie" id="matrizp"></div></div>
+      <div class="tarjeta vidrio"><h3>Selector · Whose trend and seasonality?</h3><div class="subt" id="selSubt">Trend: breadth × criterion. Seasonality: its own row. Codes in each group (darker, bigger).</div><svg id="bsel" width="326" height="326"></svg><div class="pie" id="matrizp"></div></div>
     </div>
     </div>
   </section>
@@ -939,9 +968,9 @@ details[open] summary::before{transform:rotate(45deg)}
     <div class="sec-cuerpo">
     <p class="sub">What happened (actual Consensus) against the best recipe, by window.</p>
     <div class="rejilla" id="resRejilla">
-      <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Months F+1 to F+3</div><svg id="r90" width="326" height="230"></svg><div class="pie" id="r90p"></div></div>
-      <div class="tarjeta res vidrio"><h3>SPP6 · WAPE180</h3><div class="subt">Months F+1 to F+6</div><svg id="r180" width="326" height="230"></svg><div class="pie" id="r180p"></div></div>
-      <div class="tarjeta res vidrio"><h3>SPP · WAPE (9M)</h3><div class="subt">Months F+1 to F+9</div><svg id="r9M" width="326" height="230"></svg><div class="pie" id="r9Mp"></div></div>
+      <div class="tarjeta res vidrio"><div class="res-cab"><h3 id="resTit">SPP3 · WAPE90</h3>
+        <div class="seg seg-ven" role="group" aria-label="KPI window" id="segVen"><span class="pulgar" aria-hidden="true"></span><button type="button" data-ven="90" aria-pressed="true" aria-label="3 months: SPP3 and WAPE90">3M</button><button type="button" data-ven="180" aria-pressed="false" aria-label="6 months: SPP6 and WAPE180">6M</button><button type="button" data-ven="9M" aria-pressed="false" aria-label="9 months: SPP and WAPE 9M">9M</button></div></div>
+        <div class="subt" id="resSubt">Months F+1 to F+3. The other windows stay visible, faded.</div><svg id="rRes" width="326" height="262"></svg><div class="pie" id="rResp"></div></div>
       <div class="tarjeta res vidrio"><h3>How to read them</h3><div class="subt"></div><div id="leer" class="pequeño"></div></div>
     </div>
     <div class="ancho anteriores vidrio"><h3>Detail by snapshot</h3><div id="anteriores"></div></div>
@@ -954,6 +983,7 @@ details[open] summary::before{transform:rotate(45deg)}
     <div class="sec-cuerpo">
     <p class="sub">EANs off their strategy. Uses the tolerance and the recipe of the current snapshot.</p>
     <div class="ancho vidrio">
+      <div class="formula" id="detFormula"></div>
       <div class="controles">
         <label><input type="checkbox" id="verTodos"> Also show the ones within range</label>
         <label class="oculto" for="filtro">Filter</label><input id="filtro" type="search" placeholder="Filter EAN or description" style="width:220px">
@@ -993,7 +1023,7 @@ const corto = s => (s || "").replace(/\s*\(\d+\)\s*$/, "");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const EJ = D.ejes, CELDAS = D.celdas, CFG = D.config;
 const AMPL = ["Propio","Product Line","Brand","House","Todo"], CRIT = ["Jerarquía","Segmento","Tamaño","Edad"];
-const vtxt = (k, v) => k === "N" ? v + "M" : Math.round(v*100) + "%";
+const vtxt = (k, v) => k === "N" ? v + "M" : k === "e" ? v + (v === 1 ? " year" : " years") : k === "h" ? tx(v) : Math.round(v*100) + "%";
 const reducir = matchMedia("(prefers-reduced-motion: reduce)");
 let estado = {casa: null, sel: null, orden: {col: "u", dir: -1}};
 
@@ -1025,10 +1055,13 @@ document.querySelectorAll(".tema button").forEach(b => b.addEventListener("click
 const TX = {"Propio": "Own", "Todo": "All", "Jerarquía": "Hierarchy", "Segmento": "Segment", "Tamaño": "Size", "Edad": "Age",
   "A1 1-6": "Y1 M1-6", "A1 7-12": "Y1 M7-12", "Año 2": "Year 2", "Año 3+": "Year 3+", "Pre-disco": "Pre-disco", "Sin ventas": "No sales",
   "(vacío)": "(blank)", "Innovación meses 1-6": "innovation, months 1-6", "Sin ventas aún": "no sales yet",
-  "Inactivo (sin ventas 12M ni forecast)": "inactive (no sales in 12M and no forecast)", "One Shot/Promo": "One Shot/Promo", "Local": "Local"};
+  "Inactivo (sin ventas 12M ni forecast)": "inactive (no sales in 12M and no forecast)", "One Shot/Promo": "One Shot/Promo", "Local": "Local",
+  "Product Line": "Product Line", "Brand": "Brand", "House": "House", "Fuera del export": "No longer in the export"};
 const tx = s => s == null ? s : (TX[s] ?? String(s).split(" · ").map(p => TX[p] ?? p).join(" · "));
+// la estacionalidad (e, h) solo se nombra si la receta la usa: con s = 0 no influye
+const estacTxt = r => r.s > 0 && r.h != null ? ` · seasonality ${tx(r.h)}, ${r.e} yr${r.e === 1 ? "" : "s"}` : "";
 function recetaTxt(r){ if(!r) return "-";
-  return `s ${vtxt("s",r.s)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · ${tx(r.grupo)}`; }
+  return `s ${vtxt("s",r.s)}${estacTxt(r)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · trend ${tx(r.grupo)}`; }
 function casa(){ return D.casas[estado.casa]; }
 function esRegla(){ return estado.sel.startsWith("R|") || estado.sel.startsWith("S|"); }
 function entidad(foto){
@@ -2257,12 +2290,12 @@ function capaCodigos(cods, X, Y){
   });
   return h + `</g>`;
 }
-function capaMedia(pts, X, Y, etiqueta){
+function capaMedia(pts, X, Y, etiqueta, {pref = "m", r = [9, 5]} = {}){
   let h = "";
-  if (pts.length > 1) h += `<path data-k="m-linea" class="tray" d="${curva(pts.map(p => [X(p), Y(p)]))}" fill="none" stroke="var(--receta)" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>`;
+  if (pts.length > 1) h += `<path data-k="${pref}-linea" class="tray" d="${curva(pts.map(p => [X(p), Y(p)]))}" fill="none" stroke="var(--receta)" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>`;
   pts.forEach((p, i) => {
     const ult = i === pts.length - 1, op = ult ? 1 : 0.25 + 0.6 * i / Math.max(1, pts.length - 1);
-    h += `<circle class="media" data-k="m-${p.mes}" cx="${X(p)}" cy="${Y(p)}" r="${ult ? 9 : 5}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${esc(etiqueta(p))}</title></circle>`;
+    h += `<circle class="media" data-k="${pref}-${p.mes}" cx="${X(p)}" cy="${Y(p)}" r="${ult ? r[0] : r[1]}" fill="var(--receta)" fill-opacity="${op}" stroke="var(--card)" stroke-width="2"><title>${esc(etiqueta(p))}</title></circle>`;
   });
   return h;
 }
@@ -2280,7 +2313,7 @@ const leyendaGrupo = (tr, x, y) => esRegla() && tr.media.length
 // amortiguado (sin rebote, respuesta ≈0,4 s). Lo nuevo entra con opacidad y escala 0,92; lo que se va sale más rápido.
 // Con movimiento reducido solo hay un fundido corto.
 const MOV = {dur: 560, entrada: 240, salida: 160, curva: "cubic-bezier(0.23, 1, 0.32, 1)"};
-const ATTRS = ["cx", "cy", "r", "x", "y", "width", "height", "fill-opacity", "points", "d", "x1", "x2", "y1", "y2"];
+const ATTRS = ["cx", "cy", "r", "x", "y", "width", "height", "fill-opacity", "opacity", "points", "d", "x1", "x2", "y1", "y2"];
 const muelle = t => { const w = 9.2; const v = 1 - (1 + w * t) * Math.exp(-w * t); return t >= 1 ? 1 : v / (1 - (1 + w) * Math.exp(-w)); };
 const trozos = s => String(s).split(/(-?\d*\.?\d+(?:e-?\d+)?)/);
 function capturar(raiz){
@@ -2386,7 +2419,7 @@ function construir(svg){
   let i = 0;
   svg.querySelectorAll(":scope > circle[data-k], :scope > path[data-k^='kpi'], :scope > g > circle[data-k]").forEach(c =>
     c.animate([{opacity: 0, transform: "scale(.7)"}, {opacity: 1, transform: "none"}], {duration: 280, delay: 80 + Math.min(i++ * 55, 600), easing: MOV.curva, fill: "backwards"}));
-  svg.querySelectorAll("rect[data-k^='c-']").forEach((r, k) => r.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: (+r.dataset.k.slice(2) || 0) * 14, easing: MOV.curva, fill: "backwards"}));
+  svg.querySelectorAll("rect[data-k^='c-'], rect[data-k^='h-']").forEach((r, k) => r.animate([{opacity: 0, transform: "scale(.92)"}, {opacity: 1, transform: "none"}], {duration: 260, delay: ((+r.dataset.k.slice(2) || 0) + (r.dataset.k[0] === "h" ? 17 : 0)) * 14, easing: MOV.curva, fill: "backwards"}));
   svg.querySelectorAll("text[data-k^='l-']").forEach(t => t.animate([{opacity: 0}, {opacity: 1}], {duration: 240, delay: 700, easing: "ease", fill: "backwards"}));
 }
 
@@ -2502,55 +2535,106 @@ function brujula(svgId, ex, ey, polos){
   $(svgId + "p").innerHTML = esSel() && pts.length ? `Large dot: average position of the ${pts[pts.length - 1].n} codes (${pts[pts.length - 1].mes}); each one with its own recipe.` : p && p.ejes ? `Best achievable WAPE at each axis value${esRegla() ? ", group rule" : ""} (${pts[pts.length-1].mes}):<br>${linea(ex)}<br>${linea(ey)}` : "";
 }
 
+// Años de estacionalidad (e): es un interruptor, no un eje. Esta tira lo enseña foto a foto debajo de la Brújula 1:
+// abajo 1 año, arriba 2 años, con la misma regla de posición que las brújulas (tanh de la mejora de WAPE; cerca de la
+// línea discontinua = da igual). Con s = 0 la estacionalidad no influye y la tira queda atenuada.
+function tiraE(){
+  const svg = $("b1e"), W = 326, L = 52, Rm = 12, T = 24, B = 56, cy = (T + B) / 2;
+  const fotos = fotosCerradas().map(f => f.foto), idx = new Map(fotos.map((m, i) => [m, i]));
+  const tr = trayectorias(e => { if (!e.ejes || !e.ejes.e) return null; const y = posEje(e.ejes.e); return y == null ? null : {x: 0, y}; });
+  const X = q => (L + (W - L - Rm) * (fotos.length > 1 ? (idx.get(q.mes) ?? 0) / (fotos.length - 1) : 0.5)).toFixed(1);
+  const Y = q => (cy - q.y * (B - T) / 2).toFixed(1);
+  const rec = recetaElegida(), plano = !esSel() && rec && rec.s === 0;
+  svg.classList.toggle("inerte", !!plano);
+  const der = esSel() ? "Each code its own" : !rec ? "" : plano ? "No effect: flat mean (s 0%)" : `Chosen: ${vtxt("e", rec.e)}`;
+  let h = `<text class="t-cab" x="0" y="11">Years of seasonality · e</text>
+    <text x="${W}" y="11" text-anchor="end" style="fill:${plano || esSel() ? "var(--label-2)" : "var(--blue-txt)"};font-weight:600">${der}</text>
+    <line x1="${L}" x2="${W - Rm + 6}" y1="${T}" y2="${T}" stroke="var(--sep)"/><line x1="${L}" x2="${W - Rm + 6}" y1="${B}" y2="${B}" stroke="var(--sep)"/>
+    <line x1="${L}" x2="${W - Rm + 6}" y1="${cy}" y2="${cy}" stroke="var(--sep-fuerte)" stroke-dasharray="2 3"/>
+    <text x="${L - 8}" y="${T + 4}" text-anchor="end">2 years</text><text x="${L - 8}" y="${B + 3}" text-anchor="end">1 year</text>`;
+  if (esRegla() && !CALOR) h += capaCodigos(tr.cods, X, Y);
+  h += capaMedia(tr.media, X, Y, p => {
+    if (esRegla()) return `${p.mes} · average of ${p.n} codes`;
+    const w = p.e.ejes.e, r = p.e.oraculo_receta;
+    return `${p.mes}\n1 year → ${pct(w[0])} · 2 years → ${pct(w[1])}${r && r.s === 0 ? "\nFlat mean in this snapshot: e has no effect" : ""}`;
+  }, {pref: "e", r: [6, 3.5]});
+  if (!tr.media.length) h += `<text x="${(L + W) / 2}" y="${cy + 4}" text-anchor="middle">No snapshots with closed windows</text>`;
+  pintarSVG(svg, h);
+}
+
 function recetaElegida(){
   if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); return e ? e.receta_txt : null; }
   const el = V().elegida[estado.sel]; return el ? el.txt : null;
 }
 
-// Selector como rejilla, igual que una brújula: 5 amplitudes × 4 criterios. Cada celda lleva el nº de códigos
-// del grupo (más intenso = más grande) y encima va la trayectoria del grupo ganador foto a foto.
+// Selector como rejilla, igual que una brújula: 5 amplitudes × 4 criterios para el trend, y debajo una fila aparte
+// para la estacionalidad (h: Propio · Product Line · Brand · House), alineada con sus columnas. Son decisiones
+// independientes: el trend conviene copiarlo de cerca y la estacionalidad de un grupo grande y estable. Cada celda
+// lleva el nº de códigos del grupo (más intenso = más grande) y encima va la trayectoria del ganador foto a foto.
 function selector(){
   const svg = $("bsel"), f = fotoUltCerrada(), e = f && entidad(f);
   if (!e) { svg.innerHTML = `<text x="163" y="170" text-anchor="middle">No snapshots with closed windows</text>`; $("matrizp").innerHTML = ""; return; }
-  const L = 74, T = 46, CW = 48.4, CH = 62, gap = 3;
-  const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos, max = Math.max(...tam);
+  const L = 74, T = 40, CW = 48.4, CH = 50, gap = 3, TH = T + 4 * CH + 14, CHh = 46;
+  const tam = esRegla() ? e.tam_grupos_medio : e.tam_grupos;
+  const gJer = a => CELDAS.findIndex(c => c[0] === a && c[1] === "Jerarquía");
+  const tamH = hv => hv === "Propio" ? 1 : tam[gJer(hv)];
+  const max = Math.max(...tam);
   const rec = recetaElegida(), gan = rec ? rec.g : -1;
+  const plano = !esSel() && rec && rec.s === 0;   // con media plana la estacionalidad no influye: la fila se atenúa
   const cal = CALOR ? conteoCalor(r => r.g >= 0 ? r.g : null) : null;
+  const calH = CALOR ? conteoCalor(r => r.s > 0 && r.h != null ? r.h : null) : null;
   let capaCal = "";
-  $("selSubt").textContent = cal ? `On top, number of codes in the group. Color: where the ${cal.tot} ${unidadCalor()} gather, from blue (few) to red (many).` : "X: breadth. Y: criterion. Number of codes in the group in each cell (darker, bigger).";
+  $("selSubt").textContent = cal ? `On top, number of codes in the group. Color: where the ${cal.tot} ${unidadCalor()} gather, from blue (few) to red (many).` : "Trend: breadth × criterion. Seasonality: its own row. Codes in each group (darker, bigger).";
   const celda = gi => ({col: AMPL.indexOf(CELDAS[gi][0]), fila: CRIT.indexOf(CELDAS[gi][1])});
-  const cx = col => L + col * CW + CW / 2, cy = fila => T + fila * CH + CH / 2;
-  let h = AMPL.map((a, k) => `<text x="${cx(k)}" y="${T - 10}" text-anchor="middle">${a === "Product Line" ? "Line" : tx(a)}</text>`).join("")
-        + CRIT.map((cr, k) => `<text x="${L - 8}" y="${cy(k) + 4}" text-anchor="end">${cr === "Jerarquía" ? "Hierarchy" : "+ " + tx(cr)}</text>`).join("");
+  // fila 0–3 = criterios del trend; fila 4 = estacionalidad (los repartos dentro de la celda caen a ±0,37)
+  const cx = col => L + col * CW + CW / 2, cy = y => y < 3.5 ? T + y * CH + CH / 2 : TH + (y - 4) * CHh + CHh / 2;
+  const caja = (col, fila) => fila < 4 ? {x: L + col * CW + gap / 2, y: T + fila * CH + gap / 2, w: CW - gap, h: CH - gap} : {x: L + col * CW + gap / 2, y: TH + gap / 2, w: CW - gap, h: CHh - gap};
+  let h = AMPL.map((a, k) => `<text x="${cx(k)}" y="${T - 9}" text-anchor="middle">${a === "Product Line" ? "Line" : tx(a)}</text>`).join("")
+        + CRIT.map((cr, k) => `<text x="${L - 8}" y="${cy(k) + 4}" text-anchor="end">${cr === "Jerarquía" ? "Hierarchy" : "+ " + tx(cr)}</text>`).join("")
+        + `<line x1="6" x2="${L + 5 * CW - gap / 2}" y1="${TH - 7}" y2="${TH - 7}" stroke="var(--sep)"/>`
+        + `<text x="${L - 7}" y="${cy(4) + 4}" text-anchor="end" style="fill:var(--label);font-weight:600">Seasonality</text>`;
+  const pintaCelda = (k, q, n, w, nombre, elegida, vc, tot, op) => {
+    const t = max > 0 ? Math.log(1 + n) / Math.log(1 + max) : 0, al = CALOR ? 0.06 : 0.07 + 0.78 * t;
+    let r = `<g class="celda"${op < 1 ? ` opacity="${op}"` : ""}><title>${nombre}${elegida ? " (chosen)" : ""}\n${esRegla() ? "average size" : "codes"}: ${esRegla() ? n.toFixed(1) : n}\nbest WAPE with this group: ${pct(w)}${CALOR ? `\nchosen ${vc} of ${tot} ${unidadCalor()}` : ""}${op < 1 ? "\nNo effect with the chosen recipe: flat mean (s 0%)" : ""}</title>
+      <rect data-k="${k}" x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="9" fill="${CALOR ? "var(--label)" : "var(--blue)"}" fill-opacity="${al.toFixed(3)}"/>
+      <text x="${q.x + 6}" y="${q.y + 14}" class="${CALOR ? "num-calor" : ""}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text></g>`;
+    if (elegida) r += `<rect data-k="${k[0]}-elegida" x="${q.x - 1.5}" y="${q.y - 1.5}" width="${q.w + 3}" height="${q.h + 3}" rx="10.5" fill="none" stroke="var(--receta)" stroke-width="2"${op < 1 ? ` opacity="${op}"` : ""}/>`;
+    return r;
+  };
   CELDAS.forEach((_, gi) => {
-    const {col, fila} = celda(gi), n = tam[gi], t = max > 0 ? Math.log(1 + n) / Math.log(1 + max) : 0;
-    // con el mapa de calor la intensidad pasa a ser cuántas veces se eligió el grupo (el nº de códigos queda arriba)
-    // con el mapa de calor las celdas quedan en gris claro y el calor va encima, recortado a las celdas
-    const vc = cal ? (cal.n.get(gi) || 0) : 0, al = cal ? 0.06 : 0.07 + 0.78 * t;
-    const x = L + col * CW + gap / 2, y = T + fila * CH + gap / 2, w = e.ejes ? e.ejes.g[gi] : null;
-    h += `<g class="celda"><title>${tx(CELDAS[gi][0])} · ${tx(CELDAS[gi][1])}${gi === gan ? " (chosen)" : ""}\n${esRegla() ? "average size" : "codes"}: ${esRegla() ? n.toFixed(1) : n}\nbest WAPE with this group: ${pct(w)}${cal ? `\nchosen ${vc} of ${cal.tot} ${unidadCalor()}` : ""}</title>
-      <rect data-k="c-${gi}" x="${x}" y="${y}" width="${CW - gap}" height="${CH - gap}" rx="9" fill="${cal ? "var(--label)" : "var(--blue)"}" fill-opacity="${al.toFixed(3)}"/>
-      <text x="${x + 6}" y="${y + 14}" class="${cal ? "num-calor" : ""}" style="font-size:10px;font-weight:600;fill:${al > 0.5 ? "#fff" : "var(--label)"};opacity:.85">${esRegla() ? n.toFixed(0) : n}</text></g>`;
-    if (gi === gan) h += `<rect data-k="c-elegida" x="${x - 1.5}" y="${y - 1.5}" width="${CW - gap + 3}" height="${CH - gap + 3}" rx="10.5" fill="none" stroke="var(--receta)" stroke-width="2"/>`;
+    const {col, fila} = celda(gi);
+    h += pintaCelda(`c-${gi}`, caja(col, fila), tam[gi], e.ejes ? e.ejes.g[gi] : null, `Trend · ${tx(CELDAS[gi][0])} · ${tx(CELDAS[gi][1])}`, gi === gan, cal ? (cal.n.get(gi) || 0) : 0, cal ? cal.tot : 0, 1);
+  });
+  EJ.h.forEach((hv, k) => {
+    h += pintaCelda(`h-${k}`, caja(AMPL.indexOf(hv), 4), tamH(hv), e.ejes && e.ejes.h ? e.ejes.h[k] : null, `Seasonality · ${tx(hv)}`, !esSel() && rec && rec.h === hv, calH ? (calH.n.get(hv) || 0) : 0, calH ? calH.tot : 0, plano ? 0.4 : 1);
   });
   const hacerCalor = (fuente) => {
     const pts = fuente.map(q => ({x: cx(q.x) - L, y: cy(q.y) - T, w: 1}));
-    const W = AMPL.length * CW, H = CRIT.length * CH, url = imagenCalor(pts, W, H, sigmaCalor(pts.length) * 1.15);
-    capaCal = `<defs><clipPath id="clip-sel">${CELDAS.map((_, gi) => { const q = celda(gi); return `<rect x="${L + q.col * CW + gap / 2}" y="${T + q.fila * CH + gap / 2}" width="${CW - gap}" height="${CH - gap}" rx="9"/>`; }).join("")}</clipPath></defs>`
+    const W = AMPL.length * CW, H = TH + CHh - T, url = imagenCalor(pts, W, H, sigmaCalor(pts.length) * 1.15);
+    const rects = [...CELDAS.map((_, gi) => { const q = celda(gi); return caja(q.col, q.fila); }), ...EJ.h.map(hv => caja(AMPL.indexOf(hv), 4))];
+    capaCal = `<defs><clipPath id="clip-sel">${rects.map(q => `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="9"/>`).join("")}</clipPath></defs>`
       + `<image class="calor-img" href="${url}" x="${L}" y="${T}" width="${W}" height="${H}" clip-path="url(#clip-sel)" preserveAspectRatio="none" style="pointer-events:none"/>`;
   };
   // posición = centro de la celda ganadora; los códigos de un grupo se reparten dentro de su celda
-  const tr = trayectorias((x) => { const r = x.oraculo_receta || x.receta_txt; if (!r || r.g == null || r.g < 0) return null; const q = celda(r.g); return {x: q.col, y: q.fila}; });
+  const receta = x => x.oraculo_receta || x.receta_txt;
+  const tr = trayectorias((x) => { const r = receta(x); if (!r || r.g == null || r.g < 0) return null; const q = celda(r.g); return {x: q.col, y: q.fila}; });
+  const trH = trayectorias((x) => { const r = receta(x); if (!r || r.h == null || !(r.s > 0)) return null; return {x: AMPL.indexOf(r.h), y: 4}; });
   const hash = s => { let v = 2166136261; for (const ch of s) v = Math.imul(v ^ ch.charCodeAt(0), 16777619); return (v >>> 0) / 4294967296; };
   // reparto estable dentro de la celda (ángulo áureo sobre un hash del EAN), sin solaparse en diagonal
   const jit = ean => { const u = hash(ean), v = hash(ean.split("").reverse().join("") + "·"), ang = u * 2 * Math.PI, rad = 0.12 + 0.2 * Math.sqrt(v); return {x: Math.cos(ang) * rad, y: Math.sin(ang) * rad * 1.15}; };
-  const cods = new Map(); tr.cods.forEach((l, ean) => { const j = jit(ean); cods.set(ean, l.map(q => ({x: q.x + j.x, y: q.y + j.y}))); });
-  if (cal) hacerCalor(esRegla() ? [...cods.values()].flat() : tr.media.map((q, i) => ({x: q.x + Math.cos(i * 2.4) * 0.18, y: q.y + Math.sin(i * 2.4) * 0.2})));
+  const repartir = t => { const m = new Map(); t.cods.forEach((l, ean) => { const j = jit(ean); m.set(ean, l.map(q => ({x: q.x + j.x, y: q.y + j.y}))); }); return m; };
+  const cods = repartir(tr), codsH = repartir(trH);
+  const giro = (l, d) => l.map((q, i) => ({x: q.x + Math.cos(i * 2.4 + d) * 0.18, y: q.y + Math.sin(i * 2.4 + d) * 0.2}));
+  if (CALOR) hacerCalor(esRegla() ? [...cods.values(), ...codsH.values()].flat() : [...giro(tr.media, 0), ...giro(trH.media, 1)]);
   const PX = q => cx(q.x).toFixed(1), PY = q => (cy(q.y) + 4).toFixed(1);
-  h += CALOR ? leyendaCalor(L, 318) : `<g class="en-celda">${capaCodigos(cods, PX, PY)}</g>` + leyendaGrupo(tr, L, 318);
+  h += CALOR ? leyendaCalor(L, 320) : `<g class="en-celda">${capaCodigos(cods, PX, PY)}</g><g class="en-celda">${capaCodigos(codsH, PX, PY)}</g>` + leyendaGrupo(tr, L, 320);
+  h += capaMedia(trH.media, PX, PY, p => {
+    if (esRegla()) return `${p.mes} · seasonality, average of ${p.n} codes`;
+    const r = p.e.oraculo_receta; return `${p.mes} · best seasonality: ${r ? tx(r.h) : "-"}`;
+  }, {pref: "hm", r: [7, 4]});
   h += capaMedia(tr.media, PX, PY, p => {
-    if (esRegla()) return `${p.mes} · average of ${p.n} codes`;
-    const r = p.e.oraculo_receta; return `${p.mes} · best group: ${r ? tx(r.grupo) : "-"}`;
+    if (esRegla()) return `${p.mes} · trend, average of ${p.n} codes`;
+    const r = p.e.oraculo_receta; return `${p.mes} · best trend group: ${r ? tx(r.grupo) : "-"}`;
   });
   const m = tr.media;
   const lejos = m.length > 1 && Math.hypot(+PX(m[0]) - +PX(m[m.length - 1]), +PY(m[0]) - +PY(m[m.length - 1])) >= 46;
@@ -2560,53 +2644,106 @@ function selector(){
     h += `<text data-k="l-${i === 0 ? "ini" : "fin"}" x="${der ? x + 13 : x - 13}" y="${y + 4}" text-anchor="${der ? "start" : "end"}" class="et-mes et-halo">${p.mes}</text>`;
   });
   // el calor va sobre las celdas y bajo la trayectoria
-  if (capaCal) { const k = h.search(/<g class="en-celda">|<path data-k="m-linea"|<circle class="media"/); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
+  if (capaCal) { const k = h.search(/<g class="en-celda">|<path data-k="hm-linea"|<path data-k="m-linea"|<circle class="media"/); h = k >= 0 ? h.slice(0, k) + capaCal + h.slice(k) : h + capaCal; }
   pintarSVG(svg, h);
   if (esSel()) { const g = grupoComun();
-    $("matrizp").innerHTML = `<span class="elegidaTxt">Each code copies the trend of its own group${g ? ` · most copied: ${esc(tx(g))}` : ""}</span><br>Most copied by snapshot: ${fotosCerradas().map(ff => `${ff.foto}: ${esc(tx(grupoComun(ff)) || "-")}`).join(" · ")}`; return; }
-  const gans = fotosCerradas().map(ff => { const x = entidad(ff); const r = x && (esRegla() ? x.receta_txt : x.oraculo_receta); return `${ff.foto}: ${r ? tx(r.grupo) : "-"}`; });
-  $("matrizp").innerHTML = (rec ? `<span class="elegidaTxt">Chosen: ${tx(rec.grupo)} (${esRegla() ? "average size " + tam[gan].toFixed(1) : tam[gan] + " codes"})</span><br>Best group by snapshot: ${gans.join(" · ")}` : "No chosen recipe");
+    $("matrizp").innerHTML = `<span class="elegidaTxt">Each code copies the trend and seasonality of its own groups${g ? ` · most copied trend: ${esc(tx(g))}` : ""}</span><br>Most copied trend by snapshot: ${fotosCerradas().map(ff => `${ff.foto}: ${esc(tx(grupoComun(ff)) || "-")}`).join(" · ")}`; return; }
+  if (!rec) { $("matrizp").innerHTML = "No chosen recipe"; return; }
+  // cuántas veces cambió el ganador entre fotos consecutivas (la lista foto a foto va en el tooltip de cada punto)
+  const rs = fotosCerradas().map(ff => { const x = entidad(ff); return x && (esRegla() ? x.receta_txt : x.oraculo_receta); }).filter(Boolean);
+  const cambios = k => rs.slice(1).filter((r, i) => r[k] !== rs[i][k]).length;
+  const tamTxt = n => esRegla() ? "average size " + n.toFixed(1) : n + (n === 1 ? " code" : " codes");
+  $("matrizp").innerHTML = `<span class="elegidaTxt">Trend: ${tx(rec.grupo)}</span> (${tamTxt(tam[gan])})<br>`
+    + (plano ? `Seasonality: no effect, the recipe uses the flat mean` : `<span class="elegidaTxt">Seasonality: ${tx(rec.h)}</span> (${tamTxt(tamH(rec.h))})`)
+    + (rs.length > 1 ? `<br>The best changed between snapshots: trend ${cambios("g")} of ${rs.length - 1} times, seasonality ${cambios("h")}.` : "");
 }
 
-function mediaBrujula(id, ventana){
-  const svg = $(id), W = 326, cx = W/2, base = 205, R = 148;
-  const X = spp => cx + Math.max(-1, Math.min(1, spp / 0.30)) * R;
-  const Y = w => base - Math.max(0, Math.min(1, w / 0.60)) * (base - 15);
-  const fuera = (spp, w) => Math.abs(spp) > 0.30 || w > 0.60;
-  const rr = 22;  // marco con las esquinas superiores redondeadas: la "media brújula" contiene todo el dominio SPP × WAPE
-  let h = `<path d="M ${cx-R} ${base} V ${15+rr} Q ${cx-R} 15 ${cx-R+rr} 15 H ${cx+R-rr} Q ${cx+R} 15 ${cx+R} ${15+rr} V ${base}" fill="none" stroke="var(--sep-fuerte)"/>
-    <line x1="${cx-R}" y1="${base}" x2="${cx+R}" y2="${base}" stroke="var(--sep-fuerte)"/>
-    <rect x="${X(-CFG.metas.spp_abs_max)}" y="${Y(CFG.metas.wape_max)}" width="${X(CFG.metas.spp_abs_max)-X(-CFG.metas.spp_abs_max)}" height="${base-Y(CFG.metas.wape_max)}" fill="var(--meta)"/>
-    <line x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--green)" stroke-dasharray="4 3"/>
-    <line x1="${cx}" y1="${base}" x2="${cx}" y2="15" stroke="var(--sep-fuerte)"/>
-    <text x="${cx-R}" y="${Y(CFG.metas.wape_max)+13}" text-anchor="start" style="fill:var(--green-txt)">WAPE 40%</text>
-    <text x="${cx-R}" y="${base+15}">-30% over-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+30% under-forecast</text>
-    <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx-R+8}" y="30">WAPE 60%</text>`;
+// Resultados: una sola media brújula con las tres ventanas (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M). Todas se ven
+// siempre; el segmentado 3M · 6M · 9M resalta una y atenúa las otras. La escala se adapta a los valores de la
+// selección (con el tope del trend en ±50% ya no caben en ±30% / 60%) y salta por pasos redondos.
+const VENTANAS = [{v: "90", tit: "SPP3 · WAPE90", sub: "Months F+1 to F+3", et: "3M"}, {v: "180", tit: "SPP6 · WAPE180", sub: "Months F+1 to F+6", et: "6M"}, {v: "9M", tit: "SPP · WAPE (9M)", sub: "Months F+1 to F+9", et: "9M"}];
+const ESC_SPP = [0.3, 0.5, 0.75, 1, 1.5, 2, 3], ESC_WAPE = [0.6, 0.8, 1, 1.5, 2, 3, 4];
+let VEN = "90";
+try { VEN = localStorage.getItem("o10-ventana") || "90"; } catch(e) {}
+if (!VENTANAS.some(x => x.v === VEN)) VEN = "90";
+function resultados(){
+  const svg = $("rRes"), W = 326, cx = W/2, base = 222, top = 16, R = 148;
   const series = [["kpi_consensus", "var(--cons)", "4 3", "Actual Consensus"], ["kpi_receta", "var(--receta)", "", esSel() ? "Each code's recipe (oracle)" : esRegla() ? "Group rule" : "Best recipe (oracle)"]];
-  const ult = {};
-  series.forEach(([k, col, dash, nom]) => {
+  const datos = VENTANAS.map(({v}) => series.map(([k]) => {
     const pts = [];
-    fotosCerradas().forEach(f => {
-      const e = entidad(f); const v = e && e[k] && e[k][ventana];
-      if (v) pts.push({x: X(v.spp), y: Y(v.wape), v, mes: f.foto, out: fuera(v.spp, v.wape)});
-    });
-    if (pts.length > 1) h += `<polyline data-k="${k}-linea" points="${pts.map(p=>p.x+","+p.y).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="1.5"/>`;
-    pts.forEach((p, i) => {
-      const u = i === pts.length - 1;
-      h += p.out ? `<path data-k="${k}-${p.mes}" d="M ${p.x} ${p.y-7} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}"><title>${nom} ${p.mes}: off the scale. SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></path>`
-                 : `<circle data-k="${k}-${p.mes}" cx="${p.x}" cy="${p.y}" r="${u ? 7 : 4}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="2"><title>${nom} ${p.mes}: SPP ${pct(p.v.spp)}, WAPE ${pct(p.v.wape)}</title></circle>`;
-      if (u) ult[k] = p;
+    fotosCerradas().forEach(f => { const e = entidad(f), x = e && e[k] && e[k][v]; if (x) pts.push({x, mes: f.foto}); });
+    return pts;
+  }));
+  const todos = datos.flat(2);
+  const mS = Math.max(0, ...todos.map(p => Math.abs(p.x.spp))), mW = Math.max(0, ...todos.map(p => p.x.wape));
+  const limS = ESC_SPP.find(x => x >= mS * 1.06) || ESC_SPP[ESC_SPP.length - 1], limW = ESC_WAPE.find(x => x >= mW * 1.06) || ESC_WAPE[ESC_WAPE.length - 1];
+  const X = spp => cx + Math.max(-1, Math.min(1, spp / limS)) * R;
+  const Y = w => base - Math.max(0, Math.min(1, w / limW)) * (base - top);
+  const fuera = (spp, w) => Math.abs(spp) > limS || w > limW;
+  const rr = 22, sg = CFG.spp_signo < 0;
+  let h = `<path d="M ${cx-R} ${base} V ${top+rr} Q ${cx-R} ${top} ${cx-R+rr} ${top} H ${cx+R-rr} Q ${cx+R} ${top} ${cx+R} ${top+rr} V ${base}" fill="none" stroke="var(--sep-fuerte)"/>
+    <line x1="${cx-R}" y1="${base}" x2="${cx+R}" y2="${base}" stroke="var(--sep-fuerte)"/>
+    <rect data-k="zona" x="${X(-CFG.metas.spp_abs_max)}" y="${Y(CFG.metas.wape_max)}" width="${X(CFG.metas.spp_abs_max)-X(-CFG.metas.spp_abs_max)}" height="${base-Y(CFG.metas.wape_max)}" fill="var(--meta)"/>
+    <line x1="${cx-R/2}" y1="${base}" x2="${cx-R/2}" y2="${top}" stroke="var(--sep)" stroke-dasharray="1 3"/><line x1="${cx+R/2}" y1="${base}" x2="${cx+R/2}" y2="${top}" stroke="var(--sep)" stroke-dasharray="1 3"/>
+    <line data-k="meta-w" x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--green)" stroke-dasharray="4 3"/>
+    <line x1="${cx}" y1="${base}" x2="${cx}" y2="${top}" stroke="var(--sep-fuerte)"/>
+    <text data-k="meta-t" x="${cx-R+4}" y="${Y(CFG.metas.wape_max)-5}" text-anchor="start" style="fill:var(--green-txt)">WAPE ${pct(CFG.metas.wape_max,0)}</text>
+    <text x="${cx-R}" y="${base+15}">${pct(-limS,0)} over-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+${pct(limS,0)} under-forecast</text>
+    <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx-R/2}" y="${base+15}" text-anchor="middle" style="opacity:.7">${pct(-limS/2,0)}</text><text x="${cx+R/2}" y="${base+15}" text-anchor="middle" style="opacity:.7">+${pct(limS/2,0)}</text>
+    <text x="${cx-R+8}" y="${top+15}">WAPE ${pct(limW,0)}</text>`;
+  // las ventanas atenuadas van debajo; la elegida, encima
+  const orden = VENTANAS.map((x, i) => i).sort((a, b) => (VENTANAS[a].v === VEN) - (VENTANAS[b].v === VEN));
+  orden.forEach(iv => {
+    const {v, et} = VENTANAS[iv], sel = v === VEN, op = sel ? 1 : 0.2;
+    series.forEach(([k, col, dash, nom], is) => {
+      const pts = datos[iv][is].map(p => ({...p, px: X(p.x.spp), py: Y(p.x.wape), out: fuera(p.x.spp, p.x.wape)}));
+      if (pts.length > 1) h += `<polyline data-k="${k}-${v}-linea" data-v="${v}" opacity="${op}" points="${pts.map(p=>p.px.toFixed(1)+","+p.py.toFixed(1)).join(" ")}" fill="none" stroke="${col}" stroke-dasharray="${dash}" stroke-width="${sel ? 1.8 : 1.4}"/>`;
+      pts.forEach((p, i) => {
+        const u = i === pts.length - 1, tt = `<title>${nom} · ${et} · ${p.mes}: SPP ${pct(p.x.spp)}, WAPE ${pct(p.x.wape)}${p.out ? " (off the scale)" : ""}</title>`;
+        h += p.out ? `<path data-k="${k}-${v}-${p.mes}" data-v="${v}" opacity="${op}" d="M ${p.px.toFixed(1)} ${(p.py-7).toFixed(1)} l 6 11 l -12 0 z" fill="${col}" fill-opacity="${u?1:.4}">${tt}</path>`
+                   : `<circle data-k="${k}-${v}-${p.mes}" data-v="${v}" opacity="${op}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="${u ? (sel ? 7 : 5) : (sel ? 4 : 3)}" fill="${col}" fill-opacity="${u?1:.4}" stroke="var(--card)" stroke-width="2">${tt}</circle>`;
+      });
+      // la etiqueta de la ventana va junto al último punto de la receta, para saber qué rastro atenuado es cuál
+      const ul = pts[pts.length - 1];
+      if (ul && k === "kpi_receta") { const d = ul.px > cx + R - 30;
+        h += `<text data-k="l-${v}" data-v="${v}" opacity="${sel ? 1 : 0.45}" x="${(ul.px + (d ? -11 : 11)).toFixed(1)}" y="${(ul.py - 8).toFixed(1)}" text-anchor="${d ? "end" : "start"}" class="et-mes">${et}</text>`; }
     });
   });
+  if (!todos.length) h += `<text x="${cx}" y="${base - 60}" text-anchor="middle">No snapshots with closed windows</text>`;
   pintarSVG(svg, h);
-  const lin = (k, nom) => { const p = ult[k]; if (!p) return `${nom}: -`;
-    return `${nom} (${p.mes}): WAPE <b class="${p.v.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.v.wape)}</b> · SPP <b class="${Math.abs(p.v.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.v.spp)}</b>${p.out ? " (off the scale)" : ""}`; };
-  let extra = "";
-  if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); const v = e && e.kpi_oraculo && e.kpi_oraculo[ventana];
-    if (v) extra = `<br>Sum of per-code oracles: WAPE ${pct(v.wape)} · SPP ${pct(v.spp)}`; }
-  const sw = (col, dash) => `<svg width="18" height="8" style="vertical-align:middle"><line x1="0" x2="18" y1="4" y2="4" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/></svg>`;
-  $(id + "p").innerHTML = `${sw("var(--cons)", "4 3")} ${lin("kpi_consensus","Consensus")}<br>${sw("var(--receta)", "")} ${lin("kpi_receta", esSel() ? "Recipes" : esRegla() ? "Rule" : "Recipe")}${extra}`;
+  pieResultados();
 }
+// cabecera, segmentado y pie de la ventana elegida (sin redibujar la gráfica)
+function pieResultados(){
+  const w = VENTANAS.find(x => x.v === VEN);
+  $("resTit").textContent = w.tit;
+  $("resSubt").textContent = `${w.sub}. The other windows stay visible, faded.`;
+  $("segVen").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.ven === VEN)));
+  requestAnimationFrame(() => moverPulgar($("segVen")));
+  const ult = k => { const l = fotosCerradas().map(f => { const e = entidad(f), x = e && e[k] && e[k][VEN]; return x ? {x, mes: f.foto} : null; }).filter(Boolean); return l[l.length - 1]; };
+  const lin = (k, nom) => { const p = ult(k); if (!p) return `${nom}: -`;
+    return `${nom} (${p.mes}): WAPE <b class="${p.x.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.x.wape)}</b> · SPP <b class="${Math.abs(p.x.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.x.spp)}</b>`; };
+  let extra = "";
+  if (esRegla()) { const f = fotoUltCerrada(); const e = f && entidad(f); const v = e && e.kpi_oraculo && e.kpi_oraculo[VEN];
+    if (v) extra = `<br>Sum of per-code oracles: WAPE ${pct(v.wape)} · SPP ${pct(v.spp)}`; }
+  const sw = (col, dash) => `<svg width="18" height="8" style="vertical-align:middle" aria-hidden="true"><line x1="0" x2="18" y1="4" y2="4" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/></svg>`;
+  $("rResp").innerHTML = `${sw("var(--cons)", "4 3")} ${lin("kpi_consensus","Consensus")}<br>${sw("var(--receta)", "")} ${lin("kpi_receta", esSel() ? "Recipes" : esRegla() ? "Rule" : "Recipe")}${extra}`;
+}
+// el segmentado responde al instante: atenúa y resalta en el sitio (sin rehacer la gráfica) y sube la ventana elegida
+$("segVen").addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-ven]"); if (!b || b.dataset.ven === VEN) return;
+  VEN = b.dataset.ven;
+  try { localStorage.setItem("o10-ventana", VEN); } catch(e) {}
+  const svg = $("rRes");
+  svg.querySelectorAll("[data-v]").forEach(el => {
+    const sel = el.dataset.v === VEN;
+    el.setAttribute("opacity", sel ? 1 : el.tagName === "text" ? 0.45 : 0.2);
+    if (el.tagName === "circle") { const u = el.getAttribute("r") >= 5; el.setAttribute("r", u ? (sel ? 7 : 5) : (sel ? 4 : 3)); }
+    if (el.tagName === "polyline") el.setAttribute("stroke-width", sel ? 1.8 : 1.4);
+  });
+  svg.querySelectorAll(`[data-v="${VEN}"]`).forEach(el => svg.appendChild(el));
+  pieResultados();
+});
 
 function filasGrupo(){
   const det = V().detector;
@@ -2733,6 +2870,31 @@ function anteriores(){
   $("anteriores").innerHTML = h || "<p>No snapshots with closed windows.</p>";
 }
 
+// La receta elegida para el futuro, escrita como fórmula con sus valores. Un código: la suya. Un grupo: la común si
+// todos comparten la misma; si no, la más repetida, y la de cada código en la tabla.
+function formulaDetector(filas, fuente){
+  const box = $("detFormula"), recs = filas.map(x => x.rec.txt).filter(Boolean);
+  if (!recs.length) { box.innerHTML = `<h3>Recipe for the future</h3><p class="def">No code in this selection has a chosen recipe.</p>`; return; }
+  const clave = r => ["s","w","m","N","c","p","e","h","g"].map(k => r[k]).join("|");
+  const cuenta = new Map();
+  recs.forEach(r => { const k = clave(r); if (!cuenta.has(k)) cuenta.set(k, {r, n: 0}); cuenta.get(k).n++; });
+  const {r, n} = [...cuenta.values()].sort((a, b) => b.n - a.n)[0], unica = cuenta.size === 1;
+  const de = {codigo: "chosen per code with the score of the measured snapshots", pl: "its Product Line rule", brand: "its Brand rule", casa: "the house rule"}[fuente];
+  const b = k => `<b>${vtxt(k, r[k])}</b>`, op = t => `<span class="op">${t}</span>`;
+  const est = `Season<sub>${esc(tx(r.h))}, ${r.e}y</sub>(t)`;
+  const baseF = r.s === 0 ? `Mean12` : r.s === 1 ? est
+    : `${op("[")} <b>${vtxt("s", 1 - r.s)}</b>${op("·")}Mean12 ${op("+")} ${b("s")}${op("·")}${est} ${op("]")}`;
+  const trendF = r.w === 0 ? "" : ` ${op("×")} ${op("(")}1 ${op("+")} ${b("w")}${op("·")}<i>T</i>${op(")")}`;
+  const senal = r.m === 0 ? "100% sell-in" : r.m === 1 ? "100% sell-out (EPOS)" : `${vtxt("m", 1 - r.m)} sell-in + ${vtxt("m", r.m)} sell-out`;
+  const quien = (unica ? (filas.length === 1 ? "Applied to this code" : `Shared by all ${filas.length} codes`) : `Most common of ${cuenta.size} recipes (${n} of ${filas.length} codes); each code's own is in the table`) + `, ${de}.`;
+  box.innerHTML = `<h3>Recipe for the future</h3><p class="def">${quien}</p>
+    <p class="fx">Forecast(t) ${op("=")} ${baseF}${trendF} ${op("+")} DA(t)</p>
+    <p class="def">${r.s === 0 ? "<b>Flat mean</b>: no seasonality, so e and h have no effect. " : `<b>Season(t)</b> = ${r.h === "Propio" ? "the code's own sales in the same month" : `Mean12 × the seasonal index of its <b>${esc(tx(r.h))}</b>`}, ${r.e === 2 ? "averaged over the last <b>2 years</b>" : "from <b>last year</b>"}. `}${r.w === 0 ? "<b>No trend</b>. " : `<b><i>T</i></b> = trend of <b>${esc(tx(r.grupo))}</b> over the last <b>${r.N} months</b> against a year earlier, ${senal}, capped at ±${pct(CFG.tope_trend, 0)}. `}<b>Mean12</b> = mean of the last 12 closed months of the cleaned history: Actuals ${op("+")} ${b("c")} of Supply Cuts ${op("−")} ${b("p")} of Total Demand Assumption. <b>DA(t)</b> = demand assumptions planned in the current snapshot, always at 100%.</p>
+    <ul class="pars" aria-label="Recipe values">${[["s", "Seasonal weight"], ["e", "Seasonality years"], ["h", "Seasonality from"], ["w", "Trend weight"], ["m", "Sell-out mix"], ["N", "Trend length"], ["c", "Cuts added"], ["p", "Promos removed"]]
+      .map(([k, t]) => `<li class="${(k === "e" || k === "h") && r.s === 0 ? "nulo" : ""}">${t}<b>${vtxt(k, r[k])}</b></li>`).join("")}<li>Trend from<b>${esc(tx(r.grupo))}</b></li></ul>`;
+}
+const recetaCorta = r => `s ${vtxt("s", r.s)} · w ${vtxt("w", r.w)} · m ${vtxt("m", r.m)} · ${r.N}M · c ${vtxt("c", r.c)} · p ${vtxt("p", r.p)}${r.s > 0 ? ` · ${tx(r.h)} ${r.e}y` : ""}`;
+
 function detector(){
   const det = V().detector, fuente = $("selFuente").value;
   const filtro = $("filtro").value.toLowerCase();
@@ -2750,6 +2912,7 @@ function detector(){
     const meses = [bajo.length ? "Low " + bajo.join(" ") : "", alto.length ? "High " + alto.join(" ") : ""].filter(Boolean).join(" · ");
     filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
+  formulaDetector(filas, fuente);
   const fuera = filas.filter(x => x.u > 0.5).length;
   const top = filas.reduce((m, x) => !m || x.u > m.u ? x : m, null);
   RES.det = {fuera, total: filas.length, u: filas.reduce((a, x) => a + x.u, 0), top: top && top.u > 0.5 ? top.r.desc : null};
@@ -2761,12 +2924,12 @@ function detector(){
      ${sinReceta ? sinReceta + " EANs without a recipe (not in scope in any snapshot with closed windows)." : ""}
      Monthly deviation = only the excess outside the range, in absolute value (a month above and another below do not offset). Deviation % = deviation / Σ recipe forecast.`;
   const th = (k, t) => `<th class="ord" data-col="${k}" aria-sort="${col === k ? (dir > 0 ? "ascending" : "descending") : "none"}">${t}${col === k ? `<svg class="flecha" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="${dir > 0 ? "M2 6.5 5 3.5l3 3" : "M2 3.5 5 6.5l3-3"}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ""}</th>`;
-  let h = `<table class="t-det"><tr class="cab"><th class="izq">EAN</th><th class="izq">Description</th><th class="izq">Brand</th><th class="izq">Age</th>${th("sR","Σ Recipe")}${th("sC","Σ Consensus")}${th("u","Deviation units")}${th("p","Deviation %")}<th class="izq">Months off</th><th class="izq">Trend group</th></tr>`;
+  let h = `<table class="t-det"><tr class="cab"><th class="izq">EAN</th><th class="izq">Description</th><th class="izq">Brand</th><th class="izq">Age</th>${th("sR","Σ Recipe")}${th("sC","Σ Consensus")}${th("u","Deviation units")}${th("p","Deviation %")}<th class="izq">Months off</th><th class="izq">Recipe</th></tr>`;
   const tope = estado.detTodos ? vis.length : 30;
   vis.slice(0, tope).forEach(x => {
     h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a>${tolPropia(x.r.ean) ? `<span class="tol-propia" title="Own tolerance ${txtTol(tolPropia(x.r.ean))}">●</span>` : ""}</td><td class="izq desc" title="${esc(x.r.desc)} · ${tx(x.r.edad)} · trend group: ${esc(tx(x.rec.txt.grupo))}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}</td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${tx(x.r.edad)}</td>
       <td class="c-sr">${num(x.sR)}</td><td class="c-sc">${num(x.sC)}</td><td class="c-u"><b>${num(x.u)}</b></td><td class="c-p">${pct(x.p)}</td><td class="izq pequeño meses c-mes">${x.meses}</td>
-      <td class="izq pequeño meses c-grupo" title="${recetaTxt(x.rec.txt)}">${tx(x.rec.txt.grupo)}${x.rec.sin_trend ? " (no trend today)" : ""}</td></tr>`;
+      <td class="izq pequeño meses c-grupo c-rec" title="${recetaTxt(x.rec.txt)}"><span class="rec-g">Trend ${tx(x.rec.txt.grupo)}${x.rec.sin_trend ? " (no trend today)" : ""}</span><span class="rec-v">${recetaCorta(x.rec.txt)}</span></td></tr>`;
   });
   if (!vis.length) h += `<tr><td colspan="10" class="izq" style="padding:20px 10px;color:var(--label-2)">No EAN is off its strategy with these tolerances.</td></tr>`;
   $("detector").innerHTML = h + "</table>" + (vis.length > tope ? `<p><button type="button" class="btn btn-fant" id="detMas">Show all ${vis.length} EANs</button></p>` : "");
@@ -3023,7 +3186,8 @@ function miniGrupo(id){
     if (esSel()) { const g = grupoComun(); return mn("Selection", `${miembros().length}<small>codes</small>`) + mn("Recipe", "Each code's own", "txt") + mn("Most copied trend", tx(g) || "-", "txt") + mn("Measured snapshots", n); }
     if (!rec) return mn("Chosen recipe", "No chosen recipe", "txt") + mn("Measured snapshots", n);
     return mn("Seasonal · trend", `s ${vtxt("s", rec.s)} · w ${vtxt("w", rec.w)}`, "txt") + mn("Signal · length", `m ${vtxt("m", rec.m)} · ${rec.N}M`, "txt")
-      + mn("Cuts · promos", `c ${vtxt("c", rec.c)} · p ${vtxt("p", rec.p)}`, "txt") + mn("Trend from", tx(rec.grupo), "txt");
+      + mn("Cuts · promos", `c ${vtxt("c", rec.c)} · p ${vtxt("p", rec.p)}`, "txt") + mn("Trend from", tx(rec.grupo), "txt")
+      + mn("Seasonality", rec.s > 0 ? `${tx(rec.h)} · ${rec.e}y` : "Not used", "txt");
   }
   if (id === "sResultados") {
     const a = kpiVentana("90"), b = kpiVentana("9M"), nom = esSel() ? "recipes" : (esRegla() ? "rule" : "recipe");
@@ -3080,7 +3244,8 @@ $("vistaDetalle").addEventListener("click", ev => {
 $("plegarTodo").addEventListener("click", () => cambiarGrupos(() => { if (ABIERTOS.size === GRUPOS.length) ABIERTOS.clear(); else GRUPOS.forEach(k => ABIERTOS.add(k)); }));
 
 function pintarDecisiones(){
-  brujula("b1", "s", "w", ["Flat mean", "Same month last year", "No trend", "Full trend"]);
+  brujula("b1", "s", "w", ["Flat mean", "Full seasonality", "No trend", "Full trend"]);
+  tiraE();
   brujula("b2", "m", "N", ["100% sell-in", "100% sell-out", "Trend 6M", "Trend 12M"]);
   brujula("b3", "c", "p", ["No cuts added", "Add 100% of cuts", "No promos removed", "Remove 100% of promos"]);
   selector();
@@ -3090,18 +3255,19 @@ function pintar(){
   pintarTolDet();
   fotoActual();
   pintarDecisiones();
-  ["90", "180", "9M"].forEach(v => mediaBrujula("r" + v, v));
+  resultados();
   anteriores();
   detector();
   pintarGrupos();
 }
 
-$("leer").innerHTML = `<p><b>X = SPP</b> (bias, ${CFG.spp_signo < 0 ? "Σ(A−F)/ΣA" : "Σ(F−A)/ΣA"}): over-forecast on the left, under-forecast on the right. <b>Y = WAPE</b> = Σ|F−A|/ΣA, 0 at the bottom, 60% at the top.</p>
+$("leer").innerHTML = `<p><b>X = SPP</b> (bias, ${CFG.spp_signo < 0 ? "Σ(A−F)/ΣA" : "Σ(F−A)/ΣA"}): over-forecast on the left, under-forecast on the right. <b>Y = WAPE</b> = Σ|F−A|/ΣA, 0 at the bottom. The scale adapts to the selection, so large errors still fit; anything beyond it is pinned to the edge.</p>
+  <p><b>3M · 6M · 9M</b> picks the window: SPP3·WAPE90, SPP6·WAPE180 or SPP·WAPE 9M. The other two stay faded, each labeled at its last point.</p>
   <p>Green zone = target: WAPE ≤ ${pct(CFG.metas.wape_max,0)} and SPP within ±${pct(CFG.metas.spp_abs_max,0)}. Green line = WAPE 40%.</p>
   <p>Dashed gray = what happened (the snapshot's Consensus - Final). Blue = best recipe in that snapshot (for a code, the oracle; for a group, the group rule). The gap between them is what could have been gained.</p>
-  <p>One dot per measured snapshot; the last one is bigger. Triangle = off the scale, pinned to the edge.</p>
+  <p>One dot per measured snapshot; the last one is bigger. Triangle = off the scale.</p>
   <p>Only snapshots with later actuals are measured. The current snapshot is not measured: its Consensus is compared with the chosen recipe.</p>`;
-$("notas").innerHTML = `Coarse grid: ${(D.ejes.s.length**5 * D.ejes.N.length * CELDAS.length).toLocaleString("en-US")} recipes per code and snapshot. Window weights ${CFG.peso_tramo.join("-")}. Trend cap ±${pct(CFG.tope_trend,0)}. Parameters in motor/config.json.`;
+$("notas").innerHTML = `Coarse grid: ${(["s","w","m","c","p","N","e","h"].reduce((a, k) => a * (EJ[k] ? EJ[k].length : 1), 1) * CELDAS.length).toLocaleString("en-US")} recipes per code and snapshot. Window weights ${CFG.peso_tramo.join("-")}. Trend cap ±${pct(CFG.tope_trend,0)}. Parameters in motor/config.json.`;
 
 $("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-ir]"); if (!a) return; ev.preventDefault();
   // la barra compacta mide menos: se compacta antes de medir, así la sección queda justo debajo de ella
