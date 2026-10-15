@@ -6,7 +6,7 @@ import pytest
 
 from motor.lector import ErrorFoto, extraer_tamano, leer_foto, leer_listas
 from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
-from motor.pipeline import cargar_config, kpis, mascara_cuenta, variantes_tipos
+from motor.pipeline import actuals_futuros, cargar_config, kpis, mascara_cuenta, variantes_tipos
 
 RAIZ = Path(__file__).resolve().parent.parent
 COLS = ("Sub-Division;House;Brand;Product Line;Article Type;Article Sub Type;EAN;Planning Item Description;"
@@ -163,6 +163,32 @@ def test_kpis_grupo(cfg):
 
 
 CSV_GUCCI = RAIZ / "data" / "Gucci" / "Consensus" / "Gucci_2025_11.csv"
+
+
+def test_actuals_de_codigos_que_salen_del_export(tmp_path, foto_simple, cfg):
+    """Foto 2025.M01. La foto 2025.M03 trae los dos códigos; la 2025.M05 ya no trae el código 1.
+    Código 1: feb sale de 2025.M03 (la más reciente que lo tiene); mar y abr = 0 (fuera del export);
+    may en adelante sigue abierto. Código 2: feb–abr de 2025.M05."""
+    def foto_posterior(nombre, mes_foto, eans):
+        filas = []
+        for e in eans:
+            for a in (2022, 2023, 2024, 2025):
+                for m in range(1, 13):
+                    if (a, m) < (2025, mes_foto):
+                        v = 30 + m if e.startswith("1") else 50 + m
+                        filas.append({"ean": e, "mes": mes(a, m), "Actuals": v, "Consensus - Final": v})
+                    else:
+                        filas.append({"ean": e, "mes": mes(a, m), "Consensus - Final": 40})
+        d = tmp_path / nombre
+        d.mkdir()
+        return leer_foto(escribir_csv(d / f"Test_2025_{mes_foto:02d}.csv", filas, f"2025.M{mes_foto:02d}"), cfg)
+    p3 = foto_posterior("p3", 3, ["1000000000050", "2000000000030"])
+    p5 = foto_posterior("p5", 5, ["2000000000030"])
+    A = actuals_futuros(foto_simple, [foto_simple, p3, p5], cfg["horizonte"])
+    i1, i2 = foto_simple.eans.index("1000000000050"), foto_simple.eans.index("2000000000030")
+    np.testing.assert_array_equal(A[i1, :3], [32, 0, 0])
+    np.testing.assert_array_equal(A[i2, :3], [52, 53, 54])
+    assert np.isnan(A[:, 3:]).all()
 
 
 @pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")

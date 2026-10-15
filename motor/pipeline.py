@@ -29,23 +29,28 @@ def cargar_config(ruta: Path | None = None) -> dict:
 
 # ------------------------------------------------------------------ actuals
 def actuals_futuros(foto: Foto, fotos: list[Foto], hz: int) -> np.ndarray:
-    """Actuals de F+1..F+hz por código de `foto`, tomados de la foto posterior más reciente.
-    NaN = todavía no se conoce (tramo abierto)."""
+    """Actuals de F+1..F+hz por código de `foto`. NaN = todavía no se conoce (tramo abierto).
+
+    Para cada código y mes t se usa la foto posterior más reciente que cubre t y trae el código. Si el código ya no
+    sale en ninguna de las fotos que cubren t (lo sacaron del export), su actual es 0: el export trae la historia
+    completa, así que un código que hubiera vendido en t aparecería. Así los códigos que se pierden siguen
+    midiéndose y sumando en sus grupos."""
     out = np.full((len(foto.eans), hz), np.nan)
+    posteriores = sorted((P for P in fotos if P.mes > foto.mes), key=lambda f: -f.mes)
+    filas = [{e: k for k, e in enumerate(P.eans)} for P in posteriores]
     for j in range(hz):
         t = foto.mes + 1 + j
-        for P in sorted(fotos, key=lambda f: -f.mes):
-            if P.mes <= t:          # el mes en curso de una foto nunca vale como actual
-                continue
-            if t < P.primer_mes_actuals:
-                continue
-            fila = {e: k for k, e in enumerate(P.eans)}
-            k = P.col(t)
-            for i, e in enumerate(foto.eans):
-                if np.isnan(out[i, j]) and e in fila:
-                    v = P.mat["Actuals"][fila[e], k]
+        # el mes en curso de una foto nunca vale como actual
+        cubren = [(P, fila) for P, fila in zip(posteriores, filas) if P.mes > t and t >= P.primer_mes_actuals]
+        if not cubren:
+            continue
+        out[:, j] = 0.0
+        for i, e in enumerate(foto.eans):
+            for P, fila in cubren:
+                if e in fila:
+                    v = P.mat["Actuals"][fila[e], P.col(t)]
                     out[i, j] = 0.0 if np.isnan(v) else v
-            break
+                    break
     return out
 
 
