@@ -214,6 +214,29 @@ def test_codigo_desaparecido_cuenta_en_el_trend(tmp_path, foto_simple, cfg):
     assert M.tam_grupo[gi, 0] == 1
 
 
+def test_trend_sellout_por_meses_del_grupo(tmp_path, cfg):
+    """Foto 2025.M01, PL con dos códigos. A: EPOS 100 en 2023 (salvo M08) y en 2024 (salvo M12, aún no cargado).
+    B (nuevo): EPOS 50 solo en 2024 (salvo M12). N=6 (2024.M07–M12): M12 fuera (sin EPOS), M08 fuera (sin EPOS
+    hace un año). Quedan M07, M09, M10, M11: (4·150) / (4·100) − 1 = +50%."""
+    filas = []
+    for a in (2022, 2023, 2024):
+        for m in range(1, 13):
+            fa = {"ean": "1000000000050", "mes": mes(a, m), "Actuals": 100, "Consensus - Final": 100}
+            fb = {"ean": "2000000000050", "mes": mes(a, m), "Actuals": 50, "Consensus - Final": 50}
+            if (a == 2023 and m != 8) or (a == 2024 and m != 12):
+                fa["EPOS"] = 100
+            if a == 2024 and m != 12:
+                fb["EPOS"] = 50
+            filas += [fa, fb]
+    for m in range(1, 11):
+        filas += [{"ean": e, "mes": mes(2025, m), "Consensus - Final": 80} for e in ("1000000000050", "2000000000050")]
+    f = leer_foto(escribir_csv(tmp_path / "Test_2025_01.csv", filas), cfg)
+    R = Rejilla(cfg)
+    M = MotorFoto(f, cfg, R)
+    gi, ni = CELDAS.index(("Product Line", "Jerarquía")), R.valores["N"].index(6)
+    assert M.T_so[gi, ni, 0] == pytest.approx(0.5)
+
+
 @pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")
 def test_csv_gucci(cfg):
     f = leer_foto(CSV_GUCCI, cfg)

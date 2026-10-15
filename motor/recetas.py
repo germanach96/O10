@@ -149,6 +149,8 @@ class MotorFoto:
             onehot[inv, np.arange(n)] = self.cuenta.astype(float)
             HG = np.einsum("gk,cpkt->cpgt", onehot, self.H)                 # (c, p, grupos, meses)
             dispG = (onehot @ (~self.disponible).astype(float)) == 0       # todos los miembros con historia
+            epG = onehot @ np.nan_to_num(ep)                                # EPOS del grupo por mes
+            hayG = (onehot @ ep_ok.astype(float)) > 0                       # algún miembro con EPOS ese mes
             for ni, N in enumerate(Nv):
                 rec = (th >= F - N) & (th <= F - 1)
                 ant = (th >= F - N - 12) & (th <= F - 13)
@@ -158,11 +160,12 @@ class MotorFoto:
                 with np.errstate(invalid="ignore", divide="ignore"):
                     T = np.where(ok[None, None] & (den > 0), num / den - 1, np.nan)
                 self.T_si[gi, ni] = T[:, :, inv]
-                # sell-out: pares código-mes con EPOS en t y en t−12 (comparación homogénea)
+                # sell-out: totales del grupo, solo meses con EPOS del grupo en t y en t−12 (sin EPOS hace un año
+                # = no se reportaba; sin EPOS en el mes −1 = aún no cargado). Sin emparejar código a código.
                 idx_rec = np.where(rec)[0]
-                par = ep_ok[:, idx_rec] & ep_ok[:, idx_rec - 12]
-                e_num = onehot @ np.where(par, ep[:, idx_rec], 0).sum(-1)
-                e_den = onehot @ np.where(par, ep[:, idx_rec - 12], 0).sum(-1)
+                mes_ok = hayG[:, idx_rec] & hayG[:, idx_rec - 12]
+                e_num = np.where(mes_ok, epG[:, idx_rec], 0).sum(-1)
+                e_den = np.where(mes_ok, epG[:, idx_rec - 12], 0).sum(-1)
                 with np.errstate(invalid="ignore", divide="ignore"):
                     To = np.where(e_den > 0, e_num / e_den - 1, np.nan)
                 self.T_so[gi, ni] = To[inv]

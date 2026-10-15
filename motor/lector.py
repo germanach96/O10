@@ -286,6 +286,8 @@ def agregar_desaparecidos(fotos: list[Foto]) -> None:
             G = np.full((n, len(P.meses)), np.nan)
             G[:, en_prev] = prev.mat[c][rp][:, k_prev[en_prev]]
             G[:, hueco] = 0.0
+            if c == "EPOS":   # 0 solo en los meses en que la foto tiene EPOS cargado
+                G[:, hueco & np.isnan(M).all(axis=0)] = np.nan
             if c == "hist":   # misma regla que los códigos reales: dentro de la historia útil, vacío = 0
                 util = (P.meses >= P.inicio_historia) & (P.meses < P.mes)
                 G[:, util] = np.nan_to_num(G[:, util])
