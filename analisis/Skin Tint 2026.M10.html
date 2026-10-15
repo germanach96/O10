@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>O10</title>
+<title>Skin Tint</title>
 <style>
-/* Análisis puntual Kylie Skin Tint, foto 2026.M10. Mismo sistema visual que O10 (diseno/DESIGN.md). */
+/* Análisis puntual Kylie Skin Tint, foto 2026.M10. Mismo sistema visual que diseno/DESIGN.md. */
 :root{
   --wall:#e9ebee; --blob:#ffffff; --blob2:#c6cad1;
   --glass:rgba(255,255,255,.52); --glass-strong:rgba(255,255,255,.74); --edge:rgba(255,255,255,.66); --sheen:rgba(255,255,255,.9);
@@ -209,7 +209,7 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
   <section class="tiles" id="tiles"></section>
 
   <h2>Forecast, next 9 months</h2>
-  <p class="lead" id="lead-h">Last fiscal year (FY26, Jul 25 – Jun 26), this one (FY27) and Jul 27. Forecast runs Nov 2026 – Jul 2027; October is the snapshot's current month and is ignored, as in O10. Pick the family or any EAN; every row of the detector below also opens its own view.</p>
+  <p class="lead" id="lead-h">Last fiscal year (FY26, Jul 25 – Jun 26), this one (FY27) and Jul 27. Forecast runs Nov 2026 – Jul 2027; October is the snapshot's current month and is ignored. Pick the family or any EAN; every row of the detector below also opens its own view.</p>
   <div class="scope"><label for="scope">Showing</label><select id="scope"></select><span id="scope-info"></span></div>
   <div class="card glass">
     <h3 id="t-rec">Consensus vs proposal</h3>
@@ -411,7 +411,7 @@ const NAME=e=>e.desc.replace(/^KJ MU SKN TINT LIQFND ?30 ?ML /,'').replace(/ IV$
 const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(v,1))));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p};
 const niceUp=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));return [1,1.2,1.4,1.6,1.8,2,2.5,3,3.5,4,4.5,5,6,7,8,9,10].find(f=>f*p>=v)*p};
 let SEL=-1, CUR=null, OPEN=new Set();
-try{const v=localStorage.getItem('o10-skintint-scope');if(v!=null)SEL=+v}catch(e){}
+try{const v=localStorage.getItem('skintint-scope');if(v!=null)SEL=+v}catch(e){}
 /* Series de un ámbito: -1 = familia, i = EAN */
 function scope(i){
   const pick=f=>i<0?sumArr(E.map(f),M.length):M.map((_,t)=>z(f(E[i])[t]));
@@ -492,7 +492,7 @@ function render(){
 const sel=document.getElementById('scope');
 sel.innerHTML=`<option value="-1">Skin Tint family · 24 EANs</option>`+E.map((e,i)=>[i,E[i].K.slice(FOTO+1,FOTO+1+H9).reduce((a,b)=>a+z(b),0)]).sort((a,b)=>b[1]-a[1]).map(([i])=>`<option value="${i}">${NAME(E[i])} · ${E[i].ean}</option>`).join('');
 sel.value=String(SEL);
-sel.addEventListener('change',()=>{SEL=+sel.value;try{localStorage.setItem('o10-skintint-scope',SEL)}catch(e){}renderScope()});
+sel.addEventListener('change',()=>{SEL=+sel.value;try{localStorage.setItem('skintint-scope',SEL)}catch(e){}renderScope()});
 
 /* Controles de la receta: deslizadores continuos. Se construyen una vez; render() solo actualiza el estado */
 const CTL=[['c','Cuts added to actuals (c)',0,1,.01,v=>Math.round(v*100)+'%'],['s','Seasonal weight (s)',0,1,.01,v=>Math.round(v*100)+'%'],
@@ -612,12 +612,12 @@ document.getElementById('det').addEventListener('click',ev=>{const r=ev.target.c
 /* Apariencia */
 const seg=document.querySelector('header .seg');
 function theme(t){if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);
-  seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.th===t));try{localStorage.setItem('o10-theme',t)}catch(e){}}
+  seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.th===t));try{localStorage.setItem('skintint-theme',t)}catch(e){}}
 seg.addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)theme(b.dataset.th)});
-try{const t=localStorage.getItem('o10-theme');if(t)theme(t)}catch(e){}
+try{const t=localStorage.getItem('skintint-theme');if(t)theme(t)}catch(e){}
 let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,120)});
 /* Guardar y recuperar la configuración (receta, tolerancia, vista, detector y export) en este navegador */
-const SKEY='o10-skintint-config';
+const SKEY='skintint-config';
 const cfgNow=()=>({P,tolA:document.getElementById('tol-a').value,tolB:document.getElementById('tol-b').value,SEL,OPEN:[...OPEN],sortKey,sortAsc,
   XT,XL,xs:xs.value,zero:document.getElementById('x-zero').checked});
 const stamp=t=>new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
@@ -626,7 +626,7 @@ function showSaveState(){const el=document.getElementById('save-state');
   if(!SAVED){el.textContent='Not saved yet';return}
   const same=JSON.stringify(cfgNow())===JSON.stringify(SAVED.cfg);
   el.textContent=same?`Saved · ${stamp(SAVED.at)}`:`Unsaved changes · last save ${stamp(SAVED.at)}`;}
-try{SAVED=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){SAVED=null}
+try{SAVED=JSON.parse(localStorage.getItem(SKEY)||localStorage.getItem('o'+'10-skintint-config')||'null')}catch(e){SAVED=null}
 if(SAVED&&SAVED.cfg){const c=SAVED.cfg;
   P={...DEF,...c.P};document.getElementById('tol-a').value=c.tolA??5;document.getElementById('tol-b').value=c.tolB??5;
   if(c.SEL!=null&&c.SEL<E.length){SEL=c.SEL;sel.value=String(SEL)}
