@@ -199,21 +199,13 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
   <section class="tiles" id="tiles"></section>
 
   <h2>Forecast, next 9 months</h2>
-  <p class="lead" id="lead-h">Last fiscal year (FY26, Jul 25 – Jun 26), this one (FY27) and Jul 27. Forecast runs Nov 2026 – Jul 2027; October is the snapshot's current month and is ignored, as in O10. Both charts share the same scale. Pick the family or any EAN; every row of the detector below also opens its own view.</p>
+  <p class="lead" id="lead-h">Last fiscal year (FY26, Jul 25 – Jun 26), this one (FY27) and Jul 27. Forecast runs Nov 2026 – Jul 2027; October is the snapshot's current month and is ignored, as in O10. Pick the family or any EAN; every row of the detector below also opens its own view.</p>
   <div class="scope"><label for="scope">Showing</label><select id="scope"></select><span id="scope-info"></span></div>
-  <div class="charts">
-    <div class="card glass">
-      <h3 id="t-cons">Current Consensus - Final</h3>
-      <p class="cs">What is in the system today: Demand Assumptions plus Reasonability Adjustments on top of a flow that is blocked by ISFF 1.</p>
-      <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span><span><i class="sw-out"></i>Consensus outside</span></div>
-      <div class="chart" id="ch-cons"></div>
-    </div>
-    <div class="card glass">
-      <h3 id="t-rec">Proposed forecast</h3>
-      <p class="cs" id="cs-rec"></p>
-      <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>History used</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span></div>
-      <div class="chart" id="ch-rec"></div>
-    </div>
+  <div class="card glass">
+    <h3 id="t-rec">Consensus vs proposal</h3>
+    <p class="cs" id="cs-rec" style="min-height:0"></p>
+    <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div>
+    <div class="chart" id="ch-one"></div>
   </div>
   <div class="card glass" style="margin-top:12px"><h3>Month by month</h3><p class="cs" style="min-height:0">Consensus split into what drives it, against the proposal. Same scope as the charts.</p><div class="tbl"><table id="months"></table></div></div>
 
@@ -327,7 +319,7 @@ function forecast(fo,p){
 /* Gráfico de barras + líneas compartiendo escala */
 const X0=M.indexOf('2025.M07'), X1=FOTO+H9;
 function chart(el,opt){
-  const W=Math.max(320,el.clientWidth), Hh=Math.round(Math.min(300,Math.max(220,W*.52)));
+  const W=Math.max(320,el.clientWidth), Hh=Math.round(Math.min(340,Math.max(240,W*.4)));
   const pl=40,pr=10,pt=18,pb=26, n=X1-X0+1, bw=(W-pl-pr)/n;
   const y=v=>pt+(Hh-pt-pb)*(1-Math.min(v,opt.ymax)/opt.ymax);
   const x=i=>pl+(i-X0+.5)*bw;
@@ -425,19 +417,17 @@ function scope(i){
 function tolArr(F){const a=(+document.getElementById('tol-a').value||0)/100, b=(+document.getElementById('tol-b').value||0)/100;
   const lo=Array(M.length).fill(0),hi=Array(M.length).fill(0);
   for(let j=0;j<H9;j++){const t=FOTO+1+j,tol=a+(b-a)*j/8;lo[t]=F[t]*(1-tol);hi[t]=F[t]*(1+tol)}return {lo,hi,a,b}}
-function drawPair(elC,elR,sd,id){
+function drawOne(el,sd,id){
   const tl=tolArr(sd.F);
   const vis=[...sd.A.slice(X0,FOTO+1).map((v,j)=>v+sd.C[X0+j]),...sd.K.slice(FOTO+1,X1+1),...tl.hi.slice(FOTO+1,X1+1),...sd.H.slice(X0,FOTO)];
   const ymax=niceUp(Math.max(...vis,10)*1.04);
-  const rowsBase=i=>{const r=[];if(i<=FOTO){r.push(['Actuals',k(sd.A[i])+(i===FOTO?' (partial)':'')]);if(sd.C[i])r.push(['Supply cuts',k(sd.C[i])])}return r};
-  chart(elC,{id:id+'c',ymax,aria:'Actuals, supply cuts and Consensus by month',A:sd.A,C:sd.C,
-    tol:tl,flag:sd.K,
-    lines:[{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',dots:1}],
-    rows:i=>{const r=rowsBase(i);if(i>FOTO)r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—'],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])]);return r}});
-  chart(elR,{id:id+'r',ymax,aria:'Actuals, history used and proposed forecast by month',A:sd.A,C:sd.C,
-    lines:[{a:X0,b:FOTO-1,v:sd.H,c:'var(--blue)',dash:'1.5 3.5',o:.9},{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',o:.4},{a:FOTO+1,b:X1,v:sd.F,c:'var(--blue)',dots:1}],
-    band:{a:FOTO-12,b:FOTO-1,v:sd.base},tol:tl,
-    rows:i=>{const r=rowsBase(i);if(i<FOTO)r.push(['History used',k(sd.H[i])]);if(i>FOTO)r.push(['Proposal',k(sd.F[i])],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])],['Consensus',k(sd.K[i])]);return r}});
+  chart(el,{id,ymax,aria:'Actuals, supply cuts, history used, Consensus and proposed forecast by month',A:sd.A,C:sd.C,
+    tol:tl,flag:sd.K,band:{a:FOTO-12,b:FOTO-1,v:sd.base},
+    lines:[{a:X0,b:FOTO-1,v:sd.H,c:'var(--blue)',dash:'1.5 3.5',o:.9},{a:FOTO+1,b:X1,v:sd.F,c:'var(--blue)',dots:1},{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',dots:1}],
+    rows:i=>{const r=[];
+      if(i<=FOTO){r.push(['Actuals',k(sd.A[i])+(i===FOTO?' (partial)':'')]);if(sd.C[i])r.push(['Supply cuts',k(sd.C[i])]);if(i<FOTO)r.push(['History used',k(sd.H[i])])}
+      else r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['Proposal',k(sd.F[i])],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])],['Consensus vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—']);
+      return r}});
 }
 function monthsTable(sd){
   let h=`<thead><tr><th>Month</th><th>Consensus</th><th>of which DAs</th><th>Proposal</th><th>Gap</th><th>Gap %</th><th>Same month LY, history used</th></tr></thead><tbody>`;
@@ -458,17 +448,16 @@ function renderScope(){
     ['Clean run-rate, Jun–Sep 26',k(sd.run),'actuals a month, no cuts since July']
   ].map(([a,b,c])=>`<div class="tile glass"><div class="k">${a}</div><div class="v">${b}</div><div class="n">${c}</div></div>`).join('');
   const nm=SEL<0?'Skin Tint family':NAME(E[SEL]);
-  document.getElementById('t-cons').textContent=`Current Consensus · ${nm}`;
-  document.getElementById('t-rec').textContent=`Proposed forecast · ${nm}`;
+  document.getElementById('t-rec').textContent=`Consensus vs proposal · ${nm}`;
   document.getElementById('scope-info').innerHTML=facts(sd).replace('class="facts"','class="facts" style="margin:0"');
-  drawPair(document.getElementById('ch-cons'),document.getElementById('ch-rec'),sd,'m');
+  drawOne(document.getElementById('ch-one'),sd,'m');
   document.getElementById('months').innerHTML=monthsTable(sd);
 }
 
 function render(){
   CUR=forecast(FOTO,P);
   const tr=CUR.tr;
-  document.getElementById('cs-rec').textContent=`Recipe: actuals + ${Math.round(P.c*100)}% of cuts${P.once?' (each cut counted once)':''}, seasonal ${Math.round(P.s*100)}%, trend ${Math.round(P.w*100)}% over ${P.N}M, no DAs. Base = 12-month mean of that history.`;
+  document.getElementById('cs-rec').textContent=`Grey = what is in the system today (DAs + Reasonability Adjustments, ISFF 1). Blue = proposal: actuals + ${Math.round(P.c*100)}% of cuts${P.once?' (each cut counted once)':''}, seasonal ${Math.round(P.s*100)}%, trend ${Math.round(P.w*100)}% over ${P.N}M, no DAs. Base = 12-month mean of that history.`;
   document.getElementById('trend-note').textContent=`Family trend over the last ${P.N} months, YoY: sell-in ${isFinite(tr.Ti)?pct(tr.Ti):'n/a'} · sell-out ${isFinite(tr.To)?pct(tr.To):'n/a'} · applied ${pct(P.w*tr.T)} (capped at ±30%).`;
   renderScope();
   renderRecipe();
@@ -510,8 +499,8 @@ document.getElementById('recipe').addEventListener('dblclick',ev=>{const el=ev.t
 
 function fillExp(i){
   const td=document.getElementById('exp'+i);if(!td)return;const sd=scope(i);
-  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card"><h3>Current Consensus</h3><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span><span><i class="sw-out"></i>Consensus outside</span></div><div class="chart" id="xc${i}"></div></div><div class="card"><h3>Proposed forecast</h3><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>History used</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span><span><i class="sw-tol"></i>Tolerance band</span></div><div class="chart" id="xr${i}"></div></div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
-  drawPair(document.getElementById('xc'+i),document.getElementById('xr'+i),sd,'x'+i);
+  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card full"><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div><div class="chart" id="xc${i}"></div></div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
+  drawOne(document.getElementById('xc'+i),sd,'x'+i);
 }
 function toggleRow(tr){const i=+tr.dataset.i;OPEN.has(i)?OPEN.delete(i):OPEN.add(i);renderDetector(CUR.F)}
 /* Export: variación sobre el Consensus para entrar en el margen (receta ± tolerancia del detector) */
