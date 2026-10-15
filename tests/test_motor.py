@@ -109,9 +109,12 @@ def test_forecast_a_mano(foto_simple, cfg):
     # cortes: c=1 suma 12 a 2024.M06 -> media (1320+12)/12 = 111, trend (1332/1200 − 1) = 11%
     r = indice(R, s=0, w=1, m=0, N=12, c=1, p=0, g=("Propio", "Jerarquía"))
     np.testing.assert_allclose(Fc[r][1], 111 * 1.11)
-    # sin trend, 100% estacional: H(2024.M02) = 110 (+5 de DA en el mes 1)
+    # sin trend, 100% estacional de 2 años: (H(2024.M02) + H(2023.M02)) / 2 = (110 + 100) / 2 = 105 (+5 de DA en h1)
     r = indice(R, s=1, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
-    np.testing.assert_allclose(Fc[r][:2], [115, 110])
+    np.testing.assert_allclose(Fc[r][:2], [110, 105])
+    # con estacionalidad de 1 año: H(2024.M02) = 110
+    Fc1, _ = MotorFoto(foto_simple, {**cfg, "anios_estacionalidad": 1}, R).forecasts(i)
+    np.testing.assert_allclose(Fc1[r][:2], [115, 110])
     # trend de la Product Line (ambos códigos), N=12: (1320+600)/(1200+600) − 1 = 6.67%
     r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Product Line", "Jerarquía"))
     np.testing.assert_allclose(Fc[r][1], 110 * (1 + 120 / 1800))

@@ -10,6 +10,8 @@
   },
   "tope_trend": 0.30,
   "meses_media_base": 12,
+  "anios_estacionalidad": 2,
+  "_estacionalidad": "2 = la parte estacional de la base es la media del mismo mes de los 2 años anteriores (t−12 y t−24) en los códigos que tienen los dos; si no, solo t−12",
   "horizonte": 9,
   "tramos": [[1, 3], [4, 6], [7, 9]],
   "peso_tramo": [4, 2, 1],

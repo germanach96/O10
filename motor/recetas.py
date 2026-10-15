@@ -112,6 +112,15 @@ class MotorFoto:
         lag = self.H[..., k]                                             # (c, p, códigos, hz)
         lag_ok = (lag_t[None, :] >= primer[:, None]) & (primer[:, None] >= 0) & self.disponible[:, k]
         self.lag = np.where(lag_ok[None, None], lag, self.media[..., None])
+        # estacionalidad de 2 años: media de t−12 y t−24 en los códigos que tienen los dos
+        if self.cfg.get("anios_estacionalidad", 1) >= 2:
+            lag2_t = self.t_fut - 24
+            k2 = np.searchsorted(th, lag2_t)
+            ok2 = lag_ok & (lag2_t[None, :] >= primer[:, None]) & self.disponible[:, k2]
+            self.lag = np.where(ok2[None, None], (lag + self.H[..., k2]) / 2, self.lag)
+            self.lag_2a = ok2
+        else:
+            self.lag_2a = np.zeros_like(lag_ok)
         self.lag_ok = lag_ok
 
     def base(self, i: int) -> np.ndarray:
