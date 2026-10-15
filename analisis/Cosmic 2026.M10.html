@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmic</title>
+<style>
+/* Análisis puntual Cosmic (dos product lines), foto 2026.M10. Mismo sistema visual que diseno/DESIGN.md. */
+:root{
+  --wall:#e9ebee; --blob:#ffffff; --blob2:#c6cad1;
+  --glass:rgba(255,255,255,.52); --glass-strong:rgba(255,255,255,.74); --edge:rgba(255,255,255,.66); --sheen:rgba(255,255,255,.9);
+  --card:#ffffff; --fill:rgba(120,120,128,.14); --fill-strong:rgba(120,120,128,.26);
+  --sep:rgba(60,60,67,.14); --sep-strong:rgba(60,60,67,.26);
+  --label:#1c1c1e; --label2:#5d5d63; --label3:#6e6e74;
+  --blue:#0071e3; --blue-text:#0062c4; --band:rgba(0,113,227,.12);
+  --cons:#8e8e93; --green:#34c759; --green-text:#1f7a35; --goal:rgba(52,199,89,.16);
+  --red-text:#c9001a; --d1:#ffcc00; --d2:#ff9500; --d3:#ff3b30; --d4:#b3001b;
+  --bar:rgba(120,120,128,.42); --cut:rgba(255,149,0,.55);
+  --shadow:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --wall:#0e0e0e; --blob:#2f2f2f; --blob2:#151515;
+  --glass:rgba(40,40,40,.5); --glass-strong:rgba(46,46,46,.8); --edge:rgba(255,255,255,.13); --sheen:rgba(255,255,255,.14);
+  --card:#2c2c2e; --fill:rgba(120,120,128,.24); --fill-strong:rgba(120,120,128,.36);
+  --sep:rgba(84,84,88,.5); --sep-strong:rgba(84,84,88,.8);
+  --label:#f5f5f7; --label2:#b2b2b8; --label3:#98989f;
+  --blue:#0a72e8; --blue-text:#74b8ff; --band:rgba(10,114,232,.2);
+  --green-text:#4cd964; --red-text:#ff6961; --bar:rgba(160,160,168,.42); --cut:rgba(255,159,10,.5);
+  --shadow:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4); color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --wall:#0e0e0e; --blob:#2f2f2f; --blob2:#151515;
+  --glass:rgba(40,40,40,.5); --glass-strong:rgba(46,46,46,.8); --edge:rgba(255,255,255,.13); --sheen:rgba(255,255,255,.14);
+  --card:#2c2c2e; --fill:rgba(120,120,128,.24); --fill-strong:rgba(120,120,128,.36);
+  --sep:rgba(84,84,88,.5); --sep-strong:rgba(84,84,88,.8);
+  --label:#f5f5f7; --label2:#b2b2b8; --label3:#98989f;
+  --blue:#0a72e8; --blue-text:#74b8ff; --band:rgba(10,114,232,.2);
+  --green-text:#4cd964; --red-text:#ff6961; --bar:rgba(160,160,168,.42); --cut:rgba(255,159,10,.5);
+  --shadow:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4); color-scheme:dark;}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--wall);color:var(--label);font:13px/1.45 var(--font);letter-spacing:-.003em;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
+  background:radial-gradient(40% 35% at 18% 12%,var(--blob),transparent 70%),radial-gradient(45% 40% at 85% 30%,var(--blob2),transparent 70%),radial-gradient(40% 40% at 30% 90%,var(--blob2),transparent 70%);
+  filter:blur(40px);opacity:.9}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 64px}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);
+  border:1px solid var(--edge);border-radius:22px;box-shadow:var(--shadow),inset 0 1px 0 var(--sheen)}
+header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.crumbs{font-size:11.5px;font-weight:500;color:var(--label2);margin-bottom:4px}
+h1{font:700 30px/1.1 var(--display);letter-spacing:-.025em;margin:0}
+.sub{color:var(--label2);margin:6px 0 0;max-width:68ch}
+.seg{display:inline-flex;padding:3px;border-radius:999px;gap:2px}
+.seg button{border:0;background:transparent;color:var(--label);font:500 12px var(--font);padding:6px 14px;border-radius:999px;cursor:pointer;transition:background-color .2s ease,transform .16s var(--ease-out)}
+.seg button[aria-pressed="true"]{background:var(--glass-strong);box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 var(--sheen)}
+.seg button:active{transform:scale(.97)}
+h2{font:700 24px/1.15 var(--display);letter-spacing:-.025em;margin:36px 0 4px}
+h2+.lead{color:var(--label2);margin:0 0 14px;max-width:80ch}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{padding:14px 16px}
+.tile .k{font-size:11.5px;font-weight:500;color:var(--label2)}
+.tile .v{font:700 26px/1.15 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:4px}
+.tile .n{font-size:12px;color:var(--label3);margin-top:2px;font-variant-numeric:tabular-nums}
+.neg{color:var(--red-text)} .pos{color:var(--green-text)}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{padding:16px 16px 12px;min-width:0}
+.card h3{font:700 14.5px/22px var(--font);letter-spacing:-.01em;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .cs{color:var(--label2);font-size:12px;margin:0 0 8px;min-height:36px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--label2);margin:6px 0 2px}
+.legend i{display:inline-block;vertical-align:middle;margin-right:6px}
+.sw-bar{width:10px;height:10px;border-radius:3px;background:var(--bar)}
+.sw-cut{width:10px;height:10px;border-radius:3px;background:repeating-linear-gradient(45deg,var(--cut) 0 2px,transparent 2px 4px);outline:1px solid var(--cut);outline-offset:-1px}
+.sw-cons{width:18px;border-top:2px dashed var(--cons)}
+.sw-rec{width:18px;border-top:2px solid var(--blue)}
+.sw-tol{width:14px;height:10px;border-radius:3px;background:var(--band);box-shadow:inset 0 0 0 1px rgba(0,113,227,.3)}
+.sw-out{width:8px;height:8px;border-radius:50%;background:var(--d3)}
+.sw-h{width:18px;border-top:2px dotted var(--blue)}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font:10.5px var(--font);fill:var(--label3);font-variant-numeric:tabular-nums}
+.tip{position:absolute;pointer-events:none;min-width:168px;padding:9px 11px;border-radius:14px;background:var(--glass-strong);
+  -webkit-backdrop-filter:blur(36px) saturate(185%);backdrop-filter:blur(36px) saturate(185%);border:1px solid var(--edge);box-shadow:var(--shadow);
+  font-size:12px;opacity:0;transform:scale(.96);transition:opacity .15s var(--ease-out),transform .15s var(--ease-out);z-index:3}
+.tip.on{opacity:1;transform:none}
+.tip b{display:block;margin-bottom:4px;font-weight:700}
+.tip .r{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums;color:var(--label2)}
+.tip .r span:last-child{color:var(--label);font-weight:600}
+.recipe{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;gap:22px;align-items:center}
+.rbtns{display:flex;flex-direction:column;gap:6px}
+.save-state{margin-left:auto;font-size:11.5px;color:var(--label3);white-space:nowrap}
+.wrap{padding-bottom:190px}
+.dock{position:fixed;left:0;right:0;bottom:max(12px,env(safe-area-inset-bottom));z-index:10;padding:0 20px;pointer-events:none}
+.dock-in{max-width:1140px;margin:0 auto;padding:10px 20px 12px;pointer-events:auto;border-radius:24px;
+  background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:blur(40px) saturate(185%);backdrop-filter:blur(40px) saturate(185%)}
+.dock-head{display:flex;align-items:baseline;gap:12px;margin-bottom:4px;min-width:0}
+.dock-head b{font:700 13px var(--font)}
+.sw-once{font-size:12px;color:var(--label);white-space:nowrap}
+.dock-head .note{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:980px){.dock{padding:0 10px}.dock-in{padding:8px 12px 10px}
+  .recipe{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:2px;scrollbar-width:none}
+  .recipe::-webkit-scrollbar{display:none}
+  .recipe .ctl{flex:0 0 170px;scroll-snap-align:start}.recipe .btn{flex:0 0 auto;align-self:center}}
+.ctl label{display:block;font-size:11.5px;font-weight:500;color:var(--label2);margin-bottom:6px}
+.ctl label{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl output{font:700 13px var(--font);color:var(--label);font-variant-numeric:tabular-nums}
+.ctl output.mod{color:var(--blue-text)}
+.sl{position:relative;height:28px;--thumb:24px}
+.sl input{-webkit-appearance:none;appearance:none;width:100%;height:28px;margin:0;background:transparent;cursor:pointer;touch-action:none}
+.sl input:focus{outline:none}
+.sl input::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:linear-gradient(90deg,var(--blue) 0 calc(var(--p)*(100% - var(--thumb)) + var(--thumb)/2),var(--fill-strong) 0)}
+.sl input::-moz-range-track{height:6px;border-radius:999px;background:var(--fill-strong)}
+.sl input::-moz-range-progress{height:6px;border-radius:999px;background:var(--blue)}
+.sl input::-webkit-slider-thumb{-webkit-appearance:none;width:var(--thumb);height:var(--thumb);margin-top:-9px;border-radius:50%;background:#fff;border:0;
+  box-shadow:0 2px 7px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);transition:transform .16s var(--ease-out)}
+.sl input::-moz-range-thumb{width:var(--thumb);height:var(--thumb);border-radius:50%;background:#fff;border:0;box-shadow:0 2px 7px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.08);transition:transform .16s var(--ease-out)}
+.sl input:active::-webkit-slider-thumb{transform:scale(1.12)}
+.sl input:active::-moz-range-thumb{transform:scale(1.12)}
+.sl input:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--band),0 2px 7px rgba(0,0,0,.18)}
+.sl .tick{position:absolute;top:22px;left:calc(var(--d)*(100% - var(--thumb)) + var(--thumb)/2 - 1px);width:2px;height:6px;border-radius:1px;background:var(--label3);pointer-events:none}
+.ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--label3);margin-top:1px;font-variant-numeric:tabular-nums}
+.ctl .seg{display:flex;background:var(--fill)}
+.ctl .seg button{flex:1;padding:6px 6px;font-variant-numeric:tabular-nums}
+.btn{border:0;border-radius:999px;padding:8px 16px;font:600 12.5px var(--font);cursor:pointer;background:var(--fill);color:var(--label);transition:transform .16s var(--ease-out),background-color .2s ease}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.45;cursor:default}
+.note{font-size:12px;color:var(--label3);margin:8px 2px 0}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--sep);white-space:nowrap}
+th{font-size:11.5px;font-weight:600;color:var(--label2)}
+th:first-child,td:first-child{text-align:left}
+td.mono{font:11.5px var(--mono);color:var(--label2)}
+.tbl{overflow-x:auto}
+.tr-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+.trt td:first-child{white-space:normal;min-width:96px}
+.trt td,.trt th{padding:6px 6px}
+.trt .sub2{font-size:10.5px;color:var(--label3);font-weight:400}
+.trt .hl{background:var(--band)}
+.trt thead th.hl{border-radius:8px 8px 0 0}
+.trt tr.fyend td{border-bottom:1px solid var(--sep-strong)}
+@media (max-width:980px){.tr-grid{grid-template-columns:1fr}}
+.xbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:10px;font-size:12px;color:var(--label2)}
+.xbar select{margin-left:6px;padding:6px 10px;border-radius:10px;border:1px solid var(--sep-strong);background:var(--card);color:var(--label);font:13px var(--font)}
+.xbar .grow{flex:1}
+.seg.mini{background:var(--fill)}
+.seg.mini button{padding:5px 12px}
+.chk{display:flex;align-items:center;gap:6px;cursor:pointer}
+.btn.pri{background:var(--blue);color:#fff}
+.xtbl{max-height:460px;overflow:auto;border-radius:12px}
+.xtbl thead th{position:sticky;top:0;background:var(--card);z-index:1}
+#xt td.v{font-weight:600}
+.plpick{margin:2px 0 8px}
+.plpick select{appearance:none;-webkit-appearance:none;padding:9px 38px 9px 16px;border-radius:999px;border:1px solid var(--edge);background:var(--glass-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238e8e93' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 15px center;color:var(--label);font:600 15px var(--font);box-shadow:var(--shadow);cursor:pointer;max-width:100%}
+.scope{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;color:var(--label2);font-size:12px}
+.scope select{appearance:none;-webkit-appearance:none;padding:8px 34px 8px 14px;border-radius:999px;border:1px solid var(--edge);background:var(--glass-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238e8e93' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--label);font:600 13px var(--font);box-shadow:var(--shadow);cursor:pointer;max-width:100%}
+#det tbody tr.row{cursor:pointer;transition:background-color .15s ease}
+@media (hover:hover){#det tbody tr.row:hover{background:var(--fill)}}
+#det tbody tr.row td:first-child::before{content:"›";display:inline-block;width:12px;color:var(--label3);transition:transform .2s var(--ease-out)}
+#det tbody tr.row[aria-expanded="true"] td:first-child::before{transform:rotate(90deg)}
+#det tr.exp>td{padding:4px 0 16px;white-space:normal;text-align:left}
+.exp-in{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.exp-in .card{background:var(--card);border:1px solid var(--sep);border-radius:16px;box-shadow:none}
+.exp-in .full{grid-column:1/-1}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--label2);margin:2px 0 10px}
+.facts b{color:var(--label);font-variant-numeric:tabular-nums}
+@media (max-width:980px){.exp-in{grid-template-columns:1fr}}
+.warn{color:#b86a00}
+.act{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--fill);color:var(--label2)}
+.act.a4{background:rgba(255,59,48,.16);color:var(--red-text)}
+.act.a3{background:rgba(255,149,0,.18);color:#b86a00}
+.act.a2{background:rgba(255,204,0,.22);color:#8a6d00}
+.act.a1{background:var(--band);color:var(--blue-text)}
+th.sort{cursor:pointer;user-select:none}
+th.sort[aria-sort]::after{content:" ↓";color:var(--blue-text)}
+th.sort[aria-sort="ascending"]::after{content:" ↑"}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.chips{display:flex;gap:3px}
+.chip{width:14px;height:14px;border-radius:4px;background:var(--fill)}
+.tol{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;color:var(--label2);font-size:12px}
+.tol input{width:58px;padding:6px 8px;border-radius:10px;border:1px solid var(--sep-strong);background:var(--card);color:var(--label);font:13px var(--font);font-variant-numeric:tabular-nums}
+.qs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.q{padding:16px}
+.q h4{margin:0 0 6px;font:700 14.5px/1.3 var(--font)}
+.q p{margin:0;color:var(--label2)}
+.q ol,.q ul{margin:6px 0 0;padding-left:18px;color:var(--label2)}
+.q li{margin:3px 0}
+code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radius:6px}
+.howto p{margin:0 0 8px;color:var(--label2)}
+@media (max-width:980px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.charts,.res,.qs{grid-template-columns:1fr}.recipe{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.wrap{padding:16px 16px 48px}h1{font-size:24px}.tile .v{font-size:21px}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0s!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="crumbs" id="crumbs"></div>
+      <div class="plpick"><select id="pl" aria-label="Product line"></select></div>
+      <h1 id="h1"></h1>
+      <p class="sub">A forecast built from this snapshot only, on sell-in history plus the share of supply cuts you choose. Demand Assumptions are left out, both from history and from the future.</p>
+    </div>
+    <div class="seg glass" role="group" aria-label="Appearance">
+      <button data-th="auto" aria-pressed="true">Auto</button><button data-th="light" aria-pressed="false">Light</button><button data-th="dark" aria-pressed="false">Dark</button>
+    </div>
+  </header>
+
+  <section class="tiles" id="tiles"></section>
+
+  <h2>Forecast, next 9 months</h2>
+  <p class="lead" id="lead-h">Last fiscal year (FY26, Jul 25 – Jun 26), this one (FY27) and Jul 27. Forecast runs Nov 2026 – Jul 2027; October is the snapshot's current month and is ignored. Pick the family or any EAN; every row of the detector below also opens its own view.</p>
+  <div class="scope"><label for="scope">Showing</label><select id="scope"></select><span id="scope-info"></span></div>
+  <div class="card glass">
+    <h3 id="t-rec">Consensus vs proposal</h3>
+    <p class="cs" id="cs-rec" style="min-height:0"></p>
+    <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div>
+    <div class="chart" id="ch-one"></div>
+  </div>
+  <div class="card glass" style="margin-top:12px"><h3>Trends · year over year</h3><p class="cs" style="min-height:0">Each window ending Sep 26 against the same months one year earlier. Same scope as the chart. The highlighted column is the trend length the recipe uses (N).</p><div id="trends"></div></div>
+  <div class="card glass" style="margin-top:12px"><h3>Month by month</h3><p class="cs" style="min-height:0">Consensus split into what drives it, against the proposal. Same scope as the charts.</p><div class="tbl"><table id="months"></table></div></div>
+
+  <h2>Detector</h2>
+  <p class="lead">Current Consensus against the proposed recipe, EAN by EAN, Nov–Jul. Only the excess beyond the tolerance counts, and months do not offset each other. Click a row to open that EAN.</p>
+  <div class="card glass">
+    <div class="tol">Tolerance <label>start <input id="tol-a" type="number" min="0" max="100" step="1" value="5">%</label><label>end <input id="tol-b" type="number" min="0" max="100" step="1" value="5">%</label><span id="det-sum"></span></div>
+    <div class="tbl"><table id="det"></table></div>
+  </div>
+
+  <h2>How it was built, and open questions</h2>
+  <div class="qs">
+    <div class="q glass howto">
+      <h4>How the history is built</h4>
+      <p><code>History(t) = Actuals(t) + c · Cuts(t)</code>. At c = 0% the history is actuals only; at c = 100% it is actuals plus every unit cut. <b style="color:var(--label)">Count repeated cuts once</b> keeps only the cuts that are new each month, <code>c · (Cuts(t) − Cuts(t−1))</code>.</p>
+      <p>Demand Assumptions are left out of the history and of the future. The base is the mean of that history over the last B months (only months since the first sale count for a new code); the trend is its YoY over N months.</p>
+      <div id="pl-notes"></div>
+    </div>
+    <div class="q glass">
+      <h4>Questions for you</h4>
+      <ol id="pl-qs"></ol>
+    </div>
+  </div>
+
+  <h2>Export: adjustments to reach the margin</h2>
+  <p class="lead">For each code and future month, the change to put on the Consensus so it lands inside the margin set on this page: the recipe above, with the detector's tolerance. Negative = take units out. It follows every slider and the tolerance.</p>
+  <div class="card glass">
+    <div class="xbar">
+      <label>Codes <select id="x-scope"></select></label>
+      <div class="seg mini" role="group" aria-label="Target"><button data-t="edge" aria-pressed="true">To tolerance edge</button><button data-t="rec" aria-pressed="false">To the recipe</button></div>
+      <div class="seg mini" role="group" aria-label="Layout"><button data-l="long" aria-pressed="true">Code × month</button><button data-l="wide" aria-pressed="false">Months as columns</button></div>
+      <label class="chk"><input type="checkbox" id="x-zero" checked> Hide rows with no change</label>
+      <span class="grow"></span>
+      <button class="btn pri" id="x-copy">Copy for Excel</button><button class="btn" id="x-csv">Download CSV</button>
+    </div>
+    <p class="note" id="x-sum" style="margin:0 0 8px"></p>
+    <div class="tbl xtbl"><table id="xt"></table></div>
+  </div>
+</div>
+
+<div class="dock" role="region" aria-label="Recipe">
+  <div class="dock-in glass">
+    <div class="dock-head"><b>Recipe</b><label class="chk sw-once"><input type="checkbox" id="once"> Count repeated cuts once</label><span class="note" id="trend-note"></span><span class="save-state" id="save-state"></span></div>
+    <div class="recipe" id="recipe"></div>
+  </div>
+</div>
+<script>
+const D={"months":["2024.M01","2024.M02","2024.M03","2024.M04","2024.M05","2024.M06","2024.M07","2024.M08","2024.M09","2024.M10","2024.M11","2024.M12","2025.M01","2025.M02","2025.M03","2025.M04","2025.M05","2025.M06","2025.M07","2025.M08","2025.M09","2025.M10","2025.M11","2025.M12","2026.M01","2026.M02","2026.M03","2026.M04","2026.M05","2026.M06","2026.M07","2026.M08","2026.M09","2026.M10","2026.M11","2026.M12","2027.M01","2027.M02","2027.M03","2027.M04","2027.M05","2027.M06","2027.M07","2027.M08","2027.M09","2027.M10","2027.M11","2027.M12","2028.M01","2028.M02","2028.M03","2028.M04","2028.M05","2028.M06","2028.M07","2028.M08","2028.M09","2028.M10","2028.M11","2028.M12","2029.M01","2029.M02","2029.M03","2029.M04","2029.M05","2029.M06","2029.M07","2029.M08","2029.M09","2029.M10","2029.M11","2029.M12","2030.M01","2030.M02","2030.M03","2030.M04","2030.M05","2030.M06","2030.M07","2030.M08"],"foto":"2026.M10","lines":[{"name":"Cosmic Kylie Jenner (00006014)","short":"Cosmic Kylie Jenner","house":"Kylie Jenner Fragrances","isff":1,"eans":[{"ean":"4064941111504","desc":"KJ COSMIC EDP 50 ML FML IV","A":[6529,25674,8719,24063,21555,21983,null,1520,7535,3002,2367,2042,1572,7011,6482,8362,2752,3777,3086,963,12499,11359,7148,66,718,2640,4227,114,903,2037,4099,6029,11153,506,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,20,null,2199,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,4490,4641,5022,3353,4183,18290,3779,5308,6275,4741,5243,5124,4693,4672,4976,3237,3895,14331,3229,3692,3517,3060,4393,3566,3782,4075,3661,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-497,-663,819,128,717,1526,1526,5080,5080,2558,2814,2303,2303,2303,2303,2303,2303,null,null,2979,2979,2979,2979,3575,2979,2979,2979,2979,2979,3575,2979,2979,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[6529,25674,8719,24063,21555,21983,null,1520,7535,3002,2367,2042,1572,7011,6482,8362,2752,3777,3086,963,12499,11359,7148,66,718,2640,4227,114,903,2037,4099,6029,11153,4431,3989,3549,3038,3039,3038,3036,3038,3036,997,1425,5797,5853,5824,5092,5594,5557,5154,5122,4321,3973,4571,4404,5799,2873,2846,2112,2020,2576,2173,2142,1343,993,996,229,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941111542","desc":"KJ COSMIC EDP 150 ML REFILL IV","A":[215,310,240,null,null,1319,null,null,null,68,735,null,null,139,125,286,262,147,73,424,104,232,null,722,34,108,350,158,334,150,308,531,292,176,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,768,632,null,545,4160,932,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,146,102,172,190,330,589,147,200,182,300,186,244,234,44,236,279,180,221,181,292,199,205,204,296,279,239,295,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,175,31,480,300,420,360,360,796,796,360,396,324,324,324,324,324,324,null,null,375,375,375,375,450,375,375,375,375,375,450,375,375,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[215,310,240,null,null,1319,null,null,null,68,735,null,null,139,125,286,262,147,73,424,104,232,null,722,34,108,350,158,334,150,308,531,292,529,360,396,324,324,324,324,324,324,null,null,375,375,375,375,450,375,375,375,375,375,450,375,375,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941111559","desc":"KJ COSMIC EDP 10 ML FML PEN SPRAY IV","A":[null,42790,17366,22720,64342,37334,null,null,3811,3133,1486,1991,1140,5056,3036,7766,4182,3955,3521,556,6990,13503,4360,96,523,271,3351,99,681,3535,1737,12546,5030,1254,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,136,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,8,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,5270,5363,6082,4185,5576,16497,3451,4219,6142,5139,4835,5284,3981,3042,3274,2302,2653,6966,3057,3880,3047,3018,3605,3522,3506,3237,3613,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-1498,-1590,480,225,840,984,984,6345,6345,2998,3297,2698,2698,2698,2698,2698,2698,null,null,3564,3564,3564,3564,4277,3564,3564,3564,3564,3564,4277,3564,3564,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[null,42790,17366,22720,64342,37334,null,null,3811,3133,1486,1991,1140,5056,3036,7766,4182,3955,3521,556,6990,13503,4360,96,523,271,3351,99,681,3535,1737,12546,5030,3948,3100,3429,3008,2886,2857,2796,2787,2843,105,146,3859,3861,3864,3783,4490,3834,3789,3787,3702,3668,4383,3711,3859,297,299,218,212,272,226,224,138,104,106,24,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941111719","desc":"KJ COSMIC EDP 100 ML FML IV","A":[23213,25847,33675,25112,31649,20337,null,null,4833,5230,8265,2300,1272,24801,6438,9870,6480,4405,1972,1539,12864,18082,11285,2481,1390,5060,8781,389,3487,4721,4541,8410,20323,2536,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,6,2222,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,6041,5789,6596,5478,8898,26633,5125,6552,7617,8665,7984,6934,7312,6514,6282,4508,8811,25199,4385,5960,4548,4980,6391,5040,5619,5469,5039,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-3091,-2763,4678,1114,3510,4028,4028,8657,8657,4178,4595,3760,3760,3760,3760,3760,3760,null,null,5268,5268,5268,5268,6321,5268,5268,5268,5268,5268,6321,5268,5268,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[23213,25847,33675,25112,31649,20337,null,null,4833,5230,8265,2300,1272,24801,6438,9870,6480,4405,1972,1539,12864,18082,11285,2481,1390,5060,8781,389,3487,4721,4541,8410,20323,9181,8561,8863,5146,5144,5146,5145,5146,5144,1546,2205,9639,9719,9686,8541,9452,9262,8634,8586,7354,6808,7867,7474,9639,4451,4418,3273,3131,3996,3367,3316,2085,1539,1546,356,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941116219","desc":"KJ COSMIC EDP 30 ML FML IV","A":[13327,26813,10975,24474,69477,19286,null,null,7147,6116,1613,1443,783,4034,5686,9286,4972,4850,2786,567,15160,30008,148,null,32,136,1665,29,160,1382,3037,4398,8234,1513,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,24,null,null,100,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,7152,8037,8202,5358,6145,22169,4893,5422,6430,5384,6550,6106,4853,4539,4101,2888,3141,11178,3498,4315,3179,2855,3990,3553,3578,3689,3120,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-2457,-1703,283,25,165,300,300,4857,4857,3537,3890,3183,3183,3183,3183,3183,3183,null,null,2892,2892,2892,2892,3470,2892,2892,2892,2892,2892,3470,2892,2892,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[13327,26813,10975,24474,69477,19286,null,null,7147,6116,1613,1443,783,4034,5686,9286,4972,4850,2786,567,15160,30008,148,null,32,136,1665,29,160,1382,3037,4398,8234,3650,4537,3890,3183,3183,3183,3183,3183,3183,null,null,2892,2892,2892,2892,3470,2892,2892,2892,2892,2892,3470,2892,2892,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]}],"def":{"s":0.5,"w":1},"notes":"<p><b style=\"color:var(--label)\">This line.</b> ISFF 1: the Consensus is mostly DAs (\u224812.3k a month in 2027) plus a small system flow. Cuts are small (8.0k in 12 months), so c barely moves the result.</p><p>Sell-in has a strong Sep\u2013Oct load-in (Oct 25: 73.2k). A flat 12-month mean spreads that peak over Nov\u2013Jul (19.8k a month, +36% over the Consensus), so the recommendation uses 50% seasonality. Sell-in is \u221219% and sell-out \u221226% YoY over the last 6 months, so the trend is applied (w = 100%). Result: 107.6k for Nov\u2013Jul against 130.6k of Consensus (\u221218%).</p>","trendNote":"Data starts Jan 2024. Sell-in swings with the Sep\u2013Oct holiday load-in, so short windows are noisy; sell-out is the steadier read.","questions":["<b>October load-in.</b> Oct 25 shipped 73.2k; Oct 26 is at 6.0k so far against a 21.7k Consensus. Is a load-in like last year still coming? If it is, it falls outside Nov\u2013Jul and does not change the proposal.","<b>Sell-out \u221226% YoY</b> over 6 months (Sep \u221217%). Distribution loss, fewer doors reporting, or real decline? The recommendation applies the sell-in trend (\u221219%); set w = 0% if you think it is not demand.","<b>Jul 2027 drops to 2.6k</b> because the DAs stop after Jun 2027. Phase-out of a size, or DAs still to be loaded?","<b>Seasonality.</b> 50% mixes the flat mean with the same month last year (Dec 25 and Jan 26 were very low on sell-in, 3.4k and 2.7k, while sell-out peaked in Dec). Is last year's phasing representative?"]},{"name":"Cosmic Kylie Jenner INTENSE (00007045)","short":"Cosmic Kylie Jenner INTENSE","house":"Kylie Jenner Fragrances","isff":2,"eans":[{"ean":"4064941178613","desc":"KJ COSMIC INT EDP 30 ML FY26 IV","A":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10008,975,21369,7098,4905,3054,4827,3925,4158,13596,50,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,633,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5359,8000,6204,4790,5784,4285,4144,3336,2855,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5484,-22,7597,137,1184,6986,5486,13482,10682,10140,7979,4500,3228,4035,4035,4842,null,null,null,3413,3413,3413,3413,4096,3413,3413,3413,3413,3413,4096,3413,3413,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10008,975,21369,7098,4905,3054,4827,3925,4158,13596,4895,8877,8000,4500,3228,4035,4035,4842,3413,3413,3413,3413,3413,3413,3413,4096,3413,3413,3413,3413,3413,4096,3413,3413,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941178620","desc":"KJ COSMIC INT EDP 50 ML FY26 IV","A":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2001,null,14943,552,3,null,87,1818,null,240,73,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,54,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,713,1860,691,537,593,454,398,589,651,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,3280,-472,2516,163,-243,1800,-865,339,503,-156,-155,100,447,559,559,671,null,null,null,433,433,433,433,520,433,433,433,433,433,520,433,433,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2001,null,14943,552,3,null,87,1818,null,240,355,77,100,100,447,559,559,671,433,433,433,433,433,433,433,520,433,433,433,433,433,520,433,433,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941178637","desc":"KJ COSMIC INT EDP 100 ML FY26 IV","A":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,12006,1134,25659,15627,711,321,1743,4219,5310,15018,43,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,6417,11252,6430,5177,5660,3994,4012,3348,3462,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,14050,-4802,-1160,249,389,6395,4895,12860,9902,9352,7352,6000,5524,6905,6905,8286,null,null,null,3984,3984,3984,3984,4781,3984,3984,3984,3984,3984,4781,3984,3984,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,12006,1134,25659,15627,711,321,1743,4219,5310,15018,4093,7874,7500,6000,5524,6905,6905,8286,3984,3984,3984,3984,3984,3984,3984,4781,3984,3984,3984,3984,3984,4781,3984,3984,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},{"ean":"4064941178644","desc":"KJ COSMIC INT EDP 10 ML FY26 IV","A":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10506,2157,31050,null,651,1038,1158,281,5724,8556,47,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"C":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"E":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,47,1506,4996,8669,4818,3334,3977,3523,3255,2763,2380,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"T":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5816,-514,3375,7559,-131,3370,2870,9823,6899,6481,3824,3000,1196,1496,1496,1795,null,null,null,2105,2105,2105,2105,2526,2105,2105,2105,2105,2105,2526,2105,2105,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"K":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10506,2157,31050,null,651,1038,1158,281,5724,8556,3762,6143,4000,3000,1196,1496,1496,1795,2105,2105,2105,2105,2105,2105,2105,2526,2105,2105,2105,2105,2105,2526,2105,2105,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]}],"def":{"B":6},"notes":"<p><b style=\"color:var(--label)\">This line.</b> ISFF 2: everything is manual and the Consensus equals the DAs. Launched Dec 2025 with a 34.5k pipeline fill and a 93.0k launch month in Feb 2026. A 12-month base carries that launch volume into every future month (23.6k a month, +66% over the Consensus).</p><p>The recommendation uses a 6-month base (Apr\u2013Sep 2026, 13.6k a month): 122.0k for Nov\u2013Jul against 128.0k of Consensus (\u22125%). There are no last-year months, so trend and seasonality cannot be used. Sell-out has fallen from 29.8k in Feb to 9.3k in Sep.</p>","trendNote":"Launched Dec 2025: there are no last-year months to compare yet, so YoY shows as not available.","questions":["<b>Base window.</b> Is Apr\u2013Sep 2026 (B = 6) the right picture of steady-state demand, or is part of it still launch distribution?","<b>September 37.4k sell-in</b> against 9.3k sell-out: holiday load-in, or stock building at customers while sell-out falls? If it is load-in, Nov\u2013Dec will be lighter than the base.","<b>Jun\u2013Aug 2027</b> carry 9.9k a month as Reasonability Adjustment with no DA. Intended?","<b>Sell-out decline</b> since launch (29.8k \u2192 9.3k). Is there activation planned (the Feb and May 2027 DAs), or should the base come down further?"]}]};
+const M=D.months, FOTO=M.indexOf(D.foto), H9=9;
+let PLI=0;try{const r=localStorage.getItem('cosmic-pl'),v=+r;if(r!==null&&v>=0&&v<D.lines.length)PLI=v}catch(e){}
+const PL=D.lines[PLI];
+const DEF={c:0,once:false,B:12,s:0,w:0,m:0,N:6,...(PL.def||{})};
+let P={...DEF};
+const fmt=new Intl.NumberFormat('en-US');
+const k=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(2)+'M':Math.abs(v)>=1e3?(v/1e3).toFixed(1)+'k':fmt.format(Math.round(v));
+const pct=(v,d=0)=>(v>0?'+':'')+(v*100).toFixed(d)+'%';
+const mlab=i=>{const [y,m]=M[i].split('.M');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+y.slice(2)};
+const z=v=>v==null?0:v;
+const E=PL.eans, WOS={};
+const first=E.map(e=>e.A.findIndex(v=>v>0));
+
+/* Motor de la receta (mismas fórmulas que motor/recetas.py, sin DAs) */
+/* Historia = Actuals + c·Cortes. Con ONCE, cada corte cuenta solo el mes en que aparece (se descuenta el re-pedido del mes anterior) */
+function hist(e,p){return M.map((_,t)=>z(e.A[t])+p.c*(z(e.C[t])-(p.once&&t>0?z(e.C[t-1]):0)))}
+function trends(fo,p){
+  const hs=E.map(e=>hist(e,p));
+  const hg=M.map((_,t)=>hs.reduce((a,h)=>a+h[t],0));
+  const sum=(x,a,b)=>{let s=0;for(let t=Math.max(0,a);t<b;t++)s+=x[t];return s};
+  const b=sum(hg,fo-p.N-12,fo-12), Ti=b>0?sum(hg,fo-p.N,fo)/b-1:NaN;
+  let a2=0,b2=0;for(let t=fo-p.N;t<fo;t++){let x=0,y=0,ok1=0,ok2=0;for(const e of E){if(e.E[t]!=null){x+=e.E[t];ok1=1}if(e.E[t-12]!=null){y+=e.E[t-12];ok2=1}}if(ok1&&ok2){a2+=x;b2+=y}}
+  const To=b2>0?a2/b2-1:NaN;
+  let T=(1-p.m)*Ti+(p.m?p.m*To:0);
+  if(!isFinite(T))T=0;
+  return {hs,Ti,To,T:Math.max(-.3,Math.min(.3,T))};
+}
+const MEANS=[];
+function forecast(fo,p){
+  const tr=trends(fo,p);
+  const F=E.map((e,i)=>{
+    const h=tr.hs[i], a=Math.max(fo-p.B,first[i]<0?fo:first[i]);
+    let s=0;for(let t=a;t<fo;t++)s+=h[t];
+    const mean=fo>a?s/(fo-a):0; MEANS[i]=mean; const short=first[i]<0||first[i]>fo-12;
+    return Array.from({length:H9},(_,j)=>{const t=fo+1+j;const ly=(!short&&t-12<fo)?h[t-12]:mean;
+      return Math.max(0,((1-p.s)*mean+p.s*ly)*(1+p.w*tr.T))});
+  });
+  return {F,tr};
+}
+
+/* Gráfico de barras + líneas compartiendo escala */
+const X0=M.indexOf('2025.M07'), X1=FOTO+H9;
+function chart(el,opt){
+  const W=Math.max(320,el.clientWidth), Hh=Math.round(Math.min(340,Math.max(240,W*.4)));
+  const pl=40,pr=10,pt=18,pb=26, n=X1-X0+1, bw=(W-pl-pr)/n;
+  const y=v=>pt+(Hh-pt-pb)*(1-Math.min(v,opt.ymax)/opt.ymax);
+  const x=i=>pl+(i-X0+.5)*bw;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${opt.aria}"><defs><pattern id="hp${opt.id}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="4" fill="var(--cut)"/></pattern></defs>`;
+  const step=nice(opt.ymax/4.5);
+  for(let v=0;v<=opt.ymax;v+=step){s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--sep)"/><text x="${pl-6}" y="${y(v)+3.5}" text-anchor="end">${v?k(v):'0'}</text>`}
+  // futuro sombreado y mes en curso
+  s+=`<rect x="${x(FOTO+1)-bw/2}" y="${pt}" width="${(X1-FOTO)*bw}" height="${Hh-pt-pb}" fill="var(--fill)" opacity=".5" rx="6"/>`;
+  s+=`<text x="${x(FOTO)}" y="${pt+9}" text-anchor="middle" style="font-size:9.5px">now</text>`;
+  for(const [m,lab] of [['2025.M07','FY26'],['2026.M07','FY27']]){const i=M.indexOf(m);
+    if(i>X0)s+=`<line x1="${x(i)-bw/2}" x2="${x(i)-bw/2}" y1="${pt-2}" y2="${Hh-pb}" stroke="var(--sep-strong)" stroke-dasharray="2 3"/>`;
+    s+=`<text x="${x(i)-bw/2+4}" y="${pt-3}" style="font-size:10px;font-weight:600;fill:var(--label2)">${lab}</text>`}
+  const gap=Math.min(2,bw*.15), bwi=Math.max(1,bw-gap*2);
+  for(let i=X0;i<=FOTO;i++){
+    const a=opt.A[i],c=opt.C[i];
+    const cur=i===FOTO;
+    if(a>0)s+=`<rect x="${x(i)-bwi/2}" y="${y(a)}" width="${bwi}" height="${y(0)-y(a)}" rx="${Math.min(3,bwi/3)}" fill="var(--bar)" ${cur?'opacity=".45"':''}/>`;
+    if(c>0){const top=y(a+c);s+=`<rect x="${x(i)-bwi/2}" y="${top}" width="${bwi}" height="${Math.max(0,y(a)-top-1.5)}" rx="${Math.min(3,bwi/3)}" fill="url(#hp${opt.id})"/>`;
+      if(a+c>opt.ymax){s+=`<path d="M${x(i)-3.5},${pt+4}L${x(i)},${pt-1}L${x(i)+3.5},${pt+4}Z" fill="var(--cut)"/>`;
+        if(a+c===Math.max(...opt.A.map((v,t)=>t>=X0&&t<=FOTO?v+opt.C[t]:0)))s+=`<text x="${x(i)+6}" y="${pt+3}" style="font-size:9.5px;fill:var(--label2)">${k(a+c)}</text>`}}
+  }
+  const path=(pts)=>pts.map((p,j)=>(j?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join('');
+  if(opt.tol){const up=[],dn=[];for(let i=FOTO+1;i<=X1;i++){up.push([x(i),y(opt.tol.hi[i])]);dn.unshift([x(i),y(opt.tol.lo[i])])}
+    s+=`<path d="${path(up.concat(dn))}Z" fill="var(--band)"/><path d="${path(up)}" fill="none" stroke="var(--blue)" stroke-width="1" opacity=".35"/><path d="${path(dn.slice().reverse())}" fill="none" stroke="var(--blue)" stroke-width="1" opacity=".35"/>`;
+    const lab=opt.tol.a===opt.tol.b?`±${Math.round(opt.tol.a*100)}%`:`±${Math.round(opt.tol.a*100)}→${Math.round(opt.tol.b*100)}%`;
+    s+=`<text x="${x(X1)+bw/2-2}" y="${y(opt.tol.hi[X1])-6}" text-anchor="end" style="font-size:9.5px;fill:var(--blue-text);paint-order:stroke;stroke:var(--card);stroke-width:3px">${lab}</text>`}
+  for(const L of opt.lines){
+    const pts=[];for(let i=L.a;i<=L.b;i++)pts.push([x(i),y(Math.max(0,L.v[i]))]);
+    s+=`<path d="${path(pts)}" fill="none" stroke="${L.c}" stroke-width="2" ${L.dash?`stroke-dasharray="${L.dash}"`:''} stroke-linejoin="round" stroke-linecap="round" opacity="${L.o||1}"/>`;
+    if(L.dots)pts.forEach((p,j)=>{const i=L.a+j,out=opt.flag===L.v&&opt.tol&&(L.v[i]>opt.tol.hi[i]+.5||L.v[i]<opt.tol.lo[i]-.5);
+      s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${out?3.5:3}" fill="${out?'var(--d3)':L.c}" stroke="var(--card)" stroke-width="1.5"/>`});
+  }
+  if(opt.band)s+=`<line x1="${x(opt.band.a)-bw/2}" x2="${x(opt.band.b)+bw/2}" y1="${y(opt.band.v)}" y2="${y(opt.band.v)}" stroke="var(--blue)" stroke-width="1" stroke-dasharray="2 3" opacity=".7"/><text x="${x(opt.band.a)-bw/2}" y="${y(opt.band.v)-5}" style="fill:var(--blue-text);font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:3px">${P.B}M base ${k(opt.band.v)}</text>`;
+  for(let i=X0;i<=X1;i++){const mm=+M[i].slice(-2);if(mm%3===1)s+=`<text x="${x(i)}" y="${Hh-8}" text-anchor="middle">${mlab(i)}</text>`}
+  s+=`<line id="xh${opt.id}" y1="${pt}" y2="${Hh-pb}" stroke="var(--label3)" stroke-width="1" opacity="0"/>`;
+  s+=`<rect x="${pl}" y="0" width="${W-pl-pr}" height="${Hh}" fill="transparent" data-hit="1"/></svg><div class="tip" id="tip${opt.id}"></div>`;
+  el.innerHTML=s;
+  const svg=el.querySelector('svg'), tip=el.querySelector('.tip'), xh=el.querySelector('#xh'+opt.id);
+  const move=ev=>{const r=svg.getBoundingClientRect(), px=(ev.clientX-r.left)*W/r.width;
+    const i=Math.max(X0,Math.min(X1,Math.round((px-pl)/bw-.5+X0)));
+    xh.setAttribute('x1',x(i));xh.setAttribute('x2',x(i));xh.setAttribute('opacity','.5');
+    tip.innerHTML=`<b>${mlab(i)}${i===FOTO?' · current month':''}</b>`+opt.rows(i).map(([a,b])=>`<div class="r"><span>${a}</span><span>${b}</span></div>`).join('');
+    const sx=x(i)*r.width/W; tip.classList.add('on');
+    const tw=tip.offsetWidth; tip.style.left=Math.max(0,Math.min(r.width-tw,sx+(sx>r.width/2?-tw-12:12)))+'px'; tip.style.top='8px'};
+  svg.addEventListener('pointermove',move);
+  svg.addEventListener('pointerleave',()=>{tip.classList.remove('on');xh.setAttribute('opacity','0')});
+}
+
+const sumArr=(arrs,len,off=0)=>Array.from({length:len},(_,t)=>arrs.reduce((a,v)=>a+z(v[t+off]),0));
+const famA=sumArr(E.map(e=>e.A),M.length), famC=sumArr(E.map(e=>e.C),M.length), famK=sumArr(E.map(e=>e.K),M.length);
+
+const NAME=e=>e.desc.replace(/^KJ COSMIC (INT )?/,'').replace(/ IV$/,'');
+const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(v,1))));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p};
+const niceUp=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));return [1,1.2,1.4,1.6,1.8,2,2.5,3,3.5,4,4.5,5,6,7,8,9,10].find(f=>f*p>=v)*p};
+let SEL=-1, CUR=null, OPEN=new Set();
+try{const v=localStorage.getItem('cosmic-scope-'+PLI);if(v!=null)SEL=+v}catch(e){}
+/* Series de un ámbito: -1 = familia, i = EAN */
+function scope(i){
+  const pick=f=>i<0?sumArr(E.map(f),M.length):M.map((_,t)=>z(f(E[i])[t]));
+  const A=pick(e=>e.A),C=pick(e=>e.C),K=pick(e=>e.K),T=pick(e=>e.T),Ep=pick(e=>e.E);
+  const H=i<0?sumArr(CUR.tr.hs,M.length):CUR.tr.hs[i];
+  const Fv=i<0?sumArr(CUR.F,H9):CUR.F[i];
+  const Ff=Array(M.length).fill(0);Fv.forEach((v,j)=>Ff[FOTO+1+j]=v);
+  const sl=(x,a,b)=>x.slice(a,b).reduce((p,q)=>p+q,0);
+  const bse=i<0?(forecast(FOTO,P),MEANS.reduce((p,q)=>p+q,0)):(forecast(FOTO,P),MEANS[i]);
+  return {i,A,C,K,T,H,Ep,F:Ff,cs:sl(K,FOTO+1,FOTO+1+H9),rs:sl(Ff,FOTO+1,FOTO+1+H9),das:sl(T,FOTO+1,FOTO+1+H9),
+    base:bse,a12:sl(A,FOTO-12,FOTO),c12:sl(C,FOTO-12,FOTO),run:sl(A,FOTO-4,FOTO)/4,
+    wos:i<0?NaN:WOS[E[i].ean]};
+}
+/* Banda de tolerancia del detector alrededor de la receta, mes a mes */
+function tolArr(F){const a=(+document.getElementById('tol-a').value||0)/100, b=(+document.getElementById('tol-b').value||0)/100;
+  const lo=Array(M.length).fill(0),hi=Array(M.length).fill(0);
+  for(let j=0;j<H9;j++){const t=FOTO+1+j,tol=a+(b-a)*j/8;lo[t]=F[t]*(1-tol);hi[t]=F[t]*(1+tol)}return {lo,hi,a,b}}
+function drawOne(el,sd,id){
+  const tl=tolArr(sd.F);
+  const vis=[...sd.A.slice(X0,FOTO+1).map((v,j)=>v+sd.C[X0+j]),...sd.K.slice(FOTO+1,X1+1),...tl.hi.slice(FOTO+1,X1+1),...sd.H.slice(X0,FOTO)];
+  const ymax=niceUp(Math.max(...vis,10)*1.04);
+  chart(el,{id,ymax,aria:'Actuals, supply cuts, history used, Consensus and proposed forecast by month',A:sd.A,C:sd.C,
+    tol:tl,flag:sd.K,band:{a:FOTO-P.B,b:FOTO-1,v:sd.base},
+    lines:[{a:X0,b:FOTO-1,v:sd.H,c:'var(--blue)',dash:'1.5 3.5',o:.9},{a:FOTO+1,b:X1,v:sd.F,c:'var(--blue)',dots:1},{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',dots:1}],
+    rows:i=>{const r=[];
+      if(i<=FOTO){r.push(['Actuals',k(sd.A[i])+(i===FOTO?' (partial)':'')]);if(sd.C[i])r.push(['Supply cuts',k(sd.C[i])]);if(i<FOTO)r.push(['History used',k(sd.H[i])])}
+      else r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['Proposal',k(sd.F[i])],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])],['Consensus vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—']);
+      return r}});
+}
+/* Trends YoY: ventanas que terminan en el último mes cerrado frente a los mismos meses del año anterior */
+function trendsHtml(sd){
+  const L=FOTO-1, sum=(x,a,b)=>{let t=0;for(let i=a;i<=b;i++)t+=x[i];return t};
+  const yo=(x,n)=>{const c=sum(x,L-n+1,L),p=sum(x,L-n-11,L-12);return {c,p,v:p>0?c/p-1:NaN}};
+  const cell=(o,hl)=>`<td${hl?' class="hl"':''}><span class="${o.v>0?'pos':o.v<0?'neg':''}" style="font-weight:700">${isFinite(o.v)?pct(o.v):'—'}</span><div class="sub2">${k(o.c)} vs ${k(o.p)}</div></td>`;
+  const W=[1,3,6,9,12], ser=[['Sell-in (actuals)',sd.A],['History used (+ c · cuts)',sd.H],['Sell-out (EPOS)',sd.Ep]];
+  let h=`<div class="tr-grid"><div class="tbl"><table class="trt"><thead><tr><th></th>${W.map(n=>`<th${n===P.N?' class="hl"':''}>${n===1?mlab(L):'Last '+n+'M'}</th>`).join('')}</tr></thead><tbody>`+
+    ser.map(([l,x])=>`<tr><td style="text-align:left">${l}</td>${W.map(n=>cell(yo(x,n),n===P.N)).join('')}</tr>`).join('')+`</tbody></table></div>`;
+  h+=`<div class="tbl" style="max-height:330px;overflow:auto"><table class="trt"><thead><tr><th>Month</th><th>Actuals</th><th>LY</th><th>YoY</th><th>EPOS</th><th>LY</th><th>YoY</th></tr></thead><tbody>`;
+  for(let i=L;i>=X0;i--){const a=sd.A[i],al=sd.A[i-12],e=sd.Ep[i],el=sd.Ep[i-12];
+    const f=(c,p)=>p>0?`<span class="${c>=p?'pos':'neg'}">${pct(c/p-1)}</span>`:'—';
+    h+=`<tr${+M[i].slice(-2)===6?' class="fyend"':''}><td>${mlab(i)}</td><td>${k(a)}</td><td>${k(al)}</td><td>${f(a,al)}</td><td>${e?k(e):'—'}</td><td>${el?k(el):'—'}</td><td>${e?f(e,el):'—'}</td></tr>`}
+  return h+`</tbody></table></div></div><p class="note" style="margin-top:8px">${PL.trendNote||''} EPOS is used only as a trend, never as volume.</p>`;
+}
+function monthsTable(sd){
+  let h=`<thead><tr><th>Month</th><th>Consensus</th><th>of which DAs</th><th>Proposal</th><th>Gap</th><th>Gap %</th><th>Same month LY, history used</th></tr></thead><tbody>`;
+  for(let j=0;j<H9;j++){const t=FOTO+1+j,g=sd.K[t]-sd.F[t];
+    h+=`<tr><td>${mlab(t)}</td><td>${k(sd.K[t])}</td><td>${k(sd.T[t])}</td><td>${k(sd.F[t])}</td><td class="${g>0?'neg':''}">${g>0?'+':''}${k(g)}</td><td>${sd.F[t]>0?pct(g/sd.F[t]):'—'}</td><td>${k(sd.H[t-12])}</td></tr>`}
+  const g=sd.cs-sd.rs;
+  return h+`<tr style="font-weight:700"><td>Nov–Jul</td><td>${k(sd.cs)}</td><td>${k(sd.das)}</td><td>${k(sd.rs)}</td><td class="${g>0?'neg':''}">${g>0?'+':''}${k(g)}</td><td>${sd.rs>0?pct(g/sd.rs):'—'}</td><td>${k(sd.H.slice(FOTO-11,FOTO-2).reduce((a,b)=>a+b,0))}</td></tr></tbody>`;
+}
+const facts=sd=>`<div class="facts"><span>12M actuals <b>${k(sd.a12)}</b></span><span>12M cuts <b>${k(sd.c12)}</b></span><span>Base (history used) <b>${k(sd.base)}</b>/month</span><span>Run-rate Jun–Sep <b>${k(sd.run)}</b>/month</span>${isFinite(sd.wos)?`<span>WOS <b>${sd.wos.toFixed(1)}</b></span>`:''}</div>`;
+
+function renderScope(){
+  const sd=scope(SEL);
+  const cs=sd.cs, rs=sd.rs;
+  document.getElementById('tiles').innerHTML=[
+    ['Consensus, Nov–Jul',k(cs),`${k(cs/9)} a month`],
+    ['Proposal, Nov–Jul',k(rs),`${k(rs/9)} a month`],
+    ['Gap vs Consensus',`<span class="${rs<cs?'neg':'pos'}">${rs>0?pct(rs/cs-1):'—'}</span>`,`${rs<cs?'−':'+'}${k(Math.abs(rs-cs))} units vs the Consensus`],
+    ['Clean run-rate, Jun–Sep 26',k(sd.run),'actuals a month']
+  ].map(([a,b,c])=>`<div class="tile glass"><div class="k">${a}</div><div class="v">${b}</div><div class="n">${c}</div></div>`).join('');
+  const nm=SEL<0?PL.short:NAME(E[SEL]);
+  document.getElementById('t-rec').textContent=`Consensus vs proposal · ${nm}`;
+  document.getElementById('scope-info').innerHTML=facts(sd).replace('class="facts"','class="facts" style="margin:0"');
+  drawOne(document.getElementById('ch-one'),sd,'m');
+  document.getElementById('months').innerHTML=monthsTable(sd);
+  document.getElementById('trends').innerHTML=trendsHtml(sd);
+}
+
+function render(){
+  CUR=forecast(FOTO,P);
+  const tr=CUR.tr;
+  document.getElementById('cs-rec').textContent=`Grey = what is in the system today (${PL.isff===2?'DAs, ISFF 2: all manual':'DAs + Reasonability Adjustments, ISFF 1'}). Blue = proposal: ${P.B}-month base on actuals + ${Math.round(P.c*100)}% of cuts${P.once?' (each cut counted once)':''}, seasonal ${Math.round(P.s*100)}%, trend ${Math.round(P.w*100)}% over ${P.N}M, no DAs. `;
+  document.getElementById('trend-note').textContent=`Trend over the last ${P.N} months, YoY: sell-in ${isFinite(tr.Ti)?pct(tr.Ti):'n/a'} · sell-out ${isFinite(tr.To)?pct(tr.To):'n/a'} · applied ${pct(P.w*tr.T)} (capped at ±30%).`;
+  renderScope();
+  renderRecipe();
+  renderDetector(CUR.F);
+}
+document.getElementById('crumbs').textContent=`${PL.house} › ${PL.name} · ${E.length} EANs · ISFF ${PL.isff} · Snapshot ${D.foto}`;
+document.getElementById('h1').textContent=`Cosmic: Consensus vs proposed recipe`;
+const plSel=document.getElementById('pl');
+plSel.innerHTML=D.lines.map((l,i)=>`<option value="${i}">${l.name}</option>`).join('');plSel.value=String(PLI);
+plSel.addEventListener('change',()=>{try{localStorage.setItem('cosmic-pl',plSel.value)}catch(e){}location.reload()});
+document.getElementById('pl-notes').innerHTML=PL.notes||'';
+document.getElementById('pl-qs').innerHTML=(PL.questions||[]).map(q=>`<li>${q}</li>`).join('');
+const sel=document.getElementById('scope');
+sel.innerHTML=`<option value="-1">${PL.short} · ${E.length} EANs</option>`+E.map((e,i)=>[i,E[i].K.slice(FOTO+1,FOTO+1+H9).reduce((a,b)=>a+z(b),0)]).sort((a,b)=>b[1]-a[1]).map(([i])=>`<option value="${i}">${NAME(E[i])} · ${E[i].ean}</option>`).join('');
+sel.value=String(SEL);
+sel.addEventListener('change',()=>{SEL=+sel.value;try{localStorage.setItem('cosmic-scope-'+PLI,SEL)}catch(e){}renderScope()});
+
+/* Controles de la receta: deslizadores continuos. Se construyen una vez; render() solo actualiza el estado */
+const CTL=[['c','Cuts added (c)',0,1,.01,v=>Math.round(v*100)+'%'],['B','Base window (B)',3,12,1,v=>v+'M'],['s','Seasonal weight (s)',0,1,.01,v=>Math.round(v*100)+'%'],
+  ['w','Trend weight (w)',0,1,.01,v=>Math.round(v*100)+'%'],['m','Sell-in ↔ sell-out (m)',0,1,.01,v=>Math.round(v*100)+'%'],['N','Trend length (N)',3,12,1,v=>v+'M']];
+const frac=(c,v)=>(v-c[2])/(c[3]-c[2]);
+function buildRecipe(){
+  document.getElementById('recipe').innerHTML=CTL.map(c=>{const [key,lab,mn,mx,st]=c;
+    return `<div class="ctl"><label for="sl-${key}"><span>${lab}</span><output id="o-${key}"></output></label>
+      <div class="sl" style="--d:${frac(c,DEF[key])}"><input type="range" id="sl-${key}" data-k="${key}" min="${mn}" max="${mx}" step="${st}" value="${P[key]}"><span class="tick" title="Recommended: ${c[5](DEF[key])}"></span></div>
+      <div class="ends"><span>${c[5](mn)}</span><span>${c[5](mx)}</span></div></div>`}).join('')
+    +`<div class="rbtns"><button class="btn pri" id="save">Save</button><button class="btn" id="reset">Reset</button></div>`;
+}
+function renderRecipe(){
+  for(const c of CTL){const el=document.getElementById('sl-'+c[0]);if(+el.value!==P[c[0]])el.value=P[c[0]];
+    el.style.setProperty('--p',frac(c,P[c[0]]));
+    const o=document.getElementById('o-'+c[0]);o.textContent=c[5](P[c[0]]);o.classList.toggle('mod',P[c[0]]!==DEF[c[0]])}
+  document.getElementById('once').checked=P.once;
+  document.getElementById('reset').disabled=CTL.every(c=>P[c[0]]===DEF[c[0]])&&P.once===DEF.once;
+}
+buildRecipe();
+let rafR=0;const queue=()=>{if(!rafR)rafR=requestAnimationFrame(()=>{rafR=0;render()})};
+document.getElementById('recipe').addEventListener('input',ev=>{const el=ev.target.closest('input[type=range]');if(!el)return;
+  P[el.dataset.k]=+el.value;
+  const c=CTL.find(c=>c[0]===el.dataset.k);el.style.setProperty('--p',frac(c,P[c[0]]));document.getElementById('o-'+c[0]).textContent=c[5](P[c[0]]);
+  queue()});
+document.getElementById('once').addEventListener('change',ev=>{P.once=ev.target.checked;queue()});
+document.getElementById('recipe').addEventListener('click',ev=>{if(ev.target.id==='reset'){P={...DEF};queue()}});
+/* Doble clic sobre un deslizador: vuelve al valor recomendado */
+document.getElementById('recipe').addEventListener('dblclick',ev=>{const el=ev.target.closest('input[type=range]');if(el){P[el.dataset.k]=DEF[el.dataset.k];queue()}});
+
+function fillExp(i){
+  const td=document.getElementById('exp'+i);if(!td)return;const sd=scope(i);
+  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card full"><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div><div class="chart" id="xc${i}"></div></div><div class="card full"><h3>Trends · year over year</h3>${trendsHtml(sd)}</div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
+  drawOne(document.getElementById('xc'+i),sd,'x'+i);
+}
+function toggleRow(tr){const i=+tr.dataset.i;OPEN.has(i)?OPEN.delete(i):OPEN.add(i);renderDetector(CUR.F)}
+/* Export: variación sobre el Consensus para entrar en el margen (receta ± tolerancia del detector) */
+let XT='edge', XL='long';
+const xs=document.getElementById('x-scope');
+xs.innerHTML=`<option value="-1">All codes · ${E.length}</option>`+E.map((e,i)=>`<option value="${i}">${NAME(e)} · ${e.ean}</option>`).join('');
+function exportRows(){
+  const a=(+document.getElementById('tol-a').value||0)/100, b=(+document.getElementById('tol-b').value||0)/100;
+  const sc=+xs.value, out=[];
+  E.forEach((e,i)=>{if(sc>=0&&i!==sc)return;
+    for(let j=0;j<H9;j++){const t=FOTO+1+j,f=CUR.F[i][j],c=z(e.K[t]),tol=a+(b-a)*j/8;
+      let tg=c; if(XT==='rec')tg=f; else if(c>f*(1+tol))tg=Math.floor(f*(1+tol)); else if(c<f*(1-tol))tg=Math.ceil(f*(1-tol));
+      const v=Math.round(tg-c);out.push({ean:e.ean,desc:e.desc.trim(),shade:NAME(e),m:M[t],j,c:Math.round(c),f:Math.round(f),v,n:Math.round(c)+v})}});
+  return out;
+}
+function exportTable(){
+  const rows=exportRows(), hide=document.getElementById('x-zero').checked;
+  if(XL==='long'){const r=rows.filter(x=>!hide||x.v!==0);
+    return {head:['EAN','Description','Month','Consensus','Recipe','Variation','New Consensus'],
+      body:r.map(x=>[x.ean,x.desc,x.m,x.c,x.f,x.v,x.n]),rows};}
+  const by=new Map();rows.forEach(x=>{if(!by.has(x.ean))by.set(x.ean,{x,v:Array(H9).fill(0)});by.get(x.ean).v[x.j]=x.v});
+  const body=[...by.values()].filter(r=>!hide||r.v.some(v=>v!==0)).map(r=>[r.x.ean,r.x.desc,...r.v,r.v.reduce((p,q)=>p+q,0)]);
+  return {head:['EAN','Description',...Array.from({length:H9},(_,j)=>M[FOTO+1+j]),'Total'],body,rows};
+}
+function renderExport(){
+  if(!CUR)return;const T=exportTable();
+  const tot=T.rows.reduce((p,x)=>p+x.v,0), n=T.rows.filter(x=>x.v).length, codes=new Set(T.rows.filter(x=>x.v).map(x=>x.ean)).size;
+  document.getElementById('x-sum').innerHTML=`${n} code-months to change across ${codes} codes · net variation <b style="color:var(--label)">${tot>0?'+':''}${fmt.format(tot)}</b> units`;
+  const num=v=>typeof v==='number';
+  document.getElementById('xt').innerHTML=`<thead><tr>${T.head.map((h,c)=>`<th${c===1?' style="text-align:left"':''}>${h}</th>`).join('')}</tr></thead><tbody>`+
+    T.body.map(r=>`<tr>${r.map((v,c)=>c===0?`<td class="mono">${v}</td>`:c===1?`<td style="text-align:left">${v}</td>`:num(v)?`<td class="${(XL==='long'?c===5:true)?'v '+(v<0?'neg':v>0?'pos':''):''}">${(XL==='long'?c===5:true)&&v>0?'+':''}${fmt.format(v)}</td>`:`<td>${v}</td>`).join('')}</tr>`).join('')+'</tbody>';
+}
+document.querySelectorAll('.xbar .seg').forEach(g=>g.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(b.dataset.t)XT=b.dataset.t;if(b.dataset.l)XL=b.dataset.l;renderExport()}));
+xs.addEventListener('change',renderExport);document.getElementById('x-zero').addEventListener('change',renderExport);
+const flash=(b,t)=>{const o=b.textContent;b.textContent=t;setTimeout(()=>b.textContent=o,1400)};
+document.getElementById('x-copy').addEventListener('click',async ev=>{
+  const T=exportTable(), btn=ev.currentTarget;
+  const tsv=[T.head,...T.body].map(r=>r.join('\t')).join('\r\n');
+  /* HTML con el EAN como texto para que Excel no lo pase a notación científica */
+  const esc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const html=`<table><tr>${T.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${T.body.map(r=>`<tr>${r.map((v,c)=>c===0||(XL==='long'&&c===2)?`<td style="mso-number-format:'\\@'">${esc(v)}</td>`:`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`;
+  try{await navigator.clipboard.write([new ClipboardItem({'text/plain':new Blob([tsv],{type:'text/plain'}),'text/html':new Blob([html],{type:'text/html'})})]);flash(btn,'Copied')}
+  catch(e){try{await navigator.clipboard.writeText(tsv);flash(btn,'Copied')}catch(e2){
+    const r=document.createRange();r.selectNodeContents(document.getElementById('xt'));const s=getSelection();s.removeAllRanges();s.addRange(r);flash(btn,'Selected: press Ctrl+C')}}
+});
+document.getElementById('x-csv').addEventListener('click',()=>{
+  const T=exportTable();const q=v=>{v=String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const csv='\ufeff'+[T.head,...T.body].map((r,ri)=>r.map((v,c)=>ri>0&&c===0?'="'+v+'"':q(v)).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`Cosmic_${PL.short.replace(/\W+/g,'_')}_adjustments_${D.foto.replace('.','_')}${xs.value>=0?'_'+E[+xs.value].ean:''}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+
+let sortKey='u', sortAsc=false;
+const wosTxt=w=>!isFinite(w)?'—':`<span class="${w>26?'neg':w<13?'warn':''}">${w>=100?fmt.format(Math.round(w)):w.toFixed(1)}</span>`;
+const actTxt=r=>`<span class="act a${r.pri}">${r.act}</span>`;
+function renderDetector(F){
+  const a=(+document.getElementById('tol-a').value||0)/100, b=(+document.getElementById('tol-b').value||0)/100;
+  const rows=E.map((e,i)=>{let u=0,fs=0,cs=0;const mo=[];
+    for(let j=0;j<H9;j++){const t=FOTO+1+j,f=F[i][j],c=z(e.K[t]),tol=a+(b-a)*j/8;fs+=f;cs+=c;
+      const ex=Math.max(0,Math.abs(c-f)-tol*f);u+=ex;mo.push(ex>0?(c>f?1:-1):0)}
+    const w=WOS[e.ean]??NaN, gap=cs-fs, gp=fs>0?gap/fs:0;
+    const act=u===0?['Inside tolerance',0]:gap>0?(w>26?['Cut first',4]:w>=13?['Cut, watch cover',3]:['Check before cutting',2]):(w<13?['Supply risk',1]:['Raise, cover OK',0]);
+    return {e,u,p:fs>0?u/fs:(u>0?Infinity:0),fs,cs,mo,gap,gp,w,act:act[0],pri:act[1]};
+  });
+  rows.sort((x,y)=>(sortAsc?1:-1)*((x[sortKey]-y[sortKey])||(x.u-y.u)));
+  const out=rows.filter(r=>r.u>0), tot=out.reduce((s,r)=>s+r.u,0);
+  renderExport();
+  document.getElementById('det-sum').innerHTML=`· <b style="color:var(--label)">${out.length} of ${rows.length}</b> EANs outside · total deviation ${k(tot)} units`;
+  const color=p=>p===0?'var(--fill-strong)':p<.1?'var(--d1)':p<.25?'var(--d2)':p<.5?'var(--d3)':'var(--d4)';
+  const th=(key,l)=>`<th class="sort" data-s="${key}" ${sortKey===key?`aria-sort="${sortAsc?'ascending':'descending'}"`:''}>${l}</th>`;
+  document.getElementById('det').innerHTML=`<thead><tr><th>EAN</th><th style="text-align:left">Item</th>${th('cs','Consensus 9M')}${th('fs','Recipe 9M')}${th('gap','Gap')}${th('u','Deviation, units')}${th('p','Deviation, %')}<th style="text-align:left">Months out (Nov → Jul)</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr class="row" tabindex="0" data-i="${E.indexOf(r.e)}" aria-expanded="${OPEN.has(E.indexOf(r.e))}"><td class="mono">${r.e.ean}</td><td style="text-align:left"><span class="dot" style="background:${color(r.p)}"></span>${r.e.desc.replace(/^KJ COSMIC (INT )?/,'').replace(/ IV$/,'')}</td><td>${k(r.cs)}</td><td>${k(r.fs)}</td><td class="${r.gap>0?'neg':''}">${r.gap>0?'+':''}${k(r.gap)}</td><td>${k(r.u)}</td><td>${isFinite(r.p)?(r.p*100).toFixed(0)+'%':'—'}</td><td><div class="chips">${r.mo.map((m,j)=>`<span class="chip" title="${mlab(FOTO+1+j)}: ${m>0?'Consensus above':m<0?'Consensus below':'inside'}" style="${m>0?'background:var(--d3)':m<0?'background:var(--blue)':''}"></span>`).join('')}</div></td></tr>`+(OPEN.has(E.indexOf(r.e))?`<tr class="exp"><td colspan="8" id="exp${E.indexOf(r.e)}"></td></tr>`:'')).join('')+'</tbody>';
+  OPEN.forEach(fillExp);
+}
+document.getElementById('det').addEventListener('keydown',ev=>{const r=ev.target.closest('tr.row');if(r&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();toggleRow(r)}});
+document.getElementById('det').addEventListener('click',ev=>{const r=ev.target.closest('tr.row');if(r){toggleRow(r);return}const t=ev.target.closest('th[data-s]');if(!t)return;
+  if(sortKey===t.dataset.s)sortAsc=!sortAsc;else{sortKey=t.dataset.s;sortAsc=false}renderDetector(CUR.F)});
+['tol-a','tol-b'].forEach(id=>document.getElementById(id).addEventListener('input',()=>queue()));
+
+/* Apariencia */
+const seg=document.querySelector('header .seg');
+function theme(t){if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);
+  seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.th===t));try{localStorage.setItem('cosmic-theme',t)}catch(e){}}
+seg.addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)theme(b.dataset.th)});
+try{const t=localStorage.getItem('cosmic-theme');if(t)theme(t)}catch(e){}
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,120)});
+/* Guardar y recuperar la configuración (receta, tolerancia, vista, detector y export) en este navegador */
+const SKEY='cosmic-config-'+PLI;
+const cfgNow=()=>({P,tolA:document.getElementById('tol-a').value,tolB:document.getElementById('tol-b').value,SEL,OPEN:[...OPEN],sortKey,sortAsc,
+  XT,XL,xs:xs.value,zero:document.getElementById('x-zero').checked});
+const stamp=t=>new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+let SAVED=null;
+function showSaveState(){const el=document.getElementById('save-state');
+  if(!SAVED){el.textContent='Not saved yet';return}
+  const same=JSON.stringify(cfgNow())===JSON.stringify(SAVED.cfg);
+  el.textContent=same?`Saved · ${stamp(SAVED.at)}`:`Unsaved changes · last save ${stamp(SAVED.at)}`;}
+try{SAVED=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){SAVED=null}
+if(SAVED&&SAVED.cfg){const c=SAVED.cfg;
+  P={...DEF,...c.P};document.getElementById('tol-a').value=c.tolA??5;document.getElementById('tol-b').value=c.tolB??5;
+  if(c.SEL!=null&&c.SEL<E.length){SEL=c.SEL;sel.value=String(SEL)}
+  OPEN=new Set((c.OPEN||[]).filter(i=>i<E.length));if(c.sortKey){sortKey=c.sortKey;sortAsc=!!c.sortAsc}
+  XT=c.XT||XT;XL=c.XL||XL;if(c.xs!=null)xs.value=c.xs;document.getElementById('x-zero').checked=c.zero!==false;
+  document.querySelectorAll('.xbar .seg button').forEach(b=>{if(b.dataset.t)b.setAttribute('aria-pressed',b.dataset.t===XT);if(b.dataset.l)b.setAttribute('aria-pressed',b.dataset.l===XL)});}
+document.getElementById('recipe').addEventListener('click',ev=>{if(ev.target.id!=='save')return;
+  SAVED={at:Date.now(),cfg:cfgNow()};
+  try{localStorage.setItem(SKEY,JSON.stringify(SAVED));flash(ev.target,'Saved ✓')}catch(e){flash(ev.target,'Could not save')}
+  showSaveState()});
+/* El estado se refresca tras cada cambio: todo pasa por render() o por los controles del detector y del export */
+const _render=render;render=function(){_render();showSaveState()};
+['change','input','click'].forEach(t=>document.addEventListener(t,()=>setTimeout(showSaveState,0)));
+
+render();
+</script>
+</body>
+</html>
