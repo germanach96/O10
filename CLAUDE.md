@@ -246,7 +246,7 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.1`; cada versión aprobada sube la subversión: O10.0.2, O10.0.3…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.2`; cada versión aprobada sube la subversión: O10.0.2, O10.0.3…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
@@ -281,6 +281,7 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 
 ### Sección "Decisiones" — rejilla 2 × 2
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.
+- **Años de estacionalidad `e`:** no es un eje. Debajo del lienzo de la Brújula 1 va una tira pequeña ("Years of seasonality · e") con un punto por foto entre 1 año (abajo) y 2 años (arriba), posicionado con la misma regla que los ejes (`tanh(ΔWAPE / 5 pp)`; la línea discontinua del medio = indiferente). Con `s = 0` en la receta elegida la tira queda atenuada ("No effect: flat mean").
 - **Las cuatro tarjetas exactamente del mismo tamaño y alineadas.** Los prototipos fallaron aquí: usar un tamaño fijo en px para el lienzo de cada brújula y una altura fija para los títulos.
 - **Cada etiqueta en su extremo:** polos del eje X a izquierda y derecha, polos del eje Y arriba y abajo.
 - **Trayectoria del código:** un punto por foto, unidos en orden con una curva suave (Catmull-Rom al 60% de tensión: redondea las esquinas sin salirse de los puntos); el último punto más grande, los antiguos más tenues; etiqueta del mes en el primero y en el último.
@@ -288,7 +289,9 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
   - Hacia el valor ganador, normalizado a −1…+1.
   - Distancia al centro proporcional a cuánto mejora frente al extremo contrario: `tanh(ΔWAPE / 5 pp)`, ajustable.
   - Diferencia menor de ~1 pp → zona indiferente, cerca del centro.
-- **Selector:** rejilla del mismo tamaño que una brújula (X = amplitud, Y = criterio) con 17 celdas que muestran el nº de códigos del grupo (más oscuro = grupo más grande). La celda elegida lleva recuadro. Encima va la trayectoria del grupo ganador foto a foto, igual que en las brújulas. Debajo, el ganador de cada foto. Tooltip con el WAPE del grupo.
+- **Selector:** rejilla del mismo tamaño que una brújula (X = amplitud, Y = criterio) con 17 celdas que muestran el nº de códigos del grupo (más oscuro = grupo más grande). La celda elegida lleva recuadro. Encima va la trayectoria del grupo ganador foto a foto, igual que en las brújulas. Tooltip con el WAPE del grupo.
+- **Grupo de estacionalidad `h`:** fila propia "Seasonality" debajo de la rejilla del trend, separada por una línea y alineada con las columnas Own · Line · Brand · House. Cada celda lleva el nº de códigos (Own = 1; las demás, el de la celda "· Jerarquía"), la elegida lleva recuadro y encima va su trayectoria foto a foto. Con `s = 0` la fila se atenúa. El pie dice el trend y la estacionalidad elegidos y cuántas veces cambió el ganador entre fotos.
+- Las cuatro tarjetas de Decisiones miden 360 × 548 px (la tira de `e` necesita el alto extra).
 - **Mapa de calor** (interruptor en la cabecera de Decisiones, apagado por defecto): densidad de **los mismos puntos que se dibujan** (cada código × foto en un grupo, cada foto en un código), calculada en una rejilla de 1 px (histograma + gaussiana separable, radio según el nº de puntos) y con escala logarítmica para que un montón de puntos apilados no esconda el resto de la nube. Paleta de mapa de calor "turbo" (azul → cian → verde → amarillo → rojo), transparente donde no hay puntos. El selector usa la misma densidad de los puntos repartidos en sus celdas. Con el mapa de calor activo se ocultan los puntos y líneas pequeños de cada código y queda el promedio encima.
 - **Transiciones al cambiar de selección:** si un gráfico está a la vista cuando cambia la selección (o se activa el mapa de calor o cambia un filtro), pasa del estado anterior al nuevo: puntos, líneas y celdas se interpolan desde su posición en pantalla con un muelle sin rebote (≈0,5 s); lo nuevo entra con fundido y escala 0,92; lo que se va sale más rápido. En el mapa de burbujas, cada burbuja se desplaza y cambia de tamaño hasta su nuevo sitio (FLIP con WAAPI, solo transform).
 - **Construcción al llegar con el scroll:** al abrir un código o grupo, los gráficos que no están en pantalla se quedan con su marco y sin datos y se construyen la primera vez que entran en la vista (una vez por selección): el Consensus frente al rango se dibuja de izquierda a derecha y cada mes aparece cuando el barrido pasa por él; las trayectorias se trazan de la primera foto a la última; los puntos aparecen en orden de foto; el calor y las celdas del selector entran con fundido. Con movimiento reducido, solo un fundido corto.
@@ -296,14 +299,16 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 
 ### Sección "Resultados" — rejilla 2 × 2
 - Tres **medias brújulas**: SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE(9M).
-  - X = SPP (−30% … +30%; izquierda = sobre-forecast). Y = WAPE (0 … 60%, solo cuadrantes superiores).
+  - X = SPP (izquierda = sobre-forecast). Y = WAPE (desde 0, solo cuadrantes superiores).
   - **Zona meta** marcada: WAPE ≤ 40% y SPP ±5%. Línea en WAPE 40%.
   - Dos trayectorias por foto: gris discontinua = lo que pasó (Consensus real), azul = mejor receta. La distancia entre ambas es lo que se habría ganado.
   - Debajo, los valores de la última foto.
-- Cuarto cuadro: cómo leerlas.
-- Escalas fijas para comparar códigos. Si un valor sale del rango, dibujarlo pegado al borde con un indicador.
+- Tres tarjetas iguales de 260 px, en una fila cuando caben. Sin tarjeta de "cómo leerlas": una leyenda de una línea encima de las gráficas.
+- **Escala común a las tres y adaptada a la selección** (con el tope del trend en ±50% ya no caben en ±30% / 60%): SPP en pasos ±30, 50, 75, 100, 150, 200, 300%; WAPE en 60, 80, 100, 150, 200, 300, 400%. Si un valor sale del rango, se dibuja pegado al borde con un triángulo.
+- Debajo de cada una, una tabla corta con el WAPE y el SPP de la última foto medida (Consensus, receta y, en un grupo, oráculos), en verde o rojo según la meta.
 
 ### Sección "Detector"
+- **Receta para el futuro**, arriba: la receta elegida escrita como fórmula (`Forecast(t) = [(1−s)·Mean12 + s·Season(t)] × (1 + w·T) + DA(t)`) con sus valores en azul, la explicación de cada término y una fila con todos los valores. En un grupo con recetas distintas se muestra la más repetida y la de cada código va en la columna "Recipe" de la tabla.
 - Tabla de EANs fuera de su estrategia, con desvío en unidades y en %, ordenable, y control para la tolerancia (inicio y fin).
 - **Solo los códigos de la selección** (el código, el grupo, el grupo filtrado o la selección acumulada): los cálculos usan toda la casa, pero aquí se ven solo sus resultados.
 

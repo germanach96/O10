@@ -525,6 +525,10 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .rejilla{display:grid;grid-template-columns:repeat(2,360px);gap:20px}
 @media (max-width:820px){.rejilla{grid-template-columns:360px}.rejilla-res{grid-template-columns:260px}}
 .tarjeta{border-radius:var(--r-l);padding:16px;width:360px;height:548px;overflow:hidden}
+/* Brújula 1: debajo del lienzo, la tira de años de estacionalidad (e), de 1 a 2 años foto a foto */
+.tarjeta svg.tira-e{display:block;margin-top:4px}
+.tira-e.inerte{opacity:.42}
+.tarjeta svg text.t-cab{fill:var(--label);font-weight:600;font-size:11px}
 /* Resultados: tres medias brújulas de 260 px, en una fila si caben (escala común a las tres) */
 .rejilla-res{display:grid;grid-template-columns:repeat(auto-fill,260px);gap:20px}
 .tarjeta.res{width:260px;height:374px}

@@ -25,7 +25,7 @@ O10/
 │   ├── plantilla.html        HTML + CSS + JS de O10; el pipeline incrusta los datos
 │   ├── html.py               genera el HTML autocontenido a partir de la plantilla
 │   └── vendor/               d3-hierarchy incrustado (licencia ISC)
-├── O10.0.1.html              versión oficial de la página (en la raíz; se abre sin servidor)
+├── O10.0.2.html              versión oficial de la página (en la raíz; se abre sin servidor)
 ├── VERSION                   número de versión que muestra la página (O10.0.1, O10.0.2…)
 ├── diseno/                   decisiones de diseño y ejemplos
 │   ├── DESIGN.md             sistema de diseño vigente (iOS / iPadOS 26, cristal líquido)

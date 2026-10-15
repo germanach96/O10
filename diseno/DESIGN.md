@@ -169,6 +169,14 @@ components:
     textColor: "{colors.label}"
     rounded: "{rounded.l}"
     width: "360px"
+    height: "548px"
+    padding: "16px"
+  results-card:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.l}"
+    width: "260px"
+    height: "374px"
     padding: "16px"
   detail-card:
     backgroundColor: "{colors.card}"
@@ -321,7 +329,20 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Shadow Strategy:** sombra de cristal (ver Elevation & Depth).
 - **Border:** filo de cristal de 1px.
 - **Internal Padding:** 16px en tarjetas; 14px en fichas; celdas de KPI de 8 × 9px con radio de 12px.
-- **Brújulas:** las cuatro tarjetas miden exactamente 360 × 480px (410px en Resultados) con lienzo SVG fijo de 326px.
+- **Decisiones:** las cuatro tarjetas (Brújula 1, 2, 3 y selector) miden exactamente 360 × 548px, con lienzo SVG fijo de 326px.
+- **Resultados:** tres tarjetas de 260 × 374px (`.tarjeta.res`) en una rejilla `repeat(auto-fill, 260px)` con 20px de separación (una columna en iPhone), con lienzo SVG de 228 × 196px.
+
+### Decisiones (brújulas y selector)
+- **Tira de años de estacionalidad** (`svg#b1e`, `.tira-e`, 326 × 62px) bajo el lienzo de la Brújula 1: rótulo "Years of seasonality · e" a la izquierda y la elección a la derecha (azul si hay receta, gris si no aplica). Un punto por foto, de 1 año (abajo) a 2 años (arriba), con la misma regla de posición que las brújulas; la línea discontinua del centro es la zona indiferente. Con s = 0 la tira recibe la clase `.inerte` y baja al 42% de opacidad.
+- **Selector** ("Selector · Whose trend and seasonality?"): filas del trend de 50px (Hierarchy, + Segmento, + Tamaño, + Edad) y, bajo un separador, una fila "Seasonality" de 46px alineada con las columnas Own · Line · Brand · House. Misma escala de tamaño (relleno azul con opacidad logarítmica según el nº de códigos); la celda elegida lleva aro de 2px en azul receta. Con s = 0 la fila de estacionalidad queda al 40% de opacidad.
+
+### Resultados (medias brújulas)
+- Tres medias brújulas (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M) con **escala común adaptativa**: SPP ±30/50/75/100/150/200/300% y WAPE 60/80/100/150/200/300/400%, el primer escalón que cubre todos los valores con un 6% de margen.
+- Encima, una fila de leyenda (`.ley-graf`, 12px, etiqueta secundaria); debajo de cada gráfico, la tabla de KPIs `.t-kpi` (12px; cabeceras 11px 600; primera columna en etiqueta secundaria). Sin tarjeta "Cómo leerlas".
+
+### Detector
+- **Bloque de fórmula** (`.formula`): relleno gris (`fill`), radio 14px (`--r-m`), relleno interior 14px × 16px. Título 14px 700; la fórmula (`.fx`) en 15px con los valores de la receta en azul de texto 700 y los operadores en etiqueta secundaria; definiciones (`.def`) en 12,5px. Debajo, chips de parámetros (`.pars`): cápsulas con fondo de tarjeta, 12px, valor en azul de texto 600; los que no influyen (s = 0) van tachados en la fórmula y al 50% en los chips (`.nulo`).
+- **Tabla:** columna "Recipe" (`.c-rec`, mínimo 230px) en dos líneas: el grupo en etiqueta y los valores debajo en 11px y etiqueta secundaria.
 
 ### Inputs / Fields
 - **Search capsule:** cristal de 42px de alto, icono de lupa, placeholder en etiqueta secundaria; 16px de texto en iPhone para que Safari no haga zoom.
@@ -357,7 +378,7 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Do** usar azul solo para receta y acción, gris para Consensus, verde para la meta y la escala amarillo → rojo para el desvío.
 - **Do** usar cifras tabulares en todo número y la fuente del sistema en todo texto.
 - **Do** animar con muelles críticamente amortiguados y curvas ease-out fuertes, respetar `prefers-reduced-motion` y `prefers-reduced-transparency`, y reservar el hover para punteros finos.
-- **Do** mantener las cuatro tarjetas de cada rejilla del mismo tamaño fijo (360 × 480px o 360 × 410px).
+- **Do** mantener todas las tarjetas de cada rejilla del mismo tamaño fijo (360 × 548px en Decisiones, 260 × 374px en Resultados).
 
 ### Don't:
 - **Don't** animar el fondo ni añadir fondos en movimiento.
