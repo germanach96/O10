@@ -13,16 +13,18 @@ AMPLITUDES = ["Propio", "Product Line", "Brand", "House", "Todo"]
 CRITERIOS = ["Jerarquía", "Segmento", "Tamaño", "Edad"]
 # 17 celdas: "Propio" solo en la fila "Jerarquía"
 CELDAS = [(a, c) for c in CRITERIOS for a in AMPLITUDES if not (a == "Propio" and c != "Jerarquía")]
-EJES = ["s", "e", "w", "m", "N", "c", "p", "g"]   # e = años de estacionalidad (1 o 2)
+EJES = ["s", "h", "e", "w", "m", "N", "c", "p", "g"]
+# h = de quién copio la estacionalidad (Propio, Product Line, Brand, House); e = años de estacionalidad (1 o 2)
 
 
 class Rejilla:
-    """Enumera las recetas de la rejilla gruesa. Índice plano en orden (s, e, w, m, N, c, p, g)."""
+    """Enumera las recetas de la rejilla gruesa. Índice plano en orden (s, h, e, w, m, N, c, p, g)."""
 
     def __init__(self, cfg: dict):
         r = cfg["rejilla_gruesa"]
         self.valores = {k: list(r[k]) for k in ["s", "w", "m", "N", "c", "p"]}
         self.valores["e"] = list(r.get("e", [1]))
+        self.valores["h"] = list(r.get("h", ["Propio"]))
         self.valores["g"] = list(range(len(CELDAS)))
         self.forma = tuple(len(self.valores[k]) for k in EJES)
         self.n = int(np.prod(self.forma))
@@ -118,15 +120,34 @@ class MotorFoto:
         k2 = np.searchsorted(th, lag2_t)
         ok2 = lag_ok & (lag2_t[None, :] >= primer[:, None]) & self.disponible[:, k2]
         lag2 = np.where(ok2[None, None], (lag + self.H[..., k2]) / 2, lag1)
-        # parte estacional por valor del eje e: (e, c, p, códigos, hz)
-        self.lag = np.stack([lag2 if e == 2 else lag1 for e in self.R.valores["e"]])
         self.lag_ok, self.lag_2a = lag_ok, ok2
+        # estacionalidad de un grupo: media del código × índice del grupo, H_G(t−12) / media 12M de H_G.
+        # Con 2 años, media de los índices de los dos años, cada uno con la media de su propio año.
+        ult2 = (th >= F - 24) & (th <= F - 13)
+        n = len(cod)
+        partes = []
+        for amp in self.R.valores["h"]:
+            if amp == "Propio":
+                partes.append([lag2 if e == 2 else lag1 for e in self.R.valores["e"]])
+                continue
+            u, inv = np.unique(_clave_grupo(cod, amp, "Jerarquía"), return_inverse=True)
+            onehot = np.zeros((len(u), n))
+            onehot[inv, np.arange(n)] = self.cuenta.astype(float)
+            HG = np.einsum("gk,cpkt->cpgt", onehot, self.H)                 # (c, p, grupos, meses)
+            m1, m2 = HG[..., ult].mean(-1, keepdims=True), HG[..., ult2].mean(-1, keepdims=True)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                i1 = np.where(m1 > 0, HG[..., k] / m1, 1.0)
+                i2 = np.where(m2 > 0, HG[..., k2] / m2, i1)
+            partes.append([self.media[..., None] * (((i1 + i2) / 2) if e == 2 else i1)[:, :, inv]
+                           for e in self.R.valores["e"]])
+        # parte estacional por (h, e): (h, e, c, p, códigos, hz)
+        self.lag = np.array(partes)
 
     def base(self, i: int) -> np.ndarray:
-        """Base(s, e, c, p, h) del código i."""
-        sv = np.array(self.R.valores["s"])[:, None, None, None, None]
-        med = self.media[:, :, i][None, None, :, :, None]
-        lag = self.lag[:, :, :, i, :][None]
+        """Base(s, h, e, c, p, mes) del código i."""
+        sv = np.array(self.R.valores["s"])[:, None, None, None, None, None]
+        med = self.media[:, :, i][None, None, None, :, :, None]
+        lag = self.lag[:, :, :, :, i, :][None]
         return (1 - sv) * med + sv * lag
 
     # ---------- trends ----------
@@ -195,15 +216,15 @@ class MotorFoto:
     # ---------- forecast ----------
     def forecasts(self, i: int):
         """Forecast (recetas, hz) y validez (recetas,) del código i."""
-        B = self.base(i)                                               # (s, e, c, p, h)
+        B = self.base(i)                                               # (s, h, e, c, p, mes)
         T, ok = self.trend(i)                                          # (m, N, c, p, g)
         wv = np.array(self.R.valores["w"])
-        # forma (s, e, w, m, N, c, p, g, h)
-        Fc = (B[:, :, None, None, None, :, :, None, :]
-              * (1 + wv[None, None, :, None, None, None, None, None, None] * T[None, None, None, ..., None])
+        # forma (s, h, e, w, m, N, c, p, g, mes)
+        Fc = (B[:, :, :, None, None, None, :, :, None, :]
+              * (1 + wv[None, None, None, :, None, None, None, None, None, None] * T[None, None, None, None, ..., None])
               + self.tda_fut[i])
         Fc = np.maximum(Fc, 0.0)
-        valido = ok[None, None, None] | (wv[None, None, :, None, None, None, None, None] == 0)
+        valido = ok[None, None, None, None] | (wv[None, None, None, :, None, None, None, None, None] == 0)
         valido = np.broadcast_to(valido, self.R.forma)
         return Fc.reshape(self.R.n, self.hz), valido.reshape(-1).copy()
 
@@ -219,7 +240,7 @@ class MotorFoto:
         Tr = T[ix["m"], ni, ci, pi, gi]
         return {
             "media": float(self.media[ci, pi, i]),
-            "lag": [float(x) for x in self.lag[ix["e"], ci, pi, i]],
+            "lag": [float(x) for x in self.lag[ix["h"], ix["e"], ci, pi, i]],
             "lag_real": [bool(x) for x in self.lag_ok[i]],
             "t_sellin": None if np.isnan(tsi) else float(tsi),
             "t_sellout": None if np.isnan(tso) else float(tso),

@@ -243,6 +243,28 @@ def test_trend_sellout_por_meses_del_grupo(tmp_path, cfg):
     assert M.T_so[gi, ni, 0] == pytest.approx(0.5)
 
 
+def test_estacionalidad_del_grupo(tmp_path, cfg):
+    """PL con dos códigos. A: 100 todos los meses. B: 60 cada febrero, 0 el resto. Índice del PL en 2024:
+    feb = 160 / 105, resto = 100 / 105 (media 12M = (11·100 + 160) / 12 = 105). Con s=1, w=0 y estacionalidad
+    del PL, A en feb-25 = 100 · 160/105 y en mar-25 = 100 · 100/105; con 2 años igual (2023 es idéntico)."""
+    filas = []
+    for a in (2022, 2023, 2024):
+        for m in range(1, 13):
+            filas.append({"ean": "1000000000050", "mes": mes(a, m), "Actuals": 100, "Consensus - Final": 100})
+            v = 60 if m == 2 else 0
+            filas.append({"ean": "2000000000030", "mes": mes(a, m), "Actuals": v, "Consensus - Final": v})
+    for m in range(1, 11):
+        filas += [{"ean": e, "mes": mes(2025, m), "Consensus - Final": 90} for e in ("1000000000050", "2000000000030")]
+    f = leer_foto(escribir_csv(tmp_path / "Test_2025_01.csv", filas), cfg)
+    R = Rejilla(cfg)
+    Fc, _ = MotorFoto(f, cfg, R).forecasts(f.eans.index("1000000000050"))
+    for e in (1, 2):
+        r = indice(R, s=1, h="Product Line", e=e, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
+        np.testing.assert_allclose(Fc[r][:2], [100 * 160 / 105, 100 * 100 / 105])
+    # estacionalidad propia de A: plana (100)
+    np.testing.assert_allclose(Fc[indice(R, s=1, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))][:2], [100, 100])
+
+
 @pytest.mark.skipif(not CSV_GUCCI.exists(), reason="sin CSV de ejemplo")
 def test_csv_gucci(cfg):
     f = leer_foto(CSV_GUCCI, cfg)
