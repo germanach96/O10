@@ -130,6 +130,16 @@ th{font-size:11.5px;font-weight:600;color:var(--label2)}
 th:first-child,td:first-child{text-align:left}
 td.mono{font:11.5px var(--mono);color:var(--label2)}
 .tbl{overflow-x:auto}
+.xbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:10px;font-size:12px;color:var(--label2)}
+.xbar select{margin-left:6px;padding:6px 10px;border-radius:10px;border:1px solid var(--sep-strong);background:var(--card);color:var(--label);font:13px var(--font)}
+.xbar .grow{flex:1}
+.seg.mini{background:var(--fill)}
+.seg.mini button{padding:5px 12px}
+.chk{display:flex;align-items:center;gap:6px;cursor:pointer}
+.btn.pri{background:var(--blue);color:#fff}
+.xtbl{max-height:460px;overflow:auto;border-radius:12px}
+.xtbl thead th{position:sticky;top:0;background:var(--card);z-index:1}
+#xt td.v{font-weight:600}
 .scope{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;color:var(--label2);font-size:12px}
 .scope select{appearance:none;-webkit-appearance:none;padding:8px 34px 8px 14px;border-radius:999px;border:1px solid var(--edge);background:var(--glass-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238e8e93' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--label);font:600 13px var(--font);box-shadow:var(--shadow);cursor:pointer;max-width:100%}
 #det tbody tr.row{cursor:pointer;transition:background-color .15s ease}
@@ -247,6 +257,21 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
         <li><b>The 5% CFG that still flows</b> is included in actuals here, as the family total. Should it be kept out?</li>
       </ol>
     </div>
+  </div>
+
+  <h2>Export: adjustments to reach the margin</h2>
+  <p class="lead">For each code and future month, the change to put on the Consensus so it lands inside the margin set on this page: the recipe above, with the detector's tolerance. Negative = take units out. It follows every slider and the tolerance.</p>
+  <div class="card glass">
+    <div class="xbar">
+      <label>Codes <select id="x-scope"></select></label>
+      <div class="seg mini" role="group" aria-label="Target"><button data-t="edge" aria-pressed="true">To tolerance edge</button><button data-t="rec" aria-pressed="false">To the recipe</button></div>
+      <div class="seg mini" role="group" aria-label="Layout"><button data-l="long" aria-pressed="true">Code × month</button><button data-l="wide" aria-pressed="false">Months as columns</button></div>
+      <label class="chk"><input type="checkbox" id="x-zero" checked> Hide rows with no change</label>
+      <span class="grow"></span>
+      <button class="btn pri" id="x-copy">Copy for Excel</button><button class="btn" id="x-csv">Download CSV</button>
+    </div>
+    <p class="note" id="x-sum" style="margin:0 0 8px"></p>
+    <div class="tbl xtbl"><table id="xt"></table></div>
   </div>
 </div>
 
@@ -473,6 +498,58 @@ function fillExp(i){
   drawPair(document.getElementById('xc'+i),document.getElementById('xr'+i),sd,'x'+i);
 }
 function toggleRow(tr){const i=+tr.dataset.i;OPEN.has(i)?OPEN.delete(i):OPEN.add(i);renderDetector(CUR.F)}
+/* Export: variación sobre el Consensus para entrar en el margen (receta ± tolerancia del detector) */
+let XT='edge', XL='long';
+const xs=document.getElementById('x-scope');
+xs.innerHTML=`<option value="-1">All codes · 24</option>`+E.map((e,i)=>`<option value="${i}">${NAME(e)} · ${e.ean}</option>`).join('');
+function exportRows(){
+  const a=(+document.getElementById('tol-a').value||0)/100, b=(+document.getElementById('tol-b').value||0)/100;
+  const sc=+xs.value, out=[];
+  E.forEach((e,i)=>{if(sc>=0&&i!==sc)return;
+    for(let j=0;j<H9;j++){const t=FOTO+1+j,f=CUR.F[i][j],c=z(e.K[t]),tol=a+(b-a)*j/8;
+      let tg=c; if(XT==='rec')tg=f; else if(c>f*(1+tol))tg=Math.floor(f*(1+tol)); else if(c<f*(1-tol))tg=Math.ceil(f*(1-tol));
+      const v=Math.round(tg-c);out.push({ean:e.ean,desc:e.desc.trim(),shade:NAME(e),m:M[t],j,c:Math.round(c),f:Math.round(f),v,n:Math.round(c)+v})}});
+  return out;
+}
+function exportTable(){
+  const rows=exportRows(), hide=document.getElementById('x-zero').checked;
+  if(XL==='long'){const r=rows.filter(x=>!hide||x.v!==0);
+    return {head:['EAN','Description','Month','Consensus','Recipe','Variation','New Consensus'],
+      body:r.map(x=>[x.ean,x.desc,x.m,x.c,x.f,x.v,x.n]),rows};}
+  const by=new Map();rows.forEach(x=>{if(!by.has(x.ean))by.set(x.ean,{x,v:Array(H9).fill(0)});by.get(x.ean).v[x.j]=x.v});
+  const body=[...by.values()].filter(r=>!hide||r.v.some(v=>v!==0)).map(r=>[r.x.ean,r.x.desc,...r.v,r.v.reduce((p,q)=>p+q,0)]);
+  return {head:['EAN','Description',...Array.from({length:H9},(_,j)=>M[FOTO+1+j]),'Total'],body,rows};
+}
+function renderExport(){
+  if(!CUR)return;const T=exportTable();
+  const tot=T.rows.reduce((p,x)=>p+x.v,0), n=T.rows.filter(x=>x.v).length, codes=new Set(T.rows.filter(x=>x.v).map(x=>x.ean)).size;
+  document.getElementById('x-sum').innerHTML=`${n} code-months to change across ${codes} codes · net variation <b style="color:var(--label)">${tot>0?'+':''}${fmt.format(tot)}</b> units`;
+  const num=v=>typeof v==='number';
+  document.getElementById('xt').innerHTML=`<thead><tr>${T.head.map((h,c)=>`<th${c===1?' style="text-align:left"':''}>${h}</th>`).join('')}</tr></thead><tbody>`+
+    T.body.map(r=>`<tr>${r.map((v,c)=>c===0?`<td class="mono">${v}</td>`:c===1?`<td style="text-align:left">${v}</td>`:num(v)?`<td class="${(XL==='long'?c===5:true)?'v '+(v<0?'neg':v>0?'pos':''):''}">${(XL==='long'?c===5:true)&&v>0?'+':''}${fmt.format(v)}</td>`:`<td>${v}</td>`).join('')}</tr>`).join('')+'</tbody>';
+}
+document.querySelectorAll('.xbar .seg').forEach(g=>g.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
+  g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(b.dataset.t)XT=b.dataset.t;if(b.dataset.l)XL=b.dataset.l;renderExport()}));
+xs.addEventListener('change',renderExport);document.getElementById('x-zero').addEventListener('change',renderExport);
+const flash=(b,t)=>{const o=b.textContent;b.textContent=t;setTimeout(()=>b.textContent=o,1400)};
+document.getElementById('x-copy').addEventListener('click',async ev=>{
+  const T=exportTable(), btn=ev.currentTarget;
+  const tsv=[T.head,...T.body].map(r=>r.join('\t')).join('\r\n');
+  /* HTML con el EAN como texto para que Excel no lo pase a notación científica */
+  const esc=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const html=`<table><tr>${T.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${T.body.map(r=>`<tr>${r.map((v,c)=>c===0||(XL==='long'&&c===2)?`<td style="mso-number-format:'\\@'">${esc(v)}</td>`:`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</table>`;
+  try{await navigator.clipboard.write([new ClipboardItem({'text/plain':new Blob([tsv],{type:'text/plain'}),'text/html':new Blob([html],{type:'text/html'})})]);flash(btn,'Copied')}
+  catch(e){try{await navigator.clipboard.writeText(tsv);flash(btn,'Copied')}catch(e2){
+    const r=document.createRange();r.selectNodeContents(document.getElementById('xt'));const s=getSelection();s.removeAllRanges();s.addRange(r);flash(btn,'Selected: press Ctrl+C')}}
+});
+document.getElementById('x-csv').addEventListener('click',()=>{
+  const T=exportTable();const q=v=>{v=String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const csv='\ufeff'+[T.head,...T.body].map((r,ri)=>r.map((v,c)=>ri>0&&c===0?'="'+v+'"':q(v)).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`SkinTint_adjustments_${D.foto.replace('.','_')}${xs.value>=0?'_'+E[+xs.value].ean:''}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+
 let sortKey='pri', sortAsc=false;
 const wosTxt=w=>!isFinite(w)?'—':`<span class="${w>26?'neg':w<13?'warn':''}">${w>=100?fmt.format(Math.round(w)):w.toFixed(1)}</span>`;
 const actTxt=r=>`<span class="act a${r.pri}">${r.act}</span>`;
@@ -488,6 +565,7 @@ function renderDetector(F){
   rows.sort((x,y)=>(sortAsc?1:-1)*((x[sortKey]-y[sortKey])||(x.u-y.u)));
   const out=rows.filter(r=>r.u>0), tot=out.reduce((s,r)=>s+r.u,0);
   renderWos(rows);
+  renderExport();
   document.getElementById('det-sum').innerHTML=`· <b style="color:var(--label)">${out.length} of ${rows.length}</b> EANs outside · total deviation ${k(tot)} units`;
   const color=p=>p===0?'var(--fill-strong)':p<.1?'var(--d1)':p<.25?'var(--d2)':p<.5?'var(--d3)':'var(--d4)';
   const th=(key,l)=>`<th class="sort" data-s="${key}" ${sortKey===key?`aria-sort="${sortAsc?'ascending':'descending'}"`:''}>${l}</th>`;
