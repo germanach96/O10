@@ -2821,9 +2821,9 @@ function mediaBrujula(v, datos, series, lim, pref = ""){
     <line x1="${cx}" y1="${base}" x2="${cx}" y2="${top}" stroke="var(--sep-fuerte)"/>
     <text data-k="meta-t" x="${cx-R+4}" y="${Y(CFG.metas.wape_max)-5}" style="fill:var(--green-txt)">WAPE ${pct(CFG.metas.wape_max,0)}</text>
     <text x="${cx-R+6}" y="${top+14}">WAPE ${pct(lim.w,0)}</text>
-    <text x="${cx-R}" y="${base+14}" text-anchor="start">${pct(-lim.s,0)}</text><text x="${cx-R/2}" y="${base+14}" text-anchor="middle">${pct(-lim.s/2,0)}</text>
+    <text x="${cx-R}" y="${base+14}" text-anchor="start">${pct(-lim.s,0)}</text>${lim.s < 1 ? `<text x="${cx-R/2}" y="${base+14}" text-anchor="middle">${pct(-lim.s/2,0)}</text>` : ""}
     <text x="${cx}" y="${base+14}" text-anchor="middle">0</text>
-    <text x="${cx+R/2}" y="${base+14}" text-anchor="middle">+${pct(lim.s/2,0)}</text><text x="${cx+R}" y="${base+14}" text-anchor="end">+${pct(lim.s,0)}</text>
+    ${lim.s < 1 ? `<text x="${cx+R/2}" y="${base+14}" text-anchor="middle">+${pct(lim.s/2,0)}</text>` : ""}<text x="${cx+R}" y="${base+14}" text-anchor="end">+${pct(lim.s,0)}</text>
     <text x="${cx-R}" y="${base+29}">← over</text><text x="${cx}" y="${base+29}" text-anchor="middle">SPP</text><text x="${cx+R}" y="${base+29}" text-anchor="end">under →</text>`;
   const ult = {};
   series.forEach(([k, col, dash, nom], is) => {
