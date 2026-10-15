@@ -180,7 +180,7 @@ def _atributos(foto: Foto, cfg: dict) -> None:
     for fecha, f in frac.items():
         if f > umbral and fecha not in defecto:
             defecto.add(fecha)
-            foto.avisos.append(f"Disco Date {fecha} la tienen el {f:.0%} de los códigos: se trata como valor por defecto")
+            foto.avisos.append(f"Disco Date {fecha} is used by {f:.0%} of the codes: treated as the default value")
     def disco_mes(d):
         if not isinstance(d, str) or d in defecto:
             return np.nan
