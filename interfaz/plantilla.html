@@ -1188,9 +1188,10 @@ function calcularHojas(){
       p = sR > 0 ? u / sR : (u > 0.5 ? Infinity : 0);
       meses = ev.map((e, k) => e.dev > 0.5 ? det.meses[k] : null).filter(Boolean);
     } else if (i.scope) sinrec = true;
-    const vol = i.vol12 > 0 ? i.vol12 : i.cons9 * 12 / 9;
+    // tamaño = Consensus de la foto más actual: 6 meses cerrados anteriores (= lo vendido) + 12 siguientes (lo planeado)
+    const v6 = i.v6 ?? 0, p12 = i.p12 ?? 0, vol = Math.max(0, v6 + p12);
     return {ean, desc: a.desc || ean, brand: a.brand || "(sin brand)", pl: a.pl || "(sin línea)", seg: a.segmento || "", edad: i.edad,
-            scope: i.scope, motivo: i.motivo, tipo: tipoHoja(i), vol12: i.vol12, cons9: i.cons9, vol, u, p, sR, sinrec, meses,
+            scope: i.scope, motivo: i.motivo, tipo: tipoHoja(i), vol12: i.vol12, cons9: i.cons9, v6, p12, vol, u, p, sR, sinrec, meses,
             fuera: u != null && u > 0.5};
   });
 }
@@ -1687,7 +1688,7 @@ function pintarPanel(){
       <div class="kpis">
         <div><span class="mono" style="color:var(--label-2)">Desvío</span><b class="num">${s.u == null ? "-" : num(s.u)}</b></div>
         <div><span class="mono" style="color:var(--label-2)">%</span><b class="num">${s.p == null ? "-" : pct(s.p)}</b></div>
-        <div><span class="mono" style="color:var(--label-2)">Actuals 12M</span><b class="num">${num(s.vol12)}</b></div>
+        <div><span class="mono" style="color:var(--label-2)">Vol. 6M + 12M</span><b class="num">${num(s.vol)}</b></div>
       </div>
       ${s.scope ? (s.sinrec ? `<p class="m">En scope, pero sin receta elegida: no estaba en scope en ninguna foto medida.</p>` : (s.meses.length ? `<p class="m">Se sale en ${s.meses.length} de 9 meses: ${s.meses.join(", ")}.</p>` : `<p class="m">Dentro de su receta los 9 meses.</p>`)) : `<p class="m">Fuera de scope (${esc(s.motivo || "local")}). Cuenta en los volúmenes del grupo.</p>`}
       <div class="acciones" style="margin:0">${SEL.modo ? botonAgregar(s.ean, s.desc, "hoja") : ""}<button type="button" class="btn${SEL.modo ? " btn-fant" : ""}" data-abrir="${s.ean}">Abrir brújulas del código</button></div></div>`;
@@ -1774,7 +1775,7 @@ $("ladoBrands").addEventListener("click", ev => {
 $("ladoBrands").addEventListener("keydown", ev => { if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains("fila")) { ev.preventDefault(); ev.target.click(); } });
 
 function pintarLeyenda(){
-  $("leyenda").innerHTML = `<span class="it pista-gesto">${matchMedia("(pointer: coarse)").matches ? "Arrastra · pellizca para acercar" : "Arrastra · rueda para acercar"}</span><span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = actuals 12M (sin ellos, Consensus 9M anualizado)</span>`
+  $("leyenda").innerHTML = `<span class="it pista-gesto">${matchMedia("(pointer: coarse)").matches ? "Arrastra · pellizca para acercar" : "Arrastra · rueda para acercar"}</span><span class="tam"><i style="width:8px;height:8px"></i><i style="width:16px;height:16px"></i>Tamaño = Consensus 6M pasados + 12M siguientes</span>`
     + BINS.map((b, k) => `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(${b.v}) 62%,transparent);box-shadow:inset 0 0 0 1.25px var(--r${k})"></span>${b.txt}</span>`).join("")
     + `<span class="it"><span class="sw" style="background:var(--sinrec);border:1px dashed var(--hueco)"></span>Sin receta</span>`
     + `<span class="it"><span class="sw" style="background:color-mix(in srgb,var(--c-os) 40%,transparent);border:1px solid var(--c-os)"></span>One Shot</span>`
@@ -1872,7 +1873,7 @@ function contenidoTip(n){
     const estado = x.scope ? (x.sinrec ? "En scope, sin receta elegida." : (x.meses.length ? `Se sale en ${x.meses.length} de 9 meses.` : "Dentro de su receta los 9 meses.")) : `Fuera de scope: ${esc(x.motivo || "local")}.`;
     return `<span class="mono">${x.ean} · ${esc(corto(x.pl))}</span><div class="tt">${esc(x.desc)}</div>
       <div class="kk"><div><span>Desvío</span><b>${x.u == null ? "-" : num(x.u)}</b></div><div><span>Sobre la receta</span><b>${x.p == null ? "-" : pct(x.p)}</b></div>
-      <div><span>Actuals 12M</span><b>${num(x.vol12)}</b></div><div><span>Consensus 9M</span><b>${num(x.cons9)}</b></div></div>
+      <div><span>Últimos 6M</span><b>${num(x.v6)}</b></div><div><span>Próximos 12M</span><b>${num(x.p12)}</b></div></div>
       <div class="nota">${estado}${x.scope ? " Clic para verlo en el panel." : ""}</div>`;
   }
   const r = resumenGrupo(n);
