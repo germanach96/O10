@@ -102,6 +102,19 @@ th{font-size:11.5px;font-weight:600;color:var(--label2)}
 th:first-child,td:first-child{text-align:left}
 td.mono{font:11.5px var(--mono);color:var(--label2)}
 .tbl{overflow-x:auto}
+.scope{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;color:var(--label2);font-size:12px}
+.scope select{appearance:none;-webkit-appearance:none;padding:8px 34px 8px 14px;border-radius:999px;border:1px solid var(--edge);background:var(--glass-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238e8e93' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--label);font:600 13px var(--font);box-shadow:var(--shadow);cursor:pointer;max-width:100%}
+#det tbody tr.row{cursor:pointer;transition:background-color .15s ease}
+@media (hover:hover){#det tbody tr.row:hover{background:var(--fill)}}
+#det tbody tr.row td:first-child::before{content:"›";display:inline-block;width:12px;color:var(--label3);transition:transform .2s var(--ease-out)}
+#det tbody tr.row[aria-expanded="true"] td:first-child::before{transform:rotate(90deg)}
+#det tr.exp>td{padding:4px 0 16px;white-space:normal;text-align:left}
+.exp-in{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.exp-in .card{background:var(--card);border:1px solid var(--sep);border-radius:16px;box-shadow:none}
+.exp-in .full{grid-column:1/-1}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--label2);margin:2px 0 10px}
+.facts b{color:var(--label);font-variant-numeric:tabular-nums}
+@media (max-width:980px){.exp-in{grid-template-columns:1fr}}
 .warn{color:#b86a00}
 .act{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--fill);color:var(--label2)}
 .act.a4{background:rgba(255,59,48,.16);color:var(--red-text)}
@@ -145,45 +158,31 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
   <section class="tiles" id="tiles"></section>
 
   <h2>Forecast, next 9 months</h2>
-  <p class="lead" id="lead-h">Nov 2026 – Jul 2027. October is the snapshot's current month and is ignored, as in O10. Both charts share the same scale.</p>
+  <p class="lead" id="lead-h">Nov 2026 – Jul 2027. October is the snapshot's current month and is ignored, as in O10. Both charts share the same scale. Pick the family or any EAN; every row of the detector below also opens its own view.</p>
+  <div class="scope"><label for="scope">Showing</label><select id="scope"></select><span id="scope-info"></span></div>
   <div class="charts">
     <div class="card glass">
-      <h3>Current Consensus - Final</h3>
+      <h3 id="t-cons">Current Consensus - Final</h3>
       <p class="cs">What is in the system today: Demand Assumptions plus Reasonability Adjustments on top of a flow that is blocked by ISFF 1.</p>
       <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-cons"></i>Consensus</span></div>
       <div class="chart" id="ch-cons"></div>
     </div>
     <div class="card glass">
-      <h3>Proposed forecast</h3>
+      <h3 id="t-rec">Proposed forecast</h3>
       <p class="cs" id="cs-rec"></p>
       <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-h"></i>Actuals + net cuts (history used)</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-cons" style="opacity:.45"></i>Consensus</span></div>
       <div class="chart" id="ch-rec"></div>
     </div>
   </div>
+  <div class="card glass" style="margin-top:12px"><h3>Month by month</h3><p class="cs" style="min-height:0">Consensus split into what drives it, against the proposal. Same scope as the charts.</p><div class="tbl"><table id="months"></table></div></div>
 
   <h2>Recipe</h2>
   <p class="lead">O10 recipe on this snapshot. Highlighted values are the recommendation; change them to see how every chart and table moves.</p>
   <div class="recipe glass" id="recipe"></div>
   <p class="note" id="trend-note"></p>
 
-  <h2>Results</h2>
-  <p class="lead">Backtest on the same file: the recipe is rebuilt at each past month with only the history known then, and measured against actuals over the next 3 months (SPP3 · WAPE90, all EANs summed). Grey dashed = the Demand Assumptions loaded for those months, the closest thing in this file to what the Consensus was (past Consensus is overwritten by actuals).</p>
-  <div class="res">
-    <div class="card glass">
-      <h3>SPP3 · WAPE90 by snapshot</h3>
-      <p class="cs">Left = over-forecast. Green box = goal (WAPE ≤ 40%, SPP ±5%). Ringed points are off the scale and pinned to its edge; exact values in the table.</p>
-      <div class="chart" id="ch-bt"></div>
-      <div class="legend"><span><i class="sw-cons"></i>DAs loaded (≈ Consensus then)</span><span><i class="sw-rec"></i>Proposed recipe</span></div>
-    </div>
-    <div class="card glass">
-      <h3>Snapshot by snapshot</h3>
-      <p class="cs">Snapshots Jan–Mar measure months when backorders from the cuts were being shipped (Feb–May sell-in 2× sell-out), which no recipe should chase. Apr–Jun measure clean months.</p>
-      <div class="tbl"><table id="bt"></table></div>
-    </div>
-  </div>
-
   <h2>Detector</h2>
-  <p class="lead">Current Consensus against the proposed recipe, EAN by EAN, Nov–Jul. Only the excess beyond the tolerance counts, and months do not offset each other.</p>
+  <p class="lead">Current Consensus against the proposed recipe, EAN by EAN, Nov–Jul. Only the excess beyond the tolerance counts, and months do not offset each other. Click a row to open that EAN.</p>
   <div class="card glass">
     <div class="tol">Tolerance <label>start <input id="tol-a" type="number" min="0" max="100" step="1" value="5">%</label><label>end <input id="tol-b" type="number" min="0" max="100" step="1" value="5">%</label><span id="det-sum"></span></div>
     <div class="tbl"><table id="det"></table></div>
@@ -275,7 +274,7 @@ function chart(el,opt){
   const y=v=>pt+(Hh-pt-pb)*(1-Math.min(v,opt.ymax)/opt.ymax);
   const x=i=>pl+(i-X0+.5)*bw;
   let s=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${opt.aria}"><defs><pattern id="hp${opt.id}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="4" fill="var(--cut)"/></pattern></defs>`;
-  const step=opt.ymax>150000?50000:opt.ymax>60000?25000:10000;
+  const step=nice(opt.ymax/4.5);
   for(let v=0;v<=opt.ymax;v+=step){s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--sep)"/><text x="${pl-6}" y="${y(v)+3.5}" text-anchor="end">${v?k(v):'0'}</text>`}
   // futuro sombreado y mes en curso
   s+=`<rect x="${x(FOTO+1)-bw/2}" y="${pt}" width="${(X1-FOTO)*bw}" height="${Hh-pt-pb}" fill="var(--fill)" opacity=".5" rx="6"/>`;
@@ -311,27 +310,6 @@ function chart(el,opt){
   svg.addEventListener('pointerleave',()=>{tip.classList.remove('on');xh.setAttribute('opacity','0')});
 }
 
-/* Media brújula SPP · WAPE con dos trayectorias */
-function half(el,pts){
-  const W=Math.max(300,el.clientWidth), Hh=Math.round(W*.56), pl=34,pr=12,pt=12,pb=26;
-  const x=v=>pl+(W-pl-pr)*(Math.max(-.3,Math.min(.3,v))+.3)/.6, y=v=>pt+(Hh-pt-pb)*(1-Math.min(.6,v)/.6);
-  let s=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="SPP3 versus WAPE90 by snapshot">`;
-  s+=`<rect x="${x(-.05)}" y="${y(.4)}" width="${x(.05)-x(-.05)}" height="${y(0)-y(.4)}" fill="var(--goal)" rx="4"/>`;
-  for(const v of [0,.2,.4,.6]){s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="${v===.4?'var(--green)':'var(--sep)'}" ${v===.4?'stroke-dasharray="3 3"':''}/><text x="${pl-6}" y="${y(v)+3.5}" text-anchor="end">${v*100}%</text>`}
-  for(const v of [-.3,-.15,0,.15,.3])s+=`<line x1="${x(v)}" x2="${x(v)}" y1="${pt}" y2="${y(0)}" stroke="var(--sep)"/><text x="${x(v)}" y="${Hh-8}" text-anchor="middle">${v?pct(v):'0'}</text>`;
-  s+=`<text x="${pl+2}" y="${pt+10}" style="font-size:9.5px">← over-forecast</text><text x="${W-pr-2}" y="${pt+10}" text-anchor="end" style="font-size:9.5px">under-forecast →</text>`;
-  const line=(key,c,dash)=>{const P=pts.map(p=>[x(p[key].spp),y(p[key].wape)]);
-    const d=P.map((p,j)=>(j?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join('');
-    let o=`<path d="${d}" fill="none" stroke="${c}" stroke-width="2" ${dash?'stroke-dasharray="5 4"':''} stroke-linejoin="round" opacity=".85"/>`;
-    P.forEach((p,j)=>{const last=j===P.length-1, out=Math.abs(pts[j][key].spp)>.3||pts[j][key].wape>.6;
-      o+=`<circle cx="${p[0]}" cy="${p[1]}" r="${last?5.5:3.5}" fill="${c}" opacity="${.35+.65*(j+1)/P.length}" stroke="var(--card)" stroke-width="1.5"><title>${mlab(pts[j].fo)} · WAPE90 ${(pts[j][key].wape*100).toFixed(0)}% · SPP3 ${pct(pts[j][key].spp)}</title></circle>`;
-      if(out)o+=`<circle cx="${p[0]}" cy="${p[1]}" r="${last?8:6}" fill="none" stroke="${c}" stroke-width="1" opacity=".6"/>`;
-      if(last)o+=`<text x="${p[0]+8}" y="${p[1]+3.5}" style="font-size:9.5px;fill:var(--label2)">${mlab(pts[j].fo)}</text>`});
-    return o};
-  s+=line('da','var(--cons)',1)+line('rec','var(--blue)',0)+'</svg>';
-  el.innerHTML=s;
-}
-
 function renderWos(rows){
   const el=document.getElementById('ch-wos');
   const W=Math.max(300,el.clientWidth), Hh=Math.round(W*.62), pl=40,pr=14,pt=14,pb=28;
@@ -360,38 +338,75 @@ function renderWos(rows){
 const sumArr=(arrs,len,off=0)=>Array.from({length:len},(_,t)=>arrs.reduce((a,v)=>a+z(v[t+off]),0));
 const famA=sumArr(E.map(e=>e.A),M.length), famC=sumArr(E.map(e=>e.C),M.length), famK=sumArr(E.map(e=>e.K),M.length);
 
-function render(){
-  const {F,tr}=forecast(FOTO,P);
-  const famF=sumArr(F,H9);
-  const famH=sumArr(tr.hs,M.length);
-  const consF=famK.slice(FOTO+1,FOTO+1+H9);
-  const cs=consF.reduce((a,b)=>a+b,0), rs=famF.reduce((a,b)=>a+b,0);
-  const run=famA.slice(FOTO-4,FOTO).reduce((a,b)=>a+b,0)/4;
-  const base=famH.slice(FOTO-12,FOTO).reduce((a,b)=>a+b,0)/12;
+const NAME=e=>e.desc.replace(/^KJ MU SKN TINT LIQFND ?30 ?ML /,'').replace(/ IV$/,'');
+const nice=v=>{const p=Math.pow(10,Math.floor(Math.log10(Math.max(v,1))));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p};
+const niceUp=v=>{const p=Math.pow(10,Math.floor(Math.log10(v)));return [1,1.25,1.5,2,2.5,3,4,5,6,8,10].find(f=>f*p>=v)*p};
+let SEL=-1, CUR=null, OPEN=new Set();
+try{const v=localStorage.getItem('o10-skintint-scope');if(v!=null)SEL=+v}catch(e){}
+/* Series de un ámbito: -1 = familia, i = EAN */
+function scope(i){
+  const pick=f=>i<0?sumArr(E.map(f),M.length):M.map((_,t)=>z(f(E[i])[t]));
+  const A=pick(e=>e.A),C=pick(e=>e.C),K=pick(e=>e.K),T=pick(e=>e.T),R=pick(e=>e.R||[]);
+  const H=i<0?sumArr(CUR.tr.hs,M.length):CUR.tr.hs[i];
+  const Fv=i<0?sumArr(CUR.F,H9):CUR.F[i];
+  const Ff=Array(M.length).fill(0);Fv.forEach((v,j)=>Ff[FOTO+1+j]=v);
+  const sl=(x,a,b)=>x.slice(a,b).reduce((p,q)=>p+q,0);
+  return {i,A,C,K,T,H,F:Ff,cs:sl(K,FOTO+1,FOTO+1+H9),rs:sl(Ff,FOTO+1,FOTO+1+H9),das:sl(T,FOTO+1,FOTO+1+H9),
+    base:sl(H,FOTO-12,FOTO)/12,a12:sl(A,FOTO-12,FOTO),c12:sl(C,FOTO-12,FOTO),run:sl(A,FOTO-4,FOTO)/4,
+    wos:i<0?NaN:WOS[E[i].ean]};
+}
+function drawPair(elC,elR,sd,id){
+  const vis=[...sd.A.slice(X0,FOTO+1),...sd.K.slice(FOTO+1,X1+1),...sd.F.slice(FOTO+1,X1+1),...sd.H.slice(X0,FOTO).map(v=>Math.max(0,v))];
+  const top=Math.max(...sd.A.slice(X0,FOTO+1),...sd.K.slice(FOTO+1,X1+1),...sd.F.slice(FOTO+1,X1+1))*1.35;
+  const ymax=niceUp(Math.max(top,10));
+  const rowsBase=i=>{const r=[];if(i<=FOTO){r.push(['Actuals',k(sd.A[i])+(i===FOTO?' (partial)':'')]);if(sd.C[i])r.push(['Supply cuts',k(sd.C[i])])}return r};
+  chart(elC,{id:id+'c',ymax,aria:'Actuals, supply cuts and Consensus by month',A:sd.A,C:sd.C,
+    lines:[{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',dots:1}],
+    rows:i=>{const r=rowsBase(i);if(i>FOTO)r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—']);return r}});
+  chart(elR,{id:id+'r',ymax,aria:'Actuals, history used and proposed forecast by month',A:sd.A,C:sd.C,
+    lines:[{a:X0,b:FOTO-1,v:sd.H,c:'var(--blue)',dash:'1.5 3.5',o:.9},{a:FOTO+1,b:X1,v:sd.K,c:'var(--cons)',dash:'5 4',o:.4},{a:FOTO+1,b:X1,v:sd.F,c:'var(--blue)',dots:1}],
+    band:{a:FOTO-12,b:FOTO-1,v:sd.base},
+    rows:i=>{const r=rowsBase(i);if(i<FOTO)r.push(['Actuals + net cuts',k(sd.H[i])]);if(i>FOTO)r.push(['Proposal',k(sd.F[i])],['Consensus',k(sd.K[i])]);return r}});
+}
+function monthsTable(sd){
+  let h=`<thead><tr><th>Month</th><th>Consensus</th><th>of which DAs</th><th>Proposal</th><th>Gap</th><th>Gap %</th><th>Same month LY, actuals + net cuts</th></tr></thead><tbody>`;
+  for(let j=0;j<H9;j++){const t=FOTO+1+j,g=sd.K[t]-sd.F[t];
+    h+=`<tr><td>${mlab(t)}</td><td>${k(sd.K[t])}</td><td>${k(sd.T[t])}</td><td>${k(sd.F[t])}</td><td class="${g>0?'neg':''}">${g>0?'+':''}${k(g)}</td><td>${sd.F[t]>0?pct(g/sd.F[t]):'—'}</td><td>${k(sd.H[t-12])}</td></tr>`}
+  const g=sd.cs-sd.rs;
+  return h+`<tr style="font-weight:700"><td>Nov–Jul</td><td>${k(sd.cs)}</td><td>${k(sd.das)}</td><td>${k(sd.rs)}</td><td class="${g>0?'neg':''}">${g>0?'+':''}${k(g)}</td><td>${sd.rs>0?pct(g/sd.rs):'—'}</td><td>${k(sd.H.slice(FOTO-11,FOTO-2).reduce((a,b)=>a+b,0))}</td></tr></tbody>`;
+}
+const facts=sd=>`<div class="facts"><span>12M actuals <b>${k(sd.a12)}</b></span><span>12M cuts <b>${k(sd.c12)}</b></span><span>Base (actuals + net cuts) <b>${k(sd.base)}</b>/month</span><span>Run-rate Jun–Sep <b>${k(sd.run)}</b>/month</span>${isFinite(sd.wos)?`<span>WOS <b>${sd.wos.toFixed(1)}</b></span>`:''}</div>`;
+
+function renderScope(){
+  const sd=scope(SEL);
+  const cs=sd.cs, rs=sd.rs;
   document.getElementById('tiles').innerHTML=[
     ['Consensus, Nov–Jul',k(cs),`${k(cs/9)} a month`],
     ['Proposal, Nov–Jul',k(rs),`${k(rs/9)} a month`],
-    ['Gap vs Consensus',`<span class="${rs<cs?'neg':'pos'}">${pct(rs/cs-1)}</span>`,`${rs<cs?'−':'+'}${k(Math.abs(rs-cs))} units the Consensus would remove`],
-    ['Clean run-rate, Jun–Sep 26',k(run),'actuals a month, no cuts since July']
+    ['Gap vs Consensus',`<span class="${rs<cs?'neg':'pos'}">${rs>0?pct(rs/cs-1):'—'}</span>`,`${rs<cs?'−':'+'}${k(Math.abs(rs-cs))} units vs the Consensus`],
+    ['Clean run-rate, Jun–Sep 26',k(sd.run),'actuals a month, no cuts since July']
   ].map(([a,b,c])=>`<div class="tile glass"><div class="k">${a}</div><div class="v">${b}</div><div class="n">${c}</div></div>`).join('');
-  const futFull=Array(M.length).fill(0), consFull=famK.slice();
-  famF.forEach((v,j)=>futFull[FOTO+1+j]=v);
-  const ymax=Math.ceil(Math.max(...famA.slice(X0,FOTO+1),...consF,...famF,...famH.slice(X0,FOTO))*1.08/10000)*10000;
-  const ymaxC=Math.min(ymax,Math.max(130000,Math.ceil(Math.max(...famA.slice(X0,FOTO+1),...consF,...famF)*1.25/10000)*10000));
-  const rowsBase=i=>{const r=[];if(i<=FOTO){r.push(['Actuals',k(famA[i])+(i===FOTO?' (partial)':'')]);if(famC[i])r.push(['Supply cuts',k(famC[i])])}return r};
-  chart(document.getElementById('ch-cons'),{id:'c',ymax:ymaxC,aria:'Actuals, supply cuts and Consensus by month',A:famA,C:famC,
-    lines:[{a:FOTO+1,b:X1,v:consFull,c:'var(--cons)',dash:'5 4',dots:1}],
-    rows:i=>{const r=rowsBase(i);if(i>FOTO)r.push(['Consensus',k(famK[i])],['vs proposal',pct(famK[i]/futFull[i]-1)]);return r}});
-  chart(document.getElementById('ch-rec'),{id:'r',ymax:ymaxC,aria:'Actuals, history used and proposed forecast by month',A:famA,C:famC,
-    lines:[{a:X0,b:FOTO-1,v:famH,c:'var(--blue)',dash:'1.5 3.5',o:.9},{a:FOTO+1,b:X1,v:consFull,c:'var(--cons)',dash:'5 4',o:.4},{a:FOTO+1,b:X1,v:futFull,c:'var(--blue)',dots:1}],
-    band:{a:FOTO-12,b:FOTO-1,v:base},
-    rows:i=>{const r=rowsBase(i);if(i<FOTO)r.push(['Actuals + net cuts',k(famH[i])]);if(i>FOTO)r.push(['Proposal',k(futFull[i])],['Consensus',k(famK[i])]);return r}});
+  const nm=SEL<0?'Skin Tint family':NAME(E[SEL]);
+  document.getElementById('t-cons').textContent=`Current Consensus · ${nm}`;
+  document.getElementById('t-rec').textContent=`Proposed forecast · ${nm}`;
+  document.getElementById('scope-info').innerHTML=facts(sd).replace('class="facts"','class="facts" style="margin:0"');
+  drawPair(document.getElementById('ch-cons'),document.getElementById('ch-rec'),sd,'m');
+  document.getElementById('months').innerHTML=monthsTable(sd);
+}
+
+function render(){
+  CUR=forecast(FOTO,P);
+  const tr=CUR.tr;
   document.getElementById('cs-rec').textContent=`Recipe: cuts counted once (r ${P.r*100}%), seasonal ${P.s*100}%, trend ${P.w*100}% over ${P.N}M, no DAs. Base = 12-month mean of actuals + net cuts.`;
   document.getElementById('trend-note').textContent=`Family trend over the last ${P.N} months, YoY: sell-in ${isFinite(tr.Ti)?pct(tr.Ti):'n/a'} · sell-out ${isFinite(tr.To)?pct(tr.To):'n/a'} · applied ${pct(P.w*tr.T)} (capped at ±30%).`;
+  renderScope();
   renderRecipe();
-  renderBacktest();
-  renderDetector(F);
+  renderDetector(CUR.F);
 }
+const sel=document.getElementById('scope');
+sel.innerHTML=`<option value="-1">Skin Tint family · 24 EANs</option>`+E.map((e,i)=>[i,E[i].K.slice(FOTO+1,FOTO+1+H9).reduce((a,b)=>a+z(b),0)]).sort((a,b)=>b[1]-a[1]).map(([i])=>`<option value="${i}">${NAME(E[i])} · ${E[i].ean}</option>`).join('');
+sel.value=String(SEL);
+sel.addEventListener('change',()=>{SEL=+sel.value;try{localStorage.setItem('o10-skintint-scope',SEL)}catch(e){}renderScope()});
 
 function renderRecipe(){
   const ctl=[['r','Cuts re-ordered (r)',[0,.5,1],v=>v*100+'%'],['s','Seasonal weight (s)',[0,.5,1],v=>v*100+'%'],['w','Trend weight (w)',[0,.5,1],v=>v*100+'%'],['m','Sell-in ↔ sell-out (m)',[0,.5,1],v=>v*100+'%'],['N','Trend length (N)',[6,9,12],v=>v+'M']];
@@ -405,19 +420,12 @@ document.getElementById('recipe').addEventListener('click',ev=>{
   requestAnimationFrame(render);
 });
 
-function renderBacktest(){
-  const fotos=['2026.M01','2026.M02','2026.M03','2026.M04','2026.M05','2026.M06'].map(m=>M.indexOf(m));
-  const pts=fotos.map(fo=>{
-    const {F}=forecast(fo,P);let act=0,ra=0,rs=0,da=0,ds=0;
-    E.forEach((e,i)=>{for(let j=0;j<3;j++){const t=fo+1+j,a=z(e.A[t]),f=F[i][j],d=z(e.T[t]);act+=a;ra+=Math.abs(f-a);rs+=a-f;da+=Math.abs(d-a);ds+=a-d}});
-    return {fo,act,rec:{wape:ra/act,spp:rs/act},da:{wape:da/act,spp:ds/act}};
-  });
-  half(document.getElementById('ch-bt'),pts);
-  const c=(o)=>`<span class="${o.wape<=.4?'pos':''}">${(o.wape*100).toFixed(0)}%</span> · <span class="${Math.abs(o.spp)<=.05?'pos':o.spp<-.05?'neg':''}">${pct(o.spp)}</span>`;
-  document.getElementById('bt').innerHTML=`<thead><tr><th>Snapshot</th><th>Months</th><th>Actuals</th><th>DAs · WAPE · SPP</th><th>Recipe · WAPE · SPP</th></tr></thead><tbody>`+
-    pts.map(p=>`<tr><td>${mlab(p.fo)}</td><td>${mlab(p.fo+1)}–${mlab(p.fo+3).slice(0,3)}</td><td>${k(p.act)}</td><td>${c(p.da)}</td><td>${c(p.rec)}</td></tr>`).join('')+'</tbody>';
+function fillExp(i){
+  const td=document.getElementById('exp'+i);if(!td)return;const sd=scope(i);
+  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card"><h3>Current Consensus</h3><div class="chart" id="xc${i}"></div></div><div class="card"><h3>Proposed forecast</h3><div class="chart" id="xr${i}"></div></div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
+  drawPair(document.getElementById('xc'+i),document.getElementById('xr'+i),sd,'x'+i);
 }
-
+function toggleRow(tr){const i=+tr.dataset.i;OPEN.has(i)?OPEN.delete(i):OPEN.add(i);renderDetector(CUR.F)}
 let sortKey='pri', sortAsc=false;
 const wosTxt=w=>!isFinite(w)?'—':`<span class="${w>26?'neg':w<13?'warn':''}">${w>=100?fmt.format(Math.round(w)):w.toFixed(1)}</span>`;
 const actTxt=r=>`<span class="act a${r.pri}">${r.act}</span>`;
@@ -437,11 +445,13 @@ function renderDetector(F){
   const color=p=>p===0?'var(--fill-strong)':p<.1?'var(--d1)':p<.25?'var(--d2)':p<.5?'var(--d3)':'var(--d4)';
   const th=(key,l)=>`<th class="sort" data-s="${key}" ${sortKey===key?`aria-sort="${sortAsc?'ascending':'descending'}"`:''}>${l}</th>`;
   document.getElementById('det').innerHTML=`<thead><tr><th>EAN</th><th>Shade</th>${th('cs','Consensus 9M')}${th('fs','Recipe 9M')}${th('gap','Gap')}${th('u','Deviation, units')}${th('p','Deviation, %')}${th('w','WOS')}${th('pri','Action')}<th style="text-align:left">Months out (Nov → Jul)</th></tr></thead><tbody>`+
-    rows.map(r=>`<tr><td class="mono">${r.e.ean}</td><td style="text-align:left"><span class="dot" style="background:${color(r.p)}"></span>${r.e.desc.replace(/^KJ MU SKN TINT LIQFND ?30 ?ML /,'').replace(/ IV$/,'')}</td><td>${k(r.cs)}</td><td>${k(r.fs)}</td><td class="${r.gap>0?'neg':''}">${r.gap>0?'+':''}${k(r.gap)}</td><td>${k(r.u)}</td><td>${isFinite(r.p)?(r.p*100).toFixed(0)+'%':'—'}</td><td>${wosTxt(r.w)}</td><td style="text-align:left">${actTxt(r)}</td><td><div class="chips">${r.mo.map((m,j)=>`<span class="chip" title="${mlab(FOTO+1+j)}: ${m>0?'Consensus above':m<0?'Consensus below':'inside'}" style="${m>0?'background:var(--d3)':m<0?'background:var(--blue)':''}"></span>`).join('')}</div></td></tr>`).join('')+'</tbody>';
+    rows.map(r=>`<tr class="row" tabindex="0" data-i="${E.indexOf(r.e)}" aria-expanded="${OPEN.has(E.indexOf(r.e))}"><td class="mono">${r.e.ean}</td><td style="text-align:left"><span class="dot" style="background:${color(r.p)}"></span>${r.e.desc.replace(/^KJ MU SKN TINT LIQFND ?30 ?ML /,'').replace(/ IV$/,'')}</td><td>${k(r.cs)}</td><td>${k(r.fs)}</td><td class="${r.gap>0?'neg':''}">${r.gap>0?'+':''}${k(r.gap)}</td><td>${k(r.u)}</td><td>${isFinite(r.p)?(r.p*100).toFixed(0)+'%':'—'}</td><td>${wosTxt(r.w)}</td><td style="text-align:left">${actTxt(r)}</td><td><div class="chips">${r.mo.map((m,j)=>`<span class="chip" title="${mlab(FOTO+1+j)}: ${m>0?'Consensus above':m<0?'Consensus below':'inside'}" style="${m>0?'background:var(--d3)':m<0?'background:var(--blue)':''}"></span>`).join('')}</div></td></tr>`+(OPEN.has(E.indexOf(r.e))?`<tr class="exp"><td colspan="10" id="exp${E.indexOf(r.e)}"></td></tr>`:'')).join('')+'</tbody>';
+  OPEN.forEach(fillExp);
 }
-document.getElementById('det').addEventListener('click',ev=>{const t=ev.target.closest('th[data-s]');if(!t)return;
-  if(sortKey===t.dataset.s)sortAsc=!sortAsc;else{sortKey=t.dataset.s;sortAsc=false}renderDetector(forecast(FOTO,P).F)});
-['tol-a','tol-b'].forEach(id=>document.getElementById(id).addEventListener('input',()=>renderDetector(forecast(FOTO,P).F)));
+document.getElementById('det').addEventListener('keydown',ev=>{const r=ev.target.closest('tr.row');if(r&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();toggleRow(r)}});
+document.getElementById('det').addEventListener('click',ev=>{const r=ev.target.closest('tr.row');if(r){toggleRow(r);return}const t=ev.target.closest('th[data-s]');if(!t)return;
+  if(sortKey===t.dataset.s)sortAsc=!sortAsc;else{sortKey=t.dataset.s;sortAsc=false}renderDetector(CUR.F)});
+['tol-a','tol-b'].forEach(id=>document.getElementById(id).addEventListener('input',()=>renderDetector(CUR.F)));
 
 /* Apariencia */
 const seg=document.querySelector('header .seg');
