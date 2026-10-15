@@ -575,8 +575,8 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 .sub-mes{display:block;color:var(--label-2);font-size:11px;margin-top:1px;overflow:hidden;text-overflow:ellipsis}
 .t-det .c-mes,.t-det th:nth-child(9){display:none}
 #detector td,#detector th{padding:6px 8px}
-@media (max-width:1700px){.t-det .c-edad,.t-det th:nth-child(4){display:none}}
-@media (max-width:1360px){.t-det .c-grupo,.t-det th:last-child{display:none}}
+@media (max-width:1700px){.t-det .c-grupo,.t-det .c-edad,.t-det th:nth-child(4),.t-det th:last-child{display:none}}
+.c-rec{min-width:230px}
 @media (max-width:1240px) and (min-width:901px){.t-det .c-brand,.t-det th:nth-child(3){display:none}}
 .matriz{table-layout:fixed;width:326px;margin-top:4px;border-collapse:separate;border-spacing:3px}
 .matriz td{text-align:center;height:40px;padding:2px;border:0;font-size:12px;font-weight:700;cursor:default;position:relative;border-radius:10px}
@@ -2546,7 +2546,7 @@ function tiraE(){
   const Y = q => (cy - q.y * (B - T) / 2).toFixed(1);
   const rec = recetaElegida(), plano = !esSel() && rec && rec.s === 0;
   svg.classList.toggle("inerte", !!plano);
-  const der = esSel() ? "Each code its own" : !rec ? "" : plano ? "No effect: flat mean (s 0%)" : `Chosen: ${vtxt("e", rec.e)}`;
+  const der = esSel() ? "Each code its own" : !rec || rec.e == null ? "" : plano ? "No effect: flat mean (s 0%)" : `Chosen: ${vtxt("e", rec.e)}`;
   let h = `<text class="t-cab" x="0" y="11">Years of seasonality · e</text>
     <text x="${W}" y="11" text-anchor="end" style="fill:${plano || esSel() ? "var(--label-2)" : "var(--blue-txt)"};font-weight:600">${der}</text>
     <line x1="${L}" x2="${W - Rm + 6}" y1="${T}" y2="${T}" stroke="var(--sep)"/><line x1="${L}" x2="${W - Rm + 6}" y1="${B}" y2="${B}" stroke="var(--sep)"/>
@@ -2605,7 +2605,7 @@ function selector(){
     const {col, fila} = celda(gi);
     h += pintaCelda(`c-${gi}`, caja(col, fila), tam[gi], e.ejes ? e.ejes.g[gi] : null, `Trend · ${tx(CELDAS[gi][0])} · ${tx(CELDAS[gi][1])}`, gi === gan, cal ? (cal.n.get(gi) || 0) : 0, cal ? cal.tot : 0, 1);
   });
-  EJ.h.forEach((hv, k) => {
+  (EJ.h || []).forEach((hv, k) => {
     h += pintaCelda(`h-${k}`, caja(AMPL.indexOf(hv), 4), tamH(hv), e.ejes && e.ejes.h ? e.ejes.h[k] : null, `Seasonality · ${tx(hv)}`, !esSel() && rec && rec.h === hv, calH ? (calH.n.get(hv) || 0) : 0, calH ? calH.tot : 0, plano ? 0.4 : 1);
   });
   const hacerCalor = (fuente) => {
@@ -2654,7 +2654,7 @@ function selector(){
   const cambios = k => rs.slice(1).filter((r, i) => r[k] !== rs[i][k]).length;
   const tamTxt = n => esRegla() ? "average size " + n.toFixed(1) : n + (n === 1 ? " code" : " codes");
   $("matrizp").innerHTML = `<span class="elegidaTxt">Trend: ${tx(rec.grupo)}</span> (${tamTxt(tam[gan])})<br>`
-    + (plano ? `Seasonality: no effect, the recipe uses the flat mean` : `<span class="elegidaTxt">Seasonality: ${tx(rec.h)}</span> (${tamTxt(tamH(rec.h))})`)
+    + (plano ? `Seasonality: no effect, the recipe uses the flat mean` : rec.h == null ? `Seasonality: not in this data` : `<span class="elegidaTxt">Seasonality: ${tx(rec.h)}</span> (${tamTxt(tamH(rec.h))})`)
     + (rs.length > 1 ? `<br>The best changed between snapshots: trend ${cambios("g")} of ${rs.length - 1} times, seasonality ${cambios("h")}.` : "");
 }
 
@@ -2688,8 +2688,9 @@ function resultados(){
     <line data-k="meta-w" x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--green)" stroke-dasharray="4 3"/>
     <line x1="${cx}" y1="${base}" x2="${cx}" y2="${top}" stroke="var(--sep-fuerte)"/>
     <text data-k="meta-t" x="${cx-R+4}" y="${Y(CFG.metas.wape_max)-5}" text-anchor="start" style="fill:var(--green-txt)">WAPE ${pct(CFG.metas.wape_max,0)}</text>
-    <text x="${cx-R}" y="${base+15}">${pct(-limS,0)} over-forecast</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+${pct(limS,0)} under-forecast</text>
-    <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx-R/2}" y="${base+15}" text-anchor="middle" style="opacity:.7">${pct(-limS/2,0)}</text><text x="${cx+R/2}" y="${base+15}" text-anchor="middle" style="opacity:.7">+${pct(limS/2,0)}</text>
+    <text x="${cx-R}" y="${base+15}">${pct(-limS,0)}</text><text x="${cx+R}" y="${base+15}" text-anchor="end">+${pct(limS,0)}</text>
+    <text x="${cx}" y="${base+15}" text-anchor="middle">SPP 0</text><text x="${cx-R/2}" y="${base+15}" text-anchor="middle">${pct(-limS/2,0)}</text><text x="${cx+R/2}" y="${base+15}" text-anchor="middle">+${pct(limS/2,0)}</text>
+    <text x="${cx-R}" y="${base+30}">← over-forecast</text><text x="${cx+R}" y="${base+30}" text-anchor="end">under-forecast →</text>
     <text x="${cx-R+8}" y="${top+15}">WAPE ${pct(limW,0)}</text>`;
   // las ventanas atenuadas van debajo; la elegida, encima
   const orden = VENTANAS.map((x, i) => i).sort((a, b) => (VENTANAS[a].v === VEN) - (VENTANAS[b].v === VEN));
@@ -2891,7 +2892,7 @@ function formulaDetector(filas, fuente){
     <p class="fx">Forecast(t) ${op("=")} ${baseF}${trendF} ${op("+")} DA(t)</p>
     <p class="def">${r.s === 0 ? "<b>Flat mean</b>: no seasonality, so e and h have no effect. " : `<b>Season(t)</b> = ${r.h === "Propio" ? "the code's own sales in the same month" : `Mean12 × the seasonal index of its <b>${esc(tx(r.h))}</b>`}, ${r.e === 2 ? "averaged over the last <b>2 years</b>" : "from <b>last year</b>"}. `}${r.w === 0 ? "<b>No trend</b>. " : `<b><i>T</i></b> = trend of <b>${esc(tx(r.grupo))}</b> over the last <b>${r.N} months</b> against a year earlier, ${senal}, capped at ±${pct(CFG.tope_trend, 0)}. `}<b>Mean12</b> = mean of the last 12 closed months of the cleaned history: Actuals ${op("+")} ${b("c")} of Supply Cuts ${op("−")} ${b("p")} of Total Demand Assumption. <b>DA(t)</b> = demand assumptions planned in the current snapshot, always at 100%.</p>
     <ul class="pars" aria-label="Recipe values">${[["s", "Seasonal weight"], ["e", "Seasonality years"], ["h", "Seasonality from"], ["w", "Trend weight"], ["m", "Sell-out mix"], ["N", "Trend length"], ["c", "Cuts added"], ["p", "Promos removed"]]
-      .map(([k, t]) => `<li class="${(k === "e" || k === "h") && r.s === 0 ? "nulo" : ""}">${t}<b>${vtxt(k, r[k])}</b></li>`).join("")}<li>Trend from<b>${esc(tx(r.grupo))}</b></li></ul>`;
+      .filter(([k]) => r[k] != null).map(([k, t]) => `<li class="${(k === "e" || k === "h") && r.s === 0 ? "nulo" : ""}">${t}<b>${vtxt(k, r[k])}</b></li>`).join("")}<li>Trend from<b>${esc(tx(r.grupo))}</b></li></ul>`;
 }
 const recetaCorta = r => `s ${vtxt("s", r.s)} · w ${vtxt("w", r.w)} · m ${vtxt("m", r.m)} · ${r.N}M · c ${vtxt("c", r.c)} · p ${vtxt("p", r.p)}${r.s > 0 ? ` · ${tx(r.h)} ${r.e}y` : ""}`;
 
