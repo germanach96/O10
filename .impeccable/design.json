@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-14T06:09:26.747419+00:00",
+  "generatedAt": "2026-10-15T23:41:54.063719+00:00",
   "title": "Design System: O10",
   "extensions": {
     "colorMeta": {
@@ -496,16 +496,16 @@
       },
       "desvio-inside": {
         "role": "tertiary",
-        "displayName": "Desvío: dentro",
+        "displayName": "Desvío: dentro del rango (verde meta)",
         "tonalRamp": [
-          "oklch(15% 0.01 285)",
-          "oklch(26% 0.01 285)",
-          "oklch(38% 0.01 285)",
-          "oklch(50% 0.01 285)",
-          "oklch(62% 0.01 285)",
-          "oklch(74% 0.01 285)",
-          "oklch(85% 0.01 285)",
-          "oklch(95% 0.01 285)"
+          "oklch(15% 0.17 145)",
+          "oklch(26% 0.17 145)",
+          "oklch(38% 0.17 145)",
+          "oklch(50% 0.17 145)",
+          "oklch(62% 0.17 145)",
+          "oklch(74% 0.17 145)",
+          "oklch(85% 0.17 145)",
+          "oklch(95% 0.17 145)"
         ]
       },
       "desvio-1": {
@@ -566,16 +566,16 @@
       },
       "desvio-rim-0": {
         "role": "tertiary",
-        "displayName": "Aro dentro",
+        "displayName": "Aro dentro del rango",
         "tonalRamp": [
-          "oklch(15% 0.01 285)",
-          "oklch(26% 0.01 285)",
-          "oklch(38% 0.01 285)",
-          "oklch(50% 0.01 285)",
-          "oklch(62% 0.01 285)",
-          "oklch(74% 0.01 285)",
-          "oklch(85% 0.01 285)",
-          "oklch(95% 0.01 285)"
+          "oklch(15% 0.17 145)",
+          "oklch(26% 0.17 145)",
+          "oklch(38% 0.17 145)",
+          "oklch(50% 0.17 145)",
+          "oklch(62% 0.17 145)",
+          "oklch(74% 0.17 145)",
+          "oklch(85% 0.17 145)",
+          "oklch(95% 0.17 145)"
         ]
       },
       "desvio-rim-1": {
@@ -632,6 +632,118 @@
           "oklch(74% 0.17 20)",
           "oklch(85% 0.17 20)",
           "oklch(95% 0.17 20)"
+        ]
+      },
+      "desvio-off": {
+        "role": "tertiary",
+        "displayName": "Fuera de los filtros",
+        "tonalRamp": [
+          "oklch(15% 0.01 285)",
+          "oklch(26% 0.01 285)",
+          "oklch(38% 0.01 285)",
+          "oklch(50% 0.01 285)",
+          "oklch(62% 0.01 285)",
+          "oklch(74% 0.01 285)",
+          "oklch(85% 0.01 285)",
+          "oklch(95% 0.01 285)"
+        ]
+      },
+      "one-shot-brown": {
+        "role": "tertiary",
+        "displayName": "Marrón One Shot (systemBrown)",
+        "tonalRamp": [
+          "oklch(15% 0.06 70)",
+          "oklch(26% 0.06 70)",
+          "oklch(38% 0.06 70)",
+          "oklch(50% 0.06 70)",
+          "oklch(62% 0.06 70)",
+          "oklch(74% 0.06 70)",
+          "oklch(85% 0.06 70)",
+          "oklch(95% 0.06 70)"
+        ]
+      },
+      "innovation-cyan": {
+        "role": "tertiary",
+        "displayName": "Cian innovación (systemCyan)",
+        "tonalRamp": [
+          "oklch(15% 0.12 230)",
+          "oklch(26% 0.12 230)",
+          "oklch(38% 0.12 230)",
+          "oklch(50% 0.12 230)",
+          "oklch(62% 0.12 230)",
+          "oklch(74% 0.12 230)",
+          "oklch(85% 0.12 230)",
+          "oklch(95% 0.12 230)"
+        ]
+      },
+      "actuals-gray": {
+        "role": "secondary",
+        "displayName": "Gris actuals",
+        "tonalRamp": [
+          "oklch(15% 0.005 285)",
+          "oklch(26% 0.005 285)",
+          "oklch(38% 0.005 285)",
+          "oklch(50% 0.005 285)",
+          "oklch(62% 0.005 285)",
+          "oklch(74% 0.005 285)",
+          "oklch(85% 0.005 285)",
+          "oklch(95% 0.005 285)"
+        ]
+      },
+      "actuals-edge": {
+        "role": "secondary",
+        "displayName": "Filo de actuals",
+        "tonalRamp": [
+          "oklch(15% 0.005 285)",
+          "oklch(26% 0.005 285)",
+          "oklch(38% 0.005 285)",
+          "oklch(50% 0.005 285)",
+          "oklch(62% 0.005 285)",
+          "oklch(74% 0.005 285)",
+          "oklch(85% 0.005 285)",
+          "oklch(95% 0.005 285)"
+        ]
+      },
+      "cuts-orange": {
+        "role": "secondary",
+        "displayName": "Naranja cortes (rayado)",
+        "tonalRamp": [
+          "oklch(15% 0.18 60)",
+          "oklch(26% 0.18 60)",
+          "oklch(38% 0.18 60)",
+          "oklch(50% 0.18 60)",
+          "oklch(62% 0.18 60)",
+          "oklch(74% 0.18 60)",
+          "oklch(85% 0.18 60)",
+          "oklch(95% 0.18 60)"
+        ]
+      },
+      "da-purple": {
+        "role": "secondary",
+        "displayName": "Morado DAs",
+        "tonalRamp": [
+          "oklch(15% 0.2 310)",
+          "oklch(26% 0.2 310)",
+          "oklch(38% 0.2 310)",
+          "oklch(50% 0.2 310)",
+          "oklch(62% 0.2 310)",
+          "oklch(74% 0.2 310)",
+          "oklch(85% 0.2 310)",
+          "oklch(95% 0.2 310)"
+        ]
+      },
+      "da-purple-text": {
+        "role": "secondary",
+        "displayName": "Morado DAs, texto",
+        "tonalRamp": [
+          "oklch(15% 0.2 310)",
+          "oklch(26% 0.2 310)",
+          "oklch(38% 0.2 310)",
+          "oklch(50% 0.2 310)",
+          "oklch(62% 0.2 310)",
+          "oklch(74% 0.2 310)",
+          "oklch(85% 0.2 310)",
+          "oklch(95% 0.2 310)"
         ]
       }
     },
@@ -720,7 +832,7 @@
       {
         "name": "ease-drawer",
         "value": "cubic-bezier(0.32, 0.72, 0, 1)",
-        "purpose": "Hojas inferiores de iPhone, 420ms."
+        "purpose": "Hojas inferiores de iPhone y barra lateral que se encoge en Detalle (420ms), mapa que pasa a fondo (460ms filtro y opacidad, 520ms escala), ficha emergente (360ms)."
       },
       {
         "name": "drift",
@@ -731,6 +843,21 @@
         "name": "sheet-velocity",
         "value": "1:1 drag, release picks detent by velocity-projected position",
         "purpose": "Inspector como hoja de dos posiciones en iPhone."
+      },
+      {
+        "name": "map-backdrop",
+        "value": "filter: blur(16px) saturate(130%); opacity: .6; transform: scale(.975); 460ms/520ms ease-drawer",
+        "purpose": "Mapa vivo detrás del Detalle (más de 900px); oculto en iPhone."
+      },
+      {
+        "name": "sheet-material",
+        "value": "opacity 0→1, translateY(14px) scale(.96)→none, blur(6px)→0, 360ms ease-drawer; out 200ms scale(.97)",
+        "purpose": "Ficha emergente dialog#ficha."
+      },
+      {
+        "name": "chart-tooltip",
+        "value": "opacity + scale(.96→1) 140ms ease-out from the point; instant while visible",
+        "purpose": "Tarjeta flotante de las gráficas del detalle."
       }
     ],
     "breakpoints": [
@@ -819,15 +946,32 @@
       "description": "Pestañas de iPhone en cápsula de cristal flotante.",
       "html": "<nav class=\"ds-tabs\"><button aria-current=\"page\">Mapa</button><button>Detalle</button><button>Brands</button><button>Filtros</button></nav>",
       "css": ".ds-tabs{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue','Segoe UI',Roboto,Arial,sans-serif;position:relative;background:var(--cristal,rgba(255,255,255,.46));-webkit-backdrop-filter:blur(28px) saturate(185%);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.08),0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);display:inline-flex;border-radius:999px;padding:5px;gap:2px}.ds-tabs button{border:0;background:transparent;border-radius:999px;padding:6px 14px;min-width:64px;font-size:11px;font-weight:600;color:#1c1c1e;transition:background-color 160ms ease,transform 140ms cubic-bezier(0.23,1,0.32,1)}.ds-tabs button[aria-current=page]{background:rgba(120,120,128,.14);color:#0062c4}.ds-tabs button:active{transform:scale(.94)}.ds-tabs button:focus-visible{outline:3px solid rgba(0,113,227,.55)}"
+    },
+    {
+      "name": "Cápsula de tolerancia",
+      "kind": "custom",
+      "refersTo": "tolerance-capsule",
+      "description": "Tolerancia general del detector en la barra superior del Detalle.",
+      "html": "<div class=\"ds-tol\"><span class=\"ds-tol-t\">Tolerance</span><label>Month 1 <input value=\"5\">%</label><span>→</span><label>Month 9 <input value=\"5\">%</label></div>",
+      "css": ".ds-tol{display:inline-flex;align-items:center;gap:8px;height:42px;padding:5px 7px 5px 16px;box-sizing:border-box;border-radius:999px;font:500 12.5px var(--font,-apple-system,sans-serif);color:#5d5d63;background:rgba(255,255,255,.46);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08)} .ds-tol-t{color:#1c1c1e;font-weight:600} .ds-tol label{display:flex;align-items:center;gap:6px} .ds-tol input{width:52px;height:28px;border:0;border-radius:999px;background:rgba(120,120,128,.14);padding:0 10px;font:600 13px inherit;color:#1c1c1e;text-align:right;font-variant-numeric:tabular-nums} .ds-tol input:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(0,113,227,.45)}"
+    },
+    {
+      "name": "Tarjeta flotante de gráfica",
+      "kind": "custom",
+      "refersTo": "chart-tooltip",
+      "description": "Sustituye al tooltip nativo en las gráficas del detalle.",
+      "html": "<div class=\"ds-tip\"><b>Best recipe · WAPE90</b>2026.M04\nWAPE 31.2% · SPP −2.4%</div>",
+      "css": ".ds-tip{display:inline-block;max-width:280px;padding:9px 12px 10px;border-radius:14px;font:12px/1.45 -apple-system,sans-serif;color:#1c1c1e;white-space:pre-line;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.46);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08)} .ds-tip b{display:block;font-size:12.5px;font-weight:600;margin-bottom:1px}"
     }
   ],
   "narrative": {
     "northStar": "El cristal sobre la mesa gris",
-    "overview": "O10 es una app de iPadOS 26 que vive en una sola ventana sin marco: el contenido (el mapa de burbujas, las tarjetas de brújulas, las tablas) ocupa todo el lienzo, y todo lo que se manipula flota encima como piezas de cristal líquido. Debajo hay un papel tapiz quieto: un gris casi neutro con cuatro manchas suaves, difuminadas 48px y con un grano de ruido al 3,5%. Ese fondo no se mueve nunca; lo que se mueve son las burbujas, que derivan despacio y frenan en cuanto el puntero entra en el mapa, para poder leer y apuntar.\n\nEl color se reserva para los datos y la acción: azul de sistema para la receta y los botones, gris para el Consensus, verde para la meta y una escala ordinal amarillo, naranja, rojo para el desvío. Las superficies de cristal son incoloras: toman el tono de lo que tienen detrás. La densidad es de herramienta de trabajo (cuerpo de 13px, filas de 32px), con títulos grandes de iPadOS arriba de cada vista.\n\nEl movimiento sigue la física de Apple: muelles críticamente amortiguados, sin rebote, respuestas cortas al pulsar y nada que tarde en dejar leer un número. Con movimiento reducido no hay deriva, ni zoom animado, ni escalas.",
+    "overview": "O10 es una app de iPadOS 26 que vive en una sola ventana sin marco: el contenido (el mapa de burbujas, las tarjetas de brújulas, las tablas) ocupa todo el lienzo, y todo lo que se manipula flota encima como piezas de cristal líquido. Debajo hay un papel tapiz quieto: un gris casi neutro con cuatro manchas suaves, difuminadas 48px y con un grano de ruido al 3,5%. Ese fondo no se mueve nunca; lo que se mueve son las burbujas, que derivan despacio y frenan en cuanto el puntero entra en el mapa, para poder leer y apuntar.\n\nEl color se reserva para los datos y la acción: azul de sistema para la receta y los botones, gris para el Consensus y los actuals, verde para la meta y para \"dentro del rango\", una escala ordinal amarillo, naranja, rojo para el desvío, naranja rayado para los cortes y morado para los DAs. Las superficies de cristal son incoloras: toman el tono de lo que tienen detrás. La densidad es de herramienta de trabajo (cuerpo de 13px, filas de 32px), con títulos grandes de iPadOS arriba de cada vista.\n\nEl mapa no desaparece nunca en iPad / escritorio: al pasar a Detalle se queda detrás, en su sitio y con su cámara, empujado hacia atrás, difuminado y atenuado, como la app que queda detrás de una hoja en iPadOS. Sigue flotando y cambiando de color con la tolerancia y el rango.\n\nEl movimiento sigue la física de Apple: muelles críticamente amortiguados, sin rebote, respuestas cortas al pulsar y nada que tarde en dejar leer un número. Con movimiento reducido no hay deriva, ni zoom animado, ni escalas.",
     "keyCharacteristics": [
       "Contenido a sangre sobre un fondo gris difuminado y estático; claro `#e9ebee`, oscuro en grises puros `#0e0e0e`.",
       "Un único material de cristal para todo lo flotante: barra lateral, cápsulas, inspector, popover, tarjetas de detalle y barra de pestañas.",
       "Burbujas hoja como lentes de cristal: tinte translúcido del tramo de desvío, aro del mismo tramo y reflejo especular arriba; sin sombreado de esfera.",
+      "En Detalle, el mapa vivo queda de fondo (escala 0,975, blur 16px, opacidad 0,6) y la barra lateral se encoge a un recuadro con O10.",
       "Colores de sistema de Apple con significado fijo; fuente del sistema.",
       "Deriva de 2,6px controlada por un solo bucle de animación con muelle sobre la amplitud.",
       "Apariencia manual Claro / Oscuro / Auto."
@@ -840,7 +984,7 @@
       },
       {
         "name": "La Regla del Significado Fijo",
-        "body": "Azul = receta y acción; gris = Consensus; verde = meta; amarillo → rojo = desvío. Ningún color cambia de papel entre vistas, y el color nunca es la única señal: la tarjeta de detalle y la leyenda nombran el tramo.",
+        "body": "Azul = receta y acción; gris = Consensus y actuals; verde = meta y dentro del rango; amarillo → rojo = desvío; naranja rayado = cortes; morado = DAs. Ningún color cambia de papel entre vistas, y el color nunca es la única señal: la tarjeta de detalle y la leyenda nombran el tramo.",
         "section": "colors"
       },
       {
@@ -864,6 +1008,11 @@
         "section": "elevation"
       },
       {
+        "name": "La Regla de la App Detrás",
+        "body": "Lo que queda detrás de una vista o una hoja se empuja hacia atrás, se difumina y se atenúa; no se oculta ni se sustituye por otro fondo. El mapa detrás del Detalle y el grupo detrás de la ficha emergente siguen ahí.",
+        "section": "elevation"
+      },
+      {
         "name": "La Regla de la Lente, no la Esfera",
         "body": "Las burbujas son lentes planas de cristal: reflejo especular arriba, luz de borde abajo, tinte translúcido. Sin gradiente radial de volumen ni sombra proyectada.",
         "section": "elevation"
@@ -881,7 +1030,10 @@
       "**Do** usar azul solo para receta y acción, gris para Consensus, verde para la meta y la escala amarillo → rojo para el desvío.",
       "**Do** usar cifras tabulares en todo número y la fuente del sistema en todo texto.",
       "**Do** animar con muelles críticamente amortiguados y curvas ease-out fuertes, respetar `prefers-reduced-motion` y `prefers-reduced-transparency`, y reservar el hover para punteros finos.",
-      "**Do** mantener las cuatro tarjetas de cada rejilla del mismo tamaño fijo (360 × 480px o 360 × 410px)."
+      "**Do** mantener todas las tarjetas de cada rejilla del mismo tamaño fijo (360 × 568px en Decisiones, 260 × 374px en Resultados).",
+      "**Do** dar a cada media brújula su propia escala (SPP ±30/50/75/100%, WAPE 60/80/100%) y pegar al borde con un triángulo lo que se salga.",
+      "**Do** usar la tarjeta flotante de cristal, y no el tooltip nativo, en las gráficas del detalle.",
+      "**Do** dejar lo que queda detrás (el mapa en Detalle, el grupo bajo la ficha) empujado, difuminado y atenuado, no oculto."
     ],
     "donts": [
       "**Don't** animar el fondo ni añadir fondos en movimiento.",
@@ -889,6 +1041,7 @@
       "**Don't** teñir el cristal con color de marca ni usar azul para decorar.",
       "**Don't** usar grises azulados en el modo oscuro.",
       "**Don't** poner rótulos en mayúsculas espaciadas sobre los títulos.",
+      "**Don't** pintar los Supply Cuts con naranja liso: van siempre rayados.",
       "**Don't** usar animaciones con rebote ni que retrasen la lectura de un número más de 640ms."
     ]
   }

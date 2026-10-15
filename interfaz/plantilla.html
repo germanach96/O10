@@ -215,7 +215,7 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
   body.en-detalle .lado > :not(.lado-cab){display:none}
   body.en-detalle .lado-cab{padding:0}
   body.en-detalle .contenido{left:0}
-  body.en-detalle .barra{padding-left:188px}
+  body.en-detalle .barra{padding-left:212px}
   body.en-detalle #vistaDetalle{padding-left:24px}
 }
 /* El mapa nunca se va (escritorio): en Detalle queda de fondo, en el mismo sitio y con la misma cámara, pero empujado
@@ -600,11 +600,11 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 }
 /* Ficha emergente de un código (desde el detector de un grupo): se abre encima sin perder el grupo de debajo.
    Modal: centrada, el fondo se oscurece y difumina (atenuar para enfocar). Llega como material: escala .96 → 1,
-   desenfoque 6 px → 0 y 12 px de subida, 340 ms con la curva de cajón de iOS; sale más rápido (200 ms). */
-.ficha{width:min(1180px,calc(100vw - 32px));height:calc(100dvh - 32px);max-height:calc(100dvh - 32px);overflow:auto;padding:22px 24px 24px;border:0;border-radius:var(--r-xl);color:var(--label);background:var(--cristal-fuerte);overscroll-behavior:contain}
-.ficha::backdrop{background:rgba(0,0,0,.26);backdrop-filter:blur(6px) saturate(120%);-webkit-backdrop-filter:blur(6px) saturate(120%)}
-.ficha[open]::backdrop{animation:velo-in 300ms var(--ease-out)}
-.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forwards}
+   desenfoque 6 px → 0 y 12 px de subida, 360 ms con la curva de cajón de iOS; sale más rápido (200 ms). */
+.emergente{width:min(1180px,calc(100vw - 32px));height:calc(100dvh - 32px);max-height:calc(100dvh - 32px);overflow:auto;padding:22px 24px 24px;border:0;border-radius:var(--r-xl);color:var(--label);background:var(--cristal-fuerte);overscroll-behavior:contain}
+.emergente::backdrop{background:rgba(0,0,0,.26);backdrop-filter:blur(6px) saturate(120%);-webkit-backdrop-filter:blur(6px) saturate(120%)}
+.emergente[open]::backdrop{animation:velo-in 300ms var(--ease-out)}
+.emergente.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forwards}
 @keyframes velo-in{from{opacity:0}} @keyframes velo-out{to{opacity:0}}
 .ficha-barra{position:sticky;top:-22px;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-22px -24px 8px;padding:14px 18px 12px 24px;
   background:var(--cristal-fuerte);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--sep)}
@@ -612,14 +612,14 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .ficha-ctx b{color:var(--label);font-weight:600}
 .ficha-acc{display:flex;gap:8px;align-items:center;flex:none}
 /* dentro de la ficha el detalle va a una columna: sin raíl, sin "volver al mapa" */
-.ficha .det-cuerpo{grid-template-columns:minmax(0,1fr) !important}
-.ficha .rail,.ficha .volver{display:none !important}
-.ficha .det-cab{padding-top:4px}
+.emergente .det-cuerpo{grid-template-columns:minmax(0,1fr) !important}
+.emergente .rail,.emergente .volver{display:none !important}
+.emergente .det-cab{padding-top:4px}
 @media (max-width:700px){
-  .ficha{width:100vw;max-width:100vw;max-height:94dvh;margin:auto 0 0;padding:18px 12px 28px;border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .emergente{width:100vw;max-width:100vw;max-height:94dvh;margin:auto 0 0;padding:18px 12px 28px;border-radius:var(--r-xl) var(--r-xl) 0 0}
   .ficha-barra{margin:-18px -12px 8px;top:-18px;padding:12px 12px 10px 16px}
 }
-@media (prefers-reduced-transparency: reduce){.ficha{background:var(--card)}}
+@media (prefers-reduced-transparency: reduce){.emergente{background:var(--card)}}
 /* Sección Actuals */
 .rango.rango-act{order:0;flex-basis:auto;margin:4px 0 12px;background:var(--fill);border-radius:var(--r-m);padding:11px 16px 6px;
   grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"txt pres" "pista pista";row-gap:2px}
@@ -1136,7 +1136,7 @@ details[open] summary::before{transform:rotate(45deg)}
   </div>
   <!-- Ficha emergente: el detalle completo de un código encima del grupo. Al abrirla, la cabecera y el cuerpo del
        detalle se mudan aquí dentro y en su sitio queda una copia quieta del grupo; al cerrarla vuelven. -->
-  <dialog class="ficha vidrio" id="ficha" aria-label="Code detail">
+  <dialog class="emergente vidrio" id="ficha" aria-label="Code detail">
     <div class="ficha-barra">
       <span class="ficha-ctx" id="fichaCtx"></span>
       <div class="ficha-acc"><button type="button" class="btn btn-fant" id="fichaAbrir">Open as page</button><button type="button" class="redondo" id="fichaCerrar" aria-label="Close and go back to the group"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
