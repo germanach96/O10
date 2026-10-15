@@ -148,14 +148,14 @@ def test_tope_trend(tmp_path, cfg):
     filas = []
     for a in (2023, 2024):
         for m in range(1, 13):
-            v = 100 if a == 2023 else 200       # +100% -> recortado a +30%
+            v = 100 if a == 2023 else 200       # +100% -> recortado al tope (±50%)
             filas.append({"ean": "1000000000050", "mes": mes(a, m), "Actuals": v})
     filas.append({"ean": "1000000000050", "mes": "2025.M05", "Consensus - Final": 1})
     f = leer_foto(escribir_csv(tmp_path / "Test_2025_01.csv", filas), cfg)
     R = Rejilla(cfg)
     Fc, _ = MotorFoto(f, cfg, R).forecasts(0)
     r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Propio", "Jerarquía"))
-    np.testing.assert_allclose(Fc[r][0], 200 * 1.3)
+    np.testing.assert_allclose(Fc[r][0], 200 * (1 + cfg["tope_trend"]))
 
 
 def test_kpis_grupo(cfg):

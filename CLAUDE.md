@@ -8,7 +8,7 @@ Fase 1 (esta especificación): encontrar, en cada foto, los parámetros que mini
 
 Idioma de la **página: inglés** (textos, botones, tooltips, números con formato en-US). Comentarios del código y documentación: español. Las etiquetas que esta especificación da en español ("Ver todo", "Sin medir aún", "Cuentan en los cálculos"…) se muestran en la página con su equivalente en inglés ("Show all", "Not measured yet", "Included in calculations"…). Las etiquetas que vienen de los datos (tramos de edad, grupos del selector, motivos de fuera de scope) se guardan en español en el motor y la página las traduce al mostrarlas (`TX` en `interfaz/plantilla.html`).
 
-Mapa del repo: `README.md`. Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/` (y `data/<Casa>/Promos/`, aún sin usar).
+Mapa del repo: `README.md`. Cambios del motor que la página aún no refleja: `diseno/PENDIENTE-DISENO.md` (leerlo antes de tocar la interfaz). Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/` (y `data/<Casa>/Promos/`, aún sin usar).
 
 Reglas de diseño (skills obligatorias Impeccable, Emil Kowalski, Taste, Figma y Playwright): @diseno/SKILLS-DISENO.md
 
@@ -31,7 +31,7 @@ Visto desde una foto F: forecast de los meses F+1 … F+9. SPP3/WAPE90 = meses F
 - En un grupo se suman numeradores y denominadores de todos los códigos y meses. Ejemplo: línea con dos códigos a −5% y +5% → WAPE 10%, SPP 0%.
 - **Metas:** WAPE ≤ 40% (todos los WAPE) y SPP entre −5% y +5% (todos los SPP).
 
-**Actuals de un mes M:** se toman de cualquier foto posterior a M (la más reciente disponible). Nunca de la foto del propio mes M.
+**Actuals de un mes M:** se toman de cualquier foto posterior a M (la más reciente disponible que traiga el código). Nunca de la foto del propio mes M. Si el código ya no sale en ninguna foto que cubre M (lo sacaron del export), su actual de M es 0: el export trae la historia completa, así que si hubiera vendido aparecería.
 
 ---
 
@@ -115,9 +115,12 @@ El scope se evalúa en cada foto: un código puede entrar en la foto de octubre 
 Una **receta** es una combinación de valores de estas variables. Horizonte: short term, 9 meses.
 
 ### Brújula 1 — "¿Cuánto me alejo de la media?"
-- **X · Peso estacional `s`**: 0% = media plana ↔ 100% = mismo mes del año pasado.
+- **X · Peso estacional `s`**: 0% = media plana ↔ 100% = estacionalidad completa.
 - **Y · Peso del trend `w`**: 0% = sin trend (solo la base) ↔ 100% = trend completo.
-- **Tope del trend:** parámetro fijo, por defecto ±30%. No es un eje.
+- **Años de estacionalidad `e`** (interruptor, no eje): 1 = mismo mes del año anterior; 2 = media del mismo mes de los 2 años anteriores (si el código no tiene 2 años, igual que 1).
+- **De quién copio la estacionalidad `h`**: Propio (historia del código), Product Line, Brand o House. Es independiente del grupo del trend (selector): el trend conviene copiarlo de un grupo cercano y la estacionalidad de uno grande y estable.
+- Con `s = 0`, `e` y `h` no influyen.
+- **Tope del trend:** parámetro fijo, ±50% (antes ±30%: con ±30% más de la mitad de los oráculos quedaban pegados al tope). No es un eje.
 
 ### Brújula 2 — "¿Qué señal sigo?"
 - **X · Mezcla `m`**: 100% sell-in (Actuals) ↔ 100% sell-out (EPOS). 50% = promedio de los dos trends.
@@ -139,8 +142,10 @@ Una **receta** es una combinación de valores de estas variables. Horizonte: sho
 - **Gruesa (la que se calcula y guarda completa):**
   - `s, w, m, c, p` ∈ {0, 50, 100}%
   - `N` ∈ {6, 9, 12}
-  - 17 grupos
-  - Total: 3⁵ × 3 × 17 = **12.393 recetas** por código y foto.
+  - `e` ∈ {1, 2} años
+  - `h` ∈ {Propio, Product Line, Brand, House}
+  - 17 grupos de trend
+  - Total: 3⁵ × 3 × 2 × 4 × 17 = **99.144 recetas** por código y foto.
 - **Fina (opcional):** pasos de 25% alrededor del ganador de la gruesa, calculada al vuelo. Pasos más finos no tienen sentido de negocio.
 - Las rejillas y el tope deben estar en un archivo de configuración, no en el código.
 
@@ -148,17 +153,20 @@ Una **receta** es una combinación de valores de estas variables. Horizonte: sho
 
 ## 5. Cómo se construye el forecast de una receta
 
-Para un código, una foto F y una receta (s, w, m, N, c, p, grupo G). Historia disponible: meses ≤ F−1.
+Para un código, una foto F y una receta (s, e, h, w, m, N, c, p, grupo G). Historia disponible: meses ≤ F−1.
 
 1. **Historia limpia (sell-in):** H(t) = Actuals(t) + c · SupplyCuts(t) − p · TDA(t), con celdas vacías = 0 en cortes y TDA.
-2. **Base para el mes futuro t:** Base(t) = (1 − s) · Media(H) + s · H(t − 12).
+2. **Base para el mes futuro t:** Base(t) = (1 − s) · Media(H) + s · E(t).
    - Media(H) = media de H de los últimos 12 meses cerrados. **Decisión abierta:** confirmar con el usuario si la media debe ser de 12M u otra.
-   - H(t − 12) = mismo mes del año anterior. Para t > F + 12 no aplica (el horizonte es de 9 meses).
+   - E(t) = parte estacional, según `h` y `e`:
+     - `h` = Propio: E(t) = H(t − 12) con `e` = 1; (H(t − 12) + H(t − 24)) / 2 con `e` = 2 (si el código no tiene t − 24, la de 1 año).
+     - `h` = un grupo: E(t) = Media(H) · I_h(t), con I_h(t) = H_h(t − 12) / media de H_h en los 12 meses cerrados (H_h = historia limpia sumada del grupo). Con `e` = 2, I_h(t) es la media de ese índice y del de t − 24, este normalizado con la media de su propio año.
 3. **Trend del grupo G con duración N:**
    - T_sellin = Σ H_G(últimos N meses) / Σ H_G(mismos N meses del año anterior) − 1, donde H_G es la historia limpia sumada de todos los códigos del grupo.
-   - T_sellout = igual con EPOS, sin limpiar, solo meses en que el grupo tiene EPOS.
+   - T_sellout = igual con EPOS, sin limpiar, con los totales del grupo y solo los meses en que el grupo tiene EPOS ese mes **y** hace 12 meses (sin EPOS hace un año = no se reportaba; el mes −1 sin EPOS cargado queda fuera). No se empareja código a código.
+   - Los códigos que salieron del export siguen sumando en H_G, H_h y el EPOS del grupo con su historia (copiada de la última foto que los traía) y 0 desde que salieron. No cuentan en el nº de códigos del grupo, ni en el scope, el mapa o el detector.
    - T = (1 − m) · T_sellin + m · T_sellout, recortado a ±tope.
-4. **Forecast:** F(t) = Base(t) · (1 + w · T) + **DAs futuros**(t), donde DAs futuros = Total Demand Assumption de la foto F para el mes t (lo planificado se suma encima de la base).
+4. **Forecast:** F(t) = Base(t) · (1 + w · T) + **DAs futuros**(t), donde DAs futuros = Total Demand Assumption de la foto F para el mes t (lo planificado se suma encima de la base). Los DAs se respetan siempre al 100%: no hay eje para ignorarlos (decisión del usuario).
 5. Forecast negativo → 0.
 
 ### Casos límite (registrar, no romper)
