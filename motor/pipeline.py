@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .lector import Foto, int_a_mes, leer_foto
+from .lector import Foto, int_a_mes, leer_foto, leer_listas
 from .recetas import CELDAS, EJES, MotorFoto, Rejilla
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -516,8 +516,10 @@ def main(argv=None):
         f = leer_foto(a, cfg)
         casas.setdefault(f.casa, []).append(f)
         print(f"  leída {a.name}: {len(f.eans)} códigos, {int(f.codigos['scope'].sum())} en scope ({time.time()-t0:.1f}s)")
+    # listas de EANs para los filtros de selección (data/filters.csv): solo eligen qué códigos se miran
+    listas = leer_listas(carpeta / "filters.csv")
     datos = {"config": cfg, "celdas": CELDAS, "ejes": {k: R.valores[k] for k in EJES if k != "g"},
-             "casas": {}}
+             "listas": listas, "casas": {}}
     for casa, fotos in casas.items():
         fotos.sort(key=lambda f: f.mes)
         # una variante por combinación de tipos ignorados (filtro general de la página);

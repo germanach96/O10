@@ -31,8 +31,9 @@ O10/
 │   ├── SKILLS-DISENO.md      skills de diseño obligatorias (lo importa CLAUDE.md)
 │   ├── referencia/           guías antiguas, ya no se aplican
 │   ├── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
-│   └── versiones/            copias fijas de versiones aprobadas: O10_first_version.html (primera versión)
+│   └── versiones/            copias fijas de la versión oficial aprobada: O10_first_version.html
 ├── data/                     datos de entrada, una carpeta por casa
+│   ├── filters.csv           listas de EANs para los filtros de selección (una por columna)
 │   ├── Gucci/
 │   │   ├── Consensus/        fotos mensuales: Gucci_2025_11.csv, Gucci_2026_09.csv
 │   │   └── Promos/           (vacía) promos, para la 2ª etapa

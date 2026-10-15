@@ -234,3 +234,28 @@ def _atributos(foto: Foto, cfg: dict) -> None:
         default="")
     attrs["fuera_scope_motivo"] = motivo
     foto.codigos = attrs
+
+
+def leer_listas(ruta: Path) -> list[dict]:
+    """Listas de EANs para los filtros de selección de la página (data/filters.csv).
+
+    Una columna = una lista: la cabecera es el nombre y debajo van sus EANs, como texto. Separador ";" y UTF-8 con BOM,
+    igual que las fotos. Las columnas pueden tener largos distintos (celdas vacías al final). Los EANs que no estén en
+    ninguna casa no molestan: la página solo usa los que encuentra.
+    """
+    ruta = Path(ruta)
+    if not ruta.exists():
+        return []
+    df = pd.read_csv(ruta, sep=";", dtype=str, encoding="utf-8-sig", keep_default_na=False)
+    listas = []
+    for col in df.columns:
+        nombre = " ".join(str(col).split())
+        if not nombre or nombre.lower().startswith("unnamed"):
+            continue
+        eans = [e.strip() for e in df[col] if e.strip()]
+        malos = [e for e in eans if re.search(r"[eE]\+|\.", e)]
+        if malos:
+            raise ErrorFoto(f"{ruta.name}: la lista «{nombre}» tiene EANs en notación científica (p. ej. {malos[0]}). "
+                            "Reexportar con el EAN como texto.")
+        listas.append({"nombre": nombre, "eans": list(dict.fromkeys(eans))})
+    return listas

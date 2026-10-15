@@ -206,7 +206,36 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
   transition:opacity 180ms var(--ease-out),transform 240ms var(--ease-out),filter 200ms var(--ease-out),visibility 0s linear 0s}
 .pop[data-cerrado]{opacity:0;transform:scale(.94) translateY(-6px);filter:blur(6px);visibility:hidden;pointer-events:none;transition:opacity 140ms ease,transform 140ms ease,filter 140ms ease,visibility 0s linear 140ms}
 .pop h2{font-size:15px;font-weight:700;margin:0 0 12px;letter-spacing:-.01em}
-.filtros{display:flex;flex-direction:column;gap:12px}
+.filtros{display:flex;flex-direction:column;gap:12px;max-height:min(62vh,calc(100dvh - 210px));overflow-y:auto;overscroll-behavior:contain;margin:0 -18px;padding:0 18px}
+/* Listas (data/filters.csv): sección plegable al final de los filtros, como un grupo de Finder. Una fila por lista con
+   cuántos de sus EANs hay en la casa; varias listas elegidas se suman (una u otra), y se cruzan con el resto de filtros. */
+.listas-f{border-top:1px solid var(--sep);padding-top:10px}
+.listas-cab{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;border:0;background:transparent;padding:0;color:var(--label);font:inherit;text-align:left;border-radius:8px}
+.listas-cab .mono{color:var(--label-2);font-size:12px;font-weight:500;width:84px;flex:none}
+.listas-res{flex:1;min-width:0;font-size:12px;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.listas-res.activa{color:var(--blue-txt);font-weight:600}
+.listas-cab .ico{width:12px;height:12px;stroke-width:2.2;color:var(--label-3);transition:transform 240ms var(--ease-out)}
+.listas-cab[aria-expanded="true"] .ico{transform:rotate(90deg)}
+.listas-cab:active .ico{transform:scale(.9)}
+.listas-cab[aria-expanded="true"]:active .ico{transform:rotate(90deg) scale(.9)}
+.listas-cuerpo{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows 260ms var(--ease-out),opacity 200ms ease}
+.listas-cuerpo.abierto{grid-template-rows:1fr;opacity:1}
+.listas-int{overflow:hidden;min-height:0}
+.listas-ul{list-style:none;margin:8px 0 0;padding:0;border-radius:12px;background:var(--fill);overflow:hidden}
+.listas-ul li + li{border-top:1px solid var(--sep)}
+.lista-it{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;border:0;background:transparent;padding:8px 12px;color:var(--label);font:inherit;font-size:13px;text-align:left;transition:background-color 140ms ease}
+.lista-it:active:not(:disabled){background:var(--fill-2)}
+@media (hover:hover) and (pointer:fine){.lista-it:not(:disabled):hover{background:var(--fill)}}
+.lista-it .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.lista-it .n{font-size:12px;color:var(--label-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lista-it .ok{width:18px;height:18px;flex:none;border-radius:50%;border:1.5px solid var(--sep-fuerte);display:grid;place-items:center;transition:background-color 140ms ease,border-color 140ms ease}
+.lista-it .ok svg{width:10px;height:10px;fill:none;stroke:var(--on-blue);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.6);transition:opacity 140ms ease,transform 180ms var(--ease-out)}
+.lista-it[aria-pressed="true"] .ok{background:var(--blue);border-color:var(--blue)}
+.lista-it[aria-pressed="true"] .ok svg{opacity:1;transform:none}
+.lista-it[aria-pressed="true"] .t{color:var(--blue-txt)}
+.lista-it:disabled{color:var(--label-3)}
+.lista-it:disabled .ok{border-style:dashed}
+.listas-nota{margin:8px 2px 2px;font-size:11.5px;line-height:1.4;color:var(--label-2)}
 .grupo-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;position:relative;padding-left:92px;min-height:26px}
 .grupo-f > span.mono{color:var(--label-2);position:absolute;left:0;top:4px;font-size:12px;font-weight:500}
 .chip{border:0;background:var(--fill);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--label);transition:background-color 140ms ease,color 140ms ease,transform 140ms var(--ease-out)}
@@ -625,6 +654,8 @@ details[open] summary::before{transform:rotate(45deg)}
   .kbd{display:none}
   .pop{position:fixed;top:auto;bottom:0;right:0;left:0;width:auto;border-radius:var(--r-xl) var(--r-xl) 0 0;padding-bottom:max(18px,env(safe-area-inset-bottom));transform-origin:bottom center}
   .pop[data-cerrado]{transform:translateY(100%);filter:none}
+  /* la hoja de filtros va dentro de la barra (sticky, z 15): al abrirla, la barra sube por encima del inspector y de las pestañas */
+  .barra:has(> .pop:not([data-cerrado])){z-index:45}
   .pop{transition:opacity 200ms ease,transform 420ms var(--ease-drawer),visibility 0s linear 0s}
   .mapa,#vistaInicio .mapa{position:relative;top:auto;padding:4px 12px 0}
   .ver-todo{top:10px;right:20px;height:32px;padding:0 9px}
@@ -675,7 +706,7 @@ details[open] summary::before{transform:rotate(45deg)}
   #mundo{transition:none}
   .n-anim{transition:opacity 220ms ease,fill 220ms ease}
   .entrando .n-anim{transform:none}
-  .seg .pulgar,.lado,.disc,.hoja-ins{transition:none}
+  .seg .pulgar,.lado,.disc,.hoja-ins,.listas-cuerpo,.listas-cab .ico,.lista-it .ok svg{transition:none}
   #mundo circle.n-hoja.encima{transform:none}
   .pop,.pop[data-cerrado]{transform:none !important;filter:none !important;transition:opacity 160ms ease,visibility 0s linear 160ms}
   .tip,.tip.ver{transform:translate3d(var(--tx,0),var(--ty,0),0);filter:none}
@@ -794,6 +825,18 @@ details[open] summary::before{transform:rotate(45deg)}
         </div>
         <div class="grupo-f" role="group" aria-label="Segmento" id="fSeg"><span class="mono">Segmento</span></div>
         <div class="grupo-f" role="group" aria-label="Edad" id="fEdad"><span class="mono">Edad</span></div>
+        <div class="listas-f" id="fListas" hidden>
+          <button type="button" class="listas-cab" id="listasTog" aria-expanded="false" aria-controls="listasCuerpo">
+            <span class="mono">Listas</span><span class="listas-res" id="listasRes"></span>
+            <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+          </button>
+          <div class="listas-cuerpo" id="listasCuerpo" inert>
+            <div class="listas-int">
+              <ul class="listas-ul" id="listasUl" role="group" aria-label="Listas de data/filters.csv"></ul>
+              <p class="listas-nota">Solo eligen qué códigos se miran. Entran los EANs de la lista que hay en esta casa y cuentan en los cálculos.</p>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="pop-pie">
         <button type="button" class="enlace" id="limpiar">Restablecer</button>
@@ -1127,7 +1170,7 @@ const BINS = [  // desvío % frente a la receta elegida (secuencial, un solo ton
   {max: Infinity, v: "--d4", txt: "Más de 30%"},
 ];
 const binDe = p => BINS.findIndex(b => p <= b.max);
-let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "todos", fuera: false, seg: new Set(), edad: new Set(), q: ""}, primera: true, W: 0};
+let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "todos", fuera: false, seg: new Set(), edad: new Set(), lista: new Set(), q: ""}, primera: true, W: 0};
 
 // fuera de scope con color propio: One Shot (Article Type) e innovaciones en sus meses 1-6
 const tipoHoja = i => i.scope ? null : (i.art === "One Shot" ? "os" : (i.edad === "A1 1-6" ? "in" : null));
@@ -1176,15 +1219,23 @@ function construirArbol(hojas){
 // grupo con filtros, el detalle es una selección (cada código con su receta y el trend de su grupo, como el modo
 // acumulado), con los resultados solo de los filtrados. Se codifica en la clave: "Brand: X~{json del filtro}".
 function filtroSel(){
-  const f = M.filtros;
-  if (!f.seg.size && !f.edad.size && !f.fuera && !f.q) return null;
-  return {seg: [...f.seg], edad: [...f.edad], fuera: f.fuera ? 1 : 0, q: f.q || ""};
+  const f = M.filtros, central = f.scope === "central";
+  if (!f.seg.size && !f.edad.size && !f.lista.size && !f.fuera && !f.q && !central) return null;
+  const o = {seg: [...f.seg], edad: [...f.edad], fuera: f.fuera ? 1 : 0, q: f.q || ""};
+  if (f.lista.size) o.lista = [...f.lista];
+  if (central) o.sc = 1;
+  return o;
 }
-const comoFiltros = o => ({scope: "central", fuera: !!o.fuera, seg: new Set(o.seg || []), edad: new Set(o.edad || []), q: o.q || ""});
+// el scope va en el filtro guardado ("Central" es un filtro más): sin él entran todos, también One Shot e innovaciones
+const comoFiltros = o => ({scope: o.sc ? "central" : "todos", fuera: !!o.fuera, seg: new Set(o.seg || []), edad: new Set(o.edad || []),
+  lista: new Set(o.lista || []), q: o.q || ""});
 function txtFiltro(o){
   if (!o) return "";
-  return [...(o.seg || []), ...(o.edad || []), o.fuera ? "fuera de estrategia" : "", o.q ? `“${o.q}”` : ""].filter(Boolean).join(" · ");
+  return [...(o.lista || []), o.sc ? "central" : "", ...(o.seg || []), ...(o.edad || []), o.fuera ? "fuera de estrategia" : "", o.q ? `“${o.q}”` : ""].filter(Boolean).join(" · ");
 }
+// Listas de data/filters.csv: nombre → EANs. Varias listas elegidas se suman (está en una o en otra).
+const LISTAS = new Map((D.listas || []).map(l => [l.nombre, new Set(l.eans)]));
+const enListas = (ean, nombres) => { for (const n of nombres) { const s = LISTAS.get(n); if (s && s.has(ean)) return true; } return false; };
 function partirClave(k){ const i = k.indexOf("~"); if (i < 0) return {base: k, f: null}; let f = null; try { f = JSON.parse(k.slice(i + 1)); } catch(e) {} return {base: k.slice(0, i), f}; }
 const nombreItem = k => { const {base, f} = partirClave(k); return corto(base.replace(/^(Casa|Brand|PL): /, "")) + (f ? " · " + txtFiltro(f) : ""); };
 // coincide(h) se usa en .filter(coincide): no puede tener un segundo parámetro (filter pasa el índice)
@@ -1194,6 +1245,7 @@ function coincideCon(h, f){
   if (f.fuera && !h.fuera) return false;
   if (f.seg.size && !f.seg.has(h.seg || "(vacío)")) return false;
   if (f.edad.size && !f.edad.has(h.edad)) return false;
+  if (f.lista && f.lista.size && !enListas(h.ean, f.lista)) return false;
   if (f.q) { const t = (h.ean + " " + h.desc + " " + h.brand + " " + h.pl).toLowerCase(); if (!f.q.split(/\s+/).every(w => t.includes(w))) return false; }
   return true;
 }
@@ -1688,7 +1740,7 @@ function pintarCifras(){
   const fila = (k, t, n) => `<li><button type="button" class="fila" data-vista="${k}" ${act === k ? 'aria-current="true"' : ""}>${ICO[k]}<span class="t">${t}</span><span class="badge">${n}</span></button></li>`;
   if ($("cifras")) $("cifras").innerHTML = fila("todos", "Todos los códigos", hs.length) + fila("scope", "En scope central", sc.length) + fila("fuera", "Fuera de estrategia", fuera.length);
   $("ladoFoto").textContent = `Foto ${casa().inicio.foto}`;
-  const n = (f.seg.size ? 1 : 0) + (f.edad.size ? 1 : 0) + (f.fuera ? 1 : 0) + (f.scope === "central" ? 1 : 0) + (f.q ? 1 : 0);
+  const n = (f.seg.size ? 1 : 0) + (f.edad.size ? 1 : 0) + (f.lista.size ? 1 : 0) + (f.fuera ? 1 : 0) + (f.scope === "central" ? 1 : 0) + (f.q ? 1 : 0);
   $("nFiltros").hidden = !n; $("nFiltros").textContent = n;
 }
 
@@ -1738,7 +1790,49 @@ function pintarChips(){
   const chip = (f, v) => `<button type="button" class="chip mono" data-f="${f}" data-v="${esc(v)}" aria-pressed="${M.filtros[f].has(v)}">${esc(v)}</button>`;
   $("fSeg").innerHTML = `<span class="mono">Segmento</span>` + segs.map(v => chip("seg", v)).join("");
   $("fEdad").innerHTML = `<span class="mono">Edad</span>` + edades.map(v => chip("edad", v)).join("");
+  pintarListas();
 }
+// sección Listas: cuántos EANs de cada lista hay en la casa (los que cuentan en los cálculos); sin ninguno, apagada
+const OK_SVG = `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2 5 8.6l4.5-5"/></svg>`;
+function pintarListas(){
+  const cont = $("fListas");
+  cont.hidden = !LISTAS.size; if (!LISTAS.size) return;
+  const hay = new Set(M.hojas.map(h => h.ean)), deCasa = casa().inicio.codigos, nombreCasa = corto(estado.casa);
+  // una lista elegida sigue elegida aunque el filtro de cálculo la deje sin códigos: entonces no se selecciona nada
+  $("listasUl").innerHTML = [...LISTAS].map(([n, s]) => {
+    const dentro = [...s].filter(e => hay.has(e)).length, enCasa = [...s].filter(e => deCasa[e]).length, on = M.filtros.lista.has(n);
+    const nota = dentro ? `${dentro} de ${s.size}` : enCasa ? "Fuera de los cálculos" : `Ninguno en ${esc(nombreCasa)}`;
+    const tip = dentro ? `${dentro} de los ${s.size} EANs de la lista están en ${nombreCasa} y cuentan en los cálculos`
+      : enCasa ? `${enCasa} EANs de la lista están en ${nombreCasa}, pero sus tipos no cuentan en los cálculos`
+      : `Ninguno de los ${s.size} EANs de la lista está en ${nombreCasa}`;
+    return `<li><button type="button" class="lista-it" data-lista="${esc(n)}" aria-pressed="${on}" title="${esc(tip)}" ${dentro || on ? "" : "disabled"}>`
+      + `<span class="ok">${OK_SVG}</span><span class="t">${esc(n)}</span><span class="n">${nota}</span></button></li>`;
+  }).join("");
+  resumirListas();
+}
+function resumirListas(){
+  const el = $("listasRes"), sel = [...M.filtros.lista];
+  el.classList.toggle("activa", sel.length > 0);
+  el.textContent = sel.length ? sel.join(" · ") : `${LISTAS.size} ${LISTAS.size === 1 ? "lista" : "listas"}`;
+}
+let LISTAS_ABIERTAS = false;
+try { LISTAS_ABIERTAS = localStorage.getItem("o10-listas") === "1"; } catch(e) {}
+function abrirListas(si){
+  LISTAS_ABIERTAS = si;
+  $("listasTog").setAttribute("aria-expanded", String(si));
+  $("listasCuerpo").classList.toggle("abierto", si);
+  $("listasCuerpo").inert = !si;
+  try { localStorage.setItem("o10-listas", si ? "1" : "0"); } catch(e) {}
+}
+$("listasTog").addEventListener("click", () => abrirListas(!LISTAS_ABIERTAS));
+$("listasUl").addEventListener("click", ev => {
+  const b = ev.target.closest(".lista-it"); if (!b || b.disabled) return;
+  const n = b.dataset.lista, s = M.filtros.lista;
+  s.has(n) ? s.delete(n) : s.add(n);
+  b.setAttribute("aria-pressed", String(s.has(n)));
+  resumirListas(); aplicarFiltros();
+});
+abrirListas(LISTAS_ABIERTAS);
 
 // ================= Popover de filtros =================
 function abrirPop(si){
@@ -1929,7 +2023,7 @@ $("filtros").addEventListener("click", ev => {
 });
 function limpiarFiltros(){
   // por defecto se ve todo (también One Shot e innovaciones); "Central" es un filtro más
-  M.filtros = {scope: "todos", fuera: false, seg: new Set(), edad: new Set(), q: ""};
+  M.filtros = {scope: "todos", fuera: false, seg: new Set(), edad: new Set(), lista: new Set(), q: ""};
   $("q").value = "";
   document.querySelectorAll('[data-f="scope"]').forEach(x => x.setAttribute("aria-pressed", String(x.dataset.v === "todos")));
   document.querySelector('[data-f="fuera"]').setAttribute("aria-pressed", "false");
