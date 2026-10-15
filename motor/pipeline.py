@@ -210,7 +210,7 @@ def con_respaldo(arr: np.ndarray, valido: np.ndarray, R: Rejilla) -> np.ndarray:
     forma = (arr.shape[0],) + R.forma + arr.shape[2:]
     a = arr.reshape(forma)
     v = valido.reshape((valido.shape[0],) + R.forma)
-    sin_trend = a[:, :, :1, :1, :1, :, :, :, :1]  # (s, w=0, m0, N0, c, p, g0)
+    sin_trend = a[(slice(None),) + tuple(slice(0, 1) if k in ("w", "m", "N", "g") else slice(None) for k in EJES)]
     sin_trend = np.broadcast_to(sin_trend, a.shape)
     vv = v.reshape(v.shape + (1,) * (a.ndim - v.ndim))
     return np.where(vv, a, sin_trend).reshape(arr.shape)
