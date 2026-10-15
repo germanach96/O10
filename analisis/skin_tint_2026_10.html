@@ -90,6 +90,8 @@ h2+.lead{color:var(--label2);margin:0 0 14px;max-width:80ch}
 .tip .r{display:flex;justify-content:space-between;gap:14px;font-variant-numeric:tabular-nums;color:var(--label2)}
 .tip .r span:last-child{color:var(--label);font-weight:600}
 .recipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:22px;align-items:center}
+.rbtns{display:flex;flex-direction:column;gap:6px}
+.save-state{margin-left:auto;font-size:11.5px;color:var(--label3);white-space:nowrap}
 .wrap{padding-bottom:190px}
 .dock{position:fixed;left:0;right:0;bottom:max(12px,env(safe-area-inset-bottom));z-index:10;padding:0 20px;pointer-events:none}
 .dock-in{max-width:1140px;margin:0 auto;padding:10px 20px 12px;pointer-events:auto;border-radius:24px;
@@ -281,7 +283,7 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
 
 <div class="dock" role="region" aria-label="Recipe">
   <div class="dock-in glass">
-    <div class="dock-head"><b>Recipe</b><label class="chk sw-once"><input type="checkbox" id="once"> Count repeated cuts once</label><span class="note" id="trend-note"></span></div>
+    <div class="dock-head"><b>Recipe</b><label class="chk sw-once"><input type="checkbox" id="once"> Count repeated cuts once</label><span class="note" id="trend-note"></span><span class="save-state" id="save-state"></span></div>
     <div class="recipe" id="recipe"></div>
   </div>
 </div>
@@ -501,7 +503,7 @@ function buildRecipe(){
     return `<div class="ctl"><label for="sl-${key}"><span>${lab}</span><output id="o-${key}"></output></label>
       <div class="sl" style="--d:${frac(c,DEF[key])}"><input type="range" id="sl-${key}" data-k="${key}" min="${mn}" max="${mx}" step="${st}" value="${P[key]}"><span class="tick" title="Recommended: ${c[5](DEF[key])}"></span></div>
       <div class="ends"><span>${c[5](mn)}</span><span>${c[5](mx)}</span></div></div>`}).join('')
-    +`<button class="btn" id="reset">Reset</button>`;
+    +`<div class="rbtns"><button class="btn pri" id="save">Save</button><button class="btn" id="reset">Reset</button></div>`;
 }
 function renderRecipe(){
   for(const c of CTL){const el=document.getElementById('sl-'+c[0]);if(+el.value!==P[c[0]])el.value=P[c[0]];
@@ -614,6 +616,31 @@ function theme(t){if(t==='auto')document.documentElement.removeAttribute('data-t
 seg.addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)theme(b.dataset.th)});
 try{const t=localStorage.getItem('o10-theme');if(t)theme(t)}catch(e){}
 let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,120)});
+/* Guardar y recuperar la configuración (receta, tolerancia, vista, detector y export) en este navegador */
+const SKEY='o10-skintint-config';
+const cfgNow=()=>({P,tolA:document.getElementById('tol-a').value,tolB:document.getElementById('tol-b').value,SEL,OPEN:[...OPEN],sortKey,sortAsc,
+  XT,XL,xs:xs.value,zero:document.getElementById('x-zero').checked});
+const stamp=t=>new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+let SAVED=null;
+function showSaveState(){const el=document.getElementById('save-state');
+  if(!SAVED){el.textContent='Not saved yet';return}
+  const same=JSON.stringify(cfgNow())===JSON.stringify(SAVED.cfg);
+  el.textContent=same?`Saved · ${stamp(SAVED.at)}`:`Unsaved changes · last save ${stamp(SAVED.at)}`;}
+try{SAVED=JSON.parse(localStorage.getItem(SKEY)||'null')}catch(e){SAVED=null}
+if(SAVED&&SAVED.cfg){const c=SAVED.cfg;
+  P={...DEF,...c.P};document.getElementById('tol-a').value=c.tolA??5;document.getElementById('tol-b').value=c.tolB??5;
+  if(c.SEL!=null&&c.SEL<E.length){SEL=c.SEL;sel.value=String(SEL)}
+  OPEN=new Set((c.OPEN||[]).filter(i=>i<E.length));if(c.sortKey){sortKey=c.sortKey;sortAsc=!!c.sortAsc}
+  XT=c.XT||XT;XL=c.XL||XL;if(c.xs!=null)xs.value=c.xs;document.getElementById('x-zero').checked=c.zero!==false;
+  document.querySelectorAll('.xbar .seg button').forEach(b=>{if(b.dataset.t)b.setAttribute('aria-pressed',b.dataset.t===XT);if(b.dataset.l)b.setAttribute('aria-pressed',b.dataset.l===XL)});}
+document.getElementById('recipe').addEventListener('click',ev=>{if(ev.target.id!=='save')return;
+  SAVED={at:Date.now(),cfg:cfgNow()};
+  try{localStorage.setItem(SKEY,JSON.stringify(SAVED));flash(ev.target,'Saved ✓')}catch(e){flash(ev.target,'Could not save')}
+  showSaveState()});
+/* El estado se refresca tras cada cambio: todo pasa por render() o por los controles del detector y del export */
+const _render=render;render=function(){_render();showSaveState()};
+['change','input','click'].forEach(t=>document.addEventListener(t,()=>setTimeout(showSaveState,0)));
+
 render();
 </script>
 </body>
