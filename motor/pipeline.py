@@ -561,10 +561,16 @@ def main(argv=None):
         fut = (fu.meses > fu.mes) & (fu.meses <= fu.mes + cfg["horizonte"])
         vol12 = np.nansum(fu.mat["Actuals"][:, ult12], axis=1)
         cons9 = np.nansum(fu.mat["Consensus - Final"][:, fut], axis=1)
+        # tamaño de la burbuja: Consensus de la foto más actual en los 6 meses cerrados anteriores (en pasado el Consensus
+        # ya es igual a los actuals: lo vendido) + los 12 siguientes (lo que se planea vender). El mes en curso no entra.
+        pas6 = (fu.meses >= fu.mes - 6) & (fu.meses < fu.mes)
+        sig12 = (fu.meses > fu.mes) & (fu.meses <= fu.mes + 12)
+        v6 = np.nansum(fu.mat["Consensus - Final"][:, pas6], axis=1)
+        p12 = np.nansum(fu.mat["Consensus - Final"][:, sig12], axis=1)
         art, resp = clases(fu.codigos)
         inicio = {}
         for i, (e, row) in enumerate(fu.codigos.iterrows()):
-            inicio[e] = {"vol12": round(float(vol12[i]), 1), "cons9": round(float(cons9[i]), 1),
+            inicio[e] = {"vol12": round(float(vol12[i]), 1), "cons9": round(float(cons9[i]), 1), "v6": round(float(v6[i]), 1), "p12": round(float(p12[i]), 1),
                          "scope": bool(row["scope"]), "motivo": row["fuera_scope_motivo"],
                          "edad": row["tramo_edad"], "tipo": row["Article Type"],
                          "art": str(art[i]), "resp": str(resp[i])}
