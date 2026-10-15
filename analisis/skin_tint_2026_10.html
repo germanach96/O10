@@ -133,6 +133,14 @@ th{font-size:11.5px;font-weight:600;color:var(--label2)}
 th:first-child,td:first-child{text-align:left}
 td.mono{font:11.5px var(--mono);color:var(--label2)}
 .tbl{overflow-x:auto}
+.tr-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+.trt td:first-child{white-space:normal;min-width:96px}
+.trt td,.trt th{padding:6px 6px}
+.trt .sub2{font-size:10.5px;color:var(--label3);font-weight:400}
+.trt .hl{background:var(--band)}
+.trt thead th.hl{border-radius:8px 8px 0 0}
+.trt tr.fyend td{border-bottom:1px solid var(--sep-strong)}
+@media (max-width:980px){.tr-grid{grid-template-columns:1fr}}
 .xbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:10px;font-size:12px;color:var(--label2)}
 .xbar select{margin-left:6px;padding:6px 10px;border-radius:10px;border:1px solid var(--sep-strong);background:var(--card);color:var(--label);font:13px var(--font)}
 .xbar .grow{flex:1}
@@ -207,6 +215,7 @@ code{font:11.5px var(--mono);background:var(--fill);padding:1px 5px;border-radiu
     <div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div>
     <div class="chart" id="ch-one"></div>
   </div>
+  <div class="card glass" style="margin-top:12px"><h3>Trends · year over year</h3><p class="cs" style="min-height:0">Each window ending Sep 26 against the same months one year earlier. Same scope as the chart. The highlighted column is the trend length the recipe uses (N).</p><div id="trends"></div></div>
   <div class="card glass" style="margin-top:12px"><h3>Month by month</h3><p class="cs" style="min-height:0">Consensus split into what drives it, against the proposal. Same scope as the charts.</p><div class="tbl"><table id="months"></table></div></div>
 
   <h2>Detector</h2>
@@ -404,12 +413,12 @@ try{const v=localStorage.getItem('o10-skintint-scope');if(v!=null)SEL=+v}catch(e
 /* Series de un ámbito: -1 = familia, i = EAN */
 function scope(i){
   const pick=f=>i<0?sumArr(E.map(f),M.length):M.map((_,t)=>z(f(E[i])[t]));
-  const A=pick(e=>e.A),C=pick(e=>e.C),K=pick(e=>e.K),T=pick(e=>e.T),R=pick(e=>e.R||[]);
+  const A=pick(e=>e.A),C=pick(e=>e.C),K=pick(e=>e.K),T=pick(e=>e.T),Ep=pick(e=>e.E);
   const H=i<0?sumArr(CUR.tr.hs,M.length):CUR.tr.hs[i];
   const Fv=i<0?sumArr(CUR.F,H9):CUR.F[i];
   const Ff=Array(M.length).fill(0);Fv.forEach((v,j)=>Ff[FOTO+1+j]=v);
   const sl=(x,a,b)=>x.slice(a,b).reduce((p,q)=>p+q,0);
-  return {i,A,C,K,T,H,F:Ff,cs:sl(K,FOTO+1,FOTO+1+H9),rs:sl(Ff,FOTO+1,FOTO+1+H9),das:sl(T,FOTO+1,FOTO+1+H9),
+  return {i,A,C,K,T,H,Ep,F:Ff,cs:sl(K,FOTO+1,FOTO+1+H9),rs:sl(Ff,FOTO+1,FOTO+1+H9),das:sl(T,FOTO+1,FOTO+1+H9),
     base:sl(H,FOTO-12,FOTO)/12,a12:sl(A,FOTO-12,FOTO),c12:sl(C,FOTO-12,FOTO),run:sl(A,FOTO-4,FOTO)/4,
     wos:i<0?NaN:WOS[E[i].ean]};
 }
@@ -428,6 +437,20 @@ function drawOne(el,sd,id){
       if(i<=FOTO){r.push(['Actuals',k(sd.A[i])+(i===FOTO?' (partial)':'')]);if(sd.C[i])r.push(['Supply cuts',k(sd.C[i])]);if(i<FOTO)r.push(['History used',k(sd.H[i])])}
       else r.push(['Consensus',k(sd.K[i])],['of which DAs',k(sd.T[i])],['Proposal',k(sd.F[i])],['Tolerance band',k(tl.lo[i])+' – '+k(tl.hi[i])],['Consensus vs proposal',sd.F[i]>0?pct(sd.K[i]/sd.F[i]-1):'—']);
       return r}});
+}
+/* Trends YoY: ventanas que terminan en el último mes cerrado frente a los mismos meses del año anterior */
+function trendsHtml(sd){
+  const L=FOTO-1, sum=(x,a,b)=>{let t=0;for(let i=a;i<=b;i++)t+=x[i];return t};
+  const yo=(x,n)=>{const c=sum(x,L-n+1,L),p=sum(x,L-n-11,L-12);return {c,p,v:p>0?c/p-1:NaN}};
+  const cell=(o,hl)=>`<td${hl?' class="hl"':''}><span class="${o.v>0?'pos':o.v<0?'neg':''}" style="font-weight:700">${isFinite(o.v)?pct(o.v):'—'}</span><div class="sub2">${k(o.c)} vs ${k(o.p)}</div></td>`;
+  const W=[1,3,6,9,12], ser=[['Sell-in (actuals)',sd.A],['History used (+ c · cuts)',sd.H],['Sell-out (EPOS)',sd.Ep]];
+  let h=`<div class="tr-grid"><div class="tbl"><table class="trt"><thead><tr><th></th>${W.map(n=>`<th${n===P.N?' class="hl"':''}>${n===1?mlab(L):'Last '+n+'M'}</th>`).join('')}</tr></thead><tbody>`+
+    ser.map(([l,x])=>`<tr><td style="text-align:left">${l}</td>${W.map(n=>cell(yo(x,n),n===P.N)).join('')}</tr>`).join('')+`</tbody></table></div>`;
+  h+=`<div class="tbl" style="max-height:330px;overflow:auto"><table class="trt"><thead><tr><th>Month</th><th>Actuals</th><th>LY</th><th>YoY</th><th>EPOS</th><th>LY</th><th>YoY</th></tr></thead><tbody>`;
+  for(let i=L;i>=X0;i--){const a=sd.A[i],al=sd.A[i-12],e=sd.Ep[i],el=sd.Ep[i-12];
+    const f=(c,p)=>p>0?`<span class="${c>=p?'pos':'neg'}">${pct(c/p-1)}</span>`:'—';
+    h+=`<tr${+M[i].slice(-2)===6?' class="fyend"':''}><td>${mlab(i)}</td><td>${k(a)}</td><td>${k(al)}</td><td>${f(a,al)}</td><td>${e?k(e):'—'}</td><td>${el?k(el):'—'}</td><td>${e?f(e,el):'—'}</td></tr>`}
+  return h+`</tbody></table></div></div><p class="note" style="margin-top:8px">Launched Jun 2024: comparisons against Jun 2024 – early 2025 are against the ramp-up and the cut period, so large positive YoY there says more about last year than about this one. EPOS is used only as a trend, never as volume.</p>`;
 }
 function monthsTable(sd){
   let h=`<thead><tr><th>Month</th><th>Consensus</th><th>of which DAs</th><th>Proposal</th><th>Gap</th><th>Gap %</th><th>Same month LY, history used</th></tr></thead><tbody>`;
@@ -452,6 +475,7 @@ function renderScope(){
   document.getElementById('scope-info').innerHTML=facts(sd).replace('class="facts"','class="facts" style="margin:0"');
   drawOne(document.getElementById('ch-one'),sd,'m');
   document.getElementById('months').innerHTML=monthsTable(sd);
+  document.getElementById('trends').innerHTML=trendsHtml(sd);
 }
 
 function render(){
@@ -499,7 +523,7 @@ document.getElementById('recipe').addEventListener('dblclick',ev=>{const el=ev.t
 
 function fillExp(i){
   const td=document.getElementById('exp'+i);if(!td)return;const sd=scope(i);
-  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card full"><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div><div class="chart" id="xc${i}"></div></div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
+  td.innerHTML=`<div class="exp-in"><div class="card full">${facts(sd)}</div><div class="card full"><div class="legend"><span><i class="sw-bar"></i>Actuals</span><span><i class="sw-cut"></i>Supply cuts</span><span><i class="sw-h"></i>History used</span><span><i class="sw-cons"></i>Consensus</span><span><i class="sw-out"></i>Consensus outside tolerance</span><span><i class="sw-rec"></i>Proposal</span><span><i class="sw-tol"></i>Tolerance band</span></div><div class="chart" id="xc${i}"></div></div><div class="card full"><h3>Trends · year over year</h3>${trendsHtml(sd)}</div><div class="card full"><div class="tbl"><table>${monthsTable(sd)}</table></div></div></div>`;
   drawOne(document.getElementById('xc'+i),sd,'x'+i);
 }
 function toggleRow(tr){const i=+tr.dataset.i;OPEN.has(i)?OPEN.delete(i):OPEN.add(i);renderDetector(CUR.F)}
