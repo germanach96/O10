@@ -25,13 +25,14 @@ O10/
 │   ├── plantilla.html        HTML + CSS + JS de O10; el pipeline incrusta los datos
 │   ├── html.py               genera el HTML autocontenido a partir de la plantilla
 │   └── vendor/               d3-hierarchy incrustado (licencia ISC)
+├── O10.0.1.html              versión oficial de la página (en la raíz; se abre sin servidor)
+├── VERSION                   número de versión que muestra la página (O10.0.1, O10.0.2…)
 ├── diseno/                   decisiones de diseño y ejemplos
 │   ├── DESIGN.md             sistema de diseño vigente (iOS / iPadOS 26, cristal líquido)
 │   ├── PRODUCT.md            para quién es y qué tiene que transmitir
 │   ├── SKILLS-DISENO.md      skills de diseño obligatorias (lo importa CLAUDE.md)
 │   ├── referencia/           guías antiguas, ya no se aplican
-│   ├── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
-│   └── versiones/            copias fijas de la versión oficial aprobada: O10_first_version.html
+│   └── ejemplos/             BRUJULAS_ejemplo.html, la página generada (se abre sin servidor)
 ├── data/                     datos de entrada, una carpeta por casa
 │   ├── filters.csv           listas de EANs para los filtros de selección (una por columna)
 │   ├── Gucci/
