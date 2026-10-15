@@ -218,6 +218,24 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
   body.en-detalle .barra{padding-left:188px}
   body.en-detalle #vistaDetalle{padding-left:24px}
 }
+/* El mapa nunca se va (escritorio): en Detalle queda de fondo, en el mismo sitio y con la misma cámara, pero empujado
+   hacia atrás (escala .975), difuminado y atenuado, como la app que queda detrás de una hoja en iPadOS. Sigue flotando y
+   cambia de color con la tolerancia o el rango. Las piezas del mapa (inspector, leyenda, Show all, etiquetas) se van:
+   detrás solo quedan los colores. La entrada y la salida usan la curva de cajón de iOS. */
+#vistaInicio{transition:filter 460ms var(--ease-drawer),opacity 460ms var(--ease-drawer),transform 520ms var(--ease-drawer);transform-origin:50% 42%}
+@media (min-width:901px){#vistaInicio .hoja-ins,#vistaInicio .leyenda{transition:opacity 200ms var(--ease-out),visibility 0s linear 0s}}
+body.fondo-mapa #vistaInicio{position:fixed;inset:0 0 0 288px;z-index:0;pointer-events:none;filter:blur(16px) saturate(130%);opacity:.6;transform:scale(.975)}
+body.fondo-mapa #vistaDetalle{z-index:1}
+body.fondo-mapa #vistaInicio .hoja-ins,body.fondo-mapa #vistaInicio .leyenda{opacity:0;visibility:hidden;transition:opacity 160ms var(--ease-out),visibility 0s linear 160ms}
+body.fondo-mapa #vistaInicio .ver-todo{visibility:hidden}
+body.fondo-mapa #etiquetas{visibility:hidden}
+@media (prefers-reduced-motion:reduce){
+  #vistaInicio{transition:filter 200ms ease,opacity 200ms ease}
+  body.fondo-mapa #vistaInicio{transform:none}
+}
+@media (prefers-reduced-transparency:reduce){
+  body.fondo-mapa #vistaInicio{filter:blur(10px);opacity:.22}
+}
 #segVista{border:1px solid var(--borde-cristal)}
 .buscador{display:flex;align-items:center;gap:7px;border-radius:999px;padding:0 14px;width:250px;height:42px;color:var(--label-2);transition:box-shadow 160ms ease}
 .buscador:focus-within{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 0 0 4px color-mix(in srgb,var(--blue) 35%,transparent),var(--sombra-cristal)}
@@ -1428,7 +1446,7 @@ function colorHoja(h){
 }
 
 function dibujarMapa(){
-  const lz = $("lienzo"), W = Math.round(lz.getBoundingClientRect().width);
+  const lz = $("lienzo"), W = lz.offsetWidth;  // ancho de maquetación: no cambia con el "empuje" del mapa en segundo plano
   if (!W) return;
   M.W = W;
   // Ancla de la vista: al reordenar (filtro de tipos, tolerancia…) el mapa NO vuelve al encuadre del foco. Se guarda el
@@ -1570,6 +1588,7 @@ function prepararFlotacion(){
 }
 function arrancarFlotacion(){ if (!F.corre && !document.hidden) { F.corre = true; F.ult = performance.now(); requestAnimationFrame(pasoFlotacion); } }
 function pasoFlotacion(ahora){
+  // en Detalle (escritorio) el mapa sigue de fondo y sigue flotando; solo se para si está oculto de verdad (iPhone)
   if (document.hidden || $("vistaInicio").hidden) { F.corre = false; return; }
   const dt = Math.min(0.05, (ahora - F.ult) / 1000); F.ult = ahora;
   // muelle críticamente amortiguado sobre la amplitud (respuesta ≈ 0,7 s)
@@ -1822,7 +1841,7 @@ function pintarMigas(){
   // al cambiar de nivel, el EAN elegido deja de valer si ya no está dentro del foco
   if (M.sel && !(M.foco.children || []).some(l => l.data.hoja && l.data.hoja.ean === M.sel)) { M.sel = null; $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo")); }
   pintarNivel();
-  if (!$("vistaInicio").hidden) $("barraTitulo").textContent = corto(M.foco.data.nombre);
+  if (enMapa()) $("barraTitulo").textContent = corto(M.foco.data.nombre);
   if (camino.length === 1) { $("migas").innerHTML = `<span>${M.raiz.children.length} house${M.raiz.children.length === 1 ? "" : "s"} · ${M.hojas.length} codes</span>`; pintarLado(); return; }
   if (camino.length === 2) { $("migas").innerHTML = `<button type="button" data-clave="Todas">All houses</button><span class="sep">›</span><span>Snapshot ${casa().inicio.foto} · ${M.hojas.length} codes</span>`; pintarLado(); return; }
   camino.pop();
@@ -1939,7 +1958,7 @@ $("ladoBrands").addEventListener("click", ev => {
   const f = ev.target.closest(".fila"); if (!f) return;
   const n = M.nodos.find(x => x.data.clave === f.dataset.clave); if (!n) return;
   cerrarLado();
-  if ($("vistaInicio").hidden) { location.hash = "inicio"; setTimeout(() => enfocar(n), 260); } else enfocar(n);
+  if (!enMapa()) { location.hash = "inicio"; setTimeout(() => enfocar(n), 260); } else enfocar(n);
 });
 $("ladoBrands").addEventListener("keydown", ev => { if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList.contains("fila")) { ev.preventDefault(); ev.target.click(); } });
 
@@ -2182,7 +2201,7 @@ document.addEventListener("keydown", ev => {
   if (ev.key === "Escape") {
     if (!$("pop").hasAttribute("data-cerrado")) { abrirPop(false); $("btnFiltros").focus(); return; }
     if ($("lado").classList.contains("abierto")) { cerrarLado(); return; }
-    if (!$("vistaInicio").hidden && document.activeElement !== $("q") && M.foco && M.foco.parent) enfocar(M.foco.parent);
+    if (enMapa() && document.activeElement !== $("q") && M.foco && M.foco.parent) enfocar(M.foco.parent);
   }
 });
 $("filtros").addEventListener("click", ev => {
@@ -2283,7 +2302,7 @@ $("panel").addEventListener("click", ev => {
     seleccionar(b.dataset.ean);
   }
 });
-new ResizeObserver(() => { if (!$("vistaInicio").hidden && Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); }).observe($("lienzo"));
+new ResizeObserver(() => { if (!$("vistaInicio").hidden && Math.abs($("lienzo").offsetWidth - M.W) > 2) dibujarMapa(); }).observe($("lienzo"));
 
 // ================= iPhone: pestañas flotantes y hoja del inspector =================
 $("pestanas").addEventListener("click", ev => {
@@ -2328,29 +2347,41 @@ $("pestanas").addEventListener("click", ev => {
 function irA(vista, sel){
   const cambio = () => {
     const ini = vista === "inicio";
-    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini; $("tolBarra").hidden = ini;
+    // El mapa nunca se va: en Detalle queda de fondo, difuminado y quieto en su sitio (misma cámara), pero vivo:
+    // sigue flotando y se recolorea si cambian la tolerancia, el rango o los tipos. En iPhone (una columna) se oculta.
+    if (!ini) congelarFondo();
+    $("vistaInicio").hidden = !ini && !FONDO.matches; $("vistaInicio").inert = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini; $("tolBarra").hidden = ini;
     document.body.classList.toggle("en-detalle", !ini);
     $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
     $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
     moverPulgar($("segVista"));
     document.querySelectorAll("#pestanas button").forEach(b => b.setAttribute("aria-current", (ini ? b.dataset.tab === "mapa" : b.dataset.tab === "detalle") ? "page" : "false"));
     ocultarTip();
-    if (ini) arrancarFlotacion();
+    if (ini) { document.body.classList.remove("fondo-mapa"); $("vistaInicio").style.removeProperty("--alto-barra"); arrancarFlotacion(); }
+    else if (FONDO.matches) { document.body.classList.add("fondo-mapa"); M.encima = false; if (!reducir.matches) { F.objetivo = 1; arrancarFlotacion(); } }
     if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false;
       // al llegar desde el mapa no se vio el detalle anterior: todos los gráficos se construyen de cero
       if (actual !== "detalle") document.querySelectorAll("#vistaDetalle [data-dibujado]").forEach(e => delete e.dataset.dibujado);
       $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"});
       pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esSel() ? "Selection of " + miembros().length + " codes" : esRegla() ? "Group rule" : "Code " + estado.sel}</span>`; }
-    else { requestAnimationFrame(() => pintarNivel()); $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").getBoundingClientRect().width - M.W) > 2) dibujarMapa(); else pintarMigas(); }
+    else { requestAnimationFrame(() => pintarNivel()); $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").offsetWidth - M.W) > 2) dibujarMapa(); else pintarMigas(); }
     bordeBarra();
   };
-  const actual = $("vistaInicio").hidden ? "detalle" : "inicio";
+  const actual = enMapa() ? "inicio" : "detalle";
   if (actual === vista && !sel) return;
   // durante la transición de página no se pinta nada y el IntersectionObserver no ve los gráficos:
   // al terminar se construyen a mano los que ya están en pantalla
   if (document.startViewTransition && !reducir.matches && actual !== vista) document.startViewTransition(cambio).finished.then(revisarPendientes, revisarPendientes);
   else { cambio(); requestAnimationFrame(revisarPendientes); }
 }
+function enMapa(){ return !document.body.classList.contains("en-detalle"); }
+// En escritorio el mapa queda de fondo en Detalle. Se congela la altura de la barra en el mapa para que no se mueva
+// aunque la barra cambie (en Detalle lleva la tolerancia en vez del indicador de nivel): al volver está donde se dejó.
+const FONDO = matchMedia("(min-width:901px)");
+function congelarFondo(){ if (enMapa()) $("vistaInicio").style.setProperty("--alto-barra", getComputedStyle(document.documentElement).getPropertyValue("--alto-barra")); }
+FONDO.addEventListener("change", () => { if (enMapa()) return;
+  $("vistaInicio").hidden = !FONDO.matches; document.body.classList.toggle("fondo-mapa", FONDO.matches);
+  if (FONDO.matches) { if (Math.abs($("lienzo").offsetWidth - M.W) > 2) dibujarMapa(); arrancarFlotacion(); } });
 function revisarPendientes(){
   document.querySelectorAll("svg[data-pendiente]").forEach(svg => { if (enVista(svg)) { if (OBS) OBS.unobserve(svg); construir(svg); } else if (OBS) { OBS.unobserve(svg); OBS.observe(svg); } });
 }
