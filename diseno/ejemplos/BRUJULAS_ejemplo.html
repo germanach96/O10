@@ -195,6 +195,29 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .barra .titulo{transition:opacity 180ms ease;text-shadow:0 0 2px var(--fondo),0 0 10px var(--fondo),0 0 18px var(--fondo)}
 .barra.titulo-oculto .titulo{opacity:0}
 .capsulas{display:flex;align-items:center;gap:10px}
+/* Tolerancia del detector en la barra: en Detalle ocupa el sitio del indicador de nivel del mapa */
+.tol-barra{display:flex;align-items:center;gap:8px;height:42px;padding:0 7px 0 16px;border-radius:999px;font-size:12.5px;font-weight:500;color:var(--label-2);white-space:nowrap}
+.tol-barra[hidden]{display:none}
+.tol-barra .tb-t{color:var(--label);font-weight:600;margin-right:2px}
+.tol-barra label{display:flex;align-items:center;gap:6px}
+.tol-barra input{width:52px;height:28px;border:0;border-radius:999px;background:var(--fill);padding:0 10px;font:600 13px var(--font);color:var(--label);text-align:right;font-variant-numeric:tabular-nums;transition:box-shadow 160ms var(--ease-out)}
+.tol-barra input{-moz-appearance:textfield;appearance:textfield}
+.tol-barra input::-webkit-inner-spin-button,.tol-barra input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.tol-barra input:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 45%,transparent)}
+.tol-barra i{font-style:normal;margin-left:-3px}
+.tol-barra .tb-flecha{width:13px;height:13px;color:var(--label-3)}
+/* En Detalle la barra lateral (casa, tipos, brands, apariencia) no se usa: queda un recuadro pequeño con O10 y
+   el detalle gana todo el ancho. El cambio de tamaño lo anima la transición de página (grupo "lado"). */
+.lado{view-transition-name:lado}
+::view-transition-group(lado){animation-duration:420ms;animation-timing-function:cubic-bezier(0.32, 0.72, 0, 1)}
+@media (min-width:901px){
+  body.en-detalle .lado{bottom:auto;width:auto;padding:9px 16px 9px 9px;border-radius:20px}
+  body.en-detalle .lado > :not(.lado-cab){display:none}
+  body.en-detalle .lado-cab{padding:0}
+  body.en-detalle .contenido{left:0}
+  body.en-detalle .barra{padding-left:188px}
+  body.en-detalle #vistaDetalle{padding-left:24px}
+}
 #segVista{border:1px solid var(--borde-cristal)}
 .buscador{display:flex;align-items:center;gap:7px;border-radius:999px;padding:0 14px;width:250px;height:42px;color:var(--label-2);transition:box-shadow 160ms ease}
 .buscador:focus-within{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 0 0 4px color-mix(in srgb,var(--blue) 35%,transparent),var(--sombra-cristal)}
@@ -745,6 +768,7 @@ details[open] summary::before{transform:rotate(45deg)}
   .ver-todo span{display:none}
   .capsulas{flex-wrap:wrap;row-gap:8px}
   .niv-seg{order:-1;flex:1 1 100%;width:100%}
+  .tol-barra{order:-1;flex:1 1 100%;justify-content:center}
   .niv-seg button{padding:5px 0;font-size:12.5px}
   #vistaInicio{overflow-x:clip}
   .lienzo{width:100%}
@@ -882,6 +906,12 @@ details[open] summary::before{transform:rotate(45deg)}
       <div class="seg vidrio niv-seg" id="nivSeg" role="group" aria-label="Map level: where you are and which levels you can go up to">
         <span class="pulgar" aria-hidden="true"></span>
         <button type="button" data-nv="todo">All</button><button type="button" data-nv="casa">House</button><button type="button" data-nv="brand">Brand</button><button type="button" data-nv="pl">Line</button><button type="button" data-nv="hoja">EAN</button>
+      </div>
+      <div class="tol-barra vidrio" id="tolBarra" role="group" aria-label="Detector tolerance" hidden>
+        <span class="tb-t">Tolerance</span>
+        <label>Month 1 <input id="tolBIni" type="number" step="0.5" min="0" inputmode="decimal"><i>%</i></label>
+        <svg class="ico tb-flecha" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M9 5l3 3-3 3"/></svg>
+        <label>Month 9 <input id="tolBFin" type="number" step="0.5" min="0" inputmode="decimal"><i>%</i></label>
       </div>
       <button type="button" class="redondo vidrio" id="btnFiltros" aria-label="Filters" aria-expanded="false" aria-controls="pop">
         <svg class="ico" viewBox="0 0 16 16"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
@@ -2176,7 +2206,10 @@ $("limpiar").addEventListener("click", limpiarFiltros);
 const nPropias = () => Object.keys(AJ.tolEan).length;
 function pintarAjustes(){
   document.querySelectorAll("#ajTipos .chip").forEach(b => b.setAttribute("aria-pressed", String(!AJ.ignorar.has(b.dataset.t))));
-  $("tolGIni").value = AJ.tol.ini; $("tolGFin").value = AJ.tol.fin;
+  // no se reescribe el campo que se está editando (se perdería, por ejemplo, el "5." a medio escribir)
+  [["tolGIni", "ini"], ["tolGFin", "fin"]].forEach(([id, k]) => { if (document.activeElement !== $(id)) $(id).value = AJ.tol[k]; });
+  if (document.activeElement !== $("tolBIni")) $("tolBIni").value = AJ.tol.ini;
+  if (document.activeElement !== $("tolBFin")) $("tolBFin").value = AJ.tol.fin;
   const n = nPropias();
   $("tolNota").innerHTML = n ? `${n} EAN${n === 1 ? "" : "s"} with their own tolerance. <button type="button" class="enlace" id="tolBorrar">Remove them</button>` : "You can fine-tune it later in each EAN's detail.";
 }
@@ -2196,10 +2229,11 @@ $("ajTipos").addEventListener("click", ev => {
   guardarAjustes(); pintarAjustes();
   cancelAnimationFrame(AJ.raf); AJ.raf = requestAnimationFrame(() => setTimeout(() => refrescarTodo(true), 0));
 });
-["tolGIni", "tolGFin"].forEach(id => $(id).addEventListener("input", () => {
-  AJ.tol = {ini: parseFloat($("tolGIni").value) || 0, fin: parseFloat($("tolGFin").value) || 0};
-  guardarAjustes(); refrescarTodo(false);
-}));
+// la tolerancia general se cambia en la barra lateral (mapa) o en la barra de arriba (detalle): las dos van a la par
+[["tolGIni", "tolGFin"], ["tolBIni", "tolBFin"]].forEach(([a, b]) => [a, b].forEach(id => $(id).addEventListener("input", () => {
+  AJ.tol = {ini: parseFloat($(a).value) || 0, fin: parseFloat($(b).value) || 0};
+  guardarAjustes(); pintarAjustes(); refrescarTodo(false);
+})));
 $("lado").addEventListener("click", ev => { if (ev.target.id === "tolBorrar") { AJ.tolEan = {}; guardarAjustes(); pintarAjustes(); refrescarTodo(false); } });
 // tolerancia propia del EAN abierto en el detalle
 function pintarTolDet(){
@@ -2294,7 +2328,8 @@ $("pestanas").addEventListener("click", ev => {
 function irA(vista, sel){
   const cambio = () => {
     const ini = vista === "inicio";
-    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini;
+    $("vistaInicio").hidden = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini; $("tolBarra").hidden = ini;
+    document.body.classList.toggle("en-detalle", !ini);
     $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
     $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
     moverPulgar($("segVista"));
