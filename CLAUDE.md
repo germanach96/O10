@@ -6,7 +6,7 @@ Después, con todas las fotos, elige **una sola receta por código** para el for
 
 Fase 1 (esta especificación): encontrar, en cada foto, los parámetros que minimizan el WAPE, para todas las fotos y todos los códigos del scope, guardarlos y mostrarlos. La búsqueda de tendencias y patrones entre fotos se define más adelante.
 
-Idioma de la interfaz y de los comentarios: español.
+Idioma de la **página: inglés** (textos, botones, tooltips, números con formato en-US). Comentarios del código y documentación: español. Las etiquetas que esta especificación da en español ("Ver todo", "Sin medir aún", "Cuentan en los cálculos"…) se muestran en la página con su equivalente en inglés ("Show all", "Not measured yet", "Included in calculations"…). Las etiquetas que vienen de los datos (tramos de edad, grupos del selector, motivos de fuera de scope) se guardan en español en el motor y la página las traduce al mostrarlas (`TX` en `interfaz/plantilla.html`).
 
 Mapa del repo: `README.md`. Cálculo en `motor/`, página en `interfaz/`, decisiones de diseño y HTML de ejemplo en `diseno/`, CSV en `data/<Casa>/Consensus/` (y `data/<Casa>/Promos/`, aún sin usar).
 
@@ -238,7 +238,7 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-El programa se llama **O10**. Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**; la pestaña del navegador dice solo "O10". Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.

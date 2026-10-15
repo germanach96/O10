@@ -114,7 +114,7 @@ def calcular_foto(foto: Foto, fotos: list[Foto], cfg: dict, R: Rejilla, ignorar=
             foto.mat["EPOS"][:, foto.meses < foto.mes]).all():
         t_hist = np.arange(foto.mes - 36, foto.mes)
         ext = epos_externo(foto, fotos, t_hist)
-        aviso = "La foto no trae EPOS: el EPOS histórico se toma de la foto más reciente"
+        aviso = "The snapshot has no EPOS: historical EPOS is taken from the most recent snapshot"
         if ext is not None and aviso not in foto.avisos:
             foto.avisos.append(aviso)
     cod = foto.codigos
