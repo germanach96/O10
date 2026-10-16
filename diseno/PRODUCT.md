@@ -14,7 +14,7 @@ web
 Brújulas de Demand responde, foto a foto, a "¿qué inputs de forecast debí haber puesto en esa foto para tener los mejores KPIs?". Con todas las fotos elige una sola receta por código y detecta los códigos cuyo Consensus actual se sale de esa receta. Éxito: el planner llega en segundos al código o grupo que tiene que revisar y entiende por qué.
 
 ## Positioning
-No es un forecast nuevo: es un oráculo retrospectivo sobre los propios datos del equipo (Actuals, EPOS, Supply Cuts, Total Demand Assumption) que traduce 99.144 recetas por código y foto a tres brújulas y un selector de grupo, más un detector frente a la receta elegida.
+No es un forecast nuevo: es un oráculo retrospectivo sobre los propios datos del equipo (Actuals, EPOS, Supply Cuts, Total Demand Assumption) que traduce 75.816 recetas por código y foto a tres brújulas y un selector de grupo, más un detector frente a la receta elegida.
 
 ## Operating Context
 - Un CSV por casa y foto mensual (export S&OP). Todo se precalcula con `python -m motor.pipeline`; la página es un HTML autocontenido que solo lee y se abre sin servidor.

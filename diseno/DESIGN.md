@@ -37,16 +37,24 @@ colors:
   goal-green-text: "#1f7a35"
   goal-zone: "rgba(52,199,89,.16)"
   alert-red-text: "#c9001a"
-  desvio-inside: "#9fa1a8"
+  desvio-inside: "#34c759"
+  desvio-off: "#9fa1a8"
   desvio-1: "#ffcc00"
   desvio-2: "#ff9500"
   desvio-3: "#ff3b30"
   desvio-4: "#b3001b"
-  desvio-rim-0: "#6c6e75"
+  desvio-rim-0: "#1f7a35"
   desvio-rim-1: "#a37f00"
   desvio-rim-2: "#b86a00"
   desvio-rim-3: "#c4170c"
   desvio-rim-4: "#7a0012"
+  one-shot-brown: "#a2845e"
+  innovation-cyan: "#32ade6"
+  actuals-gray: "rgba(142,142,147,.5)"
+  actuals-edge: "rgba(142,142,147,.85)"
+  cuts-orange: "#ff9500"
+  da-purple: "#af52de"
+  da-purple-text: "#8e3bb3"
 typography:
   display:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
@@ -169,6 +177,14 @@ components:
     textColor: "{colors.label}"
     rounded: "{rounded.l}"
     width: "360px"
+    height: "568px"
+    padding: "16px"
+  results-card:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.l}"
+    width: "260px"
+    height: "374px"
     padding: "16px"
   detail-card:
     backgroundColor: "{colors.card}"
@@ -182,6 +198,40 @@ components:
     rounded: "{rounded.l}"
     width: "450px"
     padding: "16px 18px"
+  sidebar-compact:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "20px"
+    padding: "9px 16px 9px 9px"
+  tolerance-capsule:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label-secondary}"
+    rounded: "{rounded.capsule}"
+    height: "42px"
+    padding: "5px 7px 5px 16px"
+  tolerance-field:
+    backgroundColor: "{colors.fill}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.capsule}"
+    width: "52px"
+    height: "28px"
+    padding: "0 10px"
+  chart-tooltip:
+    backgroundColor: "{colors.glass}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.m}"
+    padding: "9px 12px 10px"
+  range-well:
+    backgroundColor: "{colors.fill}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.m}"
+    padding: "11px 16px 6px"
+  code-sheet:
+    backgroundColor: "{colors.glass-strong}"
+    textColor: "{colors.label}"
+    rounded: "{rounded.xl}"
+    width: "min(1180px, calc(100vw - 32px))"
+    padding: "22px 24px 24px"
   tab-bar:
     backgroundColor: "{colors.glass}"
     textColor: "{colors.label}"
@@ -195,9 +245,11 @@ components:
 
 **Creative North Star: "El cristal sobre la mesa gris"**
 
-O10 es una app de iPadOS 26 que vive en una sola ventana sin marco: el contenido (el mapa de burbujas, las tarjetas de brújulas, las tablas) ocupa todo el lienzo, y todo lo que se manipula flota encima como piezas de cristal líquido. Debajo hay un papel tapiz quieto: un gris casi neutro con cuatro manchas suaves, difuminadas 48px y con un grano de ruido al 3,5%. Ese fondo no se mueve nunca; lo que se mueve son las burbujas, que derivan despacio y frenan en cuanto el puntero entra en el mapa, para poder leer y apuntar.
+O10 es una app de iPadOS 26 que vive en una sola ventana sin marco: el contenido (el mapa de burbujas, las tarjetas de brújulas, las tablas) ocupa todo el lienzo, y todo lo que se manipula flota encima como piezas de cristal líquido. Debajo hay un papel tapiz quieto: un gris casi neutro con cuatro manchas suaves, difuminadas 48px y con un grano de ruido al 3,5%. Ese fondo no se mueve nunca; lo que se mueve son las burbujas, que derivan despacio en todos los niveles (casa, brands, líneas y EANs, hasta unos 8px en ciclos de 11 a 19 s). Al pasar el puntero solo frena la rama señalada (el nivel bajo el puntero y sus antepasados; en una línea, también sus EANs), donde está y sin volver a un sitio base; al salir sigue desde ese punto. Solo vuelven a su sitio cuando el mapa se reempaqueta por el filtro de tipos.
 
-El color se reserva para los datos y la acción: azul de sistema para la receta y los botones, gris para el Consensus, verde para la meta y una escala ordinal amarillo, naranja, rojo para el desvío. Las superficies de cristal son incoloras: toman el tono de lo que tienen detrás. La densidad es de herramienta de trabajo (cuerpo de 13px, filas de 32px), con títulos grandes de iPadOS arriba de cada vista.
+El color se reserva para los datos y la acción: azul de sistema para la receta y los botones, gris para el Consensus y los actuals, verde para la meta y para "dentro del rango", una escala ordinal amarillo, naranja, rojo para el desvío, naranja rayado para los cortes y morado para los DAs. Las superficies de cristal son incoloras: toman el tono de lo que tienen detrás. La densidad es de herramienta de trabajo (cuerpo de 13px, filas de 32px), con títulos grandes de iPadOS arriba de cada vista.
+
+El mapa no desaparece nunca en iPad / escritorio: al pasar a Detalle se queda detrás, en su sitio y con su cámara, empujado hacia atrás, difuminado y atenuado, como la app que queda detrás de una hoja en iPadOS. Sigue flotando y cambiando de color con la tolerancia y el rango.
 
 El movimiento sigue la física de Apple: muelles críticamente amortiguados, sin rebote, respuestas cortas al pulsar y nada que tarde en dejar leer un número. Con movimiento reducido no hay deriva, ni zoom animado, ni escalas.
 
@@ -205,6 +257,7 @@ El movimiento sigue la física de Apple: muelles críticamente amortiguados, sin
 - Contenido a sangre sobre un fondo gris difuminado y estático; claro `#e9ebee`, oscuro en grises puros `#0e0e0e`.
 - Un único material de cristal para todo lo flotante: barra lateral, cápsulas, inspector, popover, tarjetas de detalle y barra de pestañas.
 - Burbujas hoja como lentes de cristal: tinte translúcido del tramo de desvío, aro del mismo tramo y reflejo especular arriba; sin sombreado de esfera.
+- En Detalle, el mapa vivo queda de fondo (escala 0,975, blur 16px, opacidad 0,6) y la barra lateral se encoge a un recuadro con O10.
 - Colores de sistema de Apple con significado fijo; fuente del sistema.
 - Deriva de 2,6px controlada por un solo bucle de animación con muelle sobre la amplitud.
 - Apariencia manual Claro / Oscuro / Auto.
@@ -220,10 +273,14 @@ Grises neutros de sistema para el fondo y el cristal; los colores saturados solo
 
 ### Secondary
 - **Gris Consensus** (consensus-gray): lo que pasó. Trayectoria discontinua en las medias brújulas y línea del Consensus frente a la receta.
+- **Gris actuals** (actuals-gray, actuals-edge): barras de actuals (sell-in) en la sección Actuals. Es el mismo gris de sistema que el Consensus, porque en pasado el Consensus es lo vendido.
+- **Naranja cortes** (cuts-orange): Supply Cuts, siempre como rayado a 45° (relleno al 18% y trazo de 2,4px al 80%), nunca como relleno liso, para que no se confunda con el naranja del desvío.
+- **Morado DAs** (da-purple, da-purple-text): Total Demand Assumption. En oscuro `#bf5af2` / `#d48ef7`.
 - **Verde meta** (goal-green, goal-green-text, goal-zone): zona WAPE ≤ 40% y SPP ±5% en las medias brújulas y valores que cumplen la meta (`.bueno`). El rojo de texto (alert-red-text) marca los que no la cumplen y los desvíos de la tabla del detector.
 
 ### Tertiary: escala ordinal de desvío
-- **Dentro** (desvio-inside), **Hasta 5%** (desvio-1, amarillo), **5–15%** (desvio-2, naranja), **15–30%** (desvio-3, rojo), **Más de 30%** (desvio-4, granate). Rellenan las burbujas hoja con opacidad 0,62 (0,74 y 0,9 en los dos tramos altos, 0,6 en oscuro) y cada tramo tiene su aro más oscuro (desvio-rim-0 … desvio-rim-4; en oscuro los aros son más claros). El modo oscuro aclara la escala (`#ffd60a`, `#ff9f0a`, `#ff6a3d`, `#ff375f`) en lugar de oscurecerla.
+- **Dentro del rango** (desvio-inside, el verde de meta): con el 72% de la opacidad del tinte, más claro y translúcido que los rojos para que también se separen por luminosidad. **Fuera de los filtros** (desvio-off): gris tenue al 12% con filo hueco. **Hasta 5%** (desvio-1, amarillo), **5–15%** (desvio-2, naranja), **15–30%** (desvio-3, rojo), **Más de 30%** (desvio-4, granate). Rellenan las burbujas hoja con opacidad 0,62 (0,74 y 0,9 en los dos tramos altos, 0,6 en oscuro) y cada tramo tiene su aro más oscuro (desvio-rim-0 … desvio-rim-4; en oscuro los aros son más claros). El modo oscuro aclara la escala (`#30d158`, `#ffd60a`, `#ff9f0a`, `#ff6a3d`, `#ff375f`) en lugar de oscurecerla.
+- **Fuera de scope con color propio:** One Shot en marrón (one-shot-brown, systemBrown) e innovaciones en sus meses 1–6 en cian (innovation-cyan, systemCyan), con relleno translúcido al 34% (40% en oscuro) y filo del mismo color; el resto de fuera de scope, huecos.
 
 ### Neutral
 - **Papel tapiz** (wallpaper / wallpaper-dark) con sus manchas (blob-*): el único fondo de la app.
@@ -236,7 +293,7 @@ Grises neutros de sistema para el fondo y el cristal; los colores saturados solo
 ### Named Rules
 **La Regla del Cristal Incoloro.** El cristal no lleva tinte de marca: es blanco o gris translúcido y toma el color del fondo. El color va en los datos, nunca en el material.
 
-**La Regla del Significado Fijo.** Azul = receta y acción; gris = Consensus; verde = meta; amarillo → rojo = desvío. Ningún color cambia de papel entre vistas, y el color nunca es la única señal: la tarjeta de detalle y la leyenda nombran el tramo.
+**La Regla del Significado Fijo.** Azul = receta y acción; gris = Consensus y actuals; verde = meta y dentro del rango; amarillo → rojo = desvío; naranja rayado = cortes; morado = DAs. Ningún color cambia de papel entre vistas, y el color nunca es la única señal: la tarjeta de detalle y la leyenda nombran el tramo.
 
 **La Regla de los Grises Puros.** El modo oscuro es gris neutro (`#0e0e0e` de fondo, manchas `#151515`–`#393939`), sin tinte azulado.
 
@@ -269,16 +326,22 @@ Ventana a sangre, sin lienzo enmarcado. En iPad / escritorio (más de 900px):
 
 - **Barra lateral** flotante de 264px, separada 12px de los bordes, de arriba abajo.
 - **Contenido** desde 288px a la derecha. Arriba, una barra con el título grande a la izquierda y las cápsulas a la derecha (segmentado Mapa / Detalle, botón redondo de filtros, cápsula de búsqueda de 250px), con 10px entre cápsulas. Al hacer scroll aparece detrás un velo difuminado con máscara degradada.
-- **Mapa**: lienzo circular cuadrado de `min(100%, 100dvh − 150px)` centrado, con la leyenda en cápsula de cristal debajo; a su derecha, el **inspector** de 332px que flota desde 84px arriba hasta 12px abajo.
-- **Detalle**: columna con secciones separadas 40px; rejillas de tarjetas de 2 × 360px con 20px de hueco (una columna por debajo de 820px). A partir de 1360px aparece un raíl de resumen de 280px pegajoso a la derecha.
+- **Mapa**: ocupa todo el hueco a la izquierda del inspector, sin recorte; la leyenda va en cápsula de cristal debajo y "Show all" arriba a la derecha. A su derecha, el **inspector** de 332px que flota desde debajo de la barra (alto medido de la barra + 8px) hasta 12px abajo.
+- **Detalle**: la barra lateral se encoge a un recuadro (icono de O10, versión y foto; radio 20px, relleno 9 × 16px) con la transición de página de 420ms y curva de cajón; el contenido pasa a `left: 0`, la barra superior deja 188px a la izquierda para el recuadro y el detalle lleva 24px de margen. En el sitio del indicador de nivel va la cápsula de tolerancia. Detrás, el mapa vivo de fondo (ver Elevation & Depth). Columna con secciones separadas 40px; rejillas de tarjetas de 2 × 360px con 20px de hueco (una columna por debajo de 820px). A partir de 1360px aparece un raíl de resumen de 280px pegajoso a la derecha.
 
 En iPhone (900px o menos) todo pasa a una columna con scroll de página: barra superior pegajosa con la búsqueda a todo el ancho, mapa a todo el ancho, **barra de pestañas** de cristal flotante abajo (Mapa, Detalle, Brands, Filtros), el inspector como hoja inferior y la barra lateral y los filtros como hojas que suben desde abajo. Se respetan las zonas seguras (`env(safe-area-inset-*)`).
+
+La barra de rango de fotos es una fila propia de la barra superior (cristal, radio 22px); por debajo de 1220px pasa a dos filas (resumen y atajos arriba, pista debajo). El mapa, el inspector y el detalle se colocan con el alto medido de la barra.
 
 El ritmo usa pasos de 3, 6, 10, 12, 16, 20, 24 y 40px; 12px es la distancia de flotación de toda pieza de cristal al borde.
 
 ## Elevation & Depth
 
 La profundidad es material, no tonal: el fondo está abajo, el contenido a sangre encima, y el cristal flota por encima de todo. Cada pieza de cristal combina relleno translúcido, `backdrop-filter: blur(28px) saturate(185%)` (40px en el popover, 36px en la tarjeta de detalle, 44px en las hojas de iPhone), un filo de 1px, una línea de brillo interior arriba, un reflejo especular diagonal en `soft-light` y una sombra suave y amplia.
+
+### Mapa de fondo en Detalle
+- En iPad / escritorio (más de 900px) el mapa sigue montado detrás del Detalle, fijo desde 288px a la izquierda, sin eventos: `filter: blur(16px) saturate(130%)`, opacidad 0,6 y `scale(.975)` con origen en 50% 42%. Entra y sale con la curva de cajón (filtro y opacidad 460ms, escala 520ms). El inspector, la leyenda, "Show all" y las etiquetas se van (160ms); detrás solo quedan los colores, que siguen flotando y cambiando con la tolerancia y el rango.
+- Con movimiento reducido no hay escala, solo filtro y opacidad en 200ms; con menos transparencia, blur de 10px y opacidad 0,22. En iPhone (900px o menos) el mapa no queda de fondo: se oculta.
 
 ### Shadow Vocabulary
 - **Sombra de cristal clara** (`box-shadow: 0 10px 34px rgba(30,36,48,.12), 0 1px 3px rgba(30,36,48,.08)`): toda pieza flotante.
@@ -290,13 +353,15 @@ La profundidad es material, no tonal: el fondo está abajo, el contenido a sangr
 ### Named Rules
 **La Regla del Fondo Quieto.** El papel tapiz no se anima nunca. Solo se mueve el contenido, y solo cuando el puntero no está encima.
 
+**La Regla de la App Detrás.** Lo que queda detrás de una vista o una hoja se empuja hacia atrás, se difumina y se atenúa; no se oculta ni se sustituye por otro fondo. El mapa detrás del Detalle y el grupo detrás de la ficha emergente siguen ahí.
+
 **La Regla de la Lente, no la Esfera.** Las burbujas son lentes planas de cristal: reflejo especular arriba, luz de borde abajo, tinte translúcido. Sin gradiente radial de volumen ni sombra proyectada.
 
 **La Regla del Cristal Accesible.** Con `prefers-reduced-transparency` todo el cristal pasa a tarjeta sólida y el fondo deja de difuminarse; con `prefers-contrast: more` el borde del cristal se oscurece y el cristal se vuelve casi opaco.
 
 ## Shapes
 
-Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco, 12px para filas y celdas, 14px para grupos del raíl, 22px para tarjetas, popover y tarjeta de detalle, 28px para las piezas grandes (barra lateral, inspector y hojas de iPhone, solo con las esquinas superiores redondeadas). Todo control es cápsula (999px): botones, segmentados, chips, búsqueda, barra de pestañas, etiquetas de grupo del mapa. El mapa es un círculo recortado; las burbujas son círculos anidados (casa, brand, product line, EAN) con filo de 1px que no escala con el zoom.
+Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco, 12px para filas y celdas, 14px para grupos del raíl, la fórmula, el pozo del periodo de actuals y la tarjeta flotante de las gráficas, 20px para el recuadro de la barra lateral en Detalle, 22px para tarjetas, popover, barra de rango y tarjeta de detalle, 28px para las piezas grandes (barra lateral, inspector, ficha emergente y hojas de iPhone, solo con las esquinas superiores redondeadas). Todo control es cápsula (999px): botones, segmentados, chips, búsqueda, barra de pestañas, etiquetas de grupo del mapa. El mapa no se recorta (ni círculo ni borde del lienzo); las burbujas son círculos anidados (casa, brand, product line, EAN) con filo de 1px que no escala con el zoom.
 
 ## Components
 
@@ -321,7 +386,41 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Shadow Strategy:** sombra de cristal (ver Elevation & Depth).
 - **Border:** filo de cristal de 1px.
 - **Internal Padding:** 16px en tarjetas; 14px en fichas; celdas de KPI de 8 × 9px con radio de 12px.
-- **Brújulas:** las cuatro tarjetas miden exactamente 360 × 480px (410px en Resultados) con lienzo SVG fijo de 326px.
+- **Decisiones:** las cuatro tarjetas (Brújula 1, 2, 3 y selector) miden exactamente 360 × 568px, con lienzo SVG fijo de 326px (el alto extra es para la sub-brújula de e).
+- **Resultados:** tres tarjetas de 260 × 374px (`.tarjeta.res`) en una rejilla `repeat(auto-fill, 260px)` con 20px de separación (una columna en iPhone), con lienzo SVG de 228 × 196px.
+
+### Decisiones (brújulas y selector)
+- **Sub-brújula de años de estacionalidad** (`svg#b1e`, 326 × 74px) bajo el lienzo de la Brújula 1, con el lenguaje del selector: cabecera "Years of seasonality · e" (11px 600) a la izquierda y la elección a la derecha (azul de texto si hay receta; gris si es una selección, "Each code its own", o si no aplica, "No effect: flat mean (s 0%)"). Dos filas de 24px con 4px de hueco (arriba 2 años, abajo 1 año) y 74px de rótulos; cada fila se tiñe de azul según cuántas fotos la eligieron (con su recuento) y la elegida para el futuro lleva recuadro. Encima, la trayectoria del valor elegido foto a foto, una columna por foto medida, en escalón; en un grupo, cada código con su punto y línea pequeños (reparto estable por EAN dentro de la fila). Si una foto usa media plana, su punto va hueco. Con s = 0 en la receta elegida la sub-brújula entera baja al 42% de opacidad (`.inerte`). Con el mapa de calor, la densidad de esos mismos puntos.
+- **Selector** ("Selector · Whose trend and seasonality?"): filas del trend de 50px (Hierarchy, + Segmento, + Tamaño, + Edad) y, bajo un separador, una fila "Seasonality" de 46px alineada con las columnas Own · Line · Brand · House. Misma escala de tamaño (relleno azul con opacidad logarítmica según el nº de códigos); la celda elegida lleva aro de 2px en azul receta. Con s = 0 la fila de estacionalidad queda al 40% de opacidad.
+
+### Resultados (medias brújulas)
+- Tres medias brújulas (SPP3·WAPE90, SPP6·WAPE180, SPP·WAPE 9M), lienzo de 228px de ancho, con **escala propia de cada gráfica**: SPP ±30/50/75/100% y WAPE 60/80/100%, el primer escalón que cubre los valores de esa ventana con un 6% de margen; nunca más del 100%. Un valor fuera de escala se dibuja pegado al borde con un triángulo. Línea verde discontinua (4 3) en el WAPE meta y zona meta en verde translúcido; Consensus en gris discontinuo (4 3), receta en azul continuo, 1,5px.
+- Encima, una fila de leyenda (`.ley-graf`, 12px, etiqueta secundaria); debajo de cada gráfico, la tabla de KPIs `.t-kpi` (12px; cabeceras 11px 600; primera columna en etiqueta secundaria). Sin tarjeta "Cómo leerlas".
+
+### Tarjeta flotante de las gráficas
+- Una sola tarjeta de cristal (`.tip-graf`, máximo 280px, radio 14px, relleno 9 × 12px, 12px con cifras tabulares; primera línea en 12,5px 600) sustituye al tooltip nativo en todas las gráficas del detalle: serie, ventana, foto, código o grupo, y WAPE y SPP. Aparece en 140ms ease-out desde el punto (escala 0,96 → 1, origen en el punto); mientras sigue visible cambia al instante. El punto apuntado crece y su trazo pasa a 3px (160ms, solo con puntero fino). Con movimiento reducido, solo fundido. Dentro de la ficha emergente la misma tarjeta se muda al diálogo.
+
+### Actuals
+- **Gráfica de barras** a todo el ancho de la sección (320px de alto; 250px por debajo de 640px de ancho), una columna por mes con la barra al 72% del ancho de la columna y esquinas de hasta 4px. Actuals en gris (actuals-gray); Supply Cuts encima con el rayado naranja a 45° (patrón de 6px); DAs en morado, encima si son positivos y bajo el cero si son negativos. El mes en curso va al 45% de opacidad y no entra en la historia.
+- **Historia usada:** curva punteada azul receta (2,2px, trazo `1.5 4` con remates redondos, Catmull-Rom) con un punto por mes (2,8px; 2,2px en estrecho). **Base 12M:** línea azul discontinua (1,2px, `3 3`, al 75%) con su rótulo en azul de texto 600 y halo del color de tarjeta.
+- **Años fiscales:** separador vertical discontinuo (`2 3`, separador fuerte) en cada julio y rótulo "FY" en 600 y etiqueta secundaria arriba.
+- **Cabecera:** leyenda de una línea y, a la derecha, el desplegable "Snapshot" (pozo de relleno gris, radio 10px). Debajo, los totales de los 12 meses cerrados en 12,5px con las cifras en etiqueta 600.
+- **Periodo de actuals:** barra de rango propia con el mismo diseño y gesto que la de las fotos, pero sobre un **pozo de relleno gris** (fill, radio 14px, relleno 11 × 16px), no sobre cristal; en dos filas (resumen y atajos arriba, pista debajo) y en tres por debajo de 700px.
+
+### Barra de rango
+- Pista de 4px en relleno fuerte con el tramo elegido en azul (colocado con `left` / `width` en px); un punto de 10px por foto (azul dentro del rango), fotos sin medir huecas de 6px sobre un tramo discontinuo con "Not measured yet" en 10px. Tiradores blancos de 26px con sombra suave y zona táctil de 44px; al arrastrar, burbuja de valor en etiqueta invertida (radio 8px). Etiquetas de mes de 10,5px (600 y etiqueta dentro del rango). Resumen en 15px 700 tabular.
+
+### Detector
+- **Bloque de fórmula** (`.formula`): relleno gris (`fill`), radio 14px (`--r-m`), relleno interior 14px × 16px. Título 14px 700; la fórmula (`.fx`) en 15px con los valores de la receta en azul de texto 700 y los operadores en etiqueta secundaria; definiciones (`.def`) en 12,5px. Debajo, chips de parámetros (`.pars`): cápsulas con fondo de tarjeta, 12px, valor en azul de texto 600; los que no influyen (s = 0) van tachados en la fórmula y al 50% en los chips (`.nulo`).
+- **Tabla:** columna "Recipe" (`.c-rec`, mínimo 230px) en dos líneas: el grupo en etiqueta y los valores debajo en 11px y etiqueta secundaria.
+
+### Ficha emergente (dialog#ficha)
+- Diálogo modal de cristal fuerte con todo el detalle de un código encima del grupo: `min(1180px, 100vw − 32px)` de ancho, alto de la ventana menos 32px, radio 28px, relleno 22 × 24px, scroll propio contenido. El velo oscurece al 26% y difumina 6px (entra en 300ms, sale en 200ms). Llega como material: escala 0,96 → 1, 14px de subida y desenfoque 6px → 0 en 360ms con la curva de cajón; sale en 200ms (escala 0,97, 10px). Con movimiento reducido, solo fundido de 200ms.
+- Barra superior pegajosa de cristal fuerte (blur 24px, separador abajo) con el contexto ("Code in <grupo>") a la izquierda y, a la derecha, "Open as page" (botón fantasma) y cerrar (botón redondo). Dentro, el detalle en una columna, sin raíl ni "volver al mapa". Detrás queda una copia quieta del grupo, sin ids e inerte.
+- Por debajo de 700px es una hoja inferior a todo el ancho (94dvh, solo esquinas superiores redondeadas). Con menos transparencia, fondo de tarjeta sólida.
+
+### Cápsula de tolerancia (barra superior en Detalle)
+- Cápsula de cristal de 42px en el sitio del indicador de nivel: "Tolerance" en etiqueta 600, "Month 1 [campo] → Month 9 [campo]" en 12,5px 500 y etiqueta secundaria. Campos en cápsula de relleno gris de 52 × 28px, 13px 600 tabular alineado a la derecha, sin flechas de número; foco con halo azul de 3px al 45%. Va a la par con la tolerancia de la barra lateral del mapa.
 
 ### Inputs / Fields
 - **Search capsule:** cristal de 42px de alto, icono de lupa, placeholder en etiqueta secundaria; 16px de texto en iPhone para que Safari no haga zoom.
@@ -329,7 +428,7 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Focus:** contorno azul al 55% de 3px con 2px de separación; la búsqueda añade un halo azul de 4px al 35%.
 
 ### Navigation
-- **Barra lateral:** cabecera con el icono de la app y "O10", selector de casa, encabezados de sección en 11px 600, filas de 32px con icono azul y contador en cápsula; fila activa con fondo azul al 16% y texto azul. Abajo, el segmentado de apariencia. Los triángulos de despliegue giran 90° en 220ms.
+- **Barra lateral:** cabecera con el icono de la app (34px), la versión en 19px 700 y la foto en 11,5px, selector de casa, encabezados de sección en 11px 600, filas de 32px con icono azul y contador en cápsula; fila activa con fondo azul al 16% y texto azul. Abajo, el segmentado de apariencia. Los triángulos de despliegue giran 90° en 220ms. En Detalle se encoge a un recuadro con solo esa cabecera.
 - **iPhone:** barra de pestañas de cristal flotante centrada abajo; pestaña activa con relleno gris y texto azul. La barra lateral sube como hoja (420ms, curva de cajón `cubic-bezier(0.32,0.72,0,1)`) con velo del 22%.
 
 ### Mapa de burbujas (signature)
@@ -357,7 +456,10 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Do** usar azul solo para receta y acción, gris para Consensus, verde para la meta y la escala amarillo → rojo para el desvío.
 - **Do** usar cifras tabulares en todo número y la fuente del sistema en todo texto.
 - **Do** animar con muelles críticamente amortiguados y curvas ease-out fuertes, respetar `prefers-reduced-motion` y `prefers-reduced-transparency`, y reservar el hover para punteros finos.
-- **Do** mantener las cuatro tarjetas de cada rejilla del mismo tamaño fijo (360 × 480px o 360 × 410px).
+- **Do** mantener todas las tarjetas de cada rejilla del mismo tamaño fijo (360 × 568px en Decisiones, 260 × 374px en Resultados).
+- **Do** dar a cada media brújula su propia escala (SPP ±30/50/75/100%, WAPE 60/80/100%) y pegar al borde con un triángulo lo que se salga.
+- **Do** usar la tarjeta flotante de cristal, y no el tooltip nativo, en las gráficas del detalle.
+- **Do** dejar lo que queda detrás (el mapa en Detalle, el grupo bajo la ficha) empujado, difuminado y atenuado, no oculto.
 
 ### Don't:
 - **Don't** animar el fondo ni añadir fondos en movimiento.
@@ -365,4 +467,5 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Don't** teñir el cristal con color de marca ni usar azul para decorar.
 - **Don't** usar grises azulados en el modo oscuro.
 - **Don't** poner rótulos en mayúsculas espaciadas sobre los títulos.
+- **Don't** pintar los Supply Cuts con naranja liso: van siempre rayados.
 - **Don't** usar animaciones con rebote ni que retrasen la lectura de un número más de 640ms.

@@ -1,5 +1,7 @@
 # Pendiente para el diseño nuevo
 
+> **Hecho en O10.0.2.** La página ya refleja todo lo de este traspaso (e, h, 99.144 recetas, tope ±50%, "Fuera del export" en `TX`). Se deja como registro; lo nuevo de la interfaz está en `CLAUDE.md`, sección 9.
+
 Traspaso para la conversación que haga el diseño. En una sesión dedicada solo al motor (sin tocar `interfaz/`) cambiamos el cálculo. La página todavía no lo refleja: `O10.0.1.html` y `diseno/ejemplos/BRUJULAS_ejemplo.html` se generaron con el motor anterior. Aquí está todo lo que cambió y lo que la página tiene que mostrar. La especificación (`CLAUDE.md`, secciones 1, 4 y 5) ya está actualizada.
 
 ## Antes de empezar: cuidado con el diseño (pedido expreso del usuario)

@@ -19,13 +19,13 @@ O10/
 ├── motor/                    cálculo en Python (sin nada de interfaz)
 │   ├── config.json           rejillas, tope del trend, pesos, tolerancia inicial, filtro de tipos
 │   ├── lector.py             lectura y validación de una foto (EAN, mes, scope, edad, tamaño)
-│   ├── recetas.py            forecast de las 99.144 recetas por código y foto (MotorFoto, Rejilla)
+│   ├── recetas.py            forecast de las 75.816 recetas por código y foto (MotorFoto, Rejilla)
 │   └── pipeline.py           actuals posteriores, tramos, cubo, resúmenes, score multi-foto, detector
 ├── interfaz/                 código de la página
 │   ├── plantilla.html        HTML + CSS + JS de O10; el pipeline incrusta los datos
 │   ├── html.py               genera el HTML autocontenido a partir de la plantilla
 │   └── vendor/               d3-hierarchy incrustado (licencia ISC)
-├── O10.0.1.html              versión oficial de la página (en la raíz; se abre sin servidor)
+├── O10.0.2.html              versión oficial de la página (en la raíz; se abre sin servidor)
 ├── VERSION                   número de versión que muestra la página (O10.0.1, O10.0.2…)
 ├── diseno/                   decisiones de diseño y ejemplos
 │   ├── DESIGN.md             sistema de diseño vigente (iOS / iPadOS 26, cristal líquido)
