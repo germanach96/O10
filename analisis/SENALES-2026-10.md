@@ -1,119 +1,181 @@
-# Señales de demanda — Gucci, 14 fotos (2025.M09 – 2026.M10)
+# Señales del Consensus — Gucci, 14 fotos (2025.M09 – 2026.M10)
 
-Análisis exploratorio para la fase de toma de decisiones: qué indicadores anticipan el sell-in futuro y los errores del Consensus.
-Datos: `data/Gucci/Consensus/` (14 fotos). Actuals cerrados hasta 2026.M09, EPOS desde 2024.M07.
+**Pregunta:** ¿qué combinación de indicadores, visible el día de la foto, anticipa que el Consensus de los próximos 3 meses va a fallar por más de un 30 %?
+**Método:** minería sistemática con confirmación fuera de muestra, no hipótesis hechas a mano (ver §5).
 
-**Cómo leer la fiabilidad.** "Se cumple X %" es la frecuencia observada, con su intervalo del 95 % (Wilson).
-"Base" es lo que pasa sin la señal. La **fuerza** es la diferencia entre ambos:
-fuerte = al menos +20 pp y estable en las dos mitades del periodo; media = de +10 a +20 pp; débil = menos de +10 pp, o no se mantiene.
-Gucci está en caída (el 68 % de los códigos maduros baja frente al año anterior), así que la base ya es alta.
-Una señal solo vale si supera esa base.
-
----
-
-## 0. Problemas de datos que cambian las conclusiones (leer primero)
-
-| # | Problema | Impacto | Qué hacer |
-|---|---|---|---|
-| D1 | **Cambio de perímetro en la foto 2026.M02.** Toda la historia de actuals se revisó al alza: +29 % en 2025.H1 y entre +16 % y +126 % según el mes. Por brand: Guilty +69 %, Bloom +25 %, Flora +19 %, Bamboo +97 %. El Consensus futuro también salta (2026.M08: +115 %). El EPOS no cambia. | Las fotos 2025.M09-2026.M01 se miden contra actuals de otro perímetro y parecen infra-forecast. El motor (`actuals_futuros`) usa los actuals de la foto más reciente, así que **la elección de recetas está contaminada**. | Medir cada foto con actuals de su mismo perímetro, o armonizar con un factor por código (actuals nuevos ÷ viejos en los meses que se solapan). Preguntar al equipo qué entró en el perímetro. |
-| D2 | **Las fotos solo guardan unos 8 meses de DAs pasados.** El resto aparece como 0. | Con `p` > 0 se limpian los DAs de los meses recientes pero no los del año anterior, así que **el trend sale sesgado** y la base de 12M solo se limpia en parte. | Guardar el DA definitivo de cada mes desde la foto siguiente a ese mes (mes + 1) y montar un histórico propio. |
-| D3 | **Sustituciones de EAN** (mismo PL y tamaño, el viejo se apaga en unos 3 meses). | La historia propia del código nuevo empieza de cero y la del viejo cae a 0, así que el trend "Propio" no sirve. | Encadenar el código nuevo con el viejo (ver S11). |
-| D4 | El EPOS solo existe desde 2024.M07 y la foto 2025.M11 viene sin EPOS. | El EPOS frente al año anterior solo se puede calcular desde 2025.M07: las señales de EPOS tienen 9-12 meses de prueba. | Repetir el análisis cada trimestre. |
+- Población: regulares con Consensus ≥ 60 uds en los 3 meses siguientes.
+- 1.324 casos código × foto: 10 fotos medidas (5 de 2025, 5 de 2026) y unos 145 códigos.
+- **Sobre-forecast** = actual < 0,7 × Consensus en F+1…F+3. Base: 43-48 %.
+- **Infra-forecast** = actual > 1,3 × Consensus. Base: 17-24 %.
 
 ---
 
-## 1. Catálogo de señales
+## 1. El scorecard (regulares)
 
-| # | Si ves… | …entonces | Se cumple | Base | Fuerza |
-|---|---|---|---|---|---|
-| **S1** | **El Consensus asume para los próximos 3 meses un crecimiento interanual más de un 50 % por encima del que muestra el EPOS de los últimos 3 meses** | Sobre-forecast en el SPP3 (SPP3 del grupo **−51 %**) | **81 %** [75-87] · n=167, 47 códigos | 60 % | **Fuerte** (fotos limpias: 83 %) |
-| S1b | El Consensus crece entre un 20 % y un 50 % más que el EPOS | Sobre-forecast (SPP3 −10 %) | 70 % [60-79] | 60 % | Media |
-| S1c | **El Consensus va alineado con el EPOS (±20 %)** | **SPP3 en meta (+2 %)** | — | — | Fuerte como referencia |
-| S1d | El Consensus crece más de un 20 % *menos* que el EPOS | Infra-forecast (SPP3 **+24 %**) | 65 % [57-72] | 40 % | **Fuerte** (fotos limpias: 57 %, base 35 %) |
-| **S2** | **El EPOS de los últimos 3 meses cae más de un 30 % frente al año anterior** | El sell-in de los 3 meses siguientes baja frente al año anterior (−22 % agregado) | **79 %** [73-83] · 51 códigos | 68 % | Media (75 % → 82 % entre la primera y la segunda mitad) |
-| S2b | El EPOS de los últimos 3 meses estable (±10 %) | Sell-in siguiente +5 % (frente a −22 % con el EPOS hundido) | — | — | Media |
-| S2c | Una vez se tiene en cuenta el EPOS frente al año anterior, el sell-in pasado ya no añade información para predecir el sell-in futuro (coeficiente −0,05; p = 0,67) | Para anticipar el sell-in, mirar el EPOS antes que el sell-in | — | — | Media |
-| **S3** | **SPP3 ya medido < −30 % y EPOS frente al año anterior < −10 %** | El Consensus vuelve a sobre-forecastear | **78 %** [70-84] · 58 códigos | 67 % | Media (solo fotos limpias: 84 %, n=25, no significativo) |
-| S3b | El mismo SPP3 < −30 % pero con el EPOS sin caer | Repite el sobre-forecast | 58 % | 67 % | Ninguna: sin el EPOS, la señal se pierde |
-| **S4** | **One Shot con DA ≥ 50 % de la base** | Sobre-forecast ese mes | **82 %** [75-87] | 54 % | **Fuerte** |
-| S4b | Regular con DA ≥ 50 % de la base | Sobre-forecast ese mes | 71 % [68-73] | 64 % | Débil |
-| **S5** | **DA positivo planificado** | Solo llega una parte: **~0,55 por unidad de DA en regulares** (IC 0,37-0,70) y **~0,40 en One Shots** (IC 0,23-0,52). Fotos limpias, 1-3 meses. | — | — | **Fuerte** (también fuera de muestra, ver §3) |
-| S5b | DA negativo | Se cumple ~0,70 (deja infra-forecast) | — | — | Media |
-| S5c | El DA de un mes futuro a 1-3 meses vista | El DA definitivo de ese mes será **~2 veces** el planificado: los DAs se cierran tarde | — | — | Media |
-| S5d | Tras un mes con DA grande | **No hay resaca** al mes siguiente | — | — | Media (sin efecto) |
-| **S6** | **Pedidos grandes** (≥ 2 veces la mediana de 12M) | Van por **calendario**: septiembre 31 %, octubre 25 %, diciembre 21 %, marzo 18 %, frente a 2-3 % en enero, abril y mayo | — | 13 % | Fuerte (patrón) |
-| S6b | El retailer vendió mucho de lo que compró | **No** anuncia un pedido grande: con sell-through de 3 meses > 1,8 la probabilidad baja al 7 % | — | 13 % | Fuerte (contraintuitiva) |
-| **S7** | **Sell-through de 3 meses > 1,2 y EPOS frente al año anterior < −10 %** (desstockaje) | El mes siguiente el sell-in queda por debajo del 70 % de su media de 12M (de media, 0,51x) | **76 %** [69-81] · 64 códigos | 64 % | Media |
-| S7b | Sell-through alto pero EPOS estable | Sell-in normal (0,86x) | — | — | Media |
-| **S8** | **EPOS de julio-agosto frente al año anterior < −30 %** | La carga de septiembre-noviembre baja (−22 % agregado) | 78 % · 36 códigos | ~70 % | Media (una sola temporada). Spearman 0,51 frente a 0,36 del sell-in de verano |
-| **S9** | **Supply Cut en el mes t** | Vuelve como pedido el **~40 %** (IC 22-59 %) en t+1…t+3, sobre todo en t+1 | — | — | Media. Respalda `c` ≈ 50 % |
-| S10 | Lanzamiento de un regular | El 50 % del primer año se envía en los meses 1-3 (mes 1 = 3,7 veces la media de los meses 4-12). A los 12 meses el canal aún tiene sell-in/EPOS = 2,4 (normal: 1,3) | — | — | Media (n=43; 14 con EPOS) |
-| S10b | Código en sus meses 7-12 | Consensus SPP −39 % con todas las fotos armonizadas, pero solo −6 % con las fotos limpias. El stock que queda del lanzamiento frenaría la recompra | — | — | Débil (no se mantiene en las fotos limpias) |
-| **S11** | **EAN nuevo con el mismo PL, el mismo tamaño y una descripción casi igual** | El viejo cae a 0 en unos 3 meses y el nuevo hereda **~100 %** de su volumen (mediana 1,00). Si es un relanzamiento, 1,2-2,1 veces durante el llenado del canal | 14 de 14 sustituciones claras | — | **Fuerte** |
-| S12 | **One Shots en la misma línea** | **Sin canibalismo medible en el EPOS de los regulares** (efecto ≈ 0). En sell-in se mueven juntos porque se cargan en las mismas ventanas (el One Shot del mes *siguiente* "predice" igual) | — | — | Media (confianza en que **no** hay un efecto grande) |
-| S13 | Flanker / línea nueva en la brand | Mixto: mediana −6 % en el sell-in del resto de la brand. Bloom Chrysalis −33 %; Gardenia Intense −17 % en sell-in y +12 % en EPOS; Ambrosia d'Oro +46 % | ~50 % | — | **Débil**: no usar |
-| S14 | Revisión de la base del Consensus frente a la foto anterior | Recortes > 30 % se pasan (SPP +19 %); el resto no anticipa nada | — | — | Débil |
+Se suman los puntos de las condiciones que se cumplen. Los puntos se calibraron con las fotos de 2025 y las probabilidades son las **observadas en las fotos de 2026**, que el modelo no vio.
 
----
+### Indicadores (todos se calculan con lo que se sabe el día de la foto)
 
-## 2. Ajuste manual frente a System FC + DA (valor añadido del forecaster, regulares, 1-3 meses)
+| Indicador | Cálculo |
+|---|---|
+| **Cons/ritmo** | Consensus de los meses 1-3 ÷ (sell-in de los últimos 12 meses ÷ 4) |
+| **Forma del Consensus** | Consensus de los meses 7-9 ÷ Consensus de los meses 1-3 |
+| **Peso del DA** | Total Demand Assumption de los meses 1-3 ÷ Consensus de los meses 1-3 |
+| **Consensus frente al EPOS** | (Consensus 3M ÷ sell-in de esos meses el año pasado) ÷ (EPOS de los últimos 3M ÷ EPOS de esos meses el año pasado) |
+| **Cortes** | Supply Cuts de los últimos 3 meses ÷ sell-in medio mensual de 12M |
+| **Último mes** | Sell-in del último mes cerrado ÷ media mensual de 12M |
+| **One Shots en la PL** | Sell-in de los One Shots de su Product Line en los últimos 3M ÷ sell-in regular de la PL |
 
-| Grupo | WAPE Consensus | WAPE Sys+DA | Mejora del ajuste manual |
-|---|---|---|---|
-| Año 1, meses 1-6 | 57 % | 126 % | **+69 pp** |
-| Año 1, meses 7-12 | 69 % | 115 % | **+46 pp** |
-| Año 2 | 63 % | 65 % | +2 pp |
-| Año 3+ | 55 % | 58 % | +3 pp |
+### A. Riesgo de SOBRE-forecast (AUC 0,74 en 2026; 0,81 con los periodos invertidos)
 
-(fotos limpias 2026.M02-M06)
+| Puntos | Condición |
+|---|---|
+| +14 | DA > 40 % del Consensus |
+| +11 | El Consensus crece más de un 50 % por encima de lo que crece el EPOS |
+| +3 | Cons/ritmo > 2x |
+| +3 | Consensus cargado al inicio (meses 7-9 < 0,5 × meses 1-3) |
+| +3 | Último mes ≈ 0 (< 15 % de la media) |
+| +1 | Cons/ritmo 1,25-2x |
+| −1 | Último mes > 1,5 × la media |
+| −2 | Cortes > 0,5 meses de venta |
+| −2 | El Consensus crece más de un 20 % por debajo de lo que crece el EPOS |
+| −5 | DA negativo |
+| −6 | Cons/ritmo 0,5-0,8x |
+| −7 | Cortes > 2 meses de venta |
+| −10 | Cons/ritmo < 0,5x |
+| −11 | One Shots > 40 % del regular de su PL |
 
-En los códigos maduros el ajuste manual aporta 1-3 pp de WAPE. En los nuevos y en los que tienen flag 1/2 aporta mucho.
-En los **Bulls** el Consensus sobre-forecastea un −27 %, más que el sistema (−18 %): ahí el ajuste empeora el bias.
-
----
-
-## 3. Lo más importante para la toma de decisiones: las recetas fuera de muestra
-
-Prueba hecha como en la vida real: en cada foto F se elige la receta solo con los tramos ya cerrados antes de F y se mide en F+1…F+3.
-Son 6 fotos de prueba (2026.M01-M06), con el perímetro armonizado.
-
-| Estrategia | WAPE90 | Gana al Consensus |
+| Puntos | % con sobre-forecast >30 % (2026) | Mediana actual/Consensus |
 |---|---|---|
-| Consensus | **56,1 %** | — |
-| Receta propia por código (oráculo de las fotos pasadas) | 83,2 % | 0/6 |
-| Regla por Product Line / Edad / Segmento / Casa | 73-74 % | 0/6 |
-| Mezcla 25 % receta + 75 % Consensus | 55,6-55,9 % | marginal |
-| Oráculo ex post (inalcanzable) | 27,3 % | 6/6 |
-| **Consensus con el DA recortado** (calibrado con fotos pasadas, bias neutro) | Regular 58,3 → 56,1 % · **One Shot 103 → 94 %** (SPP −22 % → −2 %) | 4/8 · **6/8** |
+| ≤ −10 | 21 % [16-28] · n=169, 69 códigos | 1,03 |
+| −9 a 0 | 41 % [33-50] | 0,81 |
+| 1 a 10 | 47 % [38-56] | 0,72 |
+| **11 a 20** | **78 % [67-86]** · n=68, 41 códigos | **0,24** |
+| **> 20** | **82 % [66-92]** · n=34, 17 códigos | **0,23** |
 
-Conclusiones:
-1. **Elegir la mejor de 75.816 recetas por código se ajusta al ruido** (83 % fuera de muestra frente al 27 % dentro). La receta ganadora cambia de una foto a otra.
-2. Ni la mejor receta fija elegida a posteriori gana al Consensus en 2026. De media en las 10 fotos queda en 69,8 % frente a 71,1 %, pero pierde en todas las fotos de 2026.M02 a 2026.M06.
-3. La regla de Casa que sale con datos pasados es estable: estacionalidad completa de House a 2 años, `w` = 1, **`m` = 1 (trend de sell-out)**, N = 6, `p` = 1. Que salga el trend de EPOS cuadra con S1-S2.
-4. **El valor está en corregir el Consensus con señales** (DA real, brecha frente al EPOS, desstockaje), no en sustituirlo.
-   El detector debería avisar por **señales** (S1, S3, S4, S7), no por distancia a una receta que no gana fuera de muestra.
+### B. Riesgo de INFRA-forecast (AUC 0,73 en 2026; 0,78 con los periodos invertidos)
+
+| Puntos | Condición |
+|---|---|
+| +12 | Cons/ritmo < 0,5x |
+| +11 | Cortes > 2 meses de venta |
+| +5 | Cortes > 0,5 meses de venta |
+| +3 | Cons/ritmo 0,5-0,8x |
+| +3 | One Shots > 40 % en su PL |
+| +2 | Último mes ≈ 0 |
+| +2 | Último mes > 1,5 × la media |
+| +1 | El Consensus espera recuperación (meses 7-9 > 2 × meses 1-3) |
+| +1 | El Consensus crece más de un 20 % por debajo del EPOS |
+| −1 | Cons/ritmo > 2x |
+| −3 | DA negativo |
+| −8 | Cons/ritmo 1,25-2x |
+| −9 | El Consensus crece más de un 50 % por encima del EPOS |
+| −14 | Consensus cargado al inicio |
+| −16 | DA > 40 % del Consensus |
+
+| Puntos | % con infra-forecast >30 % (2026) | Mediana actual/Consensus |
+|---|---|---|
+| ≤ −10 | 7 % [4-13] | 0,41 |
+| −9 a 0 | 8 % [4-13] | 0,76 |
+| 1 a 8 | 22 % [17-30] | 0,92 |
+| 9 a 15 | 30 % [19-43] | 1,07 |
+| **> 15** | **69 % [50-83]** · n=26, 16 códigos | **1,68** |
+
+**Lectura:** con 11 puntos o más de sobre-forecast, **4 de cada 5 códigos venden menos del 70 % de su Consensus**, y el código típico vende la cuarta parte.
+
+**Efecto en el KPI:** corregir a medias según la puntuación (factor por tramo de puntos y tamaño del código) deja el SPP3 de 2026 en +3 % (el Consensus estaba en −8,5 %) sin empeorar el WAPE.
+Aplicado al revés (calibrar en 2026, probar en 2025) baja el WAPE3 del 67 % al 57 %.
+El riesgo se concentra en códigos pequeños y medianos: en volumen el impacto es menor que en número de códigos.
 
 ---
 
-## 4. Propuestas para el motor (por decidir con el equipo)
+## 2. Patrones confirmados
 
-1. **Medir por perímetro** (D1) y volver a calcular el cubo. Hecho en el análisis con un factor por código; habría que pasarlo al pipeline.
-2. **Factor de realización de DAs** en la configuración: `rho_DA` ≈ 0,55 en regulares y 0,40 en One Shots, en lugar de respetarlos al 100 %. Choca con la decisión actual del usuario ("los DAs se respetan al 100 %"): **pregunta abierta**.
-3. **Histórico de DAs** guardado desde la foto t+1 (D2) antes de usar `p` > 0.
-4. **Encadenar sustituciones de EAN** (S11).
-5. **Regla por grupo con contracción**: si se elige receta, que sea por grupo y solo cuando gane al Consensus en las fotos de validación; si no, no proponer cambio.
-6. **Detector de señales**: brecha Consensus/EPOS > 50 %, DA dominante en One Shots, SPP3 < −30 % con EPOS cayendo y sell-through alto con EPOS cayendo.
-7. **Indicador de la carga de Q4**: EPOS de julio-agosto frente al año anterior → tamaño de la carga de septiembre-noviembre (S8).
+Cada combinación se descubrió en un periodo y se confirmó en el otro, con FDR < 5 %, al menos 8 códigos distintos y ≥ +10 pp sobre la base.
+"%" = acierto en el periodo de confirmación. "A/C" = mediana actual/Consensus en ese periodo.
+
+### Sobre-forecast (base 43-48 %)
+
+| # | Patrón | Descubierto → confirmado | % | A/C |
+|---|---|---|---|---|
+| P1 | **Rabbit con Cons/ritmo ≥ 1,6x** | 87 % → **85 %** (n=96, 30 cód.) | 85 % | 0,10 |
+| P2 | **Código que crece ≥ 45 % menos que su PL** (sell-in YoY 3M) **y Cons/ritmo ≥ 2,9x** | 100 % → **95 %** (n=19, 9 cód.) | 95 % | 0,04 |
+| P3 | **Pierde cuota en su PL** (cuota 3M < 0,77 × cuota 12M), **sin cortes, y Cons/ritmo ≥ 1,2x** | 97 % → **90 %** (n=30, 20 cód.) | 90 % | 0,10 |
+| P4 | **Canibalismo:** la brand lanzó en 6 meses ≥ 38 % de su volumen regular, **el código ya está parado** (último mes < 23 % de la media) **y sin cortes** | 96 % → **92 %** (n=12, 12 cód.) | 92 % | 0,07 |
+| P5 | **Desaceleración:** YoY 3M ≤ 0,36 × YoY 12M **y Cons/ritmo ≥ 1,7x** | 94 % → **89 %** (n=18, 10 cód.) | 89 % | 0,09 |
+| P6 | Código débil (YoY 6M < −30 %), por debajo de su brand, y Consensus que asume ≥ 2,4 veces el crecimiento del EPOS | 97 % → **89 %** (n=19, 13 cód.) | 89 % | 0,13 |
+| P7 | Consensus que es casi todo DA (DA ≥ Consensus) y cargado al inicio | 86 % → **90 %** (n=20, 8 cód.) | 90 % | 0,00 |
+| P8 | **Tamaño ≥ 100 ml con DA ≥ 26 % del Consensus** | 85 % → **75 %** (n=56, 20 cód.) | 75 % | 0,10 |
+| P9 | El Consensus asume ≥ 6 veces el crecimiento reciente del sell-in, con la brand estable o creciendo | 90 % → **87 %** (n=31, 13 cód.) | 87 % | 0,25 |
+
+### Infra-forecast (base 17-24 %)
+
+| # | Patrón | Descubierto → confirmado | % | A/C |
+|---|---|---|---|---|
+| Q1 | **Cortes recientes (≥ 0,25 meses de venta) y Consensus recortado por debajo del ritmo (< 0,67x) y del año pasado (< 0,82x)** | 73 % → **87 %** (n=15, 9 cód.) | 87 % | 2,02 |
+| Q2 | **Consensus recortado ≥ 37 % frente a hace 3 fotos y sin crecer más que el EPOS** | 48 % → **80 %** (n=35, 29 cód.) | 80 % | 2,00 |
+| Q3 | **Últimos 3 meses en máximos de 12M (≥ 93 % del mejor trimestre) y Consensus < 0,55x del ritmo** | 74 % → **79 %** (n=14, 8 cód.) | 79 % | 1,78 |
+| Q4 | Consensus < 0,67x del ritmo, por debajo del EPOS y con DA negativo ≥ 30 % | 76 % → **71 %** (n=28, 20 cód.) | 71 % | 1,73 |
+| Q5 | **Cortes recientes y Consensus que espera recuperación tardía** (meses 7-9 ≥ 2,2 × meses 1-3) | 56 % → **71 %** (n=21, 19 cód.) | 71 % | 1,64 |
+| Q6 | EPOS sin caer (YoY ≥ −12 %) y Consensus < 0,70x del ritmo | 44 % → **69 %** (n=36, 22 cód.) | 69 % | 1,53 |
+
+### Confluencia
+
+Se eligieron 8 señales mirando solo el periodo de descubrimiento y se contaron las activas en el otro:
+
+| Señales activas | Sobre-forecast 3M | Infra-forecast 3M |
+|---|---|---|
+| 0 | 39 % | 13 % |
+| 1 | 61 % | 21 % |
+| 2 | 68 % | 46 % |
+| **3+** | **91 %** (A/C 0,34) | **82 %** (A/C 1,39) |
+
+### Las tres ideas que hay detrás
+
+1. **El Consensus no se cree el declive.** Si el código pierde contra su PL, su brand o su propio ritmo (P2, P3, P5, P6) y el Consensus no baja, el actual se queda muy por debajo.
+2. **El Consensus se pasa al recortar después de un corte.** Los cortes deprimen los actuals; el Consensus recorta por debajo del ritmo; cuando vuelve el supply, el actual sale 1,6-2 veces por encima (Q1, Q2, Q5).
+3. **El DA en tallas grandes, o encima de un código parado, no llega** (P4, P7, P8).
 
 ---
 
-## 5. Método y límites
+## 3. Lo que no funciona (también es información)
 
-- La verdad de cada mes sale de la foto más reciente que lo trae (comprobado contra los CSV: actuals, EPOS, DA y Consensus cuadran exactamente).
-  El EPOS no se revisa entre fotos.
-- Las señales de Consensus se repitieron de tres formas: todas las fotos, solo fotos limpias (≥ 2026.M02) y fotos armonizadas. Las cifras de la tabla son las armonizadas, con la versión limpia al lado.
-- Comprobaciones de robustez: primera y segunda mitad del periodo; muestra sin ventanas solapadas (una foto por trimestre); nº de códigos distintos; % de códigos donde la señal acierta más de la mitad de las veces; test de Fisher.
-  Se miraron ~20 hipótesis: con esa cantidad, una con p ≈ 0,05 puede salir por azar. Las fuertes tienen p < 1e-6.
-- Correlación no es causalidad. S12 y S13 en especial: los One Shots y los regulares se cargan en las mismas campañas.
-- Muestra corta: 10 fotos con SPP3 cerrado (5 limpias) y 27 meses de EPOS. Las fiabilidades pueden moverse ±10 pp con más fotos.
-- La WAPE es mensual por código (Σ|F−A| / ΣA), como define el equipo.
+- **One Shots:** ninguna combinación se confirma. Se sobre-forecastean el 50-67 % de las veces pase lo que pase. Lo único robusto es recortar su DA: llega ≈ 40 %.
+- **Horizonte de 1 mes:** las reglas se ajustan al ruido (100 % en descubrimiento, ~50 % en validación) y el modelo tiene un AUC de 0,57-0,62. No sirve.
+- **Patrones de demanda sin el Consensus** (subida o caída interanual del sell-in): salen, pero son obvios ("si lleva 12 meses cayendo, sigue cayendo") y no aportan nada que no se vea mirando la serie.
+- **Revisiones entre fotos y fuerza relativa frente a la PL** como indicadores sueltos: inestables entre periodos. Solo valen combinados, como en Q2 y P2.
+
+---
+
+## 4. Cómo usarlo
+
+1. Calcular los 7 indicadores en cada foto (el pipeline ya tiene todos los datos) y mostrar los dos puntajes por código como semáforo de riesgo.
+2. Revisar primero los códigos con ≥ 11 puntos de sobre-forecast o > 15 de infra-forecast. En 2026 eran el 25 % de los casos: fallan más de un 30 % en el **83 %** de las veces, frente al 54 % del resto, y recogen un tercio de todos los fallos. Es una lista de prioridades, no un detector completo.
+3. En el detector, avisar por patrón (P1-P9, Q1-Q6) con su probabilidad, en lugar de por distancia a una receta.
+4. Volver a calibrar los puntos cada trimestre con las fotos nuevas. Con 10 fotos medidas, los porcentajes pueden moverse ±10 pp.
+
+---
+
+## 5. Método y validación
+
+- **Biblioteca de indicadores:** 62 de análisis técnico calculados solo con información ≤ F−1 (momentum interanual 1/3/6/12M, aceleración, cruces de medias, volatilidad, *drawdown*, ratio de meses al alza, pendiente, meses desde el último pedido grande, EPOS, sell-through, stock en el canal, divergencia sell-in/EPOS, PL/brand/casa sin el propio código, fuerza relativa, cuota en la PL, lanzamientos y One Shots en el grupo, cortes, edad, tamaño, segmento y calendario).
+  Más 13 indicadores de la propia foto: Consensus frente al ritmo, al año pasado, al EPOS y al sell-in; peso del DA; ajuste manual frente a Sistema + DA; capas Initiative/Prometheus; revisiones a 1 y 3 fotos; forma de la curva.
+- **Minería:** cada indicador se corta en los percentiles 10/20/30/70/80/90. Se prueban todas las condiciones sueltas y todas las parejas (~200.000), los 150 mejores pares se amplían a tríos y se ordenan por la cota inferior de Wilson.
+- **Confirmación:** en el otro periodo, test binomial contra su tasa base, corrección Benjamini-Hochberg, al menos 8 códigos distintos y ≥ +10 pp. Se minó en las dos direcciones del tiempo (2025 → 2026 y 2026 → 2025).
+- **Scorecard:** logística regularizada sobre los indicadores en tramos con umbrales redondos, calibrada en 2025 y medida en 2026. También al revés.
+- **Perímetro:** las fotos 2025.M09-2026.M01 son de un perímetro más pequeño. Se armonizaron con un factor por código (actuals nuevos ÷ viejos en 2024-2025) y se excluyeron 23 códigos que casi solo existen en el perímetro nuevo.
+- **Límites:**
+  - Las ventanas de fotos consecutivas se solapan; por eso se exigen códigos distintos y se informa de los IC.
+  - Los patrones con n < 25 son prometedores pero frágiles.
+  - Correlación ≠ causalidad.
+  - Solo hay datos de Gucci: hay que repetirlo en cada casa.
+
+## Anexo — problemas de datos encontrados
+
+| # | Problema | Qué hacer |
+|---|---|---|
+| D1 | **Cambio de perímetro en la foto 2026.M02**: la historia de actuals sube +29 % (Guilty +69 %, Bloom +25 %, Flora +19 %) y el Consensus futuro salta hasta +115 %. El EPOS no cambia. El motor mide las fotos viejas contra actuals del perímetro nuevo. | Medir por perímetro o armonizar con un factor por código. Preguntar qué entró en el export. |
+| D2 | Las fotos solo guardan **~8 meses de DAs pasados**: con `p` > 0 la limpieza es asimétrica y sesga el trend. | Guardar el DA definitivo de cada mes desde la foto siguiente (t+1). |
+| D3 | **Sustituciones de EAN** (mismo PL y tamaño): el viejo cae a 0 y el nuevo hereda ~100 %. | Encadenar historias. |
+| D4 | DAs: llega ≈ 55 % en regulares y ≈ 40 % en One Shots. | Factor de realización configurable (decisión abierta). |
+| D5 | Las recetas del motor elegidas con fotos pasadas no ganan al Consensus fuera de muestra (73-83 % frente a 56 % de WAPE90). | Usar las señales para corregir o priorizar el Consensus, no para sustituirlo. |
