@@ -581,6 +581,7 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .t-kpi{width:100%;margin-top:4px;font-size:12px}
 .t-kpi td,.t-kpi th{padding:3px 0 3px 8px;border:0}
 .t-kpi th{font-size:11px;font-weight:600}
+.t-kpi tr.otra b{font-weight:500;opacity:.78}
 .t-kpi td:first-child,.t-kpi th:first-child{padding-left:0;text-align:left;color:var(--label-2)}
 .t-kpi td b{font-weight:600}
 .t-kpi svg{vertical-align:middle;margin-right:5px}
@@ -690,6 +691,8 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 /* sobre las celdas azules del selector, los códigos llevan un halo para no perderse */
 .en-celda .cod circle{fill-opacity:.75;stroke:var(--card);stroke-width:.9}
 /* cabecera de Decisiones con el interruptor del mapa de calor */
+.seg[hidden]{display:none}
+#segRes button{padding:5px 14px;font-size:12.5px}
 .dec-cab{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .interruptor{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--label);cursor:pointer;user-select:none}
 .interruptor input{position:absolute;opacity:0;width:1px;height:1px}
@@ -1103,7 +1106,14 @@ details[open] summary::before{transform:rotate(45deg)}
     <div class="sec-cab"><h2>Results of past snapshots</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expand Results"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
     <button type="button" class="sec-mini vidrio" aria-label="Expand Results"></button>
     <div class="sec-cuerpo">
-    <p class="sub">What happened (actual Consensus) against the best recipe, by window. Each chart fits its own scale, up to 100%; anything beyond is pinned to the edge.</p>
+    <div class="dec-cab">
+      <p class="sub" id="resSub"></p>
+      <div class="seg vidrio" role="group" aria-label="What the group is measured with" id="segRes" hidden>
+        <span class="pulgar" aria-hidden="true"></span>
+        <button type="button" data-m="oraculo" aria-pressed="true">Per-code oracles</button>
+        <button type="button" data-m="regla" aria-pressed="false">Group rule</button>
+      </div>
+    </div>
     <div class="ley-graf" id="resLey"></div>
     <div class="rejilla-res" id="resRejilla">
       <div class="tarjeta res vidrio"><h3>SPP3 · WAPE90</h3><div class="subt">Months F+1 to F+3</div><svg id="r90" width="228" height="196"></svg><div class="pie" id="r90p"></div></div>
@@ -2401,7 +2411,7 @@ function irA(vista, sel){
       // al llegar desde el mapa no se vio el detalle anterior: todos los gráficos se construyen de cero
       if (actual !== "detalle") document.querySelectorAll("#vistaDetalle [data-dibujado]").forEach(e => delete e.dataset.dibujado);
       $("vistaDetalle").scrollTo({top: 0, behavior: "instant"}); window.scrollTo({top: 0, behavior: "instant"});
-      pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esSel() ? "Selection of " + miembros().length + " codes" : esRegla() ? "Group rule" : "Code " + estado.sel}</span>`; }
+      pintar(); $("barraTitulo").textContent = $("detTitulo").textContent; $("migas").innerHTML = `<span>${esSel() ? "Selection of " + miembros().length + " codes" : esRegla() ? "Group of " + miembros().length + " codes" : "Code " + estado.sel}</span>`; }
     else { requestAnimationFrame(() => pintarNivel()); $("barraTitulo").textContent = M.foco ? corto(M.foco.data.nombre) : estado.casa; if (Math.abs($("lienzo").offsetWidth - M.W) > 2) dibujarMapa(); else pintarMigas(); }
     bordeBarra();
   };
@@ -2910,7 +2920,16 @@ const VENTANAS = ["90", "180", "9M"];
 // una ventana cuenta en una foto solo si TODOS sus tramos están cerrados (si no, WAPE180 y 9M serían solo los meses cerrados)
 const ventanaCerrada = (f, v) => (f.tramos_cerrados || []).slice(0, {"90": 1, "180": 2, "9M": 3}[v]).every(Boolean);
 const ESC_SPP = [0.3, 0.5, 0.75, 1], ESC_WAPE = [0.6, 0.8, 1];
-const SERIES_RES = () => [["kpi_consensus", "var(--cons)", "4 3", "Actual Consensus"], ["kpi_receta", "var(--receta)", "", esSel() ? "Each code's recipe (oracle)" : esRegla() ? "Group rule" : "Best recipe (oracle)"]];
+// Resultados de un grupo: por defecto la suma de los oráculos de cada código (la mejor receta de cada código en cada
+// foto, sumando numeradores: el mejor KPI posible); con el interruptor, la regla del grupo (una receta para todos).
+// En una selección ya es la suma de oráculos; en un código, su oráculo.
+let MODO_RES = "oraculo";
+try { MODO_RES = localStorage.getItem("brujulas-res") === "regla" ? "regla" : "oraculo"; } catch(e) {}
+const conModo = () => esRegla() && !esSel();
+const kRes = () => conModo() && MODO_RES === "regla" ? "kpi_receta" : (conModo() ? "kpi_oraculo" : "kpi_receta");
+const nomRes = (corto) => conModo() ? (MODO_RES === "regla" ? (corto ? "Rule" : "Group rule") : (corto ? "Oracles" : "Per-code oracles"))
+  : esSel() ? (corto ? "Oracles" : "Per-code oracles") : (corto ? "Recipe" : "Best recipe (oracle)");
+const SERIES_RES = () => [["kpi_consensus", "var(--cons)", "4 3", "Actual Consensus"], [kRes(), "var(--receta)", "", nomRes()]];
 function resultados(pref = ""){
   const series = SERIES_RES();
   const datos = {};
@@ -2924,10 +2943,26 @@ function resultados(pref = ""){
     mediaBrujula(v, datos[v], series, lim, pref);
   });
   const sw = c => `<span class="ley-it">${c}</span>`;
-  $(pref + "resLey").innerHTML = sw('<i style="height:0;border-top:1.5px dashed var(--cons)"></i>Actual Consensus') + sw(`<i style="height:2px;background:var(--receta)"></i>${esSel() ? "Each code's recipe" : esRegla() ? "Group rule" : "Best recipe"}`)
+  const seg = $(pref + "segRes");
+  if (seg) { seg.hidden = !conModo(); seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === MODO_RES))); requestAnimationFrame(() => moverPulgar(seg)); }
+  $(pref + "resSub").textContent = "What happened (actual Consensus) against "
+    + (conModo() && MODO_RES === "regla" ? "one recipe for the whole group, chosen across the snapshots"
+       : esRegla() ? "the best recipe of each code in each snapshot, added up: the best KPI that was possible"
+       : "the best recipe in each snapshot") + ", by window. Each chart fits its own scale, up to 100%; anything beyond is pinned to the edge.";
+  $(pref + "resLey").innerHTML = sw('<i style="height:0;border-top:1.5px dashed var(--cons)"></i>Actual Consensus') + sw(`<i style="height:2px;background:var(--receta)"></i>${nomRes()}`)
     + sw('<i style="background:var(--meta);box-shadow:inset 0 0 0 1px var(--green)"></i>Target: WAPE ≤ ' + pct(CFG.metas.wape_max, 0) + ', SPP ±' + pct(CFG.metas.spp_abs_max, 0))
     + sw('Left = over-forecast · one dot per snapshot, the last one bigger');
 }
+// interruptor de Resultados (solo en un grupo): el pulgar se desliza con el muelle de los controles y las tres
+// gráficas pasan de una serie a la otra con su transición; la tira plegada y el pie cuentan desde el valor anterior
+// el pulgar se coloca cuando el control tiene tamaño (la sección empieza plegada)
+new ResizeObserver(() => moverPulgar($("segRes"))).observe($("segRes"));
+$("segRes").addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-m]"); if (!b || b.dataset.m === MODO_RES) return;
+  MODO_RES = b.dataset.m; try { localStorage.setItem("brujulas-res", MODO_RES); } catch(e) {}
+  $("segRes").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); moverPulgar($("segRes"));
+  requestAnimationFrame(() => { resultados(); pintarGrupos(); contar($("sResultados")); });
+});
 // a quién pertenece lo que se mira: el EAN y su descripción, o el nombre del grupo o la selección
 const quienSel = () => esRegla() ? $("detTituloTxt").textContent : `${estado.sel} · ${(casa().atributos[estado.sel] || {}).desc || ""}`;
 function mediaBrujula(v, datos, series, lim, pref = ""){
@@ -2966,11 +3001,11 @@ function mediaBrujula(v, datos, series, lim, pref = ""){
   const fila = (k, nom, dash, col) => { const p = ult[k];
     return `<tr><td><svg width="16" height="8" aria-hidden="true"><line x1="0" x2="16" y1="4" y2="4" stroke="${col}" stroke-width="2" stroke-dasharray="${dash}"/></svg>${nom}</td>`
       + (p ? `<td><b class="${p.x.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.x.wape)}</b></td><td><b class="${Math.abs(p.x.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.x.spp)}</b></td>` : `<td>-</td><td>-</td>`) + `</tr>`; };
-  const mes = (ult.kpi_receta || ult.kpi_consensus || {}).mes;
-  let t = `<table class="t-kpi"><tr><th>${mes || ""}</th><th>WAPE</th><th>SPP</th></tr>` + fila("kpi_consensus", "Consensus", "4 3", "var(--cons)") + fila("kpi_receta", esSel() ? "Recipes" : esRegla() ? "Rule" : "Recipe", "", "var(--receta)");
-  // oráculos de la misma foto que las otras filas (la última con esta ventana cerrada), en verde o rojo según la meta
-  if (esRegla()) { const f = fotosCerradas().find(x => x.foto === mes), e = f && ventanaCerrada(f, v) && entidad(f), o = e && e.kpi_oraculo && e.kpi_oraculo[v];
-    if (o) t += `<tr><td style="padding-left:21px">Oracles</td><td><b class="${o.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(o.wape)}</b></td><td><b class="${Math.abs(o.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(o.spp)}</b></td></tr>`; }
+  const k = kRes(), mes = (ult[k] || ult.kpi_consensus || {}).mes;
+  let t = `<table class="t-kpi"><tr><th>${mes || ""}</th><th>WAPE</th><th>SPP</th></tr>` + fila("kpi_consensus", "Consensus", "4 3", "var(--cons)") + fila(k, nomRes(true), "", "var(--receta)");
+  // en un grupo, la otra medida (regla u oráculos) de la misma foto, sin línea, para comparar
+  if (conModo()) { const otra = k === "kpi_oraculo" ? "kpi_receta" : "kpi_oraculo", f = fotosCerradas().find(x => x.foto === mes), e = f && ventanaCerrada(f, v) && entidad(f), o = e && e[otra] && e[otra][v];
+    if (o) t += `<tr class="otra"><td style="padding-left:21px">${otra === "kpi_oraculo" ? "Oracles" : "Rule"}</td><td><b class="${o.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(o.wape)}</b></td><td><b class="${Math.abs(o.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(o.spp)}</b></td></tr>`; }
   $(id + "p").innerHTML = t + `</table>`;
 }
 
@@ -3544,6 +3579,7 @@ function abrirFicha(ean){
   cab.replaceWith(FICHA.c1); cu.replaceWith(FICHA.c2);
   $("fichaCuerpo").append(cab, cu);
   $("fichaCtx").innerHTML = `Code in <b>${esc(corto(FICHA.nombre))}</b>`;
+  dlg.getAnimations().forEach(a => a.cancel()); dlg.classList.remove("cerrando");
   dlg.showModal(); dlg.appendChild(TIP); dlg.scrollTop = 0;
   estado.sel = ean;
   pintar();
@@ -3557,6 +3593,9 @@ function cerrarFicha(despues){
   quitarTip();
   const fin = () => {
     const F = FICHA; FICHA = null;
+    // la salida se anima con fill "forwards": si no se cancela, sigue aplicando opacidad 0 y la próxima ficha
+    // desaparece en cuanto termina su animación de entrada (solo quedaría el velo)
+    dlg.getAnimations().forEach(a => a.cancel());
     dlg.classList.remove("cerrando"); dlg.close(); document.body.appendChild(TIP);
     F.c1.replaceWith(F.cab); F.c2.replaceWith(F.cu);
     estado.sel = F.prev; ABIERTOS.clear(); F.abiertos.forEach(k => ABIERTOS.add(k));
@@ -3716,7 +3755,8 @@ function kpiVentana(v){
   const nt = {"90": 1, "180": 2, "9M": 3}[v];
   const fs = fotosCerradas().filter(f => (f.tramos_cerrados || []).slice(0, nt).every(Boolean));
   for (let i = fs.length - 1; i >= 0; i--) { const f = fs[i], e = entidad(f);
-    if (e && e.kpi_receta && e.kpi_receta[v] && e.kpi_consensus && e.kpi_consensus[v]) return {f, r: e.kpi_receta[v], c: e.kpi_consensus[v]}; }
+    const k = kRes();
+    if (e && e[k] && e[k][v] && e.kpi_consensus && e.kpi_consensus[v]) return {f, r: e[k][v], c: e.kpi_consensus[v]}; }
   return null;
 }
 const mn = (t, v, cls = "") => `<span class="mn ${cls}"><span>${t}</span><b>${v}</b></span>`;
@@ -3741,12 +3781,12 @@ function miniGrupo(id){
       + mn("Seasonality", rec.s > 0 ? `${tx(rec.h)} · ${rec.e}y` : "Not used", "txt");
   }
   if (id === "sResultados") {
-    const a = kpiVentana("90"), b = kpiVentana("9M"), nom = esSel() ? "recipes" : (esRegla() ? "rule" : "recipe");
+    const a = kpiVentana("90"), b = kpiVentana("9M"), nom = nomRes(true).toLowerCase();
     if (!a && !b) return mn("Results", "No snapshot in the range has closed windows", "txt");
     const par = (t, d) => d ? mn(t + " · " + nom, `<span class="${okW(d.r.wape)}">${pct(d.r.wape)}</span><small>Cons. ${pct(d.c.wape)}</small>`) : mn(t, "-");
     const d = b || a, g = (d.c.wape - d.r.wape) * 100;
     const gtxt = Math.abs(g) < 0.05 ? "Tie" : `<span class="${g > 0 ? "bueno" : "malo"}">${Math.abs(g).toLocaleString("en-US", {maximumFractionDigits: 1})}</span><small>pp of WAPE</small>`;
-    return par("WAPE90", a) + par("WAPE 9M", b) + mn((g >= 0 ? "Improves" : "Worsens") + " with the recipe · " + (b ? "9M" : "90"), gtxt) + mn("Last measured snapshot", d.f.foto, "txt");
+    return par("WAPE90", a) + par("WAPE 9M", b) + mn((g >= 0 ? "Improves" : "Worsens") + " with the " + nom + " · " + (b ? "9M" : "90"), gtxt) + mn("Last measured snapshot", d.f.foto, "txt");
   }
   const r = RES.det; if (!r) return mn("Detector", "-", "txt");
   return mn("Off their strategy", `<span class="${r.fuera ? "malo" : "bueno"}">${r.fuera}</span><small>of ${r.total}</small>`) + mn("Total deviation", `${num(r.u)}<small>units</small>`)
