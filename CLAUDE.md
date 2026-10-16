@@ -247,7 +247,7 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.2`; cada versión aprobada sube la subversión: O10.0.2, O10.0.3…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.3`; cada versión aprobada sube la subversión: O10.0.3, O10.0.4…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
@@ -310,7 +310,8 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - Tres tarjetas iguales de 260 px, en una fila cuando caben. Sin tarjeta de "cómo leerlas": una leyenda de una línea encima de las gráficas.
 - **Escala propia de cada gráfica, adaptada a sus valores y como mucho del 100%:** SPP en pasos ±30, 50, 75, 100%; WAPE en 60, 80, 100%. Si un valor sale del rango, se dibuja pegado al borde con un triángulo.
 - Al pasar el puntero por un punto sale una tarjeta de cristal pequeña con lo que se mira: serie, ventana, foto, código (EAN y descripción) o grupo, y WAPE y SPP. La misma tarjeta sustituye al tooltip nativo en todas las gráficas del detalle.
-- Debajo de cada una, una tabla corta con el WAPE y el SPP de la última foto medida (Consensus, receta y, en un grupo, oráculos), en verde o rojo según la meta.
+- **En un grupo, interruptor "Per-code oracles / Group rule"** (control segmentado junto a la explicación; se recuerda en el navegador). **Por defecto, la suma de oráculos por código** (el estándar): en cada foto, la mejor receta de cada código, sumando numeradores; es el mejor KPI posible si se hubiera hecho lo mejor para cada código. La otra opción es la regla del grupo (una receta para todos, elegida con todas las fotos). Cambia la serie azul de las tres gráficas, su leyenda, su explicación y la tira plegada. En un código no aparece (su serie ya es su oráculo) y en una selección la serie ya es la suma de oráculos.
+- Debajo de cada una, una tabla corta con el WAPE y el SPP de la última foto medida (Consensus y la serie elegida; en un grupo, también la otra medida, más tenue), en verde o rojo según la meta.
 
 ### Sección "Actuals"
 - Va después de "Foto actual". Gráfica de barras por mes de los últimos 24 meses cerrados de la foto elegida, más el mes en curso (tenue, "now"): **actuals** en gris, **Supply Cuts** encima en naranja rayado, **DAs** (Total Demand Assumption) en morado, encima si son positivos y por debajo de cero si son negativos (restan).
