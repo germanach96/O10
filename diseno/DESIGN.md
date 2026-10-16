@@ -92,6 +92,13 @@ typography:
     fontWeight: 700
     letterSpacing: "-0.01em"
     fontFeature: "tnum"
+  probability:
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
+    fontSize: "26px"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "-0.02em"
+    fontFeature: "tnum"
   label:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Segoe UI', Roboto, Arial, sans-serif"
     fontSize: "11.5px"
@@ -237,6 +244,26 @@ components:
     textColor: "{colors.label}"
     rounded: "{rounded.capsule}"
     padding: "5px"
+  scenario-well:
+    backgroundColor: "{colors.fill}"
+    textColor: "{colors.label}"
+    rounded: "20px"
+    padding: "4px"
+  scenario-well-dark:
+    backgroundColor: "rgba(0,0,0,.28)"
+    textColor: "{colors.label-dark}"
+    rounded: "20px"
+    padding: "4px"
+  scenario-thumb:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.label}"
+    rounded: "16px"
+    padding: "11px 12px 10px"
+  scenario-thumb-dark:
+    backgroundColor: "#3a3a3c"
+    textColor: "{colors.label-dark}"
+    rounded: "16px"
+    padding: "11px 12px 10px"
 ---
 
 # Design System: O10
@@ -312,6 +339,7 @@ Grises neutros de sistema para el fondo y el cristal; los colores saturados solo
 - **Card title** (700, 14.5px, altura fija de 22px): título de cada tarjeta de brújula, en una línea con elipsis; el subtítulo tiene altura fija de 36px para que las cuatro tarjetas alineen.
 - **Body** (400, 13px, 1.45): texto general, filas, resúmenes.
 - **Metric** (700, 16px, tabular): cifras de KPI en las fichas; 14px en la tarjeta de detalle.
+- **Probability** (700, 26px, 1.1, −0.02em, tabular): la probabilidad de cada opción de la escala de escenarios, la única cifra que se lee de lejos en esa sección; 24px en estrecho (panel de 700px o menos). No sustituye a Metric en las fichas.
 - **Label** (500–600, 11–12px): cabeceras de lista, leyendas, rótulos de los grupos de filtros, encabezados de la barra lateral (11px 600, en minúscula de frase).
 - **Code** (400, 11.5px, monoespaciada): EANs.
 
@@ -361,7 +389,7 @@ La profundidad es material, no tonal: el fondo está abajo, el contenido a sangr
 
 ## Shapes
 
-Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco, 12px para filas y celdas, 14px para grupos del raíl, la fórmula, el pozo del periodo de actuals y la tarjeta flotante de las gráficas, 20px para el recuadro de la barra lateral en Detalle, 22px para tarjetas, popover, barra de rango y tarjeta de detalle, 28px para las piezas grandes (barra lateral, inspector, ficha emergente y hojas de iPhone, solo con las esquinas superiores redondeadas). Todo control es cápsula (999px): botones, segmentados, chips, búsqueda, barra de pestañas, etiquetas de grupo del mapa. El mapa no se recorta (ni círculo ni borde del lienzo); las burbujas son círculos anidados (casa, brand, product line, EAN) con filo de 1px que no escala con el zoom.
+Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco, 12px para filas y celdas, 14px para grupos del raíl, la fórmula, el pozo del periodo de actuals y la tarjeta flotante de las gráficas, 16px para las opciones y el pulgar sólido de la escala de escenarios, 20px para el recuadro de la barra lateral en Detalle y el pozo de la escala de escenarios (4px de relleno, así el pulgar queda concéntrico), 22px para tarjetas, popover, barra de rango y tarjeta de detalle, 28px para las piezas grandes (barra lateral, inspector, ficha emergente y hojas de iPhone, solo con las esquinas superiores redondeadas). Todo control es cápsula (999px): botones, segmentados, chips, búsqueda, barra de pestañas, etiquetas de grupo del mapa. El mapa no se recorta (ni círculo ni borde del lienzo); las burbujas son círculos anidados (casa, brand, product line, EAN) con filo de 1px que no escala con el zoom.
 
 ## Components
 
@@ -406,6 +434,22 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Años fiscales:** separador vertical discontinuo (`2 3`, separador fuerte) en cada julio y rótulo "FY" en 600 y etiqueta secundaria arriba.
 - **Cabecera:** leyenda de una línea y, a la derecha, el desplegable "Snapshot" (pozo de relleno gris, radio 10px). Debajo, los totales de los 12 meses cerrados en 12,5px con las cifras en etiqueta 600.
 - **Periodo de actuals:** barra de rango propia con el mismo diseño y gesto que la de las fotos, pero sobre un **pozo de relleno gris** (fill, radio 14px, relleno 11 × 16px), no sobre cristal; en dos filas (resumen y atajos arriba, pista debajo) y en tres por debajo de 700px.
+
+### Escenarios
+Control segmentado con datos: la escala de escenarios frente al Consensus se lee como un segmentado de iOS, pero cada opción es una pequeña ficha con su cifra. Va en un panel de cristal a todo el ancho (relleno 14 × 14 × 18px, contenedor de consulta para su propio ancho).
+- **Pozo:** relleno gris (scenario-well; en oscuro, más hundido, scenario-well-dark), radio 20px, 4px de relleno y 4px entre opciones. Orden fijo: Sells much less · Sells less · **Consensus** · Sells more · Sells much more y, tras un separador vertical de 1px (separador fuerte, a 14px de arriba y abajo, 9px de margen), Unplanned order. Columnas `1fr 1fr minmax(92px,.72fr) 1fr 1fr 1.12fr`.
+- **Opción:** botón de radio (`role="radio"` en un `radiogroup`, tabindex itinerante), alineada a la izquierda, relleno 11 × 12 × 10px, radio 16px. De arriba abajo: glifo de 17px y nombre en 12,5px 600; umbral en % y unidades en 11,5px etiqueta secundaria con elipsis; la probabilidad en Probability; el medidor; "usual X%" en 11,5px etiqueta secundaria (en la orden de un grupo, lo usual de los grupos pasados de su tamaño y el nº esperado de códigos, "usual 95% · ≈ 2.9 codes"). Hover (solo puntero fino) = relleno gris en las no elegidas; pulsación a escala 0,97 en 140ms ease-out.
+- **Pulgar sólido** (scenario-thumb): tarjeta blanca bajo la opción elegida, radio 16px, sombra `0 2px 10px rgba(0,0,0,.1), 0 0 0 .5px rgba(0,0,0,.04)`; en oscuro `#3a3a3c` con sombra `0 2px 10px rgba(0,0,0,.4)`, brillo interior `inset 0 1px 0 rgba(255,255,255,.1)` y filo de cristal de .5px. Se desliza con el muelle de los controles (transform, ancho y alto en 360ms); con teclado se coloca sin animar.
+- **Medidor:** pista de 4px (relleno fuerte, radio 2px) con el relleno en etiqueta al 80%, que crece desde la izquierda con `scaleX`; una marca de 2 × 10px en etiqueta secundaria señala lo "usual" (la tasa histórica). Zona de puntero ampliada 8px arriba y abajo; al pasar, la tarjeta flotante de las gráficas explica lo usual.
+- **Consensus en medio:** columna centrada con la cifra de los 3 meses (rótulo 11px 600, cifra 15px 700 tabular, unidades 11px) entre dos trazos verticales discontinuos de 1,5px en gris Consensus. No es una opción ni lleva pulgar.
+- **Glifos:** 16 × 16 con una línea discontinua gris Consensus (`2.4 1.6`) a media altura y una barra de lo vendido en el color del texto al 72%, más baja o más alta que la línea según el escenario; la orden no prevista son tres barras con la del medio alta. La dirección la dicen la posición en la escala y el glifo, nunca el color: ningún escenario lleva verde ni rojo.
+- **Ancho medio** (panel de 960px o menos): el Consensus pasa a una fila encima, horizontal (los trazos discontinuos a izquierda y derecha) y las cinco opciones debajo (`repeat(4,1fr) 1.1fr`). **Estrecho** (700px o menos): dos columnas, menos arriba, la fila del Consensus en medio, más abajo y la orden a todo el ancho, con el separador horizontal encima.
+- **Reglas del escenario elegido** debajo (16px de separación): cabecera con el título en 16px 700 balanceado y la explicación de cómo se llega a la cifra en 12,5px etiqueta secundaria (cifras en etiqueta 600). Listas "Rules it meets" / "Rules it doesn't meet" / "Can't check" en columnas `auto-fit` de 330px mínimo y 32px de hueco, con rótulo de 11,5px 600. Cada fila: icono de 16px, texto 12,5px con el valor del indicador debajo en 11,5px etiqueta secundaria, y los puntos (+5, −10) a la derecha en 12,5px 600 tabular; filas de 8 × 9px separadas por un filete de 1px. Iconos: cumple = círculo lleno en etiqueta con visto en color de tarjeta; no cumple = círculo de trazo 1,3px con una raya, en etiqueta terciaria; no se puede comprobar = círculo de trazo discontinuo (`2.2 2`), en etiqueta terciaria. Las filas que no cumplen o no se pueden comprobar llevan el texto y los puntos en etiqueta terciaria.
+- **En un grupo:** cada regla dice cuántos códigos la cumplen y qué parte del Consensus son, con una **barra de cuota** de 3px (máx. 200px, pista en relleno fuerte, relleno en etiqueta al 62%); debajo, la tabla de los códigos que más pesan (descripción oculta en estrecho).
+- **Pie "How reliable":** 12px etiqueta secundaria con filete superior, cifras en etiqueta 600. Sin puntuar: un párrafo de 13px con el motivo y sin escala.
+- **Movimiento:** al abrir la sección, los medidores crecen desde cero uno detrás de otro (560ms, 120ms + 45ms entre ellos, ease-out fuerte `cubic-bezier(0.23,1,0.32,1)`); al cambiar de selección pasan del valor anterior al nuevo con la misma curva y las cifras cuentan; al elegir otro escenario, la cabecera y las reglas entran en cascada (subida de 6px y fundido, 260ms, 22ms entre filas, como mucho 200ms de retardo). Con teclado el pulgar no se anima; con movimiento reducido no hay nada de esto.
+
+**La Regla del Pulgar Sólido sobre el Pozo.** Un segmentado que va dentro de un panel de cristal no lleva pulgar de cristal: el pozo es de relleno gris y el pulgar es una tarjeta sólida (blanca; `#3a3a3c` en oscuro). Cristal sobre cristal pierde legibilidad. El pulgar de cristal queda para los segmentados que flotan solos (Mapa / Detalle, apariencia, Resultados).
 
 ### Barra de rango
 - Pista de 4px en relleno fuerte con el tramo elegido en azul (colocado con `left` / `width` en px); un punto de 10px por foto (azul dentro del rango), fotos sin medir huecas de 6px sobre un tramo discontinuo con "Not measured yet" en 10px. Tiradores blancos de 26px con sombra suave y zona táctil de 44px; al arrastrar, burbuja de valor en etiqueta invertida (radio 8px). Etiquetas de mes de 10,5px (600 y etiqueta dentro del rango). Resumen en 15px 700 tabular.
@@ -462,6 +506,7 @@ Esquinas continuas de iOS en cuatro tamaños: 10px para campos pequeños y foco,
 - **Do** mantener todas las tarjetas de cada rejilla del mismo tamaño fijo (360 × 568px en Decisiones, 260 × 374px en Resultados).
 - **Do** dar a cada media brújula su propia escala (SPP ±30/50/75/100%, WAPE 60/80/100%) y pegar al borde con un triángulo lo que se salga.
 - **Do** usar la tarjeta flotante de cristal, y no el tooltip nativo, en las gráficas del detalle.
+- **Do** decir la dirección de un escenario con la posición y el glifo (barra frente a la línea discontinua gris del Consensus), no con verde o rojo.
 - **Do** dejar lo que queda detrás (el mapa en Detalle, el grupo bajo la ficha) empujado, difuminado y atenuado, no oculto.
 
 ### Don't:

@@ -3482,8 +3482,10 @@ function escCalc(){
   const po = cods.map(e => E.codigos[e].p[ESC_POS.orden]);
   r.p.orden = r.uno ? po[0] : 1 - po.reduce((a, p) => a * (1 - p), 1);
   r.esperados = po.reduce((a, b) => a + b, 0);
-  // lo usual para un grupo de este tamaño: que al menos uno la tenga si cada código tuviera la tasa histórica
-  r.usual.orden = r.uno ? E.cats.orden.base : 1 - Math.pow(1 - E.cats.orden.base, cods.length);
+  // lo usual para un grupo: cuántas veces la tuvo al menos un código en los grupos pasados con un nº de códigos parecido
+  const tr = ((E.cats.orden.grupo || {}).usual_por_n || []).find(([lo, hi]) => cods.length >= lo && cods.length <= hi);
+  r.usualTramo = tr || null;
+  r.usual.orden = r.uno ? E.cats.orden.base : tr ? tr[2] : null;
   return r;
 }
 const escElegido = r => ESC_SEL && r.p[ESC_SEL] != null ? ESC_SEL : ["muy_bajo", "bajo", "alto", "muy_alto"].reduce((a, k) => r.p[k] > r.p[a] ? k : a, "bajo");
@@ -3511,14 +3513,15 @@ function escenarios(){
   const op = k => {
     const p = r.p[k], us = r.usual[k], sel = k === k0;
     const grupoOrden = k === "orden" && r.grupo && !r.uno;
-    const pie = `usual ${pct(us, 0)}` + (grupoOrden ? ` · ≈ ${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} codes` : "");
-    const tip = grupoOrden ? `Usual for ${r.cods.length} codes: ${pct(us, 0)}\nIf each code had the usual ${pct(E.cats.orden.base, 0)} chance`
+    const pie = (us != null ? `usual ${pct(us, 0)}` : "") + (grupoOrden ? `${us != null ? " · " : ""}≈ ${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} codes` : "");
+    const tr = r.usualTramo, rango = tr ? (tr[1] > 1e5 ? `${tr[0]} or more codes` : `${tr[0]}–${tr[1]} codes`) : "";
+    const tip = grupoOrden ? `Usual: ${us != null ? pct(us, 0) : "-"}\nHow often at least one code got one, in past groups of ${rango} (${num(tr ? tr[3] : 0)} groups). On average about ${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} of its codes would.`
       : r.grupo && !r.uno ? `Usual: ${pct(us, 0)}\nHow often it happened to the past groups (${num(E.aprendido.grupos)} groups)`
       : `Usual: ${pct(us, 0)}\nHow often it happened in the ${num(E.aprendido.casos)} past cases`;
     return `<button type="button" class="esc-op${k === "orden" ? " orden" : ""}" role="radio" data-esc="${k}" aria-checked="${sel}" tabindex="${sel ? 0 : -1}"
       aria-label="${ESC_TXT[k]}: ${pct(p, 0)}, ${def[k][0]}, ${pie}">
       <span class="esc-t">${ESC_GLIFO[k]}<span>${ESC_TXT[k]}</span></span><span class="esc-def">${def[k][0]}<br>${def[k][1]}</span>
-      <b class="esc-p">${pct(p, 0)}</b><span class="esc-med" data-tip="${esc(tip)}"><i data-k="${k}" data-p="${p}" style="transform:scaleX(${p})"></i><u style="left:${(us * 100).toFixed(1)}%"></u></span>
+      <b class="esc-p">${pct(p, 0)}</b><span class="esc-med" data-tip="${esc(tip)}"><i data-k="${k}" data-p="${p}" style="transform:scaleX(${p})"></i>${us != null ? `<u style="left:${(us * 100).toFixed(1)}%"></u>` : ""}</span>
       <span class="esc-u">${pie}</span></button>`;
   };
   escala.setAttribute("aria-label", `Scenarios against the Consensus of ${num(r.C)} units, ${mes3}`);

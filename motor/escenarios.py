@@ -605,8 +605,9 @@ def calibrar_grupos(Pm: pd.DataFrame, mod: dict, panel: Panel, cfg: dict) -> dic
         d = d0.loc[idx]
         c3 = d.c3.to_numpy()
         r = d.A3.sum() / c3.sum()
-        f = dict(F=int(d.F.iloc[0]), ln=min(np.log(c3.sum() ** 2 / (c3 ** 2).sum()), ln_max),
-                 bajo=r < u["bajo"], muy_bajo=r < u["muy_bajo"], alto=r > u["alto"], muy_alto=r > u["muy_alto"])
+        f = dict(F=int(d.F.iloc[0]), ln=min(np.log(c3.sum() ** 2 / (c3 ** 2).sum()), ln_max), n=len(d),
+                 bajo=r < u["bajo"], muy_bajo=r < u["muy_bajo"], alto=r > u["alto"], muy_alto=r > u["muy_alto"],
+                 orden=bool(d.Y_orden.max()))
         for esc in ("bajo", "muy_bajo", "alto", "muy_alto"):
             f[f"w_{esc}"] = float((c3 * d[f"p_{esc}"]).sum() / c3.sum())
         filas.append(f)
@@ -621,6 +622,14 @@ def calibrar_grupos(Pm: pd.DataFrame, mod: dict, panel: Panel, cfg: dict) -> dic
         return _sig(z * (1 + th[1] * ln) + th[0] * ln)
 
     out = {"n_grupos": int(len(D)), "n_max": float(np.exp(ln_max))}
+    # "orden no prevista" de un grupo (al menos un código): lo usual depende de cuántos códigos tiene, así que la
+    # tasa medida en los grupos pasados se da por tramos de nº de códigos
+    tramos = []
+    for lo, hi in ((2, 3), (4, 7), (8, 15), (16, 31), (32, 10 ** 6)):
+        q = D[(D.n >= lo) & (D.n <= hi)]
+        if len(q):
+            tramos.append([lo, hi, round(float(q.orden.mean()), 4), int(len(q))])
+    out["orden"] = {"usual_por_n": tramos}
     for esc in ("bajo", "muy_bajo", "alto", "muy_alto"):
         y, z, ln = D[esc].to_numpy(float), lg(D[f"w_{esc}"].to_numpy()), D.ln.to_numpy()
         th = minimize(lambda t: ll(y, modelo(t, z, ln)), [0.0, 0.0], method="Nelder-Mead").x
@@ -749,7 +758,9 @@ def calcular(fotos: list[Foto], cfg: dict) -> dict:
                    "pts": [[rid[s], p] for s, p in sorted(m["pts"].items(), key=lambda kv: -abs(kv[1]))],
                    "n_si": {str(rid[s]): n for s, n in m["n_si"].items()},
                    "p_si": {str(rid[s]): _r(p) for s, p in m["p_si"].items()}}
-        if e in grp:
+        if e == "orden":
+            cats[e]["grupo"] = grp["orden"]
+        elif e in grp:
             cats[e]["grupo"] = {k: _r(v, 4) for k, v in grp[e].items()}
     return {
         "foto": int_a_mes(ult), "meses": [int_a_mes(ult + h) for h in (1, 2, 3)],
