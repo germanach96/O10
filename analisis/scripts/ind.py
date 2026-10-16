@@ -41,7 +41,7 @@ def wn(M, a, b):
     if k(a) < 0 or k(b) >= NMm: return np.full(M.shape[0], np.nan)
     X = M[:, k(a):k(b)+1]; return np.where(np.isnan(X).any(1), np.nan, np.nansum(X, 1))
 rows = []
-for F in range(T0 + 15, T1 + 1):   # YoY de 3M necesita 15 meses; los de 12M quedan NaN hasta tener 24
+for F in range(T0 + 15, T1 + 2):   # YoY de 3M necesita 15 meses; F = T1+1 es la foto actual (sin resultados)
     d = {'F': np.full(NE, F), 'ean': np.array(EANS), 'i': np.arange(NE)}
     s1, s3, s6, s12 = SI[:, k(F-1)], w(SI, F-3, F-1), w(SI, F-6, F-1), w(SI, F-12, F-1)
     s1l, s3l, s6l, s12l = SI[:, k(F-13)], w(SI, F-15, F-13), w(SI, F-18, F-13), w(SI, F-24, F-13)
