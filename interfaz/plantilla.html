@@ -635,9 +635,13 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .esc-op.orden{margin-left:9px}
 .esc-op.orden::before{content:"";position:absolute;left:-7px;top:14px;bottom:14px;border-left:1px solid var(--sep-fuerte)}
 .esc-pulgar{position:absolute;z-index:0;left:0;top:0;width:0;height:0;border-radius:16px;pointer-events:none;background:var(--card);
-  box-shadow:0 2px 10px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.04);transition:transform 380ms var(--muelle),width 380ms var(--muelle),height 380ms var(--muelle),opacity 160ms ease}
-:root[data-theme="dark"] .esc-pulgar{background:rgba(255,255,255,.14);box-shadow:0 2px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .esc-pulgar{background:rgba(255,255,255,.14);box-shadow:0 2px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}}
+  box-shadow:0 2px 10px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.04);transition:transform 360ms var(--muelle),width 360ms var(--muelle),height 360ms var(--muelle),opacity 160ms ease}
+:root[data-theme="dark"] .esc-escala{background:rgba(0,0,0,.28)}
+:root[data-theme="dark"] .esc-pulgar{background:#3a3a3c;box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1),0 0 0 .5px var(--borde-cristal)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .esc-escala{background:rgba(0,0,0,.28)}
+  :root:not([data-theme="light"]) .esc-pulgar{background:#3a3a3c;box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1),0 0 0 .5px var(--borde-cristal)}
+}
 .esc-escala.quieta .esc-pulgar{transition:none}
 .esc-escala[hidden]{display:none}
 .esc-t{display:flex;align-items:center;gap:6px;max-width:100%;font-size:12.5px;font-weight:600;letter-spacing:-.005em;line-height:1.25}
@@ -647,6 +651,7 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .esc-def{margin-top:2px;font-size:11.5px;line-height:1.35;color:var(--label-2);font-variant-numeric:tabular-nums;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .esc-p{margin-top:8px;font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
 .esc-med{position:relative;display:block;width:100%;height:4px;margin:8px 0 6px;border-radius:2px;background:var(--fill-2)}
+.esc-med::before{content:"";position:absolute;inset:-8px 0}
 .esc-med i{position:absolute;inset:0;border-radius:inherit;background:var(--label);opacity:.8;transform-origin:left center}
 .esc-med u{position:absolute;top:-3px;width:2px;height:10px;margin-left:-1px;border-radius:1px;background:var(--label-2)}
 .esc-u{font-size:11.5px;color:var(--label-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -678,6 +683,7 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
 .esc-rcab h3 b{font-variant-numeric:tabular-nums}
 .esc-rcab p{margin:4px 0 0;max-width:96ch;color:var(--label-2);font-size:12.5px;line-height:1.5;text-wrap:pretty}
 .esc-rcab p b{color:var(--label);font-weight:600;font-variant-numeric:tabular-nums}
+.esc-rcab p.esc-cob{margin-top:6px;font-size:12px}
 .esc-listas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:2px 32px;margin-top:6px}
 .esc-lista h4{margin:12px 0 2px;font-size:11.5px;font-weight:600;color:var(--label-2)}
 .esc-lista ul{list-style:none;margin:0;padding:0}
@@ -3404,7 +3410,7 @@ new ResizeObserver(([e]) => document.documentElement.style.setProperty("--alto-b
 // que al menos un código la tenga.
 const ESC_ORDEN = ["muy_bajo", "bajo", "alto", "muy_alto", "orden"];          // de menos a más; la orden, aparte
 const ESC_POS = {bajo: 0, muy_bajo: 1, alto: 2, muy_alto: 3, orden: 4};        // posición en las probabilidades del motor
-const ESC_TXT = {muy_bajo: "Much lower", bajo: "Lower", alto: "Higher", muy_alto: "Much higher", orden: "Unplanned order"};
+const ESC_TXT = {muy_bajo: "Sells much less", bajo: "Sells less", alto: "Sells more", muy_alto: "Sells much more", orden: "Unplanned order"};
 const ESC_TIT = {muy_bajo: "Sells much less than the Consensus", bajo: "Sells less than the Consensus", alto: "Sells more than the Consensus",
   muy_alto: "Sells much more than the Consensus", orden: "Gets an order the Consensus didn't plan"};
 // glifos: barra = lo vendido, línea discontinua gris = el Consensus (el mismo lenguaje que las gráficas)
@@ -3434,6 +3440,9 @@ function escMotivo(m, n){
 // valor de un indicador tal como lo usa la regla (variación, veces, meses…)
 function escValor(v, t){
   if (v == null || !isFinite(v)) return "-";
+  return escValor0(v, t).replace(/^-/, "−");
+}
+function escValor0(v, t){
   const d = (x, k) => x.toLocaleString("en-US", {minimumFractionDigits: k, maximumFractionDigits: k});
   switch (t) {
     case "pct": { const q = Math.round(v * 100) / 100; return (q > 0 ? "+" : "") + pct(q === 0 ? 0 : q, 0); }
@@ -3473,7 +3482,8 @@ function escCalc(){
   const po = cods.map(e => E.codigos[e].p[ESC_POS.orden]);
   r.p.orden = r.uno ? po[0] : 1 - po.reduce((a, p) => a * (1 - p), 1);
   r.esperados = po.reduce((a, b) => a + b, 0);
-  r.usual.orden = r.uno ? E.cats.orden.base : null;
+  // lo usual para un grupo de este tamaño: que al menos uno la tenga si cada código tuviera la tasa histórica
+  r.usual.orden = r.uno ? E.cats.orden.base : 1 - Math.pow(1 - E.cats.orden.base, cods.length);
   return r;
 }
 const escElegido = r => ESC_SEL && r.p[ESC_SEL] != null ? ESC_SEL : ["muy_bajo", "bajo", "alto", "muy_alto"].reduce((a, k) => r.p[k] > r.p[a] ? k : a, "bajo");
@@ -3500,13 +3510,18 @@ function escenarios(){
     orden: ["a large order,", r.grupo && !r.uno ? `over ${u.orden}× plan in any code` : `over ${u.orden}× the month's plan`]};
   const op = k => {
     const p = r.p[k], us = r.usual[k], sel = k === k0;
-    const pie = us != null ? `usual ${pct(us, 0)}` : `≈ ${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} codes`;
+    const grupoOrden = k === "orden" && r.grupo && !r.uno;
+    const pie = `usual ${pct(us, 0)}` + (grupoOrden ? ` · ≈ ${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} codes` : "");
+    const tip = grupoOrden ? `Usual for ${r.cods.length} codes: ${pct(us, 0)}\nIf each code had the usual ${pct(E.cats.orden.base, 0)} chance`
+      : r.grupo && !r.uno ? `Usual: ${pct(us, 0)}\nHow often it happened to the past groups (${num(E.aprendido.grupos)} groups)`
+      : `Usual: ${pct(us, 0)}\nHow often it happened in the ${num(E.aprendido.casos)} past cases`;
     return `<button type="button" class="esc-op${k === "orden" ? " orden" : ""}" role="radio" data-esc="${k}" aria-checked="${sel}" tabindex="${sel ? 0 : -1}"
       aria-label="${ESC_TXT[k]}: ${pct(p, 0)}, ${def[k][0]}, ${pie}">
       <span class="esc-t">${ESC_GLIFO[k]}<span>${ESC_TXT[k]}</span></span><span class="esc-def">${def[k][0]}<br>${def[k][1]}</span>
-      <b class="esc-p">${pct(p, 0)}</b><span class="esc-med"><i data-k="${k}" data-p="${p}" style="transform:scaleX(${p})"></i>${us != null ? `<u style="left:${(us * 100).toFixed(1)}%"></u>` : ""}</span>
+      <b class="esc-p">${pct(p, 0)}</b><span class="esc-med" data-tip="${esc(tip)}"><i data-k="${k}" data-p="${p}" style="transform:scaleX(${p})"></i><u style="left:${(us * 100).toFixed(1)}%"></u></span>
       <span class="esc-u">${pie}</span></button>`;
   };
+  escala.setAttribute("aria-label", `Scenarios against the Consensus of ${num(r.C)} units, ${mes3}`);
   escala.innerHTML = `<span class="esc-pulgar" aria-hidden="true"></span>` + op("muy_bajo") + op("bajo")
     + `<div class="esc-cons" aria-hidden="true"><div><span>Consensus</span><b>${num(r.C)}</b><small>units · ${mes3Corto(E)}</small>${r.fuera.length ? `<small>${r.cods.length} scored codes</small>` : ""}</div></div>`
     + op("alto") + op("muy_alto") + op("orden");
@@ -3591,7 +3606,7 @@ function escReglas(r, k, animar){
     const tabla = `<div class="esc-lista"><h4>Codes that weigh most · Consensus × chance</h4><table class="esc-cods"><tr><th class="izq">EAN</th><th class="izq desc">Description</th><th>Chance</th><th>Consensus ${mes3Corto(E)}</th></tr>`
       + top.map(([e, q, c3]) => `<tr><td class="izq"><a class="ean" href="#detalle/${encodeURIComponent(e)}" data-ean="${esc(e)}">${esc(e)}</a></td><td class="izq desc">${esc((at[e] || {}).desc || "")}</td><td><b>${pct(q, 0)}</b></td><td>${num(c3)}</td></tr>`).join("") + `</table></div>`;
     const g = cat.grupo;
-    h = `<div class="esc-rcab"><h3>${ESC_TIT[k].replace("the Consensus", "its Consensus")} · <b>${pct(p, 0)}</b></h3><p>${expl}${cob}</p></div><div class="esc-listas">`
+    h = `<div class="esc-rcab"><h3>${ESC_TIT[k].replace("the Consensus", "its Consensus")} · <b>${pct(p, 0)}</b></h3>${expl ? `<p>${expl}</p>` : ""}<p class="esc-cob">${cob}</p></div><div class="esc-listas">`
       + lista("Rules its codes meet", si.map(([i, v, es]) => fila("si", ESC_ICO.si, E.reglas[i].txt, meta(es), v)))
       + lista("Rules none of its codes meets", no.map(([i, v]) => fila("no", ESC_ICO.no, E.reglas[i].txt, "", v)))
       + `</div>${tabla}<p class="esc-fiab">How reliable: each code's chance, ${auc}${g && g.auc != null ? ` The step from codes to the group was checked on ${num(E.aprendido.grupos)} past groups (houses, brands, lines and random selections): it ranks them right <b>${pct(g.auc, 0)}</b> of the time.` : ""}</p>`;
@@ -3822,7 +3837,7 @@ function quitarTip(){
 $("vistaDetalle").addEventListener("pointerover", ev => {
   let el = ev.target;
   while (el && el.tagName !== "svg" && el.nodeType === 1 && !el.querySelector(":scope > title") && !el.dataset.tip) el = el.parentNode;
-  if (!el || el.nodeType !== 1 || el.tagName === "svg" || !el.closest("svg")) { if (TIP_EL) quitarTip(); return; }
+  if (!el || el.nodeType !== 1 || el.tagName === "svg" || (!el.closest("svg") && !el.classList.contains("esc-med"))) { if (TIP_EL) quitarTip(); return; }
   if (el === TIP_EL) return;
   if (TIP_EL && TIP_EL.tagName === "circle") TIP_EL.style.removeProperty("r");
   TIP_EL = el; verTip(el, ev);

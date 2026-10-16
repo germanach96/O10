@@ -347,7 +347,9 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - **Escala de escenarios = control segmentado con datos**, en un pozo de relleno:
   - Orden: mucho más bajo · más bajo · **Consensus** · más alto · mucho más alto · orden no prevista (esta aparte, tras un separador).
   - En medio, el Consensus de los 3 meses sobre una línea discontinua gris (su color de siempre). La dirección la dicen la posición y el glifo (barra = lo vendido, línea discontinua = Consensus), no el color.
-  - Cada opción lleva su umbral en % y en unidades, la probabilidad en grande, un medidor con la marca de lo "usual" (la tasa histórica: de los códigos, o de los grupos en un grupo) y el texto "usual X%". En la orden de un grupo, el nº esperado de códigos.
+  - Nombres en la página: "Sells much less", "Sells less", "Sells more", "Sells much more" y "Unplanned order", los mismos en la escala, las reglas, la tira y el raíl.
+  - Cada opción lleva su umbral en % y en unidades, la probabilidad en grande, un medidor con la marca de lo "usual" (la tasa histórica: de los códigos, o de los grupos en un grupo) y el texto "usual X%". En la orden de un grupo, lo usual es para un grupo de su tamaño (1 − (1 − tasa)ⁿ) y se añade el nº esperado de códigos. Al pasar el puntero por el medidor, la tarjeta flotante de las gráficas explica de dónde sale lo usual.
+  - El `radiogroup` lleva en su nombre accesible el Consensus de los 3 meses.
   - Pulgar sólido (tarjeta) bajo la elegida que se desliza con el muelle de los controles; con teclado (flechas, Inicio, Fin; `radiogroup` con tabindex itinerante) no se anima.
   - Ancho medio (≤ 960 px de panel): el Consensus pasa a una fila encima. Estrecho (≤ 700 px): dos columnas con el Consensus en una fila en medio (menos arriba, más abajo) y la orden a todo el ancho.
 - **Por defecto se elige el más probable** de los cuatro de nivel; si el usuario elige otro, se recuerda en el navegador.
