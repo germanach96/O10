@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from . import escenarios
 from .lector import Foto, agregar_desaparecidos, int_a_mes, leer_foto, leer_listas
 from .recetas import CELDAS, EJES, MotorFoto, Rejilla
 
@@ -557,6 +558,10 @@ def main(argv=None):
              "listas": listas, "casas": {}}
     for casa, fotos in casas.items():
         fotos.sort(key=lambda f: f.mes)
+        # escenarios frente al Consensus de la foto más actual (sección Scenarios); con las fotos tal como vienen
+        esc = escenarios.calcular(fotos, cfg)
+        print(f"  {casa}: escenarios con {esc.get('aprendido', {}).get('casos', 0)} casos cerrados, "
+              f"{len(esc.get('codigos', {}))} códigos puntuados ({time.time()-t0:.1f}s)")
         # los códigos que salen del export siguen contando en los trends de sus grupos
         agregar_desaparecidos(fotos)
         # una variante por combinación de tipos ignorados (filtro general de la página);
@@ -619,6 +624,7 @@ def main(argv=None):
             **variantes[""], "variantes": {k: v for k, v in variantes.items() if k},
             "atributos": atributos, "inicio": {"foto": fu.etiqueta, "codigos": inicio},
             "actuals": historia_actuals(fotos),
+            "escenarios": esc,
         }
         print(f"  {casa}: score multi-foto con {len(variantes['']['elegida'])} códigos, "
               f"{len(variantes)} variantes de tipos ({time.time()-t0:.1f}s)")

@@ -21,6 +21,7 @@ O10/
 │   ├── config.json           rejillas, tope del trend, pesos, tolerancia inicial, filtro de tipos
 │   ├── lector.py             lectura y validación de una foto (EAN, mes, scope, edad, tamaño)
 │   ├── recetas.py            forecast de las 75.816 recetas por código y foto (MotorFoto, Rejilla)
+│   ├── escenarios.py         escenarios frente al Consensus: señales, pesos y probabilidad por código y grupo
 │   └── pipeline.py           actuals posteriores, tramos, cubo, resúmenes, score multi-foto, detector
 ├── interfaz/                 código de la página
 │   ├── plantilla.html        HTML + CSS + JS de O10; el pipeline incrusta los datos
@@ -45,7 +46,8 @@ O10/
 │   ├── Burberry/             ídem
 │   ├── Burberry MU/          ídem
 │   └── Marc Jacobs MU/       ídem
-├── tests/                    tests del lector, el motor y los KPIs
+├── analisis/                 informes de análisis de datos (señales de Gucci) y sus scripts
+├── tests/                    tests del lector, el motor, los KPIs y los escenarios
 └── salida/                   (no versionada) cubo Parquet, resúmenes JSON, logs
 ```
 

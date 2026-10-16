@@ -621,6 +621,86 @@ g.h:has(> circle.apagado) .brillo,g.h:has(> circle.hueco:not(.t-os):not(.t-in)) 
   .ficha-barra{margin:-18px -12px 8px;top:-18px;padding:12px 12px 10px 16px}
 }
 @media (prefers-reduced-transparency: reduce){.emergente{background:var(--card)}}
+/* Sección Scenarios: la escala de escenarios frente al Consensus (menos ← Consensus → más, y la orden aparte) es un
+   control segmentado con datos: pozo de relleno, pulgar sólido que se desliza al elegido. Debajo, las reglas del elegido.
+   El color no se usa para la dirección (la posición y el glifo la dicen): la línea discontinua gris es el Consensus. */
+.esc-panel{container-type:inline-size;padding:14px 14px 18px}
+.esc-escala{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(92px,.72fr) repeat(2,minmax(0,1fr)) minmax(0,1.12fr);
+  gap:4px;padding:4px;border-radius:20px;background:var(--fill);isolation:isolate}
+.esc-op{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:11px 12px 10px;border:0;border-radius:16px;
+  background:transparent;color:var(--label);text-align:left;font:inherit;cursor:pointer;transition:transform 140ms var(--ease-out),background-color 140ms ease}
+.esc-op:active{transform:scale(.97)}
+.esc-op:focus-visible{outline-offset:-1px;border-radius:16px}
+@media (hover:hover) and (pointer:fine){.esc-op:not([aria-checked="true"]):hover{background:var(--fill)}}
+.esc-op.orden{margin-left:9px}
+.esc-op.orden::before{content:"";position:absolute;left:-7px;top:14px;bottom:14px;border-left:1px solid var(--sep-fuerte)}
+.esc-pulgar{position:absolute;z-index:0;left:0;top:0;width:0;height:0;border-radius:16px;pointer-events:none;background:var(--card);
+  box-shadow:0 2px 10px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.04);transition:transform 380ms var(--muelle),width 380ms var(--muelle),height 380ms var(--muelle),opacity 160ms ease}
+:root[data-theme="dark"] .esc-pulgar{background:rgba(255,255,255,.14);box-shadow:0 2px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .esc-pulgar{background:rgba(255,255,255,.14);box-shadow:0 2px 10px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}}
+.esc-escala.quieta .esc-pulgar{transition:none}
+.esc-escala[hidden]{display:none}
+.esc-t{display:flex;align-items:center;gap:6px;max-width:100%;font-size:12.5px;font-weight:600;letter-spacing:-.005em;line-height:1.25}
+.esc-t svg{width:17px;height:17px;flex:none;overflow:visible}
+.esc-t svg .g-cons{fill:none;stroke:var(--cons);stroke-width:1.5;stroke-dasharray:2.4 1.6}
+.esc-t svg .g-bar{fill:currentColor;opacity:.72}
+.esc-def{margin-top:2px;font-size:11.5px;line-height:1.35;color:var(--label-2);font-variant-numeric:tabular-nums;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.esc-p{margin-top:8px;font-family:var(--font-display);font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.esc-med{position:relative;display:block;width:100%;height:4px;margin:8px 0 6px;border-radius:2px;background:var(--fill-2)}
+.esc-med i{position:absolute;inset:0;border-radius:inherit;background:var(--label);opacity:.8;transform-origin:left center}
+.esc-med u{position:absolute;top:-3px;width:2px;height:10px;margin-left:-1px;border-radius:1px;background:var(--label-2)}
+.esc-u{font-size:11.5px;color:var(--label-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* el Consensus en medio: la línea discontinua gris (su color de siempre) con la cifra encima */
+.esc-cons{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;padding:10px 2px;text-align:center}
+.esc-cons::before,.esc-cons::after{content:"";flex:1;min-height:10px;border-left:1.5px dashed var(--cons)}
+.esc-cons div{display:flex;flex-direction:column;gap:1px}
+.esc-cons span{font-size:11px;font-weight:600;color:var(--label-2);white-space:nowrap}
+.esc-cons b{font-size:15px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.esc-cons small{font-size:11px;color:var(--label-2);white-space:nowrap}
+/* ancho medio: el Consensus pasa a una fila encima; estrecho: dos columnas con el Consensus en medio (menos arriba, más abajo) */
+@container (max-width:960px){
+  .esc-escala{grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,1.1fr)}
+  .esc-cons{grid-column:1/-1;grid-row:1;flex-direction:row;gap:10px;padding:5px 12px 3px}
+  .esc-cons::before,.esc-cons::after{min-height:0;min-width:12px;border-left:0;border-top:1.5px dashed var(--cons)}
+  .esc-cons div{flex-direction:row;align-items:baseline;gap:7px}
+}
+@container (max-width:700px){
+  .esc-escala{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .esc-cons{grid-row:auto;padding:6px 12px}
+  .esc-op.orden{grid-column:1/-1;margin:5px 0 0}
+  .esc-op.orden::before{left:14px;right:14px;top:-5px;bottom:auto;border-left:0;border-top:1px solid var(--sep-fuerte)}
+  .esc-p{font-size:24px}
+}
+/* reglas del escenario elegido: las que cumple, las que no y las que no se pueden comprobar */
+.esc-reglas{margin-top:16px;padding:0 4px}
+.esc-escala[hidden] + .esc-reglas{margin-top:4px}
+.esc-rcab h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-.012em;line-height:1.3;text-wrap:balance}
+.esc-rcab h3 b{font-variant-numeric:tabular-nums}
+.esc-rcab p{margin:4px 0 0;max-width:96ch;color:var(--label-2);font-size:12.5px;line-height:1.5;text-wrap:pretty}
+.esc-rcab p b{color:var(--label);font-weight:600;font-variant-numeric:tabular-nums}
+.esc-listas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:2px 32px;margin-top:6px}
+.esc-lista h4{margin:12px 0 2px;font-size:11.5px;font-weight:600;color:var(--label-2)}
+.esc-lista ul{list-style:none;margin:0;padding:0}
+.esc-r{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:0 10px;align-items:start;padding:8px 0 9px;border-top:1px solid var(--sep)}
+.esc-r:first-child{border-top:0}
+.esc-r svg{width:16px;height:16px;margin-top:1px}
+.esc-r .si{fill:var(--label)} .esc-r .si-v{fill:none;stroke:var(--card);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.esc-r .no-c{fill:none;stroke:var(--label-3);stroke-width:1.3} .esc-r .no-l{stroke:var(--label-3);stroke-width:1.5;stroke-linecap:round}
+.esc-r .nd-c{fill:none;stroke:var(--label-3);stroke-width:1.3;stroke-dasharray:2.2 2}
+.esc-r .tx{font-size:12.5px;line-height:1.42;color:var(--label);text-wrap:pretty}
+.esc-r .vr{display:block;margin-top:2px;font-size:11.5px;line-height:1.4;color:var(--label-2);font-variant-numeric:tabular-nums}
+.esc-r .vr b{color:var(--label);font-weight:600}
+.esc-r .pt{min-width:30px;font-size:12.5px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.esc-r.no .tx,.esc-r.no .pt,.esc-r.nd .tx,.esc-r.nd .pt{color:var(--label-3)}
+.esc-r .cuota{display:block;width:min(200px,100%);height:3px;margin-top:6px;border-radius:2px;background:var(--fill-2);overflow:hidden}
+.esc-r .cuota i{display:block;height:100%;background:var(--label);opacity:.62;transform-origin:left center}
+.esc-cods{margin-top:6px;width:100%}
+.esc-cods td.desc{max-width:280px;overflow:hidden;text-overflow:ellipsis;color:var(--label-2)}
+.esc-fiab{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--sep);max-width:110ch;font-size:12px;line-height:1.55;color:var(--label-2);text-wrap:pretty}
+.esc-fiab b{color:var(--label);font-weight:600;font-variant-numeric:tabular-nums}
+.esc-vacio{margin:0;padding:4px 4px 2px;color:var(--label-2);font-size:13px;line-height:1.5;max-width:80ch}
+.esc-vacio b{color:var(--label);font-weight:600}
+@media (max-width:700px){.esc-cods .desc{display:none}}
 /* Sección Actuals */
 .rango.rango-act{order:0;flex-basis:auto;margin:4px 0 12px;background:var(--fill);border-radius:var(--r-m);padding:11px 16px 6px;
   grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"txt pres" "pista pista";row-gap:2px}
@@ -1050,6 +1130,18 @@ details[open] summary::before{transform:rotate(45deg)}
         </select></label>
       </div>
       <div id="actual"></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="seccion" id="sEscenarios">
+    <div class="sec-cab"><h2>Scenarios</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expand Scenarios"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
+    <button type="button" class="sec-mini vidrio" aria-label="Expand Scenarios"></button>
+    <div class="sec-cuerpo">
+    <p class="sub" id="escSub"></p>
+    <div class="ancho vidrio esc-panel">
+      <div class="esc-escala" id="escEscala" role="radiogroup" aria-label="Scenarios against the Consensus"></div>
+      <div class="esc-reglas" id="escReglas"></div>
     </div>
     </div>
   </section>
@@ -3052,18 +3144,23 @@ function grafico(meses, ev){
 
 function rail(r){
   RES.foto = r;
-  const nav = `<nav aria-label="Sections">${[["sFoto","Current snapshot"],["sActuals","Actuals"],["sDecisiones","Decisions"],["sResultados","Results"],["sDetector","Detector"]].map(([id, t]) => `<a href="javascript:void 0" data-ir="${id}">${t}</a>`).join("")}</nav>`;
-  if (!r) { $("rail").innerHTML = `<h2 class="rail-t">Current snapshot</h2><p class="pequeño" style="margin:0 0 14px">No recipe to compare with.</p>` + nav; return; }
+  const nav = `<nav aria-label="Sections">${[["sFoto","Current snapshot"],["sEscenarios","Scenarios"],["sActuals","Actuals"],["sDecisiones","Decisions"],["sResultados","Results"],["sDetector","Detector"]].map(([id, t]) => `<a href="javascript:void 0" data-ir="${id}">${t}</a>`).join("")}</nav>`;
   const fila = (k, v, cls = "") => `<div class="rail-f"><span>${k}</span><b class="num ${cls}">${v}</b></div>`;
+  if (!r) { $("rail").innerHTML = `<h2 class="rail-t">Current snapshot</h2><p class="pequeño" style="margin:0 0 14px">No recipe to compare with.</p>` + railEsc(fila) + nav; contar($("rail")); return; }
   const p = r.totR > 0 ? r.totDev / r.totR : null;
   $("rail").innerHTML = `<h2 class="rail-t">Snapshot ${r.foto}</h2><div class="rail-g">`
     + fila("Deviation", num(r.totDev) + " units", r.totDev > 0.5 ? "malo" : "bueno")
     + fila("Over the recipe", pct(p))
     + fila(esRegla() ? "Codes off" : "Months off", esRegla() ? r.nFuera + " of " + r.n : r.meses + " of 9")
-    + `</div><h2 class="rail-t">Recipe</h2><p class="rec">${r.rec ? recetaTxt(r.rec) : "Each code uses its own recipe."}</p>` + nav;
+    + `</div>${railEsc(fila)}<h2 class="rail-t">Recipe</h2><p class="rec">${r.rec ? recetaTxt(r.rec) : "Each code uses its own recipe."}</p>` + nav;
   contar($("rail"));
 }
 
+// resumen de escenarios en el raíl: los tres que más se miran
+function railEsc(fila){
+  const r = RES.esc; if (!r || r.err || !r.cods || !r.cods.length) return "";
+  return `<h2 class="rail-t">Scenarios ${escMeses(r.E)}</h2><div class="rail-g">${fila("Sells less", pct(r.p.bajo, 0))}${fila("Sells more", pct(r.p.alto, 0))}${fila("Unplanned order", pct(r.p.orden, 0))}</div>`;
+}
 function fotoActual(){
   const det = V().detector, fuente = $("selFuente").value, tol = tolerancia(esRegla() ? null : estado.sel);
   $("tituloActual").textContent = `Current snapshot ${det.foto}`;
@@ -3298,6 +3395,214 @@ $("calor").addEventListener("change", () => {
 });
 // la barra superior cambia de alto (una o dos filas): el mapa, el inspector y el detalle se colocan debajo
 new ResizeObserver(([e]) => document.documentElement.style.setProperty("--alto-barra", Math.round(e.target.getBoundingClientRect().height) + "px")).observe($("barra"));
+// ================= Escenarios frente al Consensus =================
+// Probabilidad de que lo vendido en los 3 meses siguientes a la foto más actual quede por debajo o por encima de su
+// Consensus, o de que llegue una orden que el Consensus no preveía. Lo aprende el motor con las fotos pasadas
+// (motor/escenarios.py); la página solo suma. En un código: el punto de partida más los puntos de las reglas que cumple.
+// En un grupo: el grupo se mide frente a su Consensus total; la media de sus códigos ponderada por su Consensus se
+// recalibra con el nº efectivo de códigos (lo que falta en un código lo compensa otro), y la orden no prevista es la de
+// que al menos un código la tenga.
+const ESC_ORDEN = ["muy_bajo", "bajo", "alto", "muy_alto", "orden"];          // de menos a más; la orden, aparte
+const ESC_POS = {bajo: 0, muy_bajo: 1, alto: 2, muy_alto: 3, orden: 4};        // posición en las probabilidades del motor
+const ESC_TXT = {muy_bajo: "Much lower", bajo: "Lower", alto: "Higher", muy_alto: "Much higher", orden: "Unplanned order"};
+const ESC_TIT = {muy_bajo: "Sells much less than the Consensus", bajo: "Sells less than the Consensus", alto: "Sells more than the Consensus",
+  muy_alto: "Sells much more than the Consensus", orden: "Gets an order the Consensus didn't plan"};
+// glifos: barra = lo vendido, línea discontinua gris = el Consensus (el mismo lenguaje que las gráficas)
+const ESC_GLIFO = (() => {
+  const c = `<path class="g-cons" d="M0 6h16"/>`, bar = (x, y, w = 6) => `<rect class="g-bar" x="${x}" y="${y}" width="${w}" height="${15 - y}" rx="1.4"/>`;
+  const g = s => `<svg viewBox="0 0 16 16" aria-hidden="true">${s}${c}</svg>`;
+  return {muy_bajo: g(bar(5, 12.2)), bajo: g(bar(5, 8.6)), alto: g(bar(5, 3.2)), muy_alto: g(bar(5, 0.6)),
+          orden: g(bar(1, 11.4, 3.4) + bar(6.3, 1.4, 3.4) + bar(11.6, 11.4, 3.4))};
+})();
+const ESC_ICO = {
+  si: `<svg viewBox="0 0 16 16" aria-hidden="true"><circle class="si" cx="8" cy="8" r="7.2"/><path class="si-v" d="M4.7 8.3 7 10.5l4.3-4.8"/></svg>`,
+  no: `<svg viewBox="0 0 16 16" aria-hidden="true"><circle class="no-c" cx="8" cy="8" r="6.6"/><path class="no-l" d="M5.4 8h5.2"/></svg>`,
+  nd: `<svg viewBox="0 0 16 16" aria-hidden="true"><circle class="nd-c" cx="8" cy="8" r="6.6"/></svg>`};
+let ESC_SEL = null;   // escenario elegido por el usuario (se recuerda); sin elegir, el más probable
+try { ESC_SEL = localStorage.getItem("o10-esc") || null; } catch(e) {}
+const escSig = z => 1 / (1 + Math.exp(-z));
+const escLogit = p => { const q = Math.min(1 - 1e-4, Math.max(1e-4, p)); return Math.log(q / (1 - q)); };
+const escPts = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v);
+const escMeses = E => `${mesCorto(E.meses[0])} – ${mesCorto(E.meses[2])}`;
+function escMotivo(m, n){
+  const mn = (CFG.escenarios || {}).minimos || {vol12: 150, edad_meses: 13, consensus_3m: 60};
+  if (n == null) return {os: "it is a One Shot", vol: `it sold under ${num(mn.vol12)} units in the last 12 months`, edad: `it is under ${mn.edad_meses} months old`,
+    cons: `its 3-month Consensus is under ${num(mn.consensus_3m)} units`, foto: "it is not in the latest snapshot"}[m] || "it is not scored";
+  return {os: n === 1 ? "1 One Shot" : `${n} One Shots`, vol: `${n} under ${num(mn.vol12)} units a year`, edad: `${n} under ${mn.edad_meses} months old`,
+    cons: `${n} with a 3-month Consensus under ${num(mn.consensus_3m)}`, foto: `${n} not in the latest snapshot`}[m] || `${n} other`;
+}
+// valor de un indicador tal como lo usa la regla (variación, veces, meses…)
+function escValor(v, t){
+  if (v == null || !isFinite(v)) return "-";
+  const d = (x, k) => x.toLocaleString("en-US", {minimumFractionDigits: k, maximumFractionDigits: k});
+  switch (t) {
+    case "pct": { const q = Math.round(v * 100) / 100; return (q > 0 ? "+" : "") + pct(q === 0 ? 0 : q, 0); }
+    case "sh": return pct(Math.round(v * 100) / 100 || 0, 0);
+    case "x": return d(v, v < 1 ? 2 : 1) + "×";
+    case "n6": return `${num(v)} of 6`;
+    case "mes": return `${num(v)} ${Math.round(v) === 1 ? "month" : "months"}`;
+    case "m": return `${d(v, 1)} months of sales`;
+    case "u": return `${num(v)} units`;
+    case "ml": return `${num(v)} ml`;
+    case "cv": return d(v, 2);
+    default: return num(v);
+  }
+}
+// probabilidades de la selección: un código tal cual; un grupo, frente a su Consensus total
+function escCalc(){
+  const E = casa().escenarios;
+  if (!E) return {err: "This page was built without scenarios. Run the pipeline again."};
+  if (E.sin_datos) return {err: `There isn't enough closed history to learn the scenarios yet (${E.sin_datos}).`};
+  const grupo = esRegla(), eans = grupo ? eansSel().filter(e => E.codigos[e] || E.fuera[e]) : [estado.sel];
+  const cods = eans.filter(e => E.codigos[e]);
+  const fuera = eans.filter(e => !E.codigos[e]).map(e => [e, E.fuera[e] || ["foto", 0]]);
+  const c3 = e => E.codigos[e].c.reduce((a, b) => a + (b || 0), 0);
+  const C = cods.reduce((a, e) => a + c3(e), 0), Cf = fuera.reduce((a, [, f]) => a + (f[1] || 0), 0);
+  const r = {E, grupo, eans, cods, fuera, C, Cf, c3, p: {}, w: {}, usual: {}, n: 1, uno: cods.length === 1};
+  if (!cods.length) return r;
+  const C2 = cods.reduce((a, e) => a + c3(e) ** 2, 0);
+  r.n = C > 0 ? C * C / C2 : cods.length;
+  ["bajo", "muy_bajo", "alto", "muy_alto"].forEach(k => {
+    const j = ESC_POS[k], cat = E.cats[k], g = cat.grupo;
+    // la compensación entre códigos crece con su nº efectivo hasta un tope (después comparten los golpes de la casa)
+    const ln = Math.log(Math.min(Math.max(1, r.n), (g && g.n_max) || Infinity));
+    r.w[k] = C > 0 ? cods.reduce((a, e) => a + c3(e) * E.codigos[e].p[j], 0) / C : cods.reduce((a, e) => a + E.codigos[e].p[j], 0) / cods.length;
+    r.p[k] = r.uno || !g ? r.w[k] : escSig(escLogit(r.w[k]) * (1 + g.b * ln) + g.a * ln);
+    r.usual[k] = r.uno || !g ? cat.base : g.tasa;
+  });
+  const po = cods.map(e => E.codigos[e].p[ESC_POS.orden]);
+  r.p.orden = r.uno ? po[0] : 1 - po.reduce((a, p) => a * (1 - p), 1);
+  r.esperados = po.reduce((a, b) => a + b, 0);
+  r.usual.orden = r.uno ? E.cats.orden.base : null;
+  return r;
+}
+const escElegido = r => ESC_SEL && r.p[ESC_SEL] != null ? ESC_SEL : ["muy_bajo", "bajo", "alto", "muy_alto"].reduce((a, k) => r.p[k] > r.p[a] ? k : a, "bajo");
+function escenarios(){
+  const r = escCalc(), escala = $("escEscala"), caja = $("escReglas");
+  RES.esc = r;
+  if (r.err) { $("escSub").textContent = ""; escala.hidden = true; escala.innerHTML = ""; caja.innerHTML = `<p class="esc-vacio">${esc(r.err)}</p>`; return; }
+  const E = r.E, mes3 = escMeses(E), ap = E.aprendido;
+  $("escSub").textContent = `How likely sales in the next 3 months (${mes3}) end below or above ${r.grupo ? "the group's total" : "the"} Consensus of snapshot ${E.foto}, `
+    + `or bring an order it didn't plan. Each scenario is scored on its own, so they don't add up to 100%. Learned from ${num(ap.casos)} past cases (${ap.codigos} codes, ${ap.fotos.length} snapshots).`;
+  if (!r.cods.length) {
+    escala.hidden = true; escala.innerHTML = "";
+    if (!r.grupo) { const f = (r.fuera[0] || [])[1] || ["foto"];
+      caja.innerHTML = `<p class="esc-vacio"><b>This code isn't scored: ${escMotivo(f[0])}.</b> The rules were learned on regular codes with at least 13 months of sales, 150 units a year and a 3-month Consensus of 60 units, so they don't apply to it.</p>`; }
+    else { const cnt = {}; r.fuera.forEach(([, f]) => cnt[f[0]] = (cnt[f[0]] || 0) + 1);
+      caja.innerHTML = `<p class="esc-vacio"><b>None of its ${r.eans.length} codes is scored.</b> ${Object.entries(cnt).map(([m, n]) => escMotivo(m, n)).join(", ")}.</p>`; }
+    return;
+  }
+  escala.hidden = false;
+  const k0 = escElegido(r), u = E.umbrales, viejo = {};
+  escala.querySelectorAll(".esc-med i").forEach(i => viejo[i.dataset.k] = +i.dataset.p);
+  const def = {muy_bajo: [`under ${pct(u.muy_bajo, 0)}`, `< ${num(u.muy_bajo * r.C)} units`], bajo: [`under ${pct(u.bajo, 0)}`, `< ${num(u.bajo * r.C)} units`],
+    alto: [`over ${pct(u.alto, 0)}`, `> ${num(u.alto * r.C)} units`], muy_alto: [`over ${pct(u.muy_alto, 0)}`, `> ${num(u.muy_alto * r.C)} units`],
+    orden: ["a large order,", r.grupo && !r.uno ? `over ${u.orden}× plan in any code` : `over ${u.orden}× the month's plan`]};
+  const op = k => {
+    const p = r.p[k], us = r.usual[k], sel = k === k0;
+    const pie = us != null ? `usual ${pct(us, 0)}` : `≈ ${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} codes`;
+    return `<button type="button" class="esc-op${k === "orden" ? " orden" : ""}" role="radio" data-esc="${k}" aria-checked="${sel}" tabindex="${sel ? 0 : -1}"
+      aria-label="${ESC_TXT[k]}: ${pct(p, 0)}, ${def[k][0]}, ${pie}">
+      <span class="esc-t">${ESC_GLIFO[k]}<span>${ESC_TXT[k]}</span></span><span class="esc-def">${def[k][0]}<br>${def[k][1]}</span>
+      <b class="esc-p">${pct(p, 0)}</b><span class="esc-med"><i data-k="${k}" data-p="${p}" style="transform:scaleX(${p})"></i>${us != null ? `<u style="left:${(us * 100).toFixed(1)}%"></u>` : ""}</span>
+      <span class="esc-u">${pie}</span></button>`;
+  };
+  escala.innerHTML = `<span class="esc-pulgar" aria-hidden="true"></span>` + op("muy_bajo") + op("bajo")
+    + `<div class="esc-cons" aria-hidden="true"><div><span>Consensus</span><b>${num(r.C)}</b><small>units · ${mes3Corto(E)}</small>${r.fuera.length ? `<small>${r.cods.length} scored codes</small>` : ""}</div></div>`
+    + op("alto") + op("muy_alto") + op("orden");
+  escPulgar(false);
+  // los medidores pasan del valor anterior al nuevo (al abrir la sección crecen desde cero: escCrecer)
+  if (ABIERTOS.has("sEscenarios") && !reducir.matches && !SIN_ANIM && enVista(escala))
+    escala.querySelectorAll(".esc-med i").forEach(i => { const a = viejo[i.dataset.k]; if (a != null && Math.abs(a - +i.dataset.p) > 1e-4)
+      i.animate([{transform: `scaleX(${a})`}, {transform: `scaleX(${i.dataset.p})`}], {duration: MOV.dur, easing: MOV.curva}); });
+  contar(escala);
+  escReglas(r, k0, false);
+}
+// el pulgar va bajo el escenario elegido; se desliza con el muelle de los controles (sin animar con teclado)
+function escPulgar(animar){
+  const escala = $("escEscala"), th = escala.querySelector(".esc-pulgar"), b = escala.querySelector('[aria-checked="true"]');
+  if (!th || !b || !b.offsetWidth) return;
+  escala.classList.toggle("quieta", !animar || reducir.matches);
+  th.style.width = b.offsetWidth + "px"; th.style.height = b.offsetHeight + "px";
+  th.style.transform = `translate(${b.offsetLeft}px,${b.offsetTop}px)`;
+  if (!animar) requestAnimationFrame(() => escala.classList.remove("quieta"));
+}
+function escElegir(k, teclado){
+  const escala = $("escEscala"), r = RES.esc; if (!r || !r.p || r.p[k] == null) return;
+  ESC_SEL = k; try { localStorage.setItem("o10-esc", k); } catch(e) {}
+  escala.querySelectorAll(".esc-op").forEach(b => { const si = b.dataset.esc === k; b.setAttribute("aria-checked", String(si)); b.tabIndex = si ? 0 : -1; });
+  escPulgar(!teclado);
+  escReglas(r, k, !teclado);
+  if (teclado) escala.querySelector(`[data-esc="${k}"]`).focus();
+}
+$("escEscala").addEventListener("click", ev => { const b = ev.target.closest(".esc-op"); if (b) escElegir(b.dataset.esc, false); });
+$("escEscala").addEventListener("keydown", ev => {
+  const b = ev.target.closest(".esc-op"); if (!b) return;
+  const i = ESC_ORDEN.indexOf(b.dataset.esc), n = ESC_ORDEN.length;
+  const j = {ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: n - 1}[ev.key];
+  if (j == null) return;
+  ev.preventDefault(); escElegir(ESC_ORDEN[(j + n) % n], true);
+});
+new ResizeObserver(() => escPulgar(false)).observe($("escEscala"));
+// al abrir la sección los medidores crecen desde cero, uno detrás de otro
+function escCrecer(){
+  if (reducir.matches) return;
+  $("escEscala").querySelectorAll(".esc-med i").forEach((i, n) => i.animate([{transform: "scaleX(0)"}, {transform: `scaleX(${i.dataset.p})`}],
+    {duration: MOV.dur, delay: 120 + n * 45, easing: MOV.curva, fill: "backwards"}));
+}
+// reglas del escenario elegido: las que cumple (con su valor), las que no y las que no se pueden comprobar
+function escReglas(r, k, animar){
+  const E = r.E, cat = E.cats[k], j = ESC_POS[k], caja = $("escReglas"), p = r.p[k];
+  const fila = (cls, ico, txt, vr, pts) => `<li class="esc-r ${cls}">${ico}<div><span class="tx">${esc(txt)}</span>${vr ? `<span class="vr">${vr}</span>` : ""}</div><span class="pt">${escPts(pts)}</span></li>`;
+  const lista = (t, filas) => filas.length ? `<div class="esc-lista"><h4>${t} · ${filas.length}</h4><ul>${filas.join("")}</ul></div>` : "";
+  const banda = tot => { const b = cat.cal.find(c => tot >= c.lo && tot <= c.hi); if (!b) return "";
+    const et = b.lo <= -99 ? `${escPts(b.hi)} points or fewer` : b.hi >= 99 ? `${escPts(b.lo)} points or more` : `${escPts(b.lo)} to ${escPts(b.hi)} points`;
+    return ` Past cases with ${et}: <b>${pct(b.pred, 0)}</b> expected, <b>${pct(b.obs, 0)}</b> happened (${num(b.n)} cases).`; };
+  const auc = cat.auc_cv != null ? `on codes it did not learn from, it ranks cases right <b>${pct(cat.auc_cv, 0)}</b> of the time (AUC ${cat.auc_cv.toFixed(2)}; 0.5 is chance).` : "";
+  let h;
+  if (!r.grupo) {
+    const c = E.codigos[r.cods[0]], tiene = i => c.a.includes(i), sinDato = i => E.reglas[i].ver.some(v => c.v[v] == null);
+    const vr = i => E.reglas[i].ver.map(v => `${E.ver[v][0]} <b>${escValor(c.v[v], E.ver[v][1])}</b>`).join(" · ");
+    const si = cat.pts.filter(([i]) => tiene(i)), no = cat.pts.filter(([i]) => !tiene(i) && !sinDato(i)), nd = cat.pts.filter(([i]) => !tiene(i) && sinDato(i));
+    const tot = si.reduce((a, [, v]) => a + v, 0);
+    h = `<div class="esc-rcab"><h3>${ESC_TIT[k]} · <b>${pct(p, 0)}</b></h3><p>`
+      + (si.length ? `Starts at <b>${pct(cat.inicio, 0)}</b>, the chance when no rule applies. The ${si.length === 1 ? "rule it meets adds" : `${si.length} rules it meets add up to`} <b>${escPts(tot)} points</b>, which takes it to <b>${pct(p, 0)}</b>. `
+                   : `It meets none of the rules, so it stays at the starting <b>${pct(cat.inicio, 0)}</b>. `)
+      + `Each rule adds or removes points: the more points, the more likely.</p></div><div class="esc-listas">`
+      + lista("Rules it meets", si.map(([i, v]) => fila("si", ESC_ICO.si, E.reglas[i].txt, vr(i), v)))
+      + lista("Rules it doesn't meet", no.map(([i, v]) => fila("no", ESC_ICO.no, E.reglas[i].txt, vr(i), v)))
+      + lista("Can't check", nd.map(([i, v]) => fila("nd", ESC_ICO.nd, E.reglas[i].txt, E.reglas[i].epos ? "No EPOS data for this code" : "Not available for this code", v)))
+      + `</div><p class="esc-fiab">How reliable: ${auc}${banda(tot)}</p>`;
+  } else {
+    const n = r.cods.length, C = r.C, en = i => r.cods.filter(e => E.codigos[e].a.includes(i));
+    const cuota = es => C > 0 ? es.reduce((a, e) => a + r.c3(e), 0) / C : es.length / n;
+    const si = cat.pts.map(([i, v]) => [i, v, en(i)]).filter(x => x[2].length).sort((a, b) => Math.abs(b[1]) * cuota(b[2]) - Math.abs(a[1]) * cuota(a[2]));
+    const no = cat.pts.filter(([i]) => !en(i).length);
+    const meta = es => { const q = cuota(es); return `${es.length} of ${n} codes · ${pct(q, 0)} of the Consensus<span class="cuota"><i style="transform:scaleX(${q.toFixed(3)})"></i></span>`; };
+    const cnt = {}; r.fuera.forEach(([, f]) => cnt[f[0]] = (cnt[f[0]] || 0) + 1);
+    const cob = `${n} of ${r.eans.length} codes are scored (${pct(C + r.Cf > 0 ? C / (C + r.Cf) : 1, 0)} of the 3-month Consensus)`
+      + (r.fuera.length ? `; not scored: ${Object.entries(cnt).map(([m, x]) => escMotivo(m, x)).join(", ")}.` : ".");
+    const expl = k === "orden"
+      ? (r.uno ? "" : `Chance that at least one of its ${n} scored codes gets an order the Consensus didn't plan. On average, about <b>${r.esperados.toLocaleString("en-US", {maximumFractionDigits: 1})} codes</b> would. `)
+      : (r.uno ? "Only one of its codes is scored, so the group takes that code's chance. "
+               : `Its codes' chances, weighted by their Consensus, average <b>${pct(r.w[k], 0)}</b>. Measured on the group total, where codes partly offset each other (the Consensus is spread over about <b>${r.n.toLocaleString("en-US", {maximumFractionDigits: 1})} codes</b>), the chance is <b>${pct(p, 0)}</b>. `);
+    const top = r.cods.map(e => [e, E.codigos[e].p[j], r.c3(e)]).sort((a, b) => b[1] * b[2] - a[1] * a[2]).slice(0, 8);
+    const at = casa().atributos;
+    const tabla = `<div class="esc-lista"><h4>Codes that weigh most · Consensus × chance</h4><table class="esc-cods"><tr><th class="izq">EAN</th><th class="izq desc">Description</th><th>Chance</th><th>Consensus ${mes3Corto(E)}</th></tr>`
+      + top.map(([e, q, c3]) => `<tr><td class="izq"><a class="ean" href="#detalle/${encodeURIComponent(e)}" data-ean="${esc(e)}">${esc(e)}</a></td><td class="izq desc">${esc((at[e] || {}).desc || "")}</td><td><b>${pct(q, 0)}</b></td><td>${num(c3)}</td></tr>`).join("") + `</table></div>`;
+    const g = cat.grupo;
+    h = `<div class="esc-rcab"><h3>${ESC_TIT[k].replace("the Consensus", "its Consensus")} · <b>${pct(p, 0)}</b></h3><p>${expl}${cob}</p></div><div class="esc-listas">`
+      + lista("Rules its codes meet", si.map(([i, v, es]) => fila("si", ESC_ICO.si, E.reglas[i].txt, meta(es), v)))
+      + lista("Rules none of its codes meets", no.map(([i, v]) => fila("no", ESC_ICO.no, E.reglas[i].txt, "", v)))
+      + `</div>${tabla}<p class="esc-fiab">How reliable: each code's chance, ${auc}${g && g.auc != null ? ` The step from codes to the group was checked on ${num(E.aprendido.grupos)} past groups (houses, brands, lines and random selections): it ranks them right <b>${pct(g.auc, 0)}</b> of the time.` : ""}</p>`;
+  }
+  caja.innerHTML = h;
+  if (!animar || reducir.matches || SIN_ANIM) return;
+  caja.querySelectorAll(".esc-rcab, .esc-r, .esc-cods tr").forEach((el, i) => el.animate([{opacity: 0, transform: "translateY(6px)"}, {opacity: 1, transform: "none"}],
+    {duration: 260, delay: Math.min(i * 22, 200), easing: MOV.curva, fill: "backwards"}));
+}
+const mes3Corto = E => `${mesCorto(E.meses[0]).split(" ")[0]}–${mesCorto(E.meses[2]).split(" ")[0]}`;
+
 // ================= Actuals =================
 // Historia que la receta aprende, tal como la exportó la foto elegida: actuals (gris), Supply Cuts encima (naranja
 // rayado) y Total Demand Assumption (morado: los positivos suben, los negativos bajan, restando). La línea punteada
@@ -3534,6 +3839,7 @@ addEventListener("scroll", () => { if (TIP_EL) quitarTip(); }, {capture: true, p
 function reanimar(ids){
   ids.forEach(id => {
     const sec = $(id); if (!sec || sec.classList.contains("plegada")) return;
+    if (id === "sEscenarios") escCrecer();
     const piezas = sec.querySelectorAll(".sec-cuerpo > .sub, .sec-cuerpo > .ley-graf, .tarjeta, .sec-cuerpo > .ancho, .dec-cab");
     piezas.forEach((c, i) => c.animate(reducir.matches ? [{opacity: 0}, {opacity: 1}] : [{opacity: 0, transform: "translateY(10px) scale(.985)"}, {opacity: 1, transform: "none"}],
       {duration: reducir.matches ? 200 : 460, delay: Math.min(i * 45, 260), easing: MOV.curva, fill: "backwards"}));
@@ -3747,7 +4053,7 @@ $("rangoPresets").addEventListener("click", ev => {
 // Al abrir la página los cuatro grupos (Foto actual, Decisiones, Resultados, Detector) están plegados: cada uno
 // deja su título y una tira con lo esencial. La tira se convierte en el contenido (View Transition con el mismo
 // nombre, curva de cajón de iOS) y la cabecera del grupo pulsado se queda quieta en pantalla.
-const GRUPOS = ["sFoto", "sActuals", "sDecisiones", "sResultados", "sDetector"];
+const GRUPOS = ["sFoto", "sEscenarios", "sActuals", "sDecisiones", "sResultados", "sDetector"];
 const ABIERTOS = new Set();
 const RES = {};   // resúmenes que dejan fotoActual() y detector() para las tiras
 // la última foto del rango en la que TODA la ventana está cerrada (si no, WAPE180 y 9M serían solo los meses cerrados)
@@ -3767,6 +4073,13 @@ function miniGrupo(id){
     return mn("Deviation", `<span class="${r.totDev > 0.5 ? "malo" : "bueno"}">${num(r.totDev)}</span><small>units</small>`) + mn("Over the recipe", pct(r.totR > 0 ? r.totDev / r.totR : null))
       + (esRegla() ? mn("Codes off", `${r.nFuera}<small>of ${r.n}</small>`) : mn("Months off", `${r.meses}<small>of 9</small>`))
       + mn("Snapshot", r.foto, "txt");
+  }
+  if (id === "sEscenarios") {
+    const r = RES.esc;
+    if (!r || r.err) return mn("Scenarios", r ? r.err : "-", "txt");
+    if (!r.cods.length) return mn("Scenarios", r.grupo ? "None of its codes is scored" : "Not scored: " + escMotivo(((r.fuera[0] || [])[1] || ["foto"])[0]), "txt");
+    return mn("Sells less", `${pct(r.p.bajo, 0)}<small>much less ${pct(r.p.muy_bajo, 0)}</small>`) + mn("Sells more", `${pct(r.p.alto, 0)}<small>much more ${pct(r.p.muy_alto, 0)}</small>`)
+      + mn("Unplanned order", pct(r.p.orden, 0)) + mn("Consensus " + escMeses(r.E), `${num(r.C)}<small>units</small>`);
   }
   if (id === "sActuals") {
     const a = RES.act; if (!a) return mn("Actuals", "No actuals history", "txt");
@@ -3817,6 +4130,7 @@ function cambiarGrupos(f, ancla){
     // el gráfico de la foto actual mide su ancho: se repinta al hacerse visible
     if (ABIERTOS.has("sFoto") && !antes.has("sFoto")) fotoActual();
     if (ABIERTOS.has("sActuals") && !antes.has("sActuals")) actuals();
+    if (ABIERTOS.has("sEscenarios") && !antes.has("sEscenarios")) escPulgar(false);
     const dy = cab.getBoundingClientRect().top - y0; (FICHA ? $("ficha") : $("vistaDetalle")).scrollBy({top: dy, behavior: "instant"});
     const dy2 = cab.getBoundingClientRect().top - y0; if (Math.abs(dy2) > 1) window.scrollBy({top: dy2, behavior: "instant"});
     requestAnimationFrame(revisarPendientes);
@@ -3846,6 +4160,7 @@ function pintarDecisiones(){
 function pintar(){
   info();
   pintarTolDet();
+  escenarios();
   fotoActual();
   actuals();
   pintarDecisiones();
@@ -3861,7 +4176,7 @@ $("rail").addEventListener("click", ev => { const a = ev.target.closest("[data-i
   // la barra compacta mide menos: se compacta antes de medir, así la sección queda justo debajo de ella
   if (a.dataset.ir !== "sFoto") $("barra").classList.add("compacta");
   const id = a.dataset.ir, ir = () => requestAnimationFrame(() => requestAnimationFrame(() => $(id).scrollIntoView({behavior: reducir.matches ? "auto" : "smooth", block: "start"})));
-  if (!ABIERTOS.has(id)) { ABIERTOS.add(id); pintarGrupos(); if (id === "sFoto") fotoActual(); if (id === "sActuals") actuals(); requestAnimationFrame(() => { revisarPendientes(); reanimar([id]); }); }
+  if (!ABIERTOS.has(id)) { ABIERTOS.add(id); pintarGrupos(); if (id === "sFoto") fotoActual(); if (id === "sActuals") actuals(); if (id === "sEscenarios") escPulgar(false); requestAnimationFrame(() => { revisarPendientes(); reanimar([id]); }); }
   ir(); });
 $("detMigas").addEventListener("click", ev => { const b = ev.target.closest("button"); if (b && !b.disabled) abrirDetalle(b.dataset.sel); });
 $("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
