@@ -3,3 +3,6 @@ pandas
 pyarrow
 duckdb
 pytest
+scipy
+statsmodels
+matplotlib
