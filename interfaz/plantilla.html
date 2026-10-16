@@ -215,7 +215,7 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
   body.en-detalle .lado > :not(.lado-cab){display:none}
   body.en-detalle .lado-cab{padding:0}
   body.en-detalle .contenido{left:0}
-  body.en-detalle .barra{padding-left:212px}
+  body.en-detalle .barra{padding-left:calc(var(--ancho-lado, 180px) + 28px)}
   body.en-detalle #vistaDetalle{padding-left:24px}
 }
 /* El mapa nunca se va (escritorio): en Detalle queda de fondo, en el mismo sitio y con la misma cámara, pero empujado
@@ -702,6 +702,7 @@ td.meses{white-space:normal;min-width:120px;max-width:200px;line-height:1.5}
 .interruptor input:focus-visible + .pista{outline:2px solid var(--blue);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){.interruptor .pista::after{transition:none}}
 .calor-v{font-size:11px !important;font-weight:600;font-variant-numeric:tabular-nums}
+svg text.halo{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
 .tarjeta svg text.et-mes{fill:var(--label);font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
 .tarjeta svg text.num-calor{fill:var(--label) !important;opacity:1 !important;paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
 .calor-img{image-rendering:auto}
@@ -732,6 +733,8 @@ details[open] summary::before{transform:rotate(45deg)}
 .rail nav{display:flex;flex-direction:column;border-top:1px solid var(--sep);padding-top:6px}
 .rail nav a{color:var(--blue-txt);font-weight:500;text-decoration:none;padding:6px 0;font-size:13px}
 @media (min-width:1360px){.det-cuerpo{grid-template-columns:minmax(0,1fr) 280px}.rail{order:0;position:sticky;top:90px;margin-top:40px}}
+/* en Detalle ya no está la barra lateral: el resumen cabe al lado desde 1100 px */
+@media (min-width:1100px){body.en-detalle .det-cuerpo{grid-template-columns:minmax(0,1fr) 280px}body.en-detalle .rail{order:0;position:sticky;top:90px;margin-top:40px}}
 
 /* barra de pestañas flotante (iPhone) */
 .pestanas{display:none}
@@ -2197,6 +2200,8 @@ $("formBuscar").addEventListener("submit", () => {
 document.addEventListener("keydown", ev => {
   if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") { ev.preventDefault(); irA("inicio"); $("q").focus(); $("q").select(); }
   if (ev.key === "Escape") {
+    // la ficha se cierra aquí también: el evento "cancel" del diálogo no siempre llega (Chrome lo omite sin activación)
+    if (FICHA) { ev.preventDefault(); cerrarFicha(); return; }
     if (!$("pop").hasAttribute("data-cerrado")) { abrirPop(false); $("btnFiltros").focus(); return; }
     if ($("lado").classList.contains("abierto")) { cerrarLado(); return; }
     if (enMapa() && document.activeElement !== $("q") && M.foco && M.foco.parent) enfocar(M.foco.parent);
@@ -2350,6 +2355,7 @@ function irA(vista, sel){
     if (!ini) congelarFondo();
     $("vistaInicio").hidden = !ini && !FONDO.matches; $("vistaInicio").inert = !ini; $("vistaDetalle").hidden = ini; $("nivSeg").hidden = !ini; $("tolBarra").hidden = ini;
     document.body.classList.toggle("en-detalle", !ini);
+    if (!ini) document.documentElement.style.setProperty("--ancho-lado", Math.ceil(document.querySelector(".lado").getBoundingClientRect().width) + "px");
     $("navInicio").setAttribute("aria-current", ini ? "page" : "false");
     $("navDetalle").setAttribute("aria-current", ini ? "false" : "page");
     moverPulgar($("segVista"));
@@ -2903,7 +2909,6 @@ function mediaBrujula(v, datos, series, lim, pref = ""){
     <line data-k="meta-w" x1="${cx-R}" y1="${Y(CFG.metas.wape_max)}" x2="${cx+R}" y2="${Y(CFG.metas.wape_max)}" stroke="var(--green)" stroke-dasharray="4 3"/>
     <line x1="${cx}" y1="${base}" x2="${cx}" y2="${top}" stroke="var(--sep-fuerte)"/>
     <text data-k="meta-t" x="${cx-R+4}" y="${Y(CFG.metas.wape_max)-5}" style="fill:var(--green-txt)">WAPE ${pct(CFG.metas.wape_max,0)}</text>
-    <text x="${cx-R+6}" y="${top+14}">WAPE ${pct(lim.w,0)}</text>
     <text x="${cx-R}" y="${base+14}" text-anchor="start">${pct(-lim.s,0)}</text>${lim.s < 1 ? `<text x="${cx-R/2}" y="${base+14}" text-anchor="middle">${pct(-lim.s/2,0)}</text>` : ""}
     <text x="${cx}" y="${base+14}" text-anchor="middle">0</text>
     ${lim.s < 1 ? `<text x="${cx+R/2}" y="${base+14}" text-anchor="middle">+${pct(lim.s/2,0)}</text>` : ""}<text x="${cx+R}" y="${base+14}" text-anchor="end">+${pct(lim.s,0)}</text>
@@ -2919,6 +2924,8 @@ function mediaBrujula(v, datos, series, lim, pref = ""){
       if (u) ult[k] = p;
     });
   });
+  // la etiqueta del tope va después de las series: los puntos pegados al borde no la tapan
+  h += `<text data-k="tope-w" class="halo" x="${cx-R+6}" y="${top+14}">WAPE ${pct(lim.w,0)}</text>`;
   if (!datos.some(l => l.length)) h += `<text x="${cx}" y="${base - 50}" text-anchor="middle">No closed windows</text>`;
   pintarSVG(svg, h);
   // pie: tabla corta con los valores de la última foto medida (WAPE y SPP en verde o rojo según la meta)
@@ -2927,8 +2934,9 @@ function mediaBrujula(v, datos, series, lim, pref = ""){
       + (p ? `<td><b class="${p.x.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(p.x.wape)}</b></td><td><b class="${Math.abs(p.x.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(p.x.spp)}</b></td>` : `<td>-</td><td>-</td>`) + `</tr>`; };
   const mes = (ult.kpi_receta || ult.kpi_consensus || {}).mes;
   let t = `<table class="t-kpi"><tr><th>${mes || ""}</th><th>WAPE</th><th>SPP</th></tr>` + fila("kpi_consensus", "Consensus", "4 3", "var(--cons)") + fila("kpi_receta", esSel() ? "Recipes" : esRegla() ? "Rule" : "Recipe", "", "var(--receta)");
-  if (esRegla()) { const f = fotoUltCerrada(), e = f && entidad(f), o = e && e.kpi_oraculo && e.kpi_oraculo[v];
-    if (o) t += `<tr><td style="padding-left:21px">Oracles</td><td>${pct(o.wape)}</td><td>${pct(o.spp)}</td></tr>`; }
+  // oráculos de la misma foto que las otras filas (la última con esta ventana cerrada), en verde o rojo según la meta
+  if (esRegla()) { const f = fotosCerradas().find(x => x.foto === mes), e = f && ventanaCerrada(f, v) && entidad(f), o = e && e.kpi_oraculo && e.kpi_oraculo[v];
+    if (o) t += `<tr><td style="padding-left:21px">Oracles</td><td><b class="${o.wape <= CFG.metas.wape_max ? "bueno" : "malo"}">${pct(o.wape)}</b></td><td><b class="${Math.abs(o.spp) <= CFG.metas.spp_abs_max ? "bueno" : "malo"}">${pct(o.spp)}</b></td></tr>`; }
   $(id + "p").innerHTML = t + `</table>`;
 }
 
@@ -3051,7 +3059,7 @@ function anteriores(){
       h += `<details><summary>Show the group's ${e.n_codigos} codes</summary><table><tr><th class="izq">EAN</th><th class="izq">Description</th><th class="izq">Age</th><th>Actuals 9M</th><th>WAPE Cons 9M</th><th>WAPE oracle 9M</th><th class="izq">Oracle recipe</th></tr>`;
       e.eans.map(ean => ({ean, c: f.codigos[ean]})).sort((a, b) => ((b.c.kpi_consensus?.["9M"]?.act)||0) - ((a.c.kpi_consensus?.["9M"]?.act)||0))
         .forEach(({ean, c}) => { const a = casa().atributos[ean];
-          h += `<tr><td class="izq"><a class="ean" data-ean="${ean}">${ean}</a></td><td class="izq">${esc(a.desc)}</td><td class="izq">${tx(c.tramo_edad)}</td><td>${num(c.kpi_consensus?.["9M"]?.act)}</td><td>${pct(c.kpi_consensus?.["9M"]?.wape)}</td><td>${pct(c.kpi_receta?.["9M"]?.wape)}</td><td class="izq pequeño">${recetaTxt(c.oraculo_receta)}</td></tr>`; });
+          h += `<tr><td class="izq"><a class="ean" href="#" role="button" data-ean="${ean}">${ean}</a></td><td class="izq">${esc(a.desc)}</td><td class="izq">${tx(c.tramo_edad)}</td><td>${num(c.kpi_consensus?.["9M"]?.act)}</td><td>${pct(c.kpi_consensus?.["9M"]?.wape)}</td><td>${pct(c.kpi_receta?.["9M"]?.wape)}</td><td class="izq pequeño">${recetaTxt(c.oraculo_receta)}</td></tr>`; });
       h += "</table></details>";
     }
   });
@@ -3116,7 +3124,7 @@ function detector(){
   let h = `<table class="t-det"><tr class="cab"><th class="izq">EAN</th><th class="izq">Description</th><th class="izq">Brand</th><th class="izq">Age</th>${th("sR","Σ Recipe")}${th("sC","Σ Consensus")}${th("u","Deviation units")}${th("p","Deviation %")}<th class="izq">Months off</th></tr>`;
   const tope = estado.detTodos ? vis.length : 30;
   vis.slice(0, tope).forEach(x => {
-    h += `<tr><td class="izq c-ean"><a class="ean" data-ean="${x.r.ean}">${x.r.ean}</a>${tolPropia(x.r.ean) ? `<span class="tol-propia" title="Own tolerance ${txtTol(tolPropia(x.r.ean))}">●</span>` : ""}</td><td class="izq desc" title="${esc(x.r.desc)} · ${tx(x.r.edad)} · trend group: ${esc(tx(x.rec.txt.grupo))}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}<span class="sub-rec">Trend ${esc(tx(x.rec.txt.grupo))}${x.rec.sin_trend ? " (no trend today)" : ""} · ${recetaCorta(x.rec.txt)}</span></td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${tx(x.r.edad)}</td>
+    h += `<tr><td class="izq c-ean"><a class="ean" href="#" role="button" data-ean="${x.r.ean}">${x.r.ean}</a>${tolPropia(x.r.ean) ? `<span class="tol-propia" title="Own tolerance ${txtTol(tolPropia(x.r.ean))}">●</span>` : ""}</td><td class="izq desc" title="${esc(x.r.desc)} · ${tx(x.r.edad)} · trend group: ${esc(tx(x.rec.txt.grupo))}">${esc(x.r.desc)}${x.meses ? `<span class="sub-mes">${x.meses}</span>` : ""}<span class="sub-rec">Trend ${esc(tx(x.rec.txt.grupo))}${x.rec.sin_trend ? " (no trend today)" : ""} · ${recetaCorta(x.rec.txt)}</span></td><td class="izq c-brand">${esc(corto(x.r.brand))}</td><td class="izq c-edad">${tx(x.r.edad)}</td>
       <td class="c-sr">${num(x.sR)}</td><td class="c-sc">${num(x.sC)}</td><td class="c-u"><b>${num(x.u)}</b></td><td class="c-p">${pct(x.p)}</td><td class="izq pequeño meses c-mes">${x.meses}</td></tr>`;
   });
   if (!vis.length) h += `<tr><td colspan="9" class="izq" style="padding:20px 10px;color:var(--label-2)">No EAN is off its strategy with these tolerances.</td></tr>`;
@@ -3276,10 +3284,11 @@ function actuals(){
   for (let v = -fondo; v <= tope + 1e-9; v += paso)
     g += `<line x1="${L}" x2="${W - Rm}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="${Math.abs(v) < 1e-9 ? "var(--sep-fuerte)" : "var(--sep)"}"/><text x="${L - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${k(v)}</text>`;
   // años fiscales (empiezan en julio): línea fina y etiqueta FY
+  let fyX = -1e9;  // última etiqueta FY: "now" no se monta encima
   h.meses.forEach((m, i) => { if (!vis(i)) return; const mm = +m.split(".M")[1], a = +m.slice(0, 4);
     if (mm === 7 || i === ini) { const fy = "FY" + String(mm >= 7 ? a + 1 : a).slice(2), xx = i === ini ? L : L + bw * (i - ini);
       if (i > ini) g += `<line x1="${xx.toFixed(1)}" x2="${xx.toFixed(1)}" y1="${T - 12}" y2="${Ht - B}" stroke="var(--sep-fuerte)" stroke-dasharray="2 3"/>`;
-      g += `<text class="fy" x="${(xx + 5).toFixed(1)}" y="${T - 6}">${fy}</text>`; }
+      g += `<text class="fy" x="${(xx + 5).toFixed(1)}" y="${T - 6}">${fy}</text>`; fyX = xx + 5; }
     const paso = Math.ceil(46 / bw), et = paso <= 1 ? true : paso <= 3 ? mm % 3 === 1 : (i - ini) % paso === 0;
     if (et) g += `<text x="${(x(i) + ancho / 2).toFixed(1)}" y="${Ht - B + 17}" text-anchor="middle">${mesCorto(m)}</text>`; });
   g += `<g class="barras">`;
@@ -3302,7 +3311,7 @@ function actuals(){
   const b0 = Math.max(n - 13, ini), b1 = Math.min(n - 2, fin), xb0 = x(b0), xb1 = x(b1) + ancho;
   if (b1 >= b0) g += `<line data-k="h-base" x1="${xb0.toFixed(1)}" x2="${xb1.toFixed(1)}" y1="${y(base).toFixed(1)}" y2="${y(base).toFixed(1)}" stroke="var(--receta)" stroke-width="1.2" stroke-dasharray="3 3" stroke-opacity=".75"/>`;
   if (b1 >= b0) g += `<text class="base" data-k="h-base-t" x="${(xb0 + 4).toFixed(1)}" y="${(y(base) - 6).toFixed(1)}">12M base ${k(base)}</text>`;
-  if (vis(n - 1)) g += `<text x="${(x(n - 1) + ancho / 2).toFixed(1)}" y="${T - 6}" text-anchor="middle" style="fill:var(--label-3)">now</text>`;
+  if (vis(n - 1) && x(n - 1) + ancho / 2 - fyX > 46) g += `<text x="${(x(n - 1) + ancho / 2).toFixed(1)}" y="${T - 6}" text-anchor="middle" style="fill:var(--label-3)">now</text>`;
   g += `</g>`;
   const sw = c => `<span class="ley-it">${c}</span>`;
   $("actLey").innerHTML = sw('<i style="background:var(--act);box-shadow:inset 0 0 0 1px var(--act-borde)"></i>Actuals') + sw('<i style="background:repeating-linear-gradient(45deg,var(--orange) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--orange)"></i>Supply cuts')
@@ -3520,6 +3529,12 @@ function cerrarFicha(despues){
     if (despues) { despues(); return; }
     SIN_ANIM = true; try { pintar(); } finally { SIN_ANIM = false; }
     $("vistaDetalle").scrollTop = F.vy; window.scrollTo({top: F.y, behavior: "instant"});
+    // el foco vuelve al código que abrió la ficha (el enlace se repintó)
+    // se reintenta unos fotogramas: las tablas se terminan de pintar después
+    const enfocarEan = n => { const l = [...document.querySelectorAll(`#vistaDetalle a[data-ean="${CSS.escape(F.ean)}"]`)];
+      const a = l.find(x => x.closest("#sDetector")) || l[0]; if (a) a.focus({preventScroll: true});
+      if (document.activeElement !== a && n) requestAnimationFrame(() => enfocarEan(n - 1)); };
+    requestAnimationFrame(() => enfocarEan(60));
   };
   if (reducir.matches) { fin(); return; }
   dlg.classList.add("cerrando");
@@ -3780,7 +3795,7 @@ $("selFuente").addEventListener("input", () => { fotoActual(); detector(); });
 document.addEventListener("click", ev => {
   const a = ev.target.closest("a.ean");
   // dentro de un grupo, el EAN se abre en una ficha encima (no se pierde el grupo); desde la ficha o el mapa, el detalle
-  if (a) { if (esRegla() && a.closest("#vistaDetalle") && !a.closest("#ficha")) abrirFicha(a.dataset.ean); else abrirDetalle(a.dataset.ean); return; }
+  if (a) { ev.preventDefault(); if (esRegla() && a.closest("#vistaDetalle") && !a.closest("#ficha")) abrirFicha(a.dataset.ean); else abrirDetalle(a.dataset.ean); return; }
   if (ev.target.closest("#detMas")) { estado.detTodos = true; detector(); return; }
   const t = ev.target.closest("th.ord");
   if (t) { const k = t.dataset.col; estado.orden = {col: k, dir: estado.orden.col === k ? -estado.orden.dir : -1}; detector(); }
