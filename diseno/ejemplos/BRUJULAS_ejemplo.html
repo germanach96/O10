@@ -1475,7 +1475,7 @@ function dibujarMapa(){
   svg.setAttribute("viewBox", `0 0 ${W} ${W}`);
   // índice de brand para la entrada en cascada
   const iBrand = new Map(); M.casaN.children.forEach((b, i) => iBrand.set(b, i));
-  // grupos anidados (brand > línea > código): cada grupo puede flotar sin romper el orden de M.nodos
+  // grupos anidados (casa > brand > línea > código): cada grupo flota (con sus hijos dentro) sin romper el orden de M.nodos
   const pinta = (n) => {
     const i = M.nodos.indexOf(n), d = n.data;
     const brand = n.depth >= 2 ? n.ancestors().find(a => a.depth === 2) : null;
@@ -1489,7 +1489,7 @@ function dibujarMapa(){
     const bin = d.nivel === "hoja" && d.hoja.scope && !d.hoja.sinrec ? ` data-bin="${binDe(d.hoja.p)}"` : "";
     const c = `<circle class="${cls}"${bin} data-i="${i}" data-k="${esc(d.nivel === "hoja" ? d.hoja.ean : d.clave)}" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${Math.max(n.r, 0.6).toFixed(2)}"${fill}></circle>`;
     if (d.nivel === "hoja") return `<g class="h flota" data-g="${i}">${c}${n.r > 4 ? `<circle class="brillo n-anim" data-k="${esc(d.hoja.ean)}-b" cx="${n.x.toFixed(2)}" cy="${n.y.toFixed(2)}" r="${n.r.toFixed(2)}" style="transition-delay:${delay}ms"></circle>` : ""}</g>`;
-    return `<g class="${d.nivel === "pl" ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
+    return `<g class="${n.depth ? "flota" : ""}" data-g="${i}">${c}${(n.children || []).map(pinta).join("")}</g>`;
   };
   // Coreografía al reordenar (skills animate + apple-design): 1) se van las que dejan de contar, 2) las que siguen se mueven
   // a su sitio nuevo, 3) entran las nuevas. FLIP en coordenadas de PANTALLA y desde lo que se VE (getBoundingClientRect:
@@ -1572,48 +1572,82 @@ function dibujarMapa(){
 }
 
 // ================= Flotación =================
-// Skill de Emil: se ve pocas veces al día y su propósito es dar vida a la vista de inicio; los datos se quedan quietos al leerlos.
-// Cada código y cada línea flotan unos píxeles con periodos de 9 a 16 s. Al entrar el puntero en el mapa, todo frena con un
-// muelle críticamente amortiguado (sin rebote) para poder leer y apuntar; al salir, vuelve a flotar. Con movimiento reducido no flota.
-const F = {lista: [], amp: 0, vel: 0, objetivo: 1, corre: false, t0: performance.now(), ult: 0};
+// Skills de Emil (animate) y apple-design. Propósito: dar vida al mapa sin que haya que perseguir lo que se quiere leer.
+// - Flotan TODOS los niveles (casa, brands, product lines y EANs), cada uno dentro de su grupo: los grupos están anidados
+//   en el SVG, así que un hijo se mueve con su padre y además con su propio vaivén. Ritmo lento y notable: hasta ~8 px en
+//   pantalla, periodos de 11 a 19 s (lejos de 0,2 Hz). Nunca invaden a un hermano ni salen del padre (media holgura).
+// - Cada burbuja lleva su propio reloj de fase. Frenar = el reloj deja de avanzar con un muelle críticamente amortiguado
+//   (respuesta ≈ 0,4 s, sin rebote): se queda donde está, y al soltar sigue desde ese mismo punto. Nada vuelve a una
+//   posición base, salvo cuando el mapa se vuelve a empaquetar (filtro de tipos): ahí todo parte de su sitio nuevo y la
+//   amplitud crece desde cero.
+// - Al pasar el puntero frena solo la rama señalada: el nivel bajo el puntero y sus antepasados. En una product line (o
+//   un EAN) frenan también sus EANs. Todo lo demás sigue flotando. En Detalle el mapa de fondo flota entero.
+// - Con movimiento reducido no flota nada.
+const F = {lista: [], porG: new Map(), env: 0, envV: 0, corre: false, ult: 0, rama: null};
 function prepararFlotacion(){
-  F.lista = [];
+  F.lista = []; F.porG = new Map(); F.rama = null;
   $("mundo").querySelectorAll("g.flota").forEach(g => {
     const n = M.nodos[+g.dataset.g], p = n.parent; if (!p) return;
-    const holgura = Math.max(0, p.r - Math.hypot(n.x - p.x, n.y - p.y) - n.r);  // no se sale de su grupo
+    // holgura: no sale del padre (la raíz no se ve: no limita) ni alcanza a un hermano (cada uno usa la mitad del hueco)
+    let holgura = p.depth === 0 ? Infinity : Math.max(0, p.r - Math.hypot(n.x - p.x, n.y - p.y) - n.r);
+    (p.children || []).forEach(h => { if (h !== n) holgura = Math.min(holgura, Math.max(0, (Math.hypot(n.x - h.x, n.y - h.y) - n.r - h.r) / 2)); });
     const s = (n.data.hoja ? n.data.hoja.ean : n.data.clave).split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
     const rnd = k => (((s ^ (k * 2654435761)) * 2246822519) >>> 0) / 4294967296;
-    F.lista.push({g, holgura, px: 9 + 7 * rnd(1), py: 9 + 7 * rnd(2), fx: rnd(3) * 6.283, fy: rnd(4) * 6.283});
+    const e = {g, n, holgura: holgura * 0.9, px: 11 + 8 * rnd(1), py: 11 + 8 * rnd(2), fx: rnd(3) * 6.283, fy: rnd(4) * 6.283,
+               fase: 0, vel: 1, velV: 0, obj: 1, x: 0, y: 0};
+    F.lista.push(e); F.porG.set(+g.dataset.g, e);
   });
-  F.objetivo = reducir.matches || M.encima ? 0 : 1;
-  if (reducir.matches) { F.amp = 0; F.vel = 0; F.lista.forEach(e => e.g.removeAttribute("transform")); return; }
+  // el mapa recién empaquetado parte de su sitio: la amplitud crece desde cero (≈ 1,2 s) en vez de saltar
+  F.env = 0; F.envV = 0;
+  if (reducir.matches) { F.lista.forEach(e => e.g.removeAttribute("transform")); return; }
   arrancarFlotacion();
 }
-function arrancarFlotacion(){ if (!F.corre && !document.hidden) { F.corre = true; F.ult = performance.now(); requestAnimationFrame(pasoFlotacion); } }
+// rama que frena: el nivel señalado y sus antepasados; en una product line o un EAN, también los EANs de esa línea
+function frenarRama(n){
+  if (n && n.data.nivel === "hoja") n = n.parent;
+  if (n && n.depth === 0) n = null;
+  if (n === F.rama) return;
+  F.rama = n;
+  const quietos = new Set();
+  if (n && enMapa()) {
+    n.ancestors().forEach(a => quietos.add(a));
+    if (n.data.nivel === "pl") (n.children || []).forEach(h => quietos.add(h));
+  }
+  F.lista.forEach(e => { e.obj = quietos.has(e.n) ? 0 : 1; });
+  arrancarFlotacion();
+}
+function arrancarFlotacion(){ if (!F.corre && !document.hidden && !reducir.matches && F.lista.length) { F.corre = true; F.ult = performance.now(); requestAnimationFrame(pasoFlotacion); } }
 function pasoFlotacion(ahora){
   // en Detalle (escritorio) el mapa sigue de fondo y sigue flotando; solo se para si está oculto de verdad (iPhone)
-  if (document.hidden || $("vistaInicio").hidden) { F.corre = false; return; }
+  if (document.hidden || $("vistaInicio").hidden || reducir.matches) { F.corre = false; return; }
   const dt = Math.min(0.05, (ahora - F.ult) / 1000); F.ult = ahora;
-  // muelle críticamente amortiguado sobre la amplitud (respuesta ≈ 0,7 s)
-  const w = 2 * Math.PI / 0.7;
-  F.vel += (-w * w * (F.amp - F.objetivo) - 2 * w * F.vel) * dt; F.amp += F.vel * dt;
-  if (F.amp < 0.002 && F.objetivo === 0 && Math.abs(F.vel) < 0.01) {
-    F.amp = 0; F.vel = 0; F.corre = false;
-    F.lista.forEach(e => e.g.removeAttribute("transform"));
-    return;
-  }
-  const t = (ahora - F.t0) / 1000, k = (M.cam || transformDe(M.foco)).k;
-  const tope = 2.6 / k;  // unos 2,6 px en pantalla a cualquier zoom
+  // muelles críticamente amortiguados: la amplitud global (arranque) y la velocidad del reloj de cada burbuja (frenar/seguir)
+  const wE = 2 * Math.PI / 1.2, wV = 2 * Math.PI / 0.4;
+  F.envV += (-wE * wE * (F.env - 1) - 2 * wE * F.envV) * dt; F.env = Math.min(1, F.env + F.envV * dt);
+  const k = (M.cam || transformDe(M.foco)).k, tope = 8 / k;  // hasta ~8 px en pantalla a cualquier zoom
+  const asentado = F.env > 0.999;
   for (const e of F.lista) {
-    const a = Math.min(e.holgura * 0.7, tope) * F.amp;
-    if (a < 0.01) continue;
-    e.g.setAttribute("transform", `translate(${(a * Math.sin(6.283 * t / e.px + e.fx)).toFixed(2)} ${(a * Math.cos(6.283 * t / e.py + e.fy)).toFixed(2)})`);
+    e.velV += (-wV * wV * (e.vel - e.obj) - 2 * wV * e.velV) * dt; e.vel += e.velV * dt;
+    if (Math.abs(e.vel - e.obj) < 1e-4 && Math.abs(e.velV) < 1e-3) { e.vel = e.obj; e.velV = 0; }
+    if (e.vel <= 0 && asentado && e.quieta) continue;   // parada y ya pintada: no se toca
+    e.fase += Math.max(0, e.vel) * dt;
+    const a = Math.min(e.holgura, tope) * F.env;
+    const x = a * Math.sin(6.283 * e.fase / e.px + e.fx), y = a * Math.cos(6.283 * e.fase / e.py + e.fy);
+    e.quieta = e.vel <= 0;
+    if (Math.abs(x - e.x) < 0.005 && Math.abs(y - e.y) < 0.005) continue;
+    e.x = x; e.y = y;
+    e.g.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
   }
   requestAnimationFrame(pasoFlotacion);
 }
-$("lienzo").addEventListener("pointerenter", ev => { if (ev.pointerType === "touch") return; M.encima = true; F.objetivo = 0; arrancarFlotacion(); });
-$("lienzo").addEventListener("pointerleave", () => { M.encima = false; if (!reducir.matches) { F.objetivo = 1; arrancarFlotacion(); } });
-document.addEventListener("visibilitychange", () => { if (!document.hidden && F.objetivo > 0) arrancarFlotacion(); });
+// el nivel bajo el puntero (no el destino del clic): se mira el círculo que hay debajo
+$("pack").addEventListener("pointerover", ev => {
+  if (ev.pointerType === "touch" || !enMapa()) return;
+  const c = ev.target.closest("circle[data-i]");
+  frenarRama(c ? M.nodos[+c.dataset.i] : null);
+});
+$("lienzo").addEventListener("pointerleave", () => frenarRama(null));
+document.addEventListener("visibilitychange", () => { if (!document.hidden) arrancarFlotacion(); });
 reducir.addEventListener("change", prepararFlotacion);
 
 function transformDe(n){
@@ -2364,7 +2398,7 @@ function irA(vista, sel){
     document.querySelectorAll("#pestanas button").forEach(b => b.setAttribute("aria-current", (ini ? b.dataset.tab === "mapa" : b.dataset.tab === "detalle") ? "page" : "false"));
     ocultarTip();
     if (ini) { document.body.classList.remove("fondo-mapa"); $("vistaInicio").style.removeProperty("--alto-barra"); arrancarFlotacion(); }
-    else if (FONDO.matches) { document.body.classList.add("fondo-mapa"); M.encima = false; if (!reducir.matches) { F.objetivo = 1; arrancarFlotacion(); } }
+    else if (FONDO.matches) { document.body.classList.add("fondo-mapa"); frenarRama(null); arrancarFlotacion(); }
     if (!ini) { if (sel) estado.sel = sel; estado.detTodos = false;
       // al llegar desde el mapa no se vio el detalle anterior: todos los gráficos se construyen de cero
       if (actual !== "detalle") document.querySelectorAll("#vistaDetalle [data-dibujado]").forEach(e => delete e.dataset.dibujado);
