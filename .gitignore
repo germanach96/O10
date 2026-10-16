@@ -4,3 +4,6 @@ __pycache__/
 .impeccable/review/
 .impeccable/questions/
 .playwright-mcp/
+
+# Análisis puntuales con datos subidos por el usuario: se quedan en local
+analisis/
