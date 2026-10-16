@@ -58,7 +58,7 @@ for ev, (pob, y, mag) in EV.items():
         if sel.sum() < 5: continue
         lo, hi = ci(int(Y[sel].sum()), int(sel.sum()), method='wilson')
         conf.append(dict(evento=ev, señales=f'{k_}' if k_ < 2 else '2+', p=Y[sel].mean(), lo=lo, hi=hi, n=int(sel.sum()), cod=D.ean[sel].nunique(), mag=np.median(M[sel]),
-                         antiguo=Y[sel & part['antiguo']].mean(), reciente=Y[sel & part['reciente']].mean()))
+                         antiguo=Y[sel & part['antiguo']].mean(), reciente=Y[sel & part['reciente']].mean(), n_ant=int((sel & part['antiguo']).sum()), n_rec=int((sel & part['reciente']).sum())))
 F = pd.DataFrame(filas); C = pd.DataFrame(conf)
 pd.set_option('display.width', 280); pd.set_option('display.max_colwidth', 120)
 for ev, g in F.groupby('evento', sort=False):
