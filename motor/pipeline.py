@@ -231,7 +231,7 @@ def resumen_foto(res: ResultadoFoto, cfg: dict, R: Rejilla) -> dict:
             "tramo_edad": cod["tramo_edad"].iat[i],
             "historia_corta": bool(M.historia_corta[i]),
             "cerrados": [bool(x) for x in res.cerrado[a]],
-            "consensus_fut": [float(x) for x in M.cons_fut[i]],
+            "consensus_fut": [None if np.isnan(x) else float(x) for x in M.cons_raw[i]],
             "actual_fut": [None if np.isnan(x) else float(x) for x in res.A[i]],
         }
         if res.cerrado[a].any():
@@ -451,7 +451,8 @@ def detector(res_ult: ResultadoFoto, elegida: dict, num: dict, sgn: dict, den: d
         fila = {"ean": e, "desc": cod["Planning Item Description"].iat[i], "brand": cod["Brand"].iat[i],
                 "pl": cod["Product Line"].iat[i], "segmento": cod["Final Segment"].iat[i],
                 "edad": cod["tramo_edad"].iat[i], "flag": cod["Ignore System Forecast Flag"].iat[i],
-                "consensus": [round(float(x), 1) for x in M.cons_fut[i]], "recetas": {}}
+                # celda vacía ≠ 0: un mes sin Consensus en la foto (p. ej. el export aún no llega a F+9) no se compara
+                "consensus": [None if np.isnan(x) else round(float(x), 1) for x in M.cons_raw[i]], "recetas": {}}
         for nombre, r in fuentes.items():
             if r is None or r < 0:
                 fila["recetas"][nombre] = None
