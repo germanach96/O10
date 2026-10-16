@@ -247,7 +247,7 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ## 9. Interfaz
 
-El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.2`; cada versión aprobada sube la subversión: O10.0.2, O10.0.3…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.3`; cada versión aprobada sube la subversión: O10.0.3, O10.0.4…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
