@@ -12,6 +12,8 @@
   },
   "_e": "Años de estacionalidad de la parte estacional de la base: 1 = mismo mes del año anterior; 2 = media del mismo mes de los 2 años anteriores (si el código no tiene 2 años, igual que 1)",
   "_h": "De quién se copia la estacionalidad: Propio = historia del código; un grupo = media del código × índice estacional del grupo (mes del año anterior / media 12M del grupo)",
+  "cortes": {"modo": "netos", "recompra": 1.0},
+  "_cortes": "Cómo entran los Supply Cuts en la historia (eje c). netos: Cortes(t) − Recompra(t), con Recompra(t) = min(recompra · Cortes(t−1), A(t) + Cortes(t)): un pedido cortado que se vuelve a pedir el mes siguiente no se cuenta otra vez (ni al re-cortarse ni al servirse en los Actuals). recompra = fracción de lo cortado que el cliente vuelve a pedir (1 = todo; 0 = igual que brutos). brutos: todos los cortes tal cual (cuenta doble los pedidos repetidos)",
   "tope_trend": 0.50,
   "meses_media_base": 12,
   "horizonte": 9,

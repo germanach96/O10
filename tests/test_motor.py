@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from motor.lector import ErrorFoto, agregar_desaparecidos, extraer_tamano, leer_foto, leer_listas, mes_a_int
-from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla
+from motor.recetas import CELDAS, EJES, MotorFoto, Rejilla, cortes_netos, recompras
 from motor.pipeline import actuals_futuros, cargar_config, kpis, mascara_cuenta, variantes_tipos
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -106,9 +106,14 @@ def test_forecast_a_mano(foto_simple, cfg):
     r = indice(R, s=0, w=1, m=0, N=12, c=0, p=0, g=("Propio", "Jerarquía"))
     assert val[r]
     np.testing.assert_allclose(Fc[r][:3], [126, 121, 121])  # 2025.M02 = h1
-    # cortes: c=1 suma 12 a 2024.M06 -> media (1320+12)/12 = 111, trend (1332/1200 − 1) = 11%
+    # cortes netos: el corte de 12 en 2024.M06 se re-pide en 2024.M07 y se sirve (110 de actuals): +12 en junio y
+    # −12 en julio -> la media y el trend no cambian (sin doble conteo)
     r = indice(R, s=0, w=1, m=0, N=12, c=1, p=0, g=("Propio", "Jerarquía"))
-    np.testing.assert_allclose(Fc[r][1], 111 * 1.11)
+    np.testing.assert_allclose(Fc[r][1], 110 * 1.10)
+    # cortes brutos: c=1 suma 12 a 2024.M06 -> media (1320+12)/12 = 111, trend (1332/1200 − 1) = 11%
+    cfg_b = {**cfg, "cortes": {"modo": "brutos"}}
+    Fb, _ = MotorFoto(foto_simple, cfg_b, R).forecasts(i)
+    np.testing.assert_allclose(Fb[r][1], 111 * 1.11)
     # sin trend, 100% estacional de 1 año: H(2024.M02) = 110 (+5 de DA en h1)
     r = indice(R, s=1, e=1, w=0, m=0, N=6, c=0, p=0, g=("Propio", "Jerarquía"))
     np.testing.assert_allclose(Fc[r][:2], [115, 110])
@@ -124,6 +129,27 @@ def test_forecast_a_mano(foto_simple, cfg):
     # sin EPOS: m>0 con trend no es válida; con w=0 sí
     assert not val[indice(R, s=0, w=1, m=0.5, N=12, c=0, p=0, g=("Propio", "Jerarquía"))]
     assert val[indice(R, s=0, w=0, m=0.5, N=12, c=0, p=0, g=("Propio", "Jerarquía"))]
+
+
+def test_cortes_netos_a_mano(cfg):
+    """Pedido de 100 cortado 3 meses seguidos y servido al 4º, encima de una venta normal de 50."""
+    A = np.array([[50, 50, 50, 50, 150, 50]], float)
+    C = np.array([[0, 100, 100, 100, 0, 0]], float)
+    # recompra: los cortes de M3 y M4 son el mismo pedido re-hecho; en M5 el pedido re-hecho se sirve (en los actuals)
+    np.testing.assert_allclose(recompras(A, C, cfg), [[0, 0, 100, 100, 100, 0]])
+    N = cortes_netos(A, C, cfg)
+    np.testing.assert_allclose(N, [[0, 100, 0, 0, -100, 0]])
+    # historia con c = 1: la demanda en el mes del pedido; el total es el de los actuals (el pedido se sirvió)
+    np.testing.assert_allclose(A + N, [[50, 150, 50, 50, 50, 50]])
+    assert (A + N).sum() == A.sum()
+    # brutos: los 300 de cortes cuentan como demanda además de los 100 servidos
+    np.testing.assert_allclose(cortes_netos(A, C, {"cortes": {"modo": "brutos"}}), C)
+    # recompra parcial (50%): solo la mitad se vuelve a pedir; el resto del corte es demanda perdida
+    np.testing.assert_allclose(recompras(A, C, {"cortes": {"modo": "netos", "recompra": 0.5}}), [[0, 0, 50, 50, 50, 0]])
+    # el re-pedido no puede superar lo que se pidió ese mes (actuals + cortes): pedido que el cliente ya no rehace
+    A2, C2 = np.array([[50, 0, 20]], float), np.array([[0, 100, 0]], float)
+    np.testing.assert_allclose(recompras(A2, C2, cfg), [[0, 0, 20]])
+    assert (A2 + cortes_netos(A2, C2, cfg) >= 0).all()
 
 
 def test_filtro_tipos(foto_simple, cfg):

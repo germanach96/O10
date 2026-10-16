@@ -17,6 +17,29 @@ EJES = ["s", "h", "e", "w", "m", "N", "c", "p", "g"]
 # h = de quién copio la estacionalidad (Propio, Product Line, Brand, House); e = años de estacionalidad (1 o 2)
 
 
+def recompras(A: np.ndarray, C: np.ndarray, cfg: dict) -> np.ndarray:
+    """Parte de los cortes y del sell-in de cada mes que es el pedido re-hecho de un corte anterior (códigos × meses).
+
+    Un pedido cortado en t−1 vuelve a pedirse en t (la fracción `recompra` de la configuración): ese pedido re-hecho se
+    corta otra vez (corte repetido) o se sirve y sale en los Actuals (recuperado). No es demanda nueva de t, así que los
+    cortes netos son  Netos(t) = Cortes(t) − Recompra(t),  con  Recompra(t) = min(r · Cortes(t−1), A(t) + Cortes(t))
+    (no se re-pide más de lo que se pidió ese mes). Con r = 1, A + Netos = la demanda en el mes en que se hizo el pedido:
+    cada corte cuenta una vez y lo que se recupera después no se cuenta dos veces. Con r = 0, Netos = Cortes (brutos).
+    Celdas vacías = 0. Solo usa meses hasta t, así que no mira el futuro de la foto.
+    """
+    cc = cfg.get("cortes", {})
+    r = 0.0 if cc.get("modo", "netos") == "brutos" else float(cc.get("recompra", 1.0))
+    A, C = np.nan_to_num(A), np.nan_to_num(C)
+    prev = np.zeros_like(C)
+    prev[:, 1:] = C[:, :-1]
+    return np.minimum(r * prev, np.maximum(A + C, 0.0))
+
+
+def cortes_netos(A: np.ndarray, C: np.ndarray, cfg: dict) -> np.ndarray:
+    """Cortes que suman a la historia: los nuevos de cada mes menos lo recuperado (puede ser negativo). Ver `recompras`."""
+    return np.nan_to_num(C) - recompras(A, C, cfg)
+
+
 class Rejilla:
     """Enumera las recetas de la rejilla gruesa. Índice plano en orden (s, h, e, w, m, N, c, p, g)."""
 
@@ -75,7 +98,9 @@ class MotorFoto:
             return out
 
         hist = tomar(foto.mat["hist"], self.t_hist)                       # NaN = fuera de la historia
-        cuts = np.nan_to_num(tomar(foto.mat["Supply Cuts"], self.t_hist))
+        # cortes netos (o brutos, según config): se calculan sobre toda la foto para tener el mes anterior a t_hist
+        netos = cortes_netos(foto.mat["hist"], foto.mat["Supply Cuts"], cfg)
+        cuts = np.nan_to_num(tomar(netos, self.t_hist))
         tda_h = np.nan_to_num(tomar(foto.mat["Total Demand Assumption"], self.t_hist))
         self.tda_fut = np.nan_to_num(tomar(foto.mat["Total Demand Assumption"], self.t_fut))
         self.cons_fut = np.nan_to_num(tomar(foto.mat["Consensus - Final"], self.t_fut))
@@ -87,7 +112,7 @@ class MotorFoto:
         self.disponible = ~np.isnan(hist)                                # mes dentro de la historia útil
 
         cv, pv = rejilla.valores["c"], rejilla.valores["p"]
-        # Historia limpia por (c, p): H = A + c·Cortes − p·TDA      forma (c, p, códigos, meses)
+        # Historia limpia por (c, p): H = A + c·CortesNetos − p·TDA      forma (c, p, códigos, meses)
         A = np.nan_to_num(hist)
         self.H = (A[None, None] + np.array(cv)[:, None, None, None] * cuts[None, None]
                   - np.array(pv)[None, :, None, None] * tda_h[None, None])

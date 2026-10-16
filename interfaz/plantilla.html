@@ -40,7 +40,7 @@
   --borde-burbuja:rgba(255,255,255,.85);
   --receta:var(--blue); --cons:#8e8e93; --banda:rgba(0,113,227,.12); --meta:rgba(52,199,89,.16);
   /* sección Actuals: barras de actuals (gris), cortes (naranja rayado) y DAs (morado del sistema) */
-  --act:rgba(142,142,147,.5); --act-borde:rgba(142,142,147,.85); --da:#af52de; --da-txt:#8e3bb3;
+  --act:rgba(142,142,147,.5); --act-borde:rgba(142,142,147,.85); --da:#af52de; --da-txt:#8e3bb3; --recup:rgba(255,149,0,.34); --corte-linea:#c96f00;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
@@ -59,7 +59,7 @@
   --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
   --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
   --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
-  --act:rgba(174,174,178,.42); --act-borde:rgba(174,174,178,.8); --da:#bf5af2; --da-txt:#d48ef7;
+  --act:rgba(174,174,178,.42); --act-borde:rgba(174,174,178,.8); --da:#bf5af2; --da-txt:#d48ef7; --recup:rgba(255,159,10,.36); --corte-linea:#ffb340;
   --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
   --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
   --d0:#30d158; --d-apag:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
@@ -81,7 +81,7 @@
     --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
     --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
     --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
-    --act:rgba(174,174,178,.42); --act-borde:rgba(174,174,178,.8); --da:#bf5af2; --da-txt:#d48ef7;
+    --act:rgba(174,174,178,.42); --act-borde:rgba(174,174,178,.8); --da:#bf5af2; --da-txt:#d48ef7; --recup:rgba(255,159,10,.36); --corte-linea:#ffb340;
     --blue:#0a72e8; --blue-txt:#74b8ff; --green:#30d158; --green-txt:#30d158;
     --orange:#ff9f0a; --red:#ff453a; --red-txt:#ff6961; --yellow:#ffd60a;
     --d0:#30d158; --d-apag:#6a6a6e; --d1:#ffd60a; --d2:#ff9f0a; --d3:#ff6a3d; --d4:#ff375f;
@@ -1055,7 +1055,7 @@ details[open] summary::before{transform:rotate(45deg)}
     <div class="sec-cab"><h2>Actuals</h2><button type="button" class="sec-tog" aria-expanded="false" aria-label="Expand Actuals"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button></div>
     <button type="button" class="sec-mini vidrio" aria-label="Expand Actuals"></button>
     <div class="sec-cuerpo">
-    <p class="sub">The history the recipe learns from, as each snapshot exported it: actuals, supply cuts and demand assumptions. The dotted line is the history actually used, after adding cuts and removing DAs with the chosen recipe.</p>
+    <p class="sub">The history the recipe learns from, as each snapshot exported it: actuals, supply cuts and demand assumptions. The dotted line is the history actually used, after adding net cuts and removing DAs with the chosen recipe. Net cuts count each cut order once: a repeated cut is last month's order cut again, and catch-up is that order shipping later inside the actuals.</p>
     <div class="ancho vidrio">
       <div class="act-cab">
         <div class="ley-graf" id="actLey"></div>
@@ -1093,7 +1093,7 @@ details[open] summary::before{transform:rotate(45deg)}
     <div class="rejilla">
       <div class="tarjeta vidrio"><h3>Compass 1 · How far do I move from the mean?</h3><div class="subt">X: seasonal weight s. Y: trend weight w.</div><svg id="b1" width="326" height="326"></svg><svg id="b1e" class="tira-e" width="326" height="74" role="img" aria-label="Years of seasonality e, snapshot by snapshot"></svg><div class="pie" id="b1p"></div></div>
       <div class="tarjeta vidrio"><h3>Compass 2 · Which signal do I follow?</h3><div class="subt">X: sell-in / sell-out mix m. Y: trend length N.</div><svg id="b2" width="326" height="326"></svg><div class="pie" id="b2p"></div></div>
-      <div class="tarjeta vidrio"><h3>Compass 3 · How do I clean the history?</h3><div class="subt">X: supply cuts added c. Y: promos removed p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
+      <div class="tarjeta vidrio"><h3>Compass 3 · How do I clean the history?</h3><div class="subt">X: net supply cuts added c. Y: promos removed p.</div><svg id="b3" width="326" height="326"></svg><div class="pie" id="b3p"></div></div>
       <div class="tarjeta vidrio"><h3>Selector · Whose trend and seasonality?</h3><div class="subt" id="selSubt">Trend: breadth × criterion. Seasonality: its own row. Codes in each group (darker, bigger).</div><svg id="bsel" width="326" height="326"></svg><div class="pie" id="matrizp"></div></div>
     </div>
     </div>
@@ -3087,7 +3087,7 @@ function anteriores(){
         h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null ? "-" : num(Math.abs(C - A))}</td><td>${A == null ? "-" : num(Math.abs(Rr - A))}</td></tr>`;
         if (i === 2 || i === 5) h += `<tr><td colspan="9" style="border-bottom:2px solid var(--sep-fuerte);padding:0"></td></tr>`;
       });
-      h += `</table><p class="pequeño">* No prior year for that month: the mean is used. H = Actuals + c·Supply Cuts − p·Total Demand Assumption.</p></details>`;
+      h += `</table><p class="pequeño">* No prior year for that month: the mean is used. H = Actuals + c·Net Supply Cuts − p·Total Demand Assumption (net cuts = cuts − last month's cut order placed again).</p></details>`;
     }
     if (esRegla()) {
       h += `<details><summary>Show the group's ${e.n_codigos} codes</summary><table><tr><th class="izq">EAN</th><th class="izq">Description</th><th class="izq">Age</th><th>Actuals 9M</th><th>WAPE Cons 9M</th><th>WAPE oracle 9M</th><th class="izq">Oracle recipe</th></tr>`;
@@ -3120,7 +3120,7 @@ function formulaDetector(filas, fuente, box = $("detFormula")){
   const poca = !unica && n < filas.length / 2;
   box.innerHTML = `<h3>${poca ? "Most common recipe for the future" : "Recipe for the future"}</h3><p class="def">${quien}</p>
     <p class="fx${poca ? " tenue" : ""}">Forecast(t) ${op("=")} ${baseF}${trendF} ${op("+")} DA(t)</p>
-    <p class="def">${r.s === 0 ? "<b>Flat mean</b>: no seasonality, so e and h have no effect. " : `<b>Season(t)</b> = ${r.h === "Propio" ? "the code's own sales in the same month" : `Mean12 × the seasonal index of its <b>${esc(tx(r.h))}</b>`}, ${r.e === 2 ? "averaged over the last <b>2 years</b>" : "from <b>last year</b>"}. `}${r.w === 0 ? "<b>No trend</b>. " : `<b><i>T</i></b> = trend of <b>${esc(tx(r.grupo))}</b> over the last <b>${r.N} months</b> against a year earlier, ${senal}, capped at ±${pct(CFG.tope_trend, 0)}. `}<b>Mean12</b> = mean of the last 12 closed months of the cleaned history: Actuals ${op("+")} ${b("c")} of Supply Cuts ${op("−")} ${b("p")} of Total Demand Assumption. <b>DA(t)</b> = demand assumptions planned in the current snapshot, always at 100%.</p>
+    <p class="def">${r.s === 0 ? "<b>Flat mean</b>: no seasonality, so e and h have no effect. " : `<b>Season(t)</b> = ${r.h === "Propio" ? "the code's own sales in the same month" : `Mean12 × the seasonal index of its <b>${esc(tx(r.h))}</b>`}, ${r.e === 2 ? "averaged over the last <b>2 years</b>" : "from <b>last year</b>"}. `}${r.w === 0 ? "<b>No trend</b>. " : `<b><i>T</i></b> = trend of <b>${esc(tx(r.grupo))}</b> over the last <b>${r.N} months</b> against a year earlier, ${senal}, capped at ±${pct(CFG.tope_trend, 0)}. `}<b>Mean12</b> = mean of the last 12 closed months of the cleaned history: Actuals ${op("+")} ${b("c")} of ${cortesNetos() ? "net Supply Cuts (each cut order once)" : "Supply Cuts"} ${op("−")} ${b("p")} of Total Demand Assumption. <b>DA(t)</b> = demand assumptions planned in the current snapshot, always at 100%.</p>
     <ul class="pars" aria-label="Recipe values">${[["s", "Seasonal weight"], ["e", "Seasonality years"], ["h", "Seasonality from"], ["w", "Trend weight"], ["m", "Sell-out mix"], ["N", "Trend length"], ["c", "Cuts added"], ["p", "Promos removed"]]
       .filter(([k]) => r[k] != null).map(([k, t]) => `<li class="${(k === "e" || k === "h") && r.s === 0 ? "nulo" : ""}">${t}<b>${vtxt(k, r[k])}</b></li>`).join("")}<li>Trend from<b>${esc(tx(r.grupo))}</b></li></ul>`;
 }
@@ -3264,10 +3264,12 @@ $("calor").addEventListener("change", () => {
 // la barra superior cambia de alto (una o dos filas): el mapa, el inspector y el detalle se colocan debajo
 new ResizeObserver(([e]) => document.documentElement.style.setProperty("--alto-barra", Math.round(e.target.getBoundingClientRect().height) + "px")).observe($("barra"));
 // ================= Actuals =================
-// Historia que la receta aprende, tal como la exportó la foto elegida: actuals (gris), Supply Cuts encima (naranja
-// rayado) y Total Demand Assumption (morado: los positivos suben, los negativos bajan, restando). La línea punteada
-// es la historia usada, H = A + c·Cortes − p·DA con la c y la p de la receta elegida de cada código, y la discontinua
-// la base de los 12 meses cerrados. El mes en curso va tenue y no entra en la historia.
+// Historia que la receta aprende, tal como la exportó la foto elegida: actuals (gris), Supply Cuts encima y Total
+// Demand Assumption (morado: los positivos suben, los negativos bajan, restando). Con cortes netos (config "cortes"),
+// cada corte se parte en nuevo (naranja rayado, cuenta) y repetido (contorno discontinuo: el pedido del mes anterior
+// cortado otra vez, no cuenta), y la parte de los actuals que es un re-pedido servido (recuperado) va teñida de naranja:
+// ya contó cuando se cortó. La línea punteada es la historia usada, H = A + c·(Cortes − Recompra) − p·DA con la c y la
+// p de la receta elegida de cada código, y la discontinua la base de los 12 meses cerrados. El mes en curso va tenue.
 const mesCorto = m => { const [a, mm] = m.split(".M"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mm - 1] + " " + a.slice(2); };
 function eansSel(){
   const c = casa(), at = c.atributos, ini = c.inicio.codigos, ok = e => !ini[e] || cuenta(ini[e]);
@@ -3279,6 +3281,8 @@ function eansSel(){
   if (k.startsWith("PL: ")) return todos.filter(e => at[e].pl === k.slice(4));
   return [];
 }
+// cortes netos salvo que la configuración pida brutos (ver motor/config.json, "cortes")
+const cortesNetos = () => !(CFG.cortes && CFG.cortes.modo === "brutos");
 function opcionesActuals(){
   const h = casa().actuals || {}, fotos = Object.keys(h), sel = $("selActFoto");
   if (!fotos.includes(estado.actFoto)) estado.actFoto = fotos[fotos.length - 1];
@@ -3290,20 +3294,26 @@ function actuals(){
   opcionesActuals();
   const h = hist[estado.actFoto], n = h.meses.length, eans = eansSel();
   const A = Array(n).fill(0), C = Array(n).fill(0), D = Array(n).fill(0), H = Array(n).fill(0), hay = Array(n).fill(false);
+  // partes de los cortes: nuevos (cuentan), repetidos (no cuentan) y recuperados (dentro de los actuals, restan)
+  const NW = Array(n).fill(0), RP = Array(n).fill(0), RC = Array(n).fill(0), netos = cortesNetos();
   let cMed = 0, pMed = 0, nRec = 0;
   eans.forEach(e => {
     const s = h.c[e]; if (!s) return;
     const el = V().elegida[e], r = el && el.txt, c = r ? r.c : 0, p = r ? r.p : 0;
     if (r) { cMed += c; pMed += p; nRec++; }
     s[0].forEach((a, i) => { if (a != null) { A[i] += a; hay[i] = true; } C[i] += s[1][i]; D[i] += s[2][i];
-      if (i < n - 1) H[i] += (a || 0) + c * s[1][i] - p * s[2][i]; });
+      if (i === n - 1) return;
+      // recompra = pedido re-hecho de un corte anterior (pipeline: recetas.recompras); páginas viejas sin la serie: brutos
+      const rc = netos && s[3] ? s[3][i] : 0, rep = Math.min(s[1][i], rc);
+      NW[i] += s[1][i] - rep; RP[i] += rep; RC[i] += rc - rep;
+      H[i] += (a || 0) + c * (s[1][i] - rc) - p * s[2][i]; });
   });
   // recetas aplicadas: un código, la suya; un grupo, el promedio (cada código usa la suya)
-  const rTxt = !esRegla() ? (nRec ? `c ${vtxt("c", cMed)} of cuts added, p ${vtxt("p", pMed)} of DAs removed` : "no chosen recipe: raw actuals")
+  const rTxt = !esRegla() ? (nRec ? `c ${vtxt("c", cMed)} of ${netos ? "net " : ""}cuts added, p ${vtxt("p", pMed)} of DAs removed` : "no chosen recipe: raw actuals")
     : `each code with its own recipe (average c ${vtxt("c", nRec ? cMed / nRec : 0)}, p ${vtxt("p", nRec ? pMed / nRec : 0)})`;
   const base = H.slice(n - 13, n - 1).reduce((a, b) => a + b, 0) / 12;
   const sum12 = arr => arr.slice(n - 13, n - 1).reduce((a, b) => a + b, 0);
-  RES.act = {foto: estado.actFoto, A: sum12(A), C: sum12(C), D: sum12(D), H: sum12(H)};
+  RES.act = {foto: estado.actFoto, A: sum12(A), C: sum12(C), D: sum12(D), H: sum12(H), N: sum12(NW) - sum12(RC), RP: sum12(RP), RC: sum12(RC), netos};
   const {ini, fin} = rangoAct(h); pintarRangoAct(h);
   const vis = i => i >= ini && i <= fin, nv = fin - ini + 1;
   const W = Math.max(300, Math.round(caja.clientWidth || 1000)), estrecho = W < 640;
@@ -3329,10 +3339,16 @@ function actuals(){
   h.meses.forEach((m, i) => {
     if (!vis(i)) return;
     const ahora = i === n - 1, op = ahora ? ` opacity=".45"` : "";
-    const tt = `${m}${ahora ? " (current month, partial)" : ""}\nActuals ${hay[i] ? num(A[i]) : "-"}\nSupply cuts ${num(C[i])}\nDemand assumptions ${num(D[i])}${ahora ? "" : "\nHistory used " + num(H[i])}`;
+    const tt = `${m}${ahora ? " (current month, partial)" : ""}\nActuals ${hay[i] ? num(A[i]) : "-"}${netos && !ahora && RC[i] ? "\n  of which catch-up " + num(RC[i]) : ""}\nSupply cuts ${num(C[i])}${netos && !ahora && C[i] ? " (new " + num(NW[i]) + ", repeated " + num(RP[i]) + ")" : ""}${netos && !ahora && (C[i] || RC[i]) ? "\nNet cuts " + (NW[i] - RC[i] > 0 ? "+" : "") + num(NW[i] - RC[i]) : ""}\nDemand assumptions ${num(D[i])}${ahora ? "" : "\nHistory used " + num(H[i])}`;
     const r = (cls, k2, y0, y1, fill, crece) => y1 - y0 < 0.4 ? "" : `<rect class="barra ${cls}" data-k="${k2}${i}" data-crece="${crece}" x="${x(i).toFixed(1)}" y="${y0.toFixed(1)}" width="${ancho.toFixed(1)}" height="${(y1 - y0).toFixed(1)}" rx="${Math.min(4, ancho / 4).toFixed(1)}" fill="${fill}"${op}><title>${esc(tt)}</title></rect>`;
     g += r("a", "a", y(A[i]), y(0), "var(--act)", "arriba");
-    g += r("c", "c", y(A[i] + C[i]), y(A[i]), "url(#rayado)", "arriba");
+    if (netos && !ahora) {
+      const rc = Math.min(Math.max(A[i], 0), RC[i]);
+      if (rc > 0) g += r("a", "rc", y(A[i]), y(A[i] - rc), "var(--recup)", "arriba");
+      g += r("c", "c", y(A[i] + NW[i]), y(A[i]), "url(#rayado)", "arriba");
+      const y0 = y(A[i] + C[i]), y1 = y(A[i] + NW[i]);
+      if (RP[i] > 0 && y1 - y0 >= 1.5) g += `<rect class="barra c" data-k="cr${i}" data-crece="arriba" x="${(x(i) + .6).toFixed(1)}" y="${(y0 + .6).toFixed(1)}" width="${(ancho - 1.2).toFixed(1)}" height="${(y1 - y0 - 1.2).toFixed(1)}" rx="${Math.min(4, ancho / 4).toFixed(1)}" fill="var(--orange)" fill-opacity=".06" stroke="var(--corte-linea)" stroke-width="1.2" stroke-dasharray="2.5 2"><title>${esc(tt)}</title></rect>`;
+    } else g += r("c", "c", y(A[i] + C[i]), y(A[i]), "url(#rayado)", "arriba");
     if (D[i] > 0) g += r("d", "d", y(A[i] + C[i] + D[i]), y(A[i] + C[i]), "var(--da)", "arriba");
     if (D[i] < 0) g += r("d", "d", y(0), y(D[i]), "var(--da)", "abajo");
   });
@@ -3348,9 +3364,11 @@ function actuals(){
   if (vis(n - 1) && x(n - 1) + ancho / 2 - fyX > 46) g += `<text x="${(x(n - 1) + ancho / 2).toFixed(1)}" y="${T - 6}" text-anchor="middle" style="fill:var(--label-3)">now</text>`;
   g += `</g>`;
   const sw = c => `<span class="ley-it">${c}</span>`;
-  $("actLey").innerHTML = sw('<i style="background:var(--act);box-shadow:inset 0 0 0 1px var(--act-borde)"></i>Actuals') + sw('<i style="background:repeating-linear-gradient(45deg,var(--orange) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--orange)"></i>Supply cuts')
+  const iRay = '<i style="background:repeating-linear-gradient(45deg,var(--orange) 0 2px,transparent 2px 5px);box-shadow:inset 0 0 0 1px var(--orange)"></i>';
+  $("actLey").innerHTML = sw('<i style="background:var(--act);box-shadow:inset 0 0 0 1px var(--act-borde)"></i>Actuals')
+    + (netos ? sw('<i style="background:linear-gradient(var(--recup),var(--recup)),var(--act);box-shadow:inset 0 0 0 1px var(--act-borde)"></i>Catch-up in actuals · subtracted') + sw(iRay + "New cuts · counted") + sw('<i style="outline:1.2px dashed var(--corte-linea);outline-offset:-1.2px"></i>Repeated cuts · not counted') : sw(iRay + "Supply cuts"))
     + sw('<i style="background:var(--da)"></i>Demand assumptions (DAs)') + sw('<i style="height:0;border-top:2.2px dotted var(--receta)"></i>History used') + sw('<i style="height:0;border-top:1.5px dashed var(--receta)"></i>12M base');
-  $("actRes").innerHTML = `<span>Last 12 closed months: actuals <b>${num(RES.act.A)}</b></span><span>cuts <b>${num(RES.act.C)}</b></span><span>DAs <b>${num(RES.act.D)}</b></span><span>history used <b>${num(RES.act.H)}</b></span><span>${esRegla() ? eans.length + " codes, " : ""}${rTxt}</span>`;
+  $("actRes").innerHTML = `<span>Last 12 closed months: actuals <b>${num(RES.act.A)}</b></span><span>cuts <b>${num(RES.act.C)}</b>${netos ? ` gross · <b>${RES.act.N > 0 ? "+" : ""}${num(RES.act.N)}</b> net` : ""}</span><span>DAs <b>${num(RES.act.D)}</b></span><span>history used <b>${num(RES.act.H)}</b></span><span>${esRegla() ? eans.length + " codes, " : ""}${rTxt}</span>`;
   contar($("actRes"));
   const antes = capturar($("grafAct")), pend = $("grafAct") && $("grafAct").hasAttribute("data-pendiente");
   caja.innerHTML = `<svg id="grafAct" viewBox="0 0 ${W} ${Ht}" width="${W}" height="${Ht}" style="display:block;max-width:100%" role="img" aria-label="Actuals, supply cuts and demand assumptions by month, snapshot ${estado.actFoto}">${g}</svg>`;
@@ -3730,7 +3748,7 @@ function miniGrupo(id){
   }
   if (id === "sActuals") {
     const a = RES.act; if (!a) return mn("Actuals", "No actuals history", "txt");
-    return mn("Actuals 12M", `${num(a.A)}<small>units</small>`) + mn("Supply cuts 12M", num(a.C)) + mn("DAs 12M", num(a.D)) + mn("Snapshot", a.foto, "txt");
+    return mn("Actuals 12M", `${num(a.A)}<small>units</small>`) + mn("Supply cuts 12M", a.netos ? `${num(a.C)}<small>net ${a.N > 0 ? "+" : ""}${num(a.N)}</small>` : num(a.C)) + mn("DAs 12M", num(a.D)) + mn("Snapshot", a.foto, "txt");
   }
   if (id === "sDecisiones") {
     const rec = recetaElegida(), n = fotosCerradas().length;
@@ -3800,7 +3818,7 @@ function pintarDecisiones(){
   brujula("b1", "s", "w", ["Flat mean", "Full seasonality", "No trend", "Full trend"]);
   tiraE();
   brujula("b2", "m", "N", ["100% sell-in", "100% sell-out", "Trend 6M", "Trend 12M"]);
-  brujula("b3", "c", "p", ["No cuts added", "Add 100% of cuts", "No promos removed", "Remove 100% of promos"]);
+  brujula("b3", "c", "p", ["No cuts added", "Add 100% of net cuts", "No promos removed", "Remove 100% of promos"]);
   selector();
 }
 function pintar(){

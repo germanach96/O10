@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from .lector import Foto, agregar_desaparecidos, int_a_mes, leer_foto, leer_listas
-from .recetas import CELDAS, EJES, MotorFoto, Rejilla
+from .recetas import CELDAS, EJES, MotorFoto, Rejilla, recompras
 
 RAIZ = Path(__file__).resolve().parent.parent
 DATOS = RAIZ / "data"                                   # data/<Casa>/Consensus/*.csv
@@ -504,10 +504,12 @@ def tabla_recetas(R: Rejilla) -> pd.DataFrame:
 
 
 # ------------------------------------------------------------------ actuals por foto (sección "Actuals" de la página)
-def historia_actuals(fotos, meses_atras: int = 24) -> dict:
+def historia_actuals(fotos, cfg: dict, meses_atras: int = 24) -> dict:
     """Actuals, Supply Cuts y Total Demand Assumption de los últimos `meses_atras` meses cerrados de cada foto,
     tal como los trae esa foto, más el mes en curso (actuals parciales, solo para mostrar). Enteros; None = sin dato.
-    La página arma con esto la historia limpia H = A + c·Cortes − p·TDA con la receta de cada código."""
+    La 4ª serie es la recompra (pedidos re-hechos de cortes anteriores, ver `recetas.recompras`): con ella la página
+    separa cada corte en nuevo y repetido, marca lo recuperado dentro de los actuals y arma la historia limpia
+    H = A + c·(Cortes − Recompra) − p·TDA con la receta de cada código."""
     out = {}
     for f in fotos:
         ts = np.arange(f.mes - meses_atras, f.mes + 1)
@@ -516,6 +518,7 @@ def historia_actuals(fotos, meses_atras: int = 24) -> dict:
             v = [M[i, k] if k >= 0 else np.nan for k in cols]
             return [None if (nan_none and np.isnan(x)) else int(round(0 if np.isnan(x) else float(x))) for x in v]
         A = f.mat["hist"].copy()
+        Rc = recompras(A, f.mat["Supply Cuts"], cfg)
         k_act = cols[-1]
         cod = {}
         for i, (e, row) in enumerate(f.codigos.iterrows()):
@@ -526,8 +529,10 @@ def historia_actuals(fotos, meses_atras: int = 24) -> dict:
                 x = f.mat["Actuals"][i, k_act]
                 a[-1] = None if np.isnan(x) else int(round(float(x)))
             c, d = serie(f.mat["Supply Cuts"], i, False), serie(f.mat["Total Demand Assumption"], i, False)
+            rc = serie(Rc, i, False)
+            rc[-1] = 0   # el mes en curso no entra en la historia
             if any(a) or any(c) or any(d):
-                cod[e] = [a, c, d]
+                cod[e] = [a, c, d, rc]
         out[f.etiqueta] = {"meses": [int_a_mes(t) for t in ts], "c": cod}
     return out
 
@@ -618,7 +623,7 @@ def main(argv=None):
         datos["casas"][casa] = {
             **variantes[""], "variantes": {k: v for k, v in variantes.items() if k},
             "atributos": atributos, "inicio": {"foto": fu.etiqueta, "codigos": inicio},
-            "actuals": historia_actuals(fotos),
+            "actuals": historia_actuals(fotos, cfg),
         }
         print(f"  {casa}: score multi-foto con {len(variantes['']['elegida'])} códigos, "
               f"{len(variantes)} variantes de tipos ({time.time()-t0:.1f}s)")

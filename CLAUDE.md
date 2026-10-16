@@ -128,7 +128,8 @@ Una **receta** es una combinación de valores de estas variables. Horizonte: sho
 - **Y · Duración `N`** del trend: 6M, 9M o 12M.
 
 ### Brújula 3 — "¿Cómo limpio la historia?" (actuals excepcionales)
-- **X · Cortes `c`**: cuánto de los Supply Cuts se suma a la historia (0% … 100%).
+- **X · Cortes `c`**: cuánto de los Supply Cuts **netos** se suma a la historia (0% … 100%).
+- **Cortes netos** (decisión del usuario, para no contar dos veces): un pedido cortado se vuelve a pedir el mes siguiente; si se vuelve a cortar es el mismo pedido (**repetido**) y si se sirve sale dentro de los actuals (**recuperado**). `Recompra(t) = min(r · Cortes(t−1), A(t) + Cortes(t))` y `Netos(t) = Cortes(t) − Recompra(t)` (puede ser negativo: el recuperado se resta). Así cada pedido cortado cuenta una vez, en el mes en que se pidió. `r` (fracción que el cliente vuelve a pedir, 1 por defecto) y el modo (`netos` / `brutos`) van en `config.json` (`cortes`). Código a código.
 - **Y · Promos `p`**: cuánto de la Total Demand Assumption se resta de la historia (0% … 100%).
 
 ### Selector — "¿De quién copio el trend?" (una sola opción, tipo botón)
@@ -156,7 +157,7 @@ Una **receta** es una combinación de valores de estas variables. Horizonte: sho
 
 Para un código, una foto F y una receta (s, e, h, w, m, N, c, p, grupo G). Historia disponible: meses ≤ F−1.
 
-1. **Historia limpia (sell-in):** H(t) = Actuals(t) + c · SupplyCuts(t) − p · TDA(t), con celdas vacías = 0 en cortes y TDA.
+1. **Historia limpia (sell-in):** H(t) = Actuals(t) + c · CortesNetos(t) − p · TDA(t), con celdas vacías = 0 en cortes y TDA (cortes netos en la sección 4).
 2. **Base para el mes futuro t:** Base(t) = (1 − s) · Media(H) + s · E(t).
    - Media(H) = media de H de los últimos 12 meses cerrados. **Decisión abierta:** confirmar con el usuario si la media debe ser de 12M u otra.
    - E(t) = parte estacional, según `h` y `e`:
@@ -313,12 +314,13 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - Debajo de cada una, una tabla corta con el WAPE y el SPP de la última foto medida (Consensus, receta y, en un grupo, oráculos), en verde o rojo según la meta.
 
 ### Sección "Actuals"
-- Va después de "Foto actual". Gráfica de barras por mes de los últimos 24 meses cerrados de la foto elegida, más el mes en curso (tenue, "now"): **actuals** en gris, **Supply Cuts** encima en naranja rayado, **DAs** (Total Demand Assumption) en morado, encima si son positivos y por debajo de cero si son negativos (restan).
-- **Línea punteada azul = la historia usada**: H = A + c·Cortes − p·DA con la `c` y la `p` de la receta elegida (en un grupo, cada código con la suya). Línea discontinua = la base de los 12 meses cerrados ("12M base"). Separadores de año fiscal (empieza en julio) con su etiqueta FY.
+- Va después de "Foto actual". Gráfica de barras por mes de los últimos 24 meses cerrados de la foto elegida, más el mes en curso (tenue, "now"): **actuals** en gris, **Supply Cuts** encima partidos en **nuevos** (naranja rayado, cuentan) y **repetidos** (contorno naranja discontinuo, no cuentan), con la parte **recuperada** de los actuals teñida de naranja (ya contó al cortarse), **DAs** (Total Demand Assumption) en morado, encima si son positivos y por debajo de cero si son negativos (restan).
+- **Línea punteada azul = la historia usada**: H = A + c·CortesNetos − p·DA con la `c` y la `p` de la receta elegida (en un grupo, cada código con la suya). Línea discontinua = la base de los 12 meses cerrados ("12M base"). Separadores de año fiscal (empieza en julio) con su etiqueta FY.
 - Un desplegable "Snapshot" cambia la foto de la que salen los actuals (por defecto la más reciente); al cambiarla las barras se transforman hasta sus nuevas alturas.
 - **Periodo de actuals:** barra de rango propia de la sección, con el mismo diseño y gesto que la de las fotos (un punto por mes de la foto elegida, dos tiradores, arrastre 1:1 con inercia y encaje con muelle, teclado, atajos All / Last 12 / Last 6). Decide qué meses se dibujan; las barras se deslizan a su nuevo sitio. Va sobre un pozo de relleno, no sobre cristal. Los totales de 12 meses no cambian con el periodo. Se guarda por etiqueta de mes: al cambiar de foto se conserva si existe.
 - Debajo de la leyenda, los totales de los 12 meses cerrados (actuals, cortes, DAs, historia usada) y qué receta se aplicó. La tira plegada enseña los mismos totales.
-- Datos: el pipeline guarda `actuals` por casa (por foto: meses, y por EAN las series de actuals, cortes y DAs).
+- Debajo, los totales también dicen los cortes netos ("cuts X gross · Y net"), y la tooltip de cada mes separa nuevos, repetidos, recuperados y netos.
+- Datos: el pipeline guarda `actuals` por casa (por foto: meses, y por EAN las series de actuals, cortes, DAs y recompra).
 
 ### Movimiento de la página (skills de Emil, animate y apple-design)
 - **Al abrir una sección** sus piezas entran en cascada (fundido + 10 px, 45 ms entre una y otra, 460 ms) y sus gráficos se vuelven a construir: barras que crecen desde cero de izquierda a derecha, trayectorias que se trazan, puntos en orden de foto. Pasa cada vez que se abre, no solo la primera.
