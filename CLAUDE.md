@@ -44,7 +44,8 @@ Un CSV por **casa** y **foto mensual** (ejemplo: `Gucci_2026_04.csv` = casa Gucc
 - **Dos filas de cabecera.** La 1ª solo trae `S&OP AAAA.MXX` encima de las columnas de medidas (de ahí, o del nombre del archivo, sale el mes de la foto). La 2ª trae los nombres de columna.
 - Formato largo: una fila por código × mes. Meses naturales `AAAA.MXX` (rango típico 2021.M01–2030.M12).
 - Hay **filas vacías al final** (solo `;`): descartarlas.
-- **Celda vacía ≠ 0.** Hay ceros explícitos; distinguir "sin dato" de "cero".
+- **Celda vacía:** en Consensus, Actuals, cortes y DAs una celda vacía es **0**, en meses pasados y futuros (decisión del usuario). **Solo en EPOS** vacío significa "sin dato" (el retailer no reportaba) y no es 0.
+- **Meses futuros de la foto:** solo se usan para ver si el Consensus se desvía de la estrategia (detector). No se calcula ningún WAPE ni SPP en un mes que aún no ha pasado.
 - Puede haber decimales con punto en el Consensus.
 - **EAN:** en el export de prueba salió en notación científica (`3.61423E+12`), lo que lo hace inútil como clave. El usuario va a reexportar con el EAN como texto. Leer siempre el EAN como texto y **validar** al cargar: si un EAN tiene notación científica o hay menos EANs distintos que descripciones, abortar con un mensaje claro.
 - Año fiscal: empieza en julio (2026.M01 = FY26.Q3). Se mezclan meses naturales con Q/FY fiscales; está bien así.
