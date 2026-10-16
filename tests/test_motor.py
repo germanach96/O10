@@ -292,3 +292,40 @@ def test_listas_de_filtros(tmp_path):
 def test_listas_del_repo():
     listas = leer_listas(RAIZ / "data" / "filters.csv")
     assert len(listas) == 5 and all(l["eans"] for l in listas)
+
+
+GUCCI = sorted((RAIZ / "data" / "Gucci" / "Consensus").glob("Gucci_*.csv"))
+
+
+@pytest.mark.skipif(len(GUCCI) < 8, reason="hacen falta las fotos de Gucci")
+def test_escenarios_gucci(cfg):
+    """Escenarios frente al Consensus: se aprenden con las fotos cerradas y se aplican a la foto más actual."""
+    from motor import escenarios as E
+    fotos = [leer_foto(p, cfg) for p in GUCCI]
+    out = E.calcular(fotos, cfg)
+    assert out["foto"] == max(f.etiqueta for f in fotos)
+    assert out["aprendido"]["casos"] >= 300 and len(out["aprendido"]["fotos"]) >= 4
+    n_reglas, n_ver = len(out["reglas"]), len(out["ver"])
+    for e in E.ESCENARIOS:
+        c = out["cats"][e]
+        assert 0 < c["base"] < 1 and c["auc_cv"] > 0.6          # mejor que el azar fuera de muestra
+        assert all(0 <= j < n_reglas for j, _ in c["pts"])
+    assert set(out["cats"]["bajo"]["grupo"]) >= {"a", "b"}
+    assert out["codigos"] and not set(out["codigos"]) & set(out["fuera"])
+    for ean, c in out["codigos"].items():
+        assert all(0 <= p <= 1 for p in c["p"]) and len(c["v"]) == n_ver
+        assert all(0 <= j < n_reglas for j in c["a"])
+        # la probabilidad es la del punto de partida más los puntos de las reglas que cumple
+        for k, e in enumerate(E.ESCENARIOS):
+            cat = out["cats"][e]
+            tot = sum(p for j, p in cat["pts"] if j in c["a"])
+            assert abs(c["p"][k] - 1 / (1 + np.exp(-(cat["b0"] + tot / 10)))) < 1e-3
+    # los que no se puntúan llevan el motivo (One Shot, poco volumen, poca edad o poco Consensus)
+    assert {m for m, _ in out["fuera"].values()} <= {"os", "vol", "edad", "cons"}
+
+
+def test_escenarios_sin_ruptura(foto_simple):
+    from motor import escenarios as E
+    pan = E.Panel([foto_simple])
+    assert E.perimetro(pan, None) == ({}, {}, set(), -1)
+    assert pan.T1 == foto_simple.mes - 1 and pan.ACT.shape[0] == len(foto_simple.eans)

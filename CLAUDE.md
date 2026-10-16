@@ -223,6 +223,34 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
 
 ---
 
+## 7b. Escenarios frente al Consensus
+
+Responde a: **"¿qué posibilidad hay de que lo vendido en los próximos 3 meses se aleje del Consensus de la foto más actual?"**. Cálculo en `motor/escenarios.py`; parámetros en `config.json` → `escenarios`.
+
+- **Cinco escenarios, cada uno con su propia probabilidad** (no suman 100%), comparando lo vendido (sell-in) en F+1…F+3 con el Consensus - Final de la foto F para esos 3 meses:
+  - **Más bajo:** vendido < 0,8 × Consensus. **Mucho más bajo:** < 0,5 ×.
+  - **Más alto:** vendido > 1,2 × Consensus. **Mucho más alto:** > 1,5 ×.
+  - **Orden no prevista:** algún mes llega un pedido grande (≥ 2× la mediana de sus 12 meses y ≥ 1,5× su media) y mayor que 2× el Consensus de ese mes.
+- **Se aprende con las fotos pasadas** cuyos 3 meses ya cerraron (Gucci: 723 casos, 91 códigos, 10 fotos) y se aplica a la foto más actual. Toda la información de un caso es anterior a su foto.
+- **Solo se puntúan** los Regular Item con ≥ 150 uds en 12 meses, ≥ 13 meses desde su primera venta y Consensus de 3 meses ≥ 60. El resto sale con su motivo (One Shot, poco volumen, poca edad o poco Consensus).
+- **Ruptura de perímetro** (`ruptura_perimetro`, Gucci 2026.M02: la historia sube un 29%): el Consensus y la historia de las fotos anteriores se armonizan con un factor por código (actuals nuevos / viejos en los 24 meses cerrados de la última foto vieja; si el código tiene menos de 50 uds, el de su brand). Los códigos que casi solo existen en el perímetro nuevo no cuentan en las fotos viejas.
+- **Señales (reglas):** unas 110 señales binarias legibles, en siete familias: trend de sell-in, trend de sell-out (EPOS), sell-in frente a sell-out, código frente a su grupo, pedidos y calendario, supply y cartera, y el Consensus frente a la realidad (Consensus frente a su ritmo de 12 meses, a lo vendido en los últimos 3 meses, al año pasado y a los trends, peso del DA, revisiones, ajustes manuales…).
+- **Pesos por escenario:**
+  1. Cribado por estabilidad: una señal entra si en dos mitades (de tiempo, o de códigos si usa EPOS) tiene ≥ 20 casos, el mismo signo y |log-odds| ≥ 0,3, y p de Fisher < 0,05.
+  2. Fuera las redundantes (correlación > 0,6).
+  3. Logística conjunta (C = 0,2); fuera las que cambian de signo o pesan menos de 0,12.
+  4. **Puntos** = peso × 10 redondeado; probabilidad = sig(intercepto + puntos / 10). El intercepto es el **punto de partida** (sin ninguna regla).
+- **Validación fuera de muestra:** CV de 5 pliegues por código y de lo antiguo a lo reciente (mitad de las fotos cerradas). AUC 0,76–0,84; las bandas de puntos están calibradas.
+- **Un grupo se mide frente a su Consensus total** (Σ vendido / Σ Consensus), no como media de sus códigos:
+  - P(grupo) = sig(z · (1 + b · ln n) + a · ln n), con z = logit de la media de sus códigos ponderada por su Consensus de 3 meses y n = nº efectivo de códigos ((ΣC)² / ΣC²), topado en `grupo_n_max` = 8.
+  - Con un código, n = 1 y P(grupo) = P(código).
+  - a y b se ajustan con los grupos de las fotos cerradas (casa, brands, líneas, brand × segmento y 25 selecciones al azar por foto) usando las probabilidades de cada código fuera de muestra.
+  - "Orden no prevista" de un grupo = que al menos un código la tenga: 1 − Π(1 − p). Se muestra además el nº esperado de códigos (Σp). Su "usual" depende del tamaño, así que se mide en los grupos pasados por tramos de nº de códigos (2–3, 4–7, 8–15, 16–31, 32+).
+  - Con un filtro de cálculo, solo cuentan los códigos que cuentan.
+- **Se recalcula entero con cada foto nueva** (pesos, puntos y recalibración de grupo); no hay pesos fijos en el código.
+
+---
+
 ## 8. Arquitectura de cálculo
 
 - **Precalcular una vez por foto y guardar; la página solo lee.** No recalcular al navegar.
@@ -241,13 +269,14 @@ Compara el **Consensus - Final de la foto más actual** con el forecast de la **
   2. Calcular las recetas de esa foto (tramos aún abiertos).
   3. Con los actuals nuevos, **cerrar tramos de fotos antiguas** y completar sus errores. Ejemplo: la foto de abril cierra SPP3 en agosto, SPP6 en noviembre y el de 9M en febrero.
   4. Regenerar los resúmenes afectados.
+  5. Volver a aprender los escenarios frente al Consensus (sección 7b) con todos los casos cerrados y puntuar la foto más actual.
 - La receta y el forecast de cada receta quedan fijados en el momento de su foto; solo cambian los actuals que se le comparan.
 
 ---
 
 ## 9. Interfaz
 
-El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.3`; cada versión aprobada sube la subversión: O10.0.3, O10.0.4…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.4`; cada versión aprobada sube la subversión: O10.0.4, O10.0.5…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
@@ -276,12 +305,12 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - **Todo cambia con el rango:** solo las fotos medidas del rango eligen la receta de cada código y de cada grupo (y, con ella, el detector y el color de las burbujas); brújulas, mapa de calor, selector y resultados muestran solo esas fotos. El detector sigue comparando el Consensus de la foto más reciente.
 - La página no calcula: el pipeline precalcula cada rango contiguo de fotos medidas (n·(n+1)/2; 55 con 10 fotos) guardando solo índices de receta, y el forecast de la foto actual una vez por (código, receta) usada. El rango se recuerda en el navegador.
 
-### Detalle en 4 grupos
+### Detalle en 6 grupos
 - **Cabecera:** migas, título y, junto al título, un botón **?** con los detalles (tipo de regla o atributos del código, fotos medidas y avisos de las fotos). No se muestran de base: aparecen al pasar el puntero y, al pulsar el ?, quedan fijos hasta volver a pulsarlo, Escape o un clic fuera.
 - **Columna de resumen** a la derecha desde 1100 px en Detalle (sin barra lateral cabe al lado); por debajo va arriba, a todo el ancho.
 - **Esquema de la selección** arriba de la columna de resumen (fija al hacer scroll): el mapa de burbujas completo en pequeño, con los códigos que entran en el reporte en azul (y un aro en el grupo o el código elegido) y "N de M códigos". Al pulsarlo vuelve al mapa enfocado en esa selección.
-- El detalle se agrupa en **cinco grupos, y solo cinco**: Foto actual, Actuals, Decisiones, Resultados y Detector. No se parten en subsectores.
-- **Al abrir la página los cinco empiezan plegados:** cada grupo deja su título y una tira de cristal con lo esencial (Foto actual: desvío, % sobre la receta, meses o códigos fuera; Actuals: actuals, cortes y DAs de los 12 meses cerrados y la foto; Decisiones: la receta elegida; Resultados: WAPE90 y WAPE 9M de la receta frente al Consensus y la mejora; Detector: EANs fuera, desvío total y el mayor). Al pulsar el título o la tira, el grupo se expande (la tira crece hasta ser el contenido, View Transition con curva de cajón de iOS) y su cabecera no se mueve en pantalla. Botón "Expandir todo" / "Plegar todo" junto al título. El índice lateral abre el grupo antes de ir a él.
+- El detalle se agrupa en **seis grupos, y solo seis**: Foto actual, Escenarios, Actuals, Decisiones, Resultados y Detector. No se parten en subsectores.
+- **Al abrir la página los seis empiezan plegados:** cada grupo deja su título y una tira de cristal con lo esencial (Foto actual: desvío, % sobre la receta, meses o códigos fuera; Escenarios: más bajo y mucho más bajo, más alto y mucho más alto, orden no prevista y el Consensus de los 3 meses; Actuals: actuals, cortes y DAs de los 12 meses cerrados y la foto; Decisiones: la receta elegida; Resultados: WAPE90 y WAPE 9M de la receta frente al Consensus y la mejora; Detector: EANs fuera, desvío total y el mayor). Al pulsar el título o la tira, el grupo se expande (la tira crece hasta ser el contenido, View Transition con curva de cajón de iOS) y su cabecera no se mueve en pantalla. Botón "Expandir todo" / "Plegar todo" junto al título. El índice lateral abre el grupo antes de ir a él.
 
 ### Sección "Decisiones" — rejilla 2 × 2
 - Tres brújulas cuadradas (Brújula 1, 2 y 3) y, en el cuarto cuadro, el selector de grupo.
@@ -313,6 +342,31 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - **En un grupo, interruptor "Per-code oracles / Group rule"** (control segmentado junto a la explicación; se recuerda en el navegador). **Por defecto, la suma de oráculos por código** (el estándar): en cada foto, la mejor receta de cada código, sumando numeradores; es el mejor KPI posible si se hubiera hecho lo mejor para cada código. La otra opción es la regla del grupo (una receta para todos, elegida con todas las fotos). Cambia la serie azul de las tres gráficas, su leyenda, su explicación y la tira plegada. En un código no aparece (su serie ya es su oráculo) y en una selección la serie ya es la suma de oráculos.
 - Debajo de cada una, una tabla corta con el WAPE y el SPP de la última foto medida (Consensus y la serie elegida; en un grupo, también la otra medida, más tenue), en verde o rojo según la meta.
 
+### Sección "Escenarios" (sección 7b)
+- Va **entre "Foto actual" y "Actuals"**. Título "Scenarios" y una línea que dice qué se mide (los 3 meses, la foto, que no suman 100% y con cuántos casos se aprendió).
+- **Escala de escenarios = control segmentado con datos**, en un pozo de relleno:
+  - Orden: mucho más bajo · más bajo · **Consensus** · más alto · mucho más alto · orden no prevista (esta aparte, tras un separador).
+  - En medio, el Consensus de los 3 meses sobre una línea discontinua gris (su color de siempre). La dirección la dicen la posición y el glifo (barra = lo vendido, línea discontinua = Consensus), no el color.
+  - Nombres en la página: "Sells much less", "Sells less", "Sells more", "Sells much more" y "Unplanned order", los mismos en la escala, las reglas, la tira y el raíl.
+  - Cada opción lleva su umbral en % y en unidades, la probabilidad en grande, un medidor con la marca de lo "usual" (la tasa histórica: de los códigos, o de los grupos en un grupo) y el texto "usual X%". En la orden de un grupo, lo usual es la tasa medida en los grupos pasados con un nº de códigos parecido y se añade el nº esperado de códigos. Al pasar el puntero por el medidor, la tarjeta flotante de las gráficas explica de dónde sale lo usual.
+  - El `radiogroup` lleva en su nombre accesible el Consensus de los 3 meses.
+  - Pulgar sólido (tarjeta) bajo la elegida que se desliza con el muelle de los controles; con teclado (flechas, Inicio, Fin; `radiogroup` con tabindex itinerante) no se anima.
+  - Ancho medio (≤ 960 px de panel): el Consensus pasa a una fila encima. Estrecho (≤ 700 px): dos columnas con el Consensus en una fila en medio (menos arriba, más abajo) y la orden a todo el ancho.
+- **Por defecto se elige el más probable** de los cuatro de nivel; si el usuario elige otro, se recuerda en el navegador.
+- **Al pulsar una opción salen debajo sus reglas:**
+  - **Un código:** "Rules it meets" (con el valor del código en cada indicador, por ejemplo "Consensus vs the last 3 months sold 2.0×"), "Rules it doesn't meet" y "Can't check" (sin EPOS u otro dato). Cada regla con sus puntos (+5, −10).
+  - **Un grupo:** cuántos de sus códigos cumplen cada regla y qué parte del Consensus son (con barra), las reglas que no cumple ninguno y los códigos que más pesan (Consensus × probabilidad). Pulsar un EAN abre su ficha emergente.
+  - **Cabecera:** cómo se llega a la cifra. En un código, el punto de partida más los puntos. En un grupo, la media ponderada, la compensación entre códigos y cuántos se puntúan (y qué parte del Consensus).
+  - **Pie "How reliable":** AUC fuera de muestra y la banda de calibración de sus puntos (en un grupo, también la validación de grupos).
+- **La ficha emergente de un código** muestra la sección igual que la página del código.
+- **Códigos o grupos sin puntuar:** un texto con el motivo, sin escala.
+- **Movimiento:**
+  - Al abrir la sección, los medidores crecen desde cero uno detrás de otro.
+  - Al cambiar de selección, pasan del valor anterior al nuevo y las cifras cuentan.
+  - Al elegir otro escenario, las reglas entran en cascada (6 px, 22 ms entre filas).
+  - Con movimiento reducido, nada de esto.
+- Datos: `escenarios` por casa (umbrales, casos aprendidos, puntos y calibración de cada escenario, recalibración de grupo, reglas con sus indicadores, y por código el Consensus de los 3 meses, las reglas que cumple, sus probabilidades y los valores de los indicadores; los no puntuados con su motivo y su Consensus).
+
 ### Sección "Actuals"
 - Va después de "Foto actual". Gráfica de barras por mes de los últimos 24 meses cerrados de la foto elegida, más el mes en curso (tenue, "now"): **actuals** en gris, **Supply Cuts** encima en naranja rayado, **DAs** (Total Demand Assumption) en morado, encima si son positivos y por debajo de cero si son negativos (restan).
 - **Línea punteada azul = la historia usada**: H = A + c·Cortes − p·DA con la `c` y la `p` de la receta elegida (en un grupo, cada código con la suya). Línea discontinua = la base de los 12 meses cerrados ("12M base"). Separadores de año fiscal (empieza en julio) con su etiqueta FY.
@@ -330,7 +384,7 @@ Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
 - **Receta para el futuro**, arriba: la receta elegida escrita como fórmula (`Forecast(t) = [(1−s)·Mean12 + s·Season(t)] × (1 + w·T) + DA(t)`) con sus valores en azul, la explicación de cada término y una fila con todos los valores. En un grupo con recetas distintas se muestra la más repetida y la de cada código va en la columna "Recipe" de la tabla.
 - Tabla de EANs fuera de su estrategia, con desvío en unidades y en %, ordenable, y control para la tolerancia (inicio y fin).
 - **Solo los códigos de la selección** (el código, el grupo, el grupo filtrado o la selección acumulada): los cálculos usan toda la casa, pero aquí se ven solo sus resultados.
-- **Ficha emergente de un código:** en un grupo, pulsar un EAN (en el detector o en la lista de códigos de una foto) abre encima, en una ventana modal, **el detalle completo de ese código**: las mismas cinco secciones, con sus brújulas, actuals, resultados y detector, solo que para ese código. El grupo no se pierde: detrás queda quieto y atenuado, y al cerrar (botón, Escape o clic fuera) se vuelve a él con sus secciones y su scroll como estaban, sin repetir animaciones. "Open as page" lleva al detalle del código como página. Llega como material (escala 0,96 → 1, desenfoque 6 px → 0, 360 ms, curva de cajón de iOS) y sus secciones abiertas entran en cascada; sale en 200 ms. En iPhone es una hoja inferior.
+- **Ficha emergente de un código:** en un grupo, pulsar un EAN (en el detector o en la lista de códigos de una foto) abre encima, en una ventana modal, **el detalle completo de ese código**: las mismas seis secciones, con sus escenarios, brújulas, actuals, resultados y detector, solo que para ese código. El grupo no se pierde: detrás queda quieto y atenuado, y al cerrar (botón, Escape o clic fuera) se vuelve a él con sus secciones y su scroll como estaban, sin repetir animaciones. "Open as page" lleva al detalle del código como página. Llega como material (escala 0,96 → 1, desenfoque 6 px → 0, 360 ms, curva de cajón de iOS) y sus secciones abiertas entran en cascada; sale en 200 ms. En iPhone es una hoja inferior.
 
 ---
 

@@ -1,0 +1,90 @@
+<div class="wrap">
+  <header class="intro">
+    <p class="eyebrow">Gucci · regulares · Consensus de la foto frente a lo que se vende</p>
+    <h1>Señales de demanda Gucci</h1>
+    <p class="lede">Para cada código, cinco probabilidades sobre el Consensus de la última foto para los próximos 3 meses: que lo vendido quede más bajo, mucho más bajo, más alto o mucho más alto que el Consensus, y que llegue una orden que el Consensus no tiene. Cada señal que se cumple suma o resta puntos según lo clara que es, y los puntos se convierten en probabilidad.</p>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#como">Cómo funciona</a>
+      {NAVCATS}
+      <a href="#ejemplos">¿Acertó?</a>
+      <a href="#hoy">Códigos hoy</a>
+      <a href="#hipotesis">Tus hipótesis</a>
+    </nav>
+  </header>
+
+  <section class="block" id="como">
+    <header>
+      <h2>Cómo funciona</h2>
+      <p>La referencia es el Consensus - Final de cada foto para los 3 meses siguientes (el mes en curso no cuenta). Las cinco probabilidades son independientes y no suman 100 %: un código puede tener a la vez un 40 % de quedar por debajo y un 30 % de recibir una orden no prevista.</p>
+    </header>
+    <div class="cats">{CATSDEF}</div>
+    <div class="steps">
+      <div class="step"><b>1. Se revisan las señales</b><p>Trends de sell-in y de sell-out, cómo va el código frente a su casa, brand y línea, su calendario de pedidos, su contexto (cortes, lanzamientos, One Shots) y el propio Consensus frente a la realidad: frente a su ritmo, al año pasado, al trend de sell-in y EPOS, el peso del DA y las revisiones.</p></div>
+      <div class="step"><b>2. Se suman los puntos</b><p>Cada escenario tiene sus señales y sus pesos. Una misma señal puede sumar en un escenario y restar en otro. Los puntos se suman al punto de partida del escenario.</p></div>
+      <div class="step"><b>3. Puntos → probabilidad</b><p>La suma se convierte en probabilidad con la tabla de cada escenario. Las tablas se comprobaron con lo que pasó de verdad, en códigos y fotos que el modelo no había visto.</p></div>
+    </div>
+    <p class="weights"><span><b>Ligera</b> 1–3 puntos</span><span><b>Moderada</b> 4–7 puntos</span><span><b>Muy clara</b> 8 puntos o más</span><span>Los puntos negativos frenan el escenario.</span></p>
+    <article class="example">
+      <div>
+        <p class="eyebrow">Ejemplo real · foto 2026.M10</p>
+        <h3>{EJDESC}</h3>
+        <p>Consensus para noviembre-enero: <b>{EJC3} uds</b>. Para «real más bajo» (vender menos de {EJLIM} uds) parte del {EJINI} y estas señales están activas hoy:</p>
+        <ul class="ex-list">{EJLIST}</ul>
+      </div>
+      <div class="ex-sum">
+        <p class="mini">Total</p>
+        <p class="ex-big">{EJPTS} puntos</p>
+        <p>Con {EJPTS} puntos, la probabilidad de vender menos de {EJLIM} uds es del <b>{EJP}</b>.</p>
+        <p>El mismo código en los otros escenarios: mucho más bajo {EJMB}, más alto {EJA}, mucho más alto {EJMA}, orden no prevista {EJO}.</p>
+      </div>
+    </article>
+  </section>
+
+  {SECCIONES}
+
+  <section class="block" id="ejemplos">
+    <header>
+      <h2>¿Acertó? Ejemplos de 2026</h2>
+      <p>Para cada escenario, los dos casos con más probabilidad en las fotos de 2026 (códigos con un Consensus de al menos 3.000 uds) y lo que pasó. Una probabilidad alta no es una certeza: también hay fallos.</p>
+    </header>
+    <div class="card-t"><div class="table-wrap"><table class="t-ej">
+      <thead><tr><th>Escenario</th><th>Código</th><th>Foto</th><th>Probabilidad</th><th>Consensus 3M</th><th>Vendido</th><th>Real / Consensus</th><th>¿Pasó?</th></tr></thead>
+      <tbody>{EJEMPLOS}</tbody></table></div></div>
+  </section>
+
+  <section class="block" id="hoy">
+    <header>
+      <h2>Códigos hoy (foto 2026.M10, noviembre a enero)</h2>
+      <p>Los {NHOY} regulares con más de un año de vida y Consensus, ordenados por su Consensus de los próximos 3 meses. Pulsa un código para ver los umbrales en unidades y qué señales tiene activas en cada escenario.</p>
+    </header>
+    <div class="hoy"><div class="hoy-in">
+      <div class="hoy-head"><span>Código</span>{HEADCATS}</div>
+      {FILAS}
+    </div></div>
+  </section>
+
+  <section class="block" id="hipotesis">
+    <header>
+      <h2>Tus hipótesis y qué dicen los datos</h2>
+      <p>Medidas frente al Consensus. Una señal solo lleva peso si empuja en la misma dirección en las fotos de 2025 y en las de 2026 (o, si usa EPOS, en las dos mitades de los códigos).</p>
+    </header>
+    <div class="hyp">
+      <div><span class="verdict">Confirmada</span><b>La casa baja y el código sube</b><p>El real queda muy por debajo del Consensus solo en el 8 % de los casos (lo normal es el 26 %), y llega una orden no prevista en el 26 % (lo normal es el 16 %). El código que va contra la casa mantiene el impulso. Lleva −5 puntos en «mucho más bajo». Con su brand pasa lo mismo.</p></div>
+      <div><span class="verdict">Confirmada</span><b>Momentum del sell-in</b><p>Con el sell-in de 3 meses por encima de +10 %, «mucho más bajo» baja al 16 %, «más alto» sube al 34 % y la orden no prevista al 23 %. Con el sell-in por debajo de −10 %, «mucho más bajo» sube al 33 %. No lleva peso propio porque su efecto ya lo recogen otras señales del modelo (contracorriente, máximos, canal).</p></div>
+      <div><span class="verdict">Confirmada</span><b>Sell-in y sell-out hundiéndose a la vez</b><p>Si los dos caen un 30 % o más, el real queda por debajo de la mitad del Consensus en el 45 % de los casos (lo normal es el 26 %). Suma 3 puntos en «mucho más bajo».</p></div>
+      <div><span class="verdict">Confirmada</span><b>El retailer se está cargando (sell-in sube, sell-out baja)</b><p>Al revés de lo que se suele pensar, no es riesgo: «mucho más bajo» baja al 17 %. El retailer que compra por encima de lo que vende suele seguir comprando unos meses.</p></div>
+      <div><span class="verdict">No se puede confirmar</span><b>Sell-in baja y sell-out sube → el código sube</b><p>Solo pasó 21 veces en estas fotos. Hacen falta más fotos con EPOS para medirlo.</p></div>
+    </div>
+  </section>
+
+  <details class="method">
+    <summary>Método y límites</summary>
+    <ul>
+      <li><b>Datos:</b> las 10 fotos de Gucci con los 3 meses siguientes ya cerrados (2025.M09–2026.M06): {NCASOS} casos código × foto de {NCOD} regulares con más de 12 meses de vida, al menos 150 uds/año y un Consensus de al menos 60 uds en esos 3 meses. Las fotos de 2025 son de un perímetro más pequeño y su Consensus se armonizó con un factor por código.</li>
+      <li><b>Señales:</b> 113 señales en 7 familias, todas con información hasta el mes anterior a la foto: las 89 de trends y contexto y 24 de «el Consensus frente a la realidad».</li>
+      <li><b>Selección:</b> solo entran las señales que empujan en la misma dirección en las fotos de 2025 y en las de 2026 (o en las dos mitades de los códigos si usan EPOS), con efecto mínimo y p &lt; 0,05. Las redundantes se descartan.</li>
+      <li><b>Pesos:</b> regresión logística conjunta por escenario, con regularización para no exagerar con pocos casos. Puntos = peso × 10, redondeado. Probabilidad = punto de partida + puntos, en escala logística.</li>
+      <li><b>Validación:</b> probabilidades medidas en códigos que el modelo no vio (5 grupos de códigos) y entrenando con las fotos de 2025 para predecir las de 2026. Capacidad de ordenar (AUC) entre 0,76 (real más bajo) y 0,84 (real mucho más alto); 0,5 sería azar y 1 perfecto.</li>
+      <li><b>Límites:</b> solo un año de fotos, solo Gucci y solo regulares maduros. Las probabilidades por encima del 70 % tienen pocos casos. Hay que volver a calibrar con cada foto nueva.</li>
+    </ul>
+  </details>

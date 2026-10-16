@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-15T23:41:54.063719+00:00",
+  "generatedAt": "2026-10-16T12:10:16.473803+00:00",
   "title": "Design System: O10",
   "extensions": {
     "colorMeta": {
@@ -779,6 +779,10 @@
       "code": {
         "displayName": "Código",
         "purpose": "EANs."
+      },
+      "probability": {
+        "displayName": "Probability",
+        "purpose": "Probabilidad de cada opción de la escala de escenarios; 24px en estrecho."
       }
     },
     "shadows": [
@@ -816,6 +820,16 @@
         "name": "wallpaper",
         "value": "4 radial-gradient blobs over #e9ebee, filter: blur(48px) saturate(110%), noise overlay .035",
         "purpose": "Papel tapiz quieto."
+      },
+      {
+        "name": "solid-thumb",
+        "value": "0 2px 10px rgba(0,0,0,.1), 0 0 0 .5px rgba(0,0,0,.04)",
+        "purpose": "Pulgar sólido de la escala de escenarios (claro)."
+      },
+      {
+        "name": "solid-thumb-dark",
+        "value": "0 2px 10px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.1), 0 0 0 .5px var(--borde-cristal)",
+        "purpose": "Pulgar sólido de la escala de escenarios (oscuro, #3a3a3c)."
       }
     ],
     "motion": [
@@ -858,6 +872,16 @@
         "name": "chart-tooltip",
         "value": "opacity + scale(.96→1) 140ms ease-out from the point; instant while visible",
         "purpose": "Tarjeta flotante de las gráficas del detalle."
+      },
+      {
+        "name": "scenario-meter-grow",
+        "value": "560ms cubic-bezier(0.23,1,0.32,1), delay 120ms + 45ms por medidor",
+        "purpose": "Medidores de la escala de escenarios al abrir la sección; al cambiar de selección, del valor anterior al nuevo."
+      },
+      {
+        "name": "scenario-rules-cascade",
+        "value": "260ms cubic-bezier(0.23,1,0.32,1), translateY 6px, 22ms entre filas (máx. 200ms)",
+        "purpose": "Reglas del escenario elegido al cambiar de escenario. Nada con movimiento reducido."
       }
     ],
     "breakpoints": [
@@ -962,6 +986,14 @@
       "description": "Sustituye al tooltip nativo en las gráficas del detalle.",
       "html": "<div class=\"ds-tip\"><b>Best recipe · WAPE90</b>2026.M04\nWAPE 31.2% · SPP −2.4%</div>",
       "css": ".ds-tip{display:inline-block;max-width:280px;padding:9px 12px 10px;border-radius:14px;font:12px/1.45 -apple-system,sans-serif;color:#1c1c1e;white-space:pre-line;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.46);backdrop-filter:blur(28px) saturate(185%);border:1px solid rgba(255,255,255,.66);box-shadow:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08)} .ds-tip b{display:block;font-size:12.5px;font-weight:600;margin-bottom:1px}"
+    },
+    {
+      "name": "Escala de escenarios",
+      "kind": "custom",
+      "refersTo": "scenario-well",
+      "description": "Segmentado con datos sobre pozo de relleno con pulgar sólido; dirección por posición y glifo, Consensus en gris discontinuo en medio.",
+      "html": "<div class=\"ds-esc\" role=\"radiogroup\" aria-label=\"Scenarios\"><button class=\"ds-esc-op\" role=\"radio\" aria-checked=\"false\"><span class=\"ds-esc-t\">Sells less</span><span class=\"ds-esc-d\">&lt; 80% · 1,240 u</span><b class=\"ds-esc-p\">18%</b><span class=\"ds-esc-med\"><i style=\"transform:scaleX(.18)\"></i><u style=\"left:22%\"></u></span><span class=\"ds-esc-d\">usual 22%</span></button><div class=\"ds-esc-cons\"><span class=\"ds-esc-d\">Consensus</span><b>1,550</b></div><button class=\"ds-esc-op sel\" role=\"radio\" aria-checked=\"true\"><span class=\"ds-esc-t\">Sells more</span><span class=\"ds-esc-d\">&gt; 120% · 1,860 u</span><b class=\"ds-esc-p\">31%</b><span class=\"ds-esc-med\"><i style=\"transform:scaleX(.31)\"></i><u style=\"left:19%\"></u></span><span class=\"ds-esc-d\">usual 19%</span></button></div>",
+      "css": ".ds-esc{display:grid;grid-template-columns:1fr 92px 1fr;gap:4px;padding:4px;border-radius:20px;background:rgba(120,120,128,.14);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;color:#1c1c1e;width:420px} .ds-esc-op{display:flex;flex-direction:column;align-items:flex-start;padding:11px 12px 10px;border:0;border-radius:16px;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:transform 140ms cubic-bezier(0.23,1,0.32,1),background-color 140ms ease} .ds-esc-op:hover:not(.sel){background:rgba(120,120,128,.14)} .ds-esc-op:active{transform:scale(.97)} .ds-esc-op:focus-visible{outline:3px solid rgba(0,113,227,.55);outline-offset:-1px} .ds-esc-op.sel{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.04)} .ds-esc-t{font-size:12.5px;font-weight:600} .ds-esc-d{font-size:11.5px;color:#5d5d63;font-variant-numeric:tabular-nums} .ds-esc-p{margin-top:8px;font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums} .ds-esc-med{position:relative;display:block;width:100%;height:4px;margin:8px 0 6px;border-radius:2px;background:rgba(120,120,128,.24)} .ds-esc-med i{position:absolute;inset:0;border-radius:inherit;background:#1c1c1e;opacity:.8;transform-origin:left center} .ds-esc-med u{position:absolute;top:-3px;width:2px;height:10px;margin-left:-1px;border-radius:1px;background:#5d5d63} .ds-esc-cons{display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1.5px dashed #8e8e93;border-right:1.5px dashed #8e8e93;text-align:center} .ds-esc-cons b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}"
     }
   ],
   "narrative": {
@@ -1021,6 +1053,11 @@
         "name": "La Regla del Cristal Accesible",
         "body": "Con `prefers-reduced-transparency` todo el cristal pasa a tarjeta sólida y el fondo deja de difuminarse; con `prefers-contrast: more` el borde del cristal se oscurece y el cristal se vuelve casi opaco.",
         "section": "elevation"
+      },
+      {
+        "name": "La Regla del Pulgar Sólido sobre el Pozo",
+        "body": "Un segmentado que va dentro de un panel de cristal no lleva pulgar de cristal: el pozo es de relleno gris y el pulgar es una tarjeta sólida (blanca; `#3a3a3c` en oscuro). Cristal sobre cristal pierde legibilidad. El pulgar de cristal queda para los segmentados que flotan solos (Mapa / Detalle, apariencia, Resultados).",
+        "section": "components"
       }
     ],
     "dos": [
@@ -1033,7 +1070,8 @@
       "**Do** mantener todas las tarjetas de cada rejilla del mismo tamaño fijo (360 × 568px en Decisiones, 260 × 374px en Resultados).",
       "**Do** dar a cada media brújula su propia escala (SPP ±30/50/75/100%, WAPE 60/80/100%) y pegar al borde con un triángulo lo que se salga.",
       "**Do** usar la tarjeta flotante de cristal, y no el tooltip nativo, en las gráficas del detalle.",
-      "**Do** dejar lo que queda detrás (el mapa en Detalle, el grupo bajo la ficha) empujado, difuminado y atenuado, no oculto."
+      "**Do** dejar lo que queda detrás (el mapa en Detalle, el grupo bajo la ficha) empujado, difuminado y atenuado, no oculto.",
+      "**Do** decir la dirección de un escenario con la posición y el glifo (barra frente a la línea discontinua gris del Consensus), no con verde o rojo."
     ],
     "donts": [
       "**Don't** animar el fondo ni añadir fondos en movimiento.",

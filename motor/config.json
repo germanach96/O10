@@ -36,5 +36,20 @@
   "_epos": "La foto 2025.M11 viene sin EPOS. Si true, el EPOS de meses ANTERIORES a la foto se toma de la foto más reciente que lo tenga (es historia, no futuro)",
   "historia_desde_consensus_pasado": true,
   "_historia": "En meses pasados Consensus = Actuals. Si true, antes del primer mes con Actuals en el archivo se usa el Consensus pasado como historia",
-  "minimo_actividad": "actuals>0 en los últimos 12 meses o Consensus>0 en el horizonte"
+  "minimo_actividad": "actuals>0 en los últimos 12 meses o Consensus>0 en el horizonte",
+  "escenarios": {
+    "_comentario": "Escenarios frente al Consensus (sección Scenarios de la página): lo vendido en F+1…F+3 frente al Consensus de la foto. Ver motor/escenarios.py",
+    "umbrales": {"bajo": 0.8, "muy_bajo": 0.5, "alto": 1.2, "muy_alto": 1.5, "orden": 2},
+    "_umbrales": "bajo / muy_bajo: vendido < umbral × Consensus; alto / muy_alto: vendido > umbral × Consensus; orden: algún mes con pedido grande (≥ 2× su mediana de 12 meses) y > umbral × el Consensus de ese mes",
+    "minimos": {"vol12": 150, "edad_meses": 13, "consensus_3m": 60},
+    "_minimos": "Solo se puntúan los Regular Item con ≥ 150 uds en 12 meses, ≥ 13 meses desde su primera venta y Consensus de 3 meses ≥ 60",
+    "ruptura_perimetro": "2026.M02",
+    "_ruptura": "Primera foto del perímetro nuevo (la historia de Gucci sube un 29 %). El Consensus de las fotos anteriores se armoniza con un factor por código. null = sin ruptura",
+    "criba": {"n_min": 20, "lor_min": 0.3, "p_max": 0.05, "corr_max": 0.6, "peso_min": 0.12},
+    "_criba": "Una señal entra si en las dos mitades (de tiempo, o de códigos si usa EPOS) tiene ≥ n_min casos, el mismo signo y |log-odds| ≥ lor_min, y p de Fisher < p_max; después, fuera las redundantes (correlación > corr_max) y las que pesan menos de peso_min en el modelo conjunto",
+    "C": 0.2,
+    "semilla": 11,
+    "grupo_n_max": 8,
+    "_grupo_n_max": "Un grupo se mide frente a su Consensus total: la compensación entre códigos crece con el nº efectivo de códigos hasta este tope (por encima, los códigos comparten los golpes de la casa)"
+  }
 }
