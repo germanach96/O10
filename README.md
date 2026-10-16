@@ -7,6 +7,7 @@ pip install -r requirements.txt
 python -m motor.pipeline            # lee data/<Casa>/Consensus/*.csv y genera diseno/ejemplos/BRUJULAS_ejemplo.html
 python -m motor.pipeline --sin-cubo # igual, sin escribir el cubo Parquet
 python -m pytest tests
+# En las sesiones en la nube de Claude Code, .claude/hooks/session-start.sh instala requirements.txt al arrancar
 ```
 
 ## Mapa del repo
