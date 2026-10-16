@@ -78,9 +78,7 @@ class MotorFoto:
         cuts = np.nan_to_num(tomar(foto.mat["Supply Cuts"], self.t_hist))
         tda_h = np.nan_to_num(tomar(foto.mat["Total Demand Assumption"], self.t_hist))
         self.tda_fut = np.nan_to_num(tomar(foto.mat["Total Demand Assumption"], self.t_fut))
-        # Consensus futuro tal cual (NaN = celda vacía: sin Consensus ese mes) y con 0 para los KPIs de tramos cerrados
-        self.cons_raw = tomar(foto.mat["Consensus - Final"], self.t_fut)
-        self.cons_fut = np.nan_to_num(self.cons_raw)
+        self.cons_fut = np.nan_to_num(tomar(foto.mat["Consensus - Final"], self.t_fut))
         epos = tomar(foto.mat["EPOS"], self.t_hist)
         if epos_externo is not None:
             epos = np.where(np.isnan(epos), epos_externo, epos)

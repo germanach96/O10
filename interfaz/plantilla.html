@@ -1344,8 +1344,6 @@ function evaluar(fc, cons, tol){
   // desvío de un mes = solo el exceso fuera de [R·(1−tol), R·(1+tol)], en valor absoluto
   return fc.map((R, i) => {
     const t = tol(i + 1), lo = R * (1 - t), hi = R * (1 + t), C = cons[i];
-    // celda vacía ≠ 0: un mes sin Consensus en la foto no se compara (ni desvío ni denominador del %)
-    if (C == null) return {R, C: null, lo, hi, dev: 0, t, sin: true};
     const dev = C > hi ? C - hi : (C < lo ? lo - C : 0);
     return {R, C, lo, hi, dev, t};
   });
@@ -1374,7 +1372,7 @@ function calcularHojas(){
     let u = null, p = null, sR = null, sinrec = false, meses = [];
     if (i.scope && r && r.recetas.codigo) {
       const ev = evaluar(r.recetas.codigo.fc, r.consensus, tolerancia(ean));
-      u = ev.reduce((s, e) => s + e.dev, 0); sR = ev.reduce((s, e) => s + (e.sin ? 0 : e.R), 0);
+      u = ev.reduce((s, e) => s + e.dev, 0); sR = ev.reduce((s, e) => s + e.R, 0);
       p = sR > 0 ? u / sR : (u > 0.5 ? Infinity : 0);
       meses = ev.map((e, k) => e.dev > 0.5 ? det.meses[k] : null).filter(Boolean);
     } else if (i.scope) sinrec = true;
@@ -2962,7 +2960,7 @@ function marcas(max){
 function grafico(meses, ev){
   const W = Math.max(300, Math.round($("actual").clientWidth || 1000)), estrecho = W < 640;
   const H = estrecho ? 240 : 290, L = estrecho ? 54 : 60, Rm = 12, T = 14, B = estrecho ? 26 : 42;
-  const {paso, tope} = marcas(Math.max(1, ...ev.map(e => Math.max(e.hi, e.R, e.C || 0))) * 1.04);
+  const {paso, tope} = marcas(Math.max(1, ...ev.map(e => Math.max(e.hi, e.C))) * 1.04);
   const x = i => L + (W - L - Rm) * (i + 0.5) / meses.length, y = v => T + (H - T - B) * (1 - v / tope);
   let h = "";
   for (let v = 0; v <= tope + 1e-9; v += paso)
@@ -2971,9 +2969,8 @@ function grafico(meses, ev){
   h += `<g class="datos">`;
   h += `<polygon data-k="g-banda" points="${ev.map((e,i)=>x(i)+","+y(e.hi)).join(" ")} ${ev.map((e,i)=>x(i)+","+y(e.lo)).reverse().join(" ")}" fill="var(--banda)"/>`;
   h += `<polyline data-k="g-rec" points="${ev.map((e,i)=>x(i)+","+y(e.R)).join(" ")}" fill="none" stroke="var(--receta)" stroke-width="2" stroke-linejoin="round"/>`;
-  h += `<polyline data-k="g-cons" points="${ev.map((e,i)=>e.sin ? null : x(i)+","+y(e.C)).filter(Boolean).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+  h += `<polyline data-k="g-cons" points="${ev.map((e,i)=>x(i)+","+y(e.C)).join(" ")}" fill="none" stroke="var(--cons)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
   ev.forEach((e, i) => {
-    if (e.sin) return;  // sin Consensus ese mes: no hay punto
     const out = e.dev > 0.5;
     h += `<circle data-k="g-c${i}" cx="${x(i)}" cy="${y(e.C)}" r="${out ? 5 : 3.5}" fill="${out ? "var(--red)" : "var(--cons)"}" stroke="var(--card)" stroke-width="2"><title>${meses[i]}: Consensus ${num(e.C)} · recipe ${num(e.R)} · range ${num(e.lo)} to ${num(e.hi)}${out ? " · deviation " + num(e.dev) + (e.C > e.hi ? " above" : " below") : ""}</title></circle>`;
     if (out && !estrecho) h += `<text x="${x(i)}" y="${e.C < e.lo && y(e.C) + 18 < H - B - 4 ? y(e.C) + 18 : y(e.C) - 10}" text-anchor="middle" style="fill:var(--red-txt);font-weight:600">${num(e.dev)}</text>`;
@@ -3007,32 +3004,27 @@ function fotoActual(){
   const conRec = filas.filter(r => r.recetas[fuente]);
   if (!conRec.length) { $("actual").innerHTML = `<p>No chosen recipe: it was not in scope in any snapshot with closed windows.</p>`; rail(null); return; }
   const n = det.meses.length;
-  let fc = Array(n).fill(0), cons = Array(n).fill(0), devCod = Array(n).fill(0), lo = Array(n).fill(0), hi = Array(n).fill(0), nC = Array(n).fill(0);
+  let fc = Array(n).fill(0), cons = Array(n).fill(0), devCod = Array(n).fill(0), lo = Array(n).fill(0), hi = Array(n).fill(0);
   let nFuera = 0;
   conRec.forEach(r => {
     const ev = evaluar(r.recetas[fuente].fc, r.consensus, tolerancia(r.ean));
     let u = 0;
-    ev.forEach((e, i) => { if (e.sin) return; nC[i]++; fc[i] += e.R; cons[i] += e.C; lo[i] += e.lo; hi[i] += e.hi; devCod[i] += e.dev; u += e.dev; });
+    ev.forEach((e, i) => { fc[i] += e.R; cons[i] += e.C; lo[i] += e.lo; hi[i] += e.hi; devCod[i] += e.dev; u += e.dev; });
     if (u > 0.5) nFuera++;
   });
   // para un grupo: la banda es la suma de las bandas; el desvío por mes es la suma de los desvíos por código (no se compensan)
-  // un mes en que ningún código trae Consensus queda sin comparar; si solo algunos lo traen, se comparan esos
-  const sinCons = i => !nC[i];
-  const ev = fc.map((R, i) => sinCons(i) ? (() => { const Rt = conRec.reduce((a, r) => a + (r.recetas[fuente].fc[i] || 0), 0), t = tol(i + 1);
-      return {R: Rt, C: null, lo: Rt * (1 - t), hi: Rt * (1 + t), t, dev: 0, sin: true}; })()
-    : {R, C: cons[i], lo: lo[i], hi: hi[i], t: tol(i + 1), n: nC[i],
+  const ev = fc.map((R, i) => ({R, C: cons[i], lo: lo[i], hi: hi[i], t: tol(i + 1),
     dev: esRegla() ? devCod[i] : (cons[i] > hi[i] ? cons[i] - hi[i] : (cons[i] < lo[i] ? lo[i] - cons[i] : 0))}));
-  const totDev = ev.reduce((a, e) => a + e.dev, 0), totR = ev.reduce((a, e) => a + (e.sin ? 0 : e.R), 0);
-  const huecos = ev.map((e, i) => e.sin ? det.meses[i] : null).filter(Boolean);
+  const totDev = ev.reduce((a, e) => a + e.dev, 0), totR = fc.reduce((a, b) => a + b, 0);
   if (!esRegla()) { const r = conRec[0].recetas[fuente];
     h += `<p style="margin:0 0 12px">Applied recipe: <b>${recetaTxt(r.txt)}</b>${r.sin_trend ? " <span class='aviso'>(trend not computable today for this code: applied without trend)</span>" : ""}</p>`; }
   else h += `<p style="margin:0 0 12px">${conRec.length} codes with a recipe (${filas.length - conRec.length} without). <b class="${nFuera ? "malo" : "bueno"}">${nFuera} off their strategy.</b> Group totals; each code uses its own recipe and its own range.</p>`;
   h += grafico(det.meses, ev);
-  h += `<p>Total deviation: <b class="marcador">${num(totDev)} units</b> · <b>${pct(totR > 0 ? totDev / totR : null)}</b> of the recipe forecast (${num(totR)} units).${huecos.length ? ` <span class="pequeño">No Consensus in the snapshot for ${huecos.join(", ")}: not compared.</span>` : ""}</p>`;
+  h += `<p>Total deviation: <b class="marcador">${num(totDev)} units</b> · <b>${pct(totR > 0 ? totDev / totR : null)}</b> of the recipe forecast (${num(totR)} units).</p>`;
   rail({totDev, totR, meses: ev.filter(e => e.dev > 0.5).length, rec: esRegla() ? null : conRec[0].recetas[fuente].txt, nFuera, n: conRec.length, foto: det.foto});
   h += `<table class="t-foto"><tr><th class="izq">Month</th><th class="c-x">h</th><th class="c-x">Tolerance</th><th>Recipe</th><th class="c-x">Range min</th><th class="c-x">Range max</th><th>Consensus</th><th class="c-x">Cons / Recipe</th><th>Deviation units</th></tr>`;
   ev.forEach((e, i) => {
-    h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td class="c-x">${i+1}</td><td class="c-x">±${pct(e.t)}</td><td>${num(e.R)}</td><td class="c-x">${num(e.lo)}</td><td class="c-x">${num(e.hi)}</td><td><b>${e.sin ? "-" : num(e.C)}</b>${esRegla() && !e.sin && e.n < conRec.length ? `<span class="pequeño"> (${e.n} of ${conRec.length})</span>` : ""}</td><td class="c-x">${!e.sin && e.R > 0 ? pct(e.C / e.R - 1) : "-"}</td><td class="dv">${e.sin ? "-" : e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
+    h += `<tr class="${e.dev > 0.5 ? "fuera" : ""}"><td class="izq">${det.meses[i]}</td><td class="c-x">${i+1}</td><td class="c-x">±${pct(e.t)}</td><td>${num(e.R)}</td><td class="c-x">${num(e.lo)}</td><td class="c-x">${num(e.hi)}</td><td><b>${num(e.C)}</b></td><td class="c-x">${e.R > 0 ? pct(e.C / e.R - 1) : "-"}</td><td class="dv">${e.dev > 0.5 ? num(e.dev) : "0"}</td></tr>`;
   });
   const antesG = capturar($("grafActual")), pend = $("grafActual") && $("grafActual").hasAttribute("data-pendiente");
   $("actual").innerHTML = h + "</table>";
@@ -3058,7 +3050,7 @@ function anteriores(){
         <table><tr><th class="izq">Month</th><th>h</th><th>Actual</th><th>Consensus</th><th>Recipe</th><th>H(t−12)</th><th>DA</th><th>|Cons−A|</th><th>|Rec−A|</th></tr>`;
       f.meses_fut.forEach((m, i) => {
         const A = e.actual_fut[i], C = e.consensus_fut[i], Rr = e.fc_oraculo[i];
-        h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null || C == null ? "-" : num(Math.abs(C - A))}</td><td>${A == null ? "-" : num(Math.abs(Rr - A))}</td></tr>`;
+        h += `<tr><td class="izq">${m}</td><td>${i+1}</td><td>${num(A)}</td><td>${num(C)}</td><td><b>${num(Rr)}</b></td><td>${num(d.lag[i])}${d.lag_real[i] ? "" : "*"}</td><td>${num(d.da[i])}</td><td>${A == null ? "-" : num(Math.abs(C - A))}</td><td>${A == null ? "-" : num(Math.abs(Rr - A))}</td></tr>`;
         if (i === 2 || i === 5) h += `<tr><td colspan="9" style="border-bottom:2px solid var(--sep-fuerte);padding:0"></td></tr>`;
       });
       h += `</table><p class="pequeño">* No prior year for that month: the mean is used. H = Actuals + c·Supply Cuts − p·Total Demand Assumption.</p></details>`;
@@ -3111,11 +3103,11 @@ function detector(){
     const rec = r.recetas[fuente];
     if (!rec) { sinReceta++; return; }
     const ev = evaluar(rec.fc, r.consensus, tolerancia(r.ean));
-    const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + (e.sin ? 0 : e.R), 0);
+    const u = ev.reduce((a, e) => a + e.dev, 0), sR = ev.reduce((a, e) => a + e.R, 0);
     const fm = (f) => ev.map((e, i) => e.dev > 0.5 && f(e) ? det.meses[i].slice(5) : null).filter(Boolean);
     const bajo = fm(e => e.C < e.lo), alto = fm(e => e.C > e.hi);
     const meses = [bajo.length ? "Low " + bajo.join(" ") : "", alto.length ? "High " + alto.join(" ") : ""].filter(Boolean).join(" · ");
-    filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + (b || 0), 0), meses});
+    filas.push({r, rec, u, p: sR > 0 ? u / sR : (u > 0 ? Infinity : 0), sR, sC: r.consensus.reduce((a, b) => a + b, 0), meses});
   });
   formulaDetector(filas, fuente);
   const fuera = filas.filter(x => x.u > 0.5).length;
