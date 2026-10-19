@@ -1,0 +1,637 @@
+[
+ {
+  "casa": "Burberry",
+  "fotos": []
+ },
+ {
+  "casa": "Burberry MU",
+  "fotos": []
+ },
+ {
+  "casa": "Gucci",
+  "fotos": [
+   "2025.M09",
+   "2025.M10",
+   "2025.M11",
+   "2025.M12",
+   "2026.M01",
+   "2026.M02",
+   "2026.M03",
+   "2026.M04",
+   "2026.M05",
+   "2026.M06",
+   "2026.M07",
+   "2026.M08",
+   "2026.M09",
+   "2026.M10"
+  ],
+  "avisos": [],
+  "calidad_ultima": {
+   "Actuals": {
+    "vacias_pasado_%": 69.1,
+    "negativos": 0,
+    "suma_pasado": 9169236.0
+   },
+   "EPOS": {
+    "vacias_pasado_%": 59.0,
+    "negativos": 0,
+    "suma_pasado": 5360724.0
+   },
+   "Supply Cuts": {
+    "vacias_pasado_%": 93.7,
+    "negativos": 0,
+    "suma_pasado": 818911.0
+   },
+   "Total Demand Assumption": {
+    "vacias_pasado_%": 94.9,
+    "negativos": 396,
+    "suma_pasado": 468160.0
+   },
+   "Consensus - Final": {
+    "vacias_pasado_%": 57.4,
+    "negativos": 0,
+    "suma_pasado": 13693256.0
+   },
+   "System FC - Final": {
+    "vacias_pasado_%": 65.0,
+    "negativos": 0,
+    "suma_pasado": 10902775.0
+   }
+  },
+  "historia": [
+   "2021.M01",
+   "2030.M12"
+  ],
+  "epos_desde": "2024.M07",
+  "epos_cobertura_codigos_%": 80.9,
+  "eans_por_foto": {
+   "2025.M09": 417,
+   "2025.M10": 425,
+   "2025.M11": 425,
+   "2025.M12": 428,
+   "2026.M01": 468,
+   "2026.M02": 499,
+   "2026.M03": 513,
+   "2026.M04": 510,
+   "2026.M05": 512,
+   "2026.M06": 524,
+   "2026.M07": 527,
+   "2026.M08": 524,
+   "2026.M09": 524,
+   "2026.M10": 524
+  },
+  "altas_bajas": {
+   "2025.M10": [
+    9,
+    1
+   ],
+   "2025.M11": [
+    0,
+    0
+   ],
+   "2025.M12": [
+    3,
+    0
+   ],
+   "2026.M01": [
+    40,
+    0
+   ],
+   "2026.M02": [
+    32,
+    1
+   ],
+   "2026.M03": [
+    14,
+    0
+   ],
+   "2026.M04": [
+    2,
+    5
+   ],
+   "2026.M05": [
+    3,
+    1
+   ],
+   "2026.M06": [
+    15,
+    3
+   ],
+   "2026.M07": [
+    3,
+    0
+   ],
+   "2026.M08": [
+    0,
+    3
+   ],
+   "2026.M09": [
+    0,
+    0
+   ],
+   "2026.M10": [
+    0,
+    0
+   ]
+  },
+  "salto_historia_24m_%": {
+   "2025.M10": 0.0,
+   "2025.M11": 0.0,
+   "2025.M12": 0.0,
+   "2026.M01": 0.0,
+   "2026.M02": 34.5,
+   "2026.M03": 0.0,
+   "2026.M04": 0.0,
+   "2026.M05": 0.0,
+   "2026.M06": 0.0,
+   "2026.M07": -0.0,
+   "2026.M08": 0.0,
+   "2026.M09": 0.0,
+   "2026.M10": -0.1
+  },
+  "n_eans": 524,
+  "por_tipo": {
+   "One Shot/Promo": 269,
+   "Regular Item": 255
+  },
+  "por_responsable": {
+   "(vacío)": 102,
+   "Central": 187,
+   "Local": 235
+  },
+  "por_segmento": {
+   "(vacío)": 144,
+   "DISC": 121,
+   "Horses": 38,
+   "Rabbits": 147,
+   "Bulls": 28,
+   "Post NPI": 46
+  },
+  "por_edad": {
+   "Sin ventas": 46,
+   "Pre-disco": 463,
+   "Año 3+": 12,
+   "A1 7-12": 2,
+   "Año 2": 1
+  },
+  "por_tamano_top": {
+   "100 ML": 109,
+   "50 ML": 98,
+   "N/D": 80,
+   "90 ML": 77,
+   "30 ML": 51,
+   "10 ML": 28,
+   "150 ML": 26,
+   "75 ML": 13,
+   "7.4 ML": 9,
+   "20 ML": 7,
+   "200 ML": 6,
+   "60 ML": 5
+  },
+  "sin_tamano": 0,
+  "n_brands": 10,
+  "n_lineas": 58,
+  "brands": {
+   "Gucci Guilty (00840)": 179,
+   "Gucci Flora (01228)": 130,
+   "Gucci Bloom (01043)": 90,
+   "Gucci Luxury Collection (01096)": 81,
+   "Gucci Bamboo (00838)": 12,
+   "Gucci Fragrance Multiline (00844)": 12,
+   "Flora by Gucci (00837)": 9,
+   "Gucci Heritage Lines (00843)": 4,
+   "Gucci by Gucci (00839)": 4,
+   "Gucci Memoire d'une Odeur (01101)": 3
+  },
+  "scope_central": 151,
+  "disco_real": 463,
+  "regulares_analizables": 98,
+  "vol12_casa": 2786798.0,
+  "top10_%_vol12": 27.6,
+  "fotos_con_3m_cerrados": [
+   "2025.M09",
+   "2025.M10",
+   "2025.M11",
+   "2025.M12",
+   "2026.M01",
+   "2026.M02",
+   "2026.M03",
+   "2026.M04",
+   "2026.M05",
+   "2026.M06"
+  ]
+ },
+ {
+  "casa": "Gucci MU",
+  "fotos": []
+ },
+ {
+  "casa": "Kylie Frag",
+  "fotos": [
+   "2025.M09",
+   "2025.M10",
+   "2025.M11",
+   "2025.M12",
+   "2026.M01",
+   "2026.M02",
+   "2026.M03",
+   "2026.M04",
+   "2026.M05",
+   "2026.M06",
+   "2026.M07",
+   "2026.M08",
+   "2026.M09",
+   "2026.M10"
+  ],
+  "avisos": [],
+  "calidad_ultima": {
+   "Actuals": {
+    "vacias_pasado_%": 83.2,
+    "negativos": 0,
+    "suma_pasado": 2430766.0
+   },
+   "EPOS": {
+    "vacias_pasado_%": 76.4,
+    "negativos": 0,
+    "suma_pasado": 1295877.0
+   },
+   "Supply Cuts": {
+    "vacias_pasado_%": 99.0,
+    "negativos": 0,
+    "suma_pasado": 23795.0
+   },
+   "Total Demand Assumption": {
+    "vacias_pasado_%": 92.8,
+    "negativos": 39,
+    "suma_pasado": 421111.0
+   },
+   "Consensus - Final": {
+    "vacias_pasado_%": 83.2,
+    "negativos": 0,
+    "suma_pasado": 2430766.0
+   },
+   "System FC - Final": {
+    "vacias_pasado_%": 83.2,
+    "negativos": 0,
+    "suma_pasado": 2430766.0
+   }
+  },
+  "historia": [
+   "2021.M01",
+   "2030.M12"
+  ],
+  "epos_desde": "2024.M07",
+  "epos_cobertura_codigos_%": 76.2,
+  "eans_por_foto": {
+   "2025.M09": 41,
+   "2025.M10": 41,
+   "2025.M11": 44,
+   "2025.M12": 44,
+   "2026.M01": 44,
+   "2026.M02": 50,
+   "2026.M03": 51,
+   "2026.M04": 52,
+   "2026.M05": 56,
+   "2026.M06": 63,
+   "2026.M07": 63,
+   "2026.M08": 63,
+   "2026.M09": 63,
+   "2026.M10": 63
+  },
+  "altas_bajas": {
+   "2025.M10": [
+    0,
+    0
+   ],
+   "2025.M11": [
+    3,
+    0
+   ],
+   "2025.M12": [
+    0,
+    0
+   ],
+   "2026.M01": [
+    0,
+    0
+   ],
+   "2026.M02": [
+    6,
+    0
+   ],
+   "2026.M03": [
+    1,
+    0
+   ],
+   "2026.M04": [
+    1,
+    0
+   ],
+   "2026.M05": [
+    4,
+    0
+   ],
+   "2026.M06": [
+    7,
+    0
+   ],
+   "2026.M07": [
+    0,
+    0
+   ],
+   "2026.M08": [
+    0,
+    0
+   ],
+   "2026.M09": [
+    0,
+    0
+   ],
+   "2026.M10": [
+    0,
+    0
+   ]
+  },
+  "salto_historia_24m_%": {
+   "2025.M10": 0.0,
+   "2025.M11": 0.0,
+   "2025.M12": 0.0,
+   "2026.M01": 0.0,
+   "2026.M02": 6.7,
+   "2026.M03": 0.0,
+   "2026.M04": 0.0,
+   "2026.M05": 0.0,
+   "2026.M06": 0.0,
+   "2026.M07": 0.0,
+   "2026.M08": 0.0,
+   "2026.M09": 0.0,
+   "2026.M10": 0.0
+  },
+  "n_eans": 63,
+  "por_tipo": {
+   "Regular Item": 29,
+   "One Shot/Promo": 34
+  },
+  "por_responsable": {
+   "Central": 16,
+   "Local": 47
+  },
+  "por_segmento": {
+   "Bulls": 4,
+   "Rabbits": 11,
+   "Horses": 1,
+   "DISC": 4,
+   "Post NPI": 23,
+   "(vacío)": 19,
+   "Pre NPI": 1
+  },
+  "por_edad": {
+   "Año 3+": 7,
+   "Pre-disco": 1,
+   "Año 2": 16,
+   "A1 7-12": 13,
+   "A1 1-6": 14,
+   "Sin ventas": 12
+  },
+  "por_tamano_top": {
+   "50 ML": 15,
+   "100 ML": 13,
+   "N/D": 13,
+   "10 ML": 9,
+   "30 ML": 7,
+   "236 ML": 3,
+   "150 ML": 1,
+   "2.4 ML": 1,
+   "10 G": 1
+  },
+  "sin_tamano": 0,
+  "n_brands": 3,
+  "n_lineas": 6,
+  "brands": {
+   "Cosmic Kylie Jenner (01246)": 43,
+   "Kylie Jenner Mood Stones (01396)": 11,
+   "Kylie Jenner Mist Collection (01409)": 9
+  },
+  "scope_central": 16,
+  "disco_real": 1,
+  "regulares_analizables": 12,
+  "vol12_casa": 1069221.0,
+  "top10_%_vol12": 62.9,
+  "fotos_con_3m_cerrados": [
+   "2025.M09",
+   "2025.M10",
+   "2025.M11",
+   "2025.M12",
+   "2026.M01",
+   "2026.M02",
+   "2026.M03",
+   "2026.M04",
+   "2026.M05",
+   "2026.M06"
+  ]
+ },
+ {
+  "casa": "Kylie MU",
+  "fotos": [
+   "2025.M09",
+   "2025.M10",
+   "2025.M11",
+   "2025.M12",
+   "2026.M01",
+   "2026.M02",
+   "2026.M03",
+   "2026.M04",
+   "2026.M05",
+   "2026.M06",
+   "2026.M07",
+   "2026.M08",
+   "2026.M09",
+   "2026.M10"
+  ],
+  "avisos": [],
+  "calidad_ultima": {
+   "Actuals": {
+    "vacias_pasado_%": 46.6,
+    "negativos": 0,
+    "suma_pasado": 8238740.0
+   },
+   "EPOS": {
+    "vacias_pasado_%": 48.0,
+    "negativos": 0,
+    "suma_pasado": 4360190.0
+   },
+   "Supply Cuts": {
+    "vacias_pasado_%": 95.1,
+    "negativos": 0,
+    "suma_pasado": 1671997.0
+   },
+   "Total Demand Assumption": {
+    "vacias_pasado_%": 93.6,
+    "negativos": 1369,
+    "suma_pasado": 778602.0
+   },
+   "Consensus - Final": {
+    "vacias_pasado_%": 31.5,
+    "negativos": 0,
+    "suma_pasado": 12677420.0
+   },
+   "System FC - Final": {
+    "vacias_pasado_%": 40.1,
+    "negativos": 0,
+    "suma_pasado": 10112499.0
+   }
+  },
+  "historia": [
+   "2021.M01",
+   "2030.M12"
+  ],
+  "epos_desde": "2024.M07",
+  "epos_cobertura_codigos_%": 84.2,
+  "eans_por_foto": {
+   "2025.M09": 487,
+   "2025.M10": 487,
+   "2025.M11": 491,
+   "2025.M12": 515,
+   "2026.M01": 526,
+   "2026.M02": 526,
+   "2026.M03": 531,
+   "2026.M04": 528,
+   "2026.M05": 528,
+   "2026.M06": 530,
+   "2026.M07": 530,
+   "2026.M08": 538,
+   "2026.M09": 538,
+   "2026.M10": 538
+  },
+  "altas_bajas": {
+   "2025.M10": [
+    0,
+    0
+   ],
+   "2025.M11": [
+    4,
+    0
+   ],
+   "2025.M12": [
+    24,
+    0
+   ],
+   "2026.M01": [
+    11,
+    0
+   ],
+   "2026.M02": [
+    0,
+    0
+   ],
+   "2026.M03": [
+    5,
+    0
+   ],
+   "2026.M04": [
+    2,
+    5
+   ],
+   "2026.M05": [
+    0,
+    0
+   ],
+   "2026.M06": [
+    2,
+    0
+   ],
+   "2026.M07": [
+    0,
+    0
+   ],
+   "2026.M08": [
+    8,
+    0
+   ],
+   "2026.M09": [
+    1,
+    1
+   ],
+   "2026.M10": [
+    0,
+    0
+   ]
+  },
+  "salto_historia_24m_%": {
+   "2025.M10": 0.0,
+   "2025.M11": 0.0,
+   "2025.M12": 0.0,
+   "2026.M01": 0.0,
+   "2026.M02": 12.0,
+   "2026.M03": 0.0,
+   "2026.M04": 0.0,
+   "2026.M05": 0.0,
+   "2026.M06": 0.0,
+   "2026.M07": 0.0,
+   "2026.M08": 0.0,
+   "2026.M09": 0.0,
+   "2026.M10": 0.0
+  },
+  "n_eans": 538,
+  "por_tipo": {
+   "Regular Item": 456,
+   "One Shot/Promo": 82
+  },
+  "por_responsable": {
+   "Central": 389,
+   "Local": 107,
+   "(vacío)": 42
+  },
+  "por_segmento": {
+   "DISC": 99,
+   "(vacío)": 59,
+   "Rabbits": 250,
+   "Horses": 56,
+   "Mules": 39,
+   "Bulls": 3,
+   "Post NPI": 32
+  },
+  "por_edad": {
+   "Pre-disco": 129,
+   "Año 3+": 264,
+   "Sin ventas": 61,
+   "Año 2": 61,
+   "A1 7-12": 18,
+   "A1 1-6": 5
+  },
+  "por_tamano_top": {
+   "Make up": 538
+  },
+  "sin_tamano": 0,
+  "n_brands": 5,
+  "n_lineas": 55,
+  "brands": {
+   "Lips (01245)": 238,
+   "Face (01243)": 221,
+   "Eyes (01244)": 58,
+   "Collection (01319)": 12,
+   "Kylie Makeup Other (01223)": 9
+  },
+  "scope_central": 313,
+  "disco_real": 138,
+  "regulares_analizables": 223,
+  "vol12_casa": 2749475.0,
+  "top10_%_vol12": 27.2,
+  "fotos_con_3m_cerrados": [
+   "2025.M09",
+   "2025.M10",
+   "2025.M11",
+   "2025.M12",
+   "2026.M01",
+   "2026.M02",
+   "2026.M03",
+   "2026.M04",
+   "2026.M05",
+   "2026.M06"
+  ]
+ },
+ {
+  "casa": "Marc Jacobs MU",
+  "fotos": []
+ }
+]
