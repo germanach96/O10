@@ -1,4 +1,4 @@
-"""Página HTML de las tarjetas en el estilo de O10 (resultados/tarjetas_O10.html).
+"""Página HTML de las tarjetas en el estilo de O10 (signals.html, en la raíz del repo).
 
 Uso: python -m scripts.patrones_08_html   (después de los pasos 02-06)
 Lee los CSV de tarjetas, las señales y la validación, traduce los textos al inglés (la página de O10 va en inglés)
@@ -404,7 +404,7 @@ def main():
                  cards=hallazgos(T) + nuevas(T) + viejas_a(T))
     plantilla = (pl.RAIZ / "scripts" / "plantilla_tarjetas.html").read_text(encoding="utf-8")
     js = json.dumps(datos, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    salida = RES / "tarjetas_O10.html"
+    salida = pl.RAIZ / "signals.html"
     salida.write_text(plantilla.replace("/*__DATOS__*/null", js), encoding="utf-8")
     print(salida, f"{salida.stat().st_size / 1024:.0f} KB", len(datos["cards"]), "tarjetas")
 
