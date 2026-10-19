@@ -22,8 +22,8 @@
   --blue:#0071e3; --blue-txt:#0062c4; --on-blue:#ffffff;
   --green-txt:#1f7a35; --red-txt:#c9001a; --cons:#8e8e93;
   --pulgar-solido:#ffffff; --pozo:rgba(120,120,128,.14);
-  /* codificación de las tarjetas: fondo = referencia, borde = dirección */
-  --fondo-k:#e9f2fd; --fondo-y:#e6e6e9; --anillo-si:#0071e3; --anillo-no:rgba(142,142,147,.78);
+  /* borde de las tarjetas: azul = frente al Consensus, gris = frente al año pasado o su propio ritmo */
+  --anillo-si:#0071e3; --anillo-no:rgba(142,142,147,.78);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
@@ -43,7 +43,7 @@
   --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
   --blue:#0a72e8; --blue-txt:#74b8ff; --green-txt:#30d158; --red-txt:#ff6961; --cons:#98989d;
   --pulgar-solido:#3a3a3c; --pozo:rgba(0,0,0,.28);
-  --fondo-k:#16253a; --fondo-y:#262628; --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
+  --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
   color-scheme:dark;
 }
 @media (prefers-color-scheme:dark){
@@ -58,7 +58,7 @@
     --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
     --blue:#0a72e8; --blue-txt:#74b8ff; --green-txt:#30d158; --red-txt:#ff6961; --cons:#98989d;
     --pulgar-solido:#3a3a3c; --pozo:rgba(0,0,0,.28);
-    --fondo-k:#16253a; --fondo-y:#262628; --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
+    --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
     color-scheme:dark;
   }
 }
@@ -164,11 +164,9 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .leer{max-width:78ch;margin:2px 0 12px;color:var(--label-2);font-size:13px}
 .clave{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:0 0 20px;font-size:12.5px;color:var(--label-2)}
 .clave span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-.clave i{width:26px;height:16px;border-radius:6px;flex:none;background:var(--card);border:1.5px solid var(--borde-cristal)}
-.clave i.si{border-color:var(--anillo-si)}
-.clave i.no{border-color:var(--anillo-no)}
-.clave i.k{background:var(--fondo-k);border-color:transparent;box-shadow:inset 0 0 0 .5px var(--sep)}
-.clave i.y{background:var(--fondo-y);border-color:transparent;box-shadow:inset 0 0 0 .5px var(--sep)}
+.clave i{width:28px;height:18px;border-radius:7px;flex:none;background:var(--tarjeta);border:2.5px solid var(--borde-cristal)}
+.clave i.k{border-color:var(--anillo-si)}
+.clave i.y{border-color:var(--anillo-no)}
 .clave .sep{width:1px;height:16px;background:var(--sep-fuerte)}
 .clave b{color:var(--label);font-weight:600}
 .leer b{color:var(--label);font-weight:600}
@@ -178,11 +176,10 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .tarjeta{position:relative;width:340px;height:308px;display:flex;flex-direction:column;padding:16px;border-radius:var(--r-l);text-align:left;border:1.5px solid var(--borde-cristal);
   background:var(--tarjeta);box-shadow:inset 0 1px 0 var(--brillo-cristal),var(--sombra-cristal);color:var(--label);cursor:pointer;
   transition:background-color 160ms ease,transform 160ms var(--ease-out),box-shadow 200ms var(--ease-out)}
-.tarjeta.ref-K{background:var(--fondo-k)}
-.tarjeta.ref-Y{background:var(--fondo-y)}
-.tarjeta.si{border-color:var(--anillo-si)}
-.tarjeta.no{border-color:var(--anillo-no)}
-@media (hover:hover) and (pointer:fine){.tarjeta:hover{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 14px 40px rgba(30,36,48,.16),0 2px 4px rgba(30,36,48,.08)}.tarjeta:not(.ref-K):not(.ref-Y):hover{background:var(--tarjeta-hover)}}
+.tarjeta.ref-K,.tarjeta.ref-Y{border-width:2.5px;padding:15px}
+.tarjeta.ref-K{border-color:var(--anillo-si)}
+.tarjeta.ref-Y{border-color:var(--anillo-no)}
+@media (hover:hover) and (pointer:fine){.tarjeta:hover{background:var(--tarjeta-hover);box-shadow:inset 0 1px 0 var(--brillo-cristal),0 14px 40px rgba(30,36,48,.16),0 2px 4px rgba(30,36,48,.08)}}
 .tarjeta:active{transform:scale(.985)}
 .tarjeta.entra{animation:entra 320ms var(--ease-out) both}
 @keyframes entra{from{opacity:0;transform:translateY(8px)}}
@@ -302,6 +299,7 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
 
 /* ============ iPhone ============ */
 @media (max-width:900px){
+  html,body{overflow-x:clip}
   .lado{top:auto;bottom:0;left:0;right:0;width:auto;height:min(80dvh,640px);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:45;transform:translateY(102%);visibility:hidden;
     transition:transform 420ms var(--ease-drawer),visibility 0s linear 420ms;padding-bottom:max(12px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);-webkit-backdrop-filter:blur(44px) saturate(185%);backdrop-filter:blur(44px) saturate(185%)}
   .lado.abierta{transform:none;visibility:visible;transition:transform 420ms var(--ease-drawer),visibility 0s}
@@ -319,8 +317,10 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
   .orden{display:none}
   .clave .sep{display:none}
   .colecciones-movil{display:grid !important;width:100%;order:4}
-  .rejilla,.rejilla.dobles{grid-template-columns:1fr}
-  .tarjeta{width:100%;height:auto;min-height:290px}
+  .rejilla,.rejilla.dobles{grid-template-columns:minmax(0,1fr)}
+  .tarjeta{width:100%;min-width:0;height:auto;min-height:290px}
+  .kpis{gap:5px}
+  .kpi{padding:6px 7px;min-width:0}
   .hallazgo{width:100%;height:auto;flex-direction:column;gap:14px}
   .h-der{width:auto;border-left:0;border-top:1px solid var(--sep);padding:14px 0 0}
   .hallazgo .why,.hallazgo .accion{-webkit-line-clamp:unset}
@@ -348,13 +348,13 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
 }
 @media (prefers-reduced-transparency:reduce){
   .vidrio,dialog.ficha{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}
-  .tarjeta:not(.ref-K):not(.ref-Y){background:var(--card)}
+  .tarjeta{background:var(--card)}
   body::before{filter:none}
 }
 @media (prefers-contrast:more){
   .vidrio,dialog.ficha{border-color:var(--sep-fuerte)}
-  .tarjeta:not(.si):not(.no){border-color:var(--sep-fuerte)}
-  .tarjeta.si,.tarjeta.no{border-width:2px}
+  .tarjeta:not(.ref-K):not(.ref-Y){border-color:var(--sep-fuerte)}
+  .tarjeta{background:var(--card)}
 }
 </style>
 </head>
@@ -373,8 +373,6 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
     <ul class="lista" id="escenarios" aria-labelledby="hEsc"></ul>
     <h2 id="hRef">Compared with</h2>
     <div class="grupo-lado"><div class="seg pozo" id="segRef" role="radiogroup" aria-labelledby="hRef"></div></div>
-    <h2 id="hDir">The card says it</h2>
-    <div class="grupo-lado"><div class="seg pozo" id="segDir" role="radiogroup" aria-labelledby="hDir"></div></div>
     <h2 id="hCasa">House</h2>
     <div class="chips" id="casas" role="group" aria-labelledby="hCasa"></div>
     <h2 id="hCls">Class</h2>
@@ -416,9 +414,7 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
   </header>
   <p class="leer" id="leer"></p>
   <div class="clave" id="clave" aria-label="How to read the colours">
-    <span><i class="si"></i><b>Blue border</b> it will happen</span><span><i class="no"></i><b>Gray border</b> it won't happen</span>
-    <span class="sep" aria-hidden="true"></span>
-    <span><i class="k"></i><b>Blue card</b> vs the Consensus</span><span><i class="y"></i><b>Gray card</b> vs last year or its own pace</span>
+    <span><i class="k"></i><b>Blue border</b> vs the Consensus</span><span><i class="y"></i><b>Gray border</b> vs last year or its own pace</span>
   </div>
   <section class="rejilla" id="rejilla" aria-label="Cards"></section>
 </main>
@@ -441,7 +437,7 @@ const ESC_SI = {muy_bajo:"Will sell much less", bajo:"Will sell less", alto:"Wil
   drop:"Will drop", death:"Will stop selling", rise:"Will rise strongly", empty:"Empty month ahead"};
 const ESC_NO = {muy_bajo:"Won't sell much less", bajo:"Won't sell less", alto:"Won't sell more", muy_alto:"Won't sell much more"};
 const nombre = c => c.dir > 0 ? ESC_SI[c.esc] : (ESC_NO[c.esc] || ESC[c.esc]);
-const codif = c => c.kind === "metric" || !c.ref ? "" : ` ref-${c.ref} ${c.dir > 0 ? "si" : "no"}`;
+const codif = c => c.kind === "metric" || !c.ref ? "" : ` ref-${c.ref}`;
 const UMB = {muy_bajo:"under 0.5×", bajo:"under 0.8×", alto:"over 1.2×", muy_alto:"over 1.5×"};
 const VERBO = {muy_bajo:"sold under half", bajo:"sold under 0.8×", alto:"sold over 1.2×", muy_alto:"sold over 1.5×"};
 const VERBO_NO = {muy_bajo:"did not sell under half", bajo:"did not sell under 0.8×", alto:"did not sell over 1.2×", muy_alto:"did not sell over 1.5×"};
@@ -491,7 +487,6 @@ function pasa(c, ignorar){
   if (c.kind === "metric") return !S.q || (c.title + " " + c.why).toLowerCase().includes(S.q);
   if (ignorar !== "esc" && S.esc.length && !S.esc.includes(c.escF || c.esc)) return false;
   if (S.ref !== "all" && c.ref !== S.ref) return false;
-  if (S.dir !== "all" && String(c.dir) !== S.dir) return false;
   if (S.casa !== "all" && !(c.houses || []).some(h => h[0] === S.casa && h[1] >= 10)) return false;
   if (S.col === "current" && S.ver.length && !S.ver.includes(c.verdict)) return false;
   if (ignorar !== "cls" && S.cls.length && !S.cls.includes(clase(c))) return false;
@@ -507,7 +502,7 @@ function ordenar(a){
   const v = c => k === "gain" ? c.gain : k === "score" ? c.score : k === "lift" ? (c.dir > 0 ? c.lift : 1 / Math.max(c.lift, .01)) : c.n;
   return a.sort((x, y) => (v(y) ?? -1e9) - (v(x) ?? -1e9));
 }
-function filtrosActivos(){ return S.esc.length + S.cls.length + (S.ref !== "all") + (S.dir !== "all") + (S.casa !== "all") + (S.col === "current" ? S.ver.length : 0); }
+function filtrosActivos(){ return S.esc.length + S.cls.length + (S.ref !== "all") + (S.casa !== "all") + (S.col === "current" ? S.ver.length : 0); }
 const clase = c => S.punt === "gain" ? c.clsG : c.cls;
 
 // ---------------------------------------------------------------- tarjetas
@@ -629,7 +624,7 @@ function contadores(){
     b.querySelector(".num").textContent = ent(n);
     b.disabled = !n && !S.cls.includes(b.dataset.k);   // sin tarjetas de esa clase: apagada
   });
-  ["#segRef", "#segDir", "#segPunt", "#segTema", "#segColMovil"].forEach(s => colocarPulgar(document.querySelector(s)));
+  ["#segRef", "#segPunt", "#segTema", "#segColMovil"].forEach(s => colocarPulgar(document.querySelector(s)));
 }
 function limpiar(){ Object.assign(S, {esc:[], ref:"all", dir:"all", casa:"all", ver:[], cls:[], q:""}); $("#busca").value = ""; pintar(); }
 
@@ -679,7 +674,6 @@ function montar(){
     const k = f.dataset.k; S.esc = S.esc.includes(k) ? S.esc.filter(x => x !== k) : [...S.esc, k]; pintar();
   });
   segmentado($("#segRef"), [["all", "All"], ["K", "Consensus"], ["Y", "Last year"]], "ref", pintar);
-  segmentado($("#segDir"), [["all", "All"], ["1", "Will happen"], ["-1", "Won't"]], "dir", pintar);
   segmentado($("#segPunt"), [["gain", "Gain"], ["score", "Your score"]], "punt", () => { if (S.orden === "gain" || S.orden === "score") { S.orden = S.punt; $("#orden").value = S.orden; } pintar(); });
   segmentado($("#segTema"), [["light", "Light"], ["dark", "Dark"], ["auto", "Auto"]], "tema", v => { aplicarTema(); contadores(); });
   segmentado($("#segColMovil"), COLS.map(c => [c.k, c.t.replace(" cards", "")]), "col", (v, antes) => cambiarColeccion(v, antes));

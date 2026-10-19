@@ -164,6 +164,8 @@ def nuevas(T):
         ref = "K" if r.tabla.startswith("K") else "Y"
         esc = ESC_ES[r.escenario]
         dir_ = 1 if r.direccion == "pasa" else -1
+        if dir_ < 0:   # solo tarjetas de «va a pasar»: las de «no va a pasar» no cambian ninguna decisión
+            continue
         out.append(dict(id=f"n{i}", coll="new", ref=ref, esc=esc, dir=dir_, sig=s, cond=[T[x] for x in s],
                         group=grupo_en(tipo, valor), gtype=GRUPO_EN.get(tipo.split("×")[0], ""),
                         origin=r.origen_senales, epos=bool(r.usa_epos), n=int(r.n), ind=int(r.casos_independientes),
@@ -227,6 +229,8 @@ def viejas_a(T):
             esc = escF = r.esc
             refTxt, ref = None, "K"
             dir_ = 1 if r.direccion == "pasa" else -1
+            if dir_ < 0:
+                continue
             v = {"bajo": "under 0.8×", "muy_bajo": "under half", "alto": "over 1.2×", "muy_alto": "over 1.5×"}[esc]
             action = (f"{'Lower' if esc in ('bajo', 'muy_bajo') else 'Raise'} the 3-month forecast: "
                       f"{r.probabilidad:.0%} of these codes sold {v} their Consensus.")
