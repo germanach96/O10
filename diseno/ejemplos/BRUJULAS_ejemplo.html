@@ -1321,7 +1321,7 @@ const tx = s => s == null ? s : (TX[s] ?? String(s).split(" · ").map(p => TX[p]
 const estacTxt = r => r.s > 0 && r.h != null ? ` · seasonality ${tx(r.h)}, ${r.e} yr${r.e === 1 ? "" : "s"}` : "";
 function recetaTxt(r){ if(!r) return "-";
   return `s ${vtxt("s",r.s)}${estacTxt(r)} · w ${vtxt("w",r.w)} · m ${vtxt("m",r.m)} · N ${r.N}M · c ${vtxt("c",r.c)} · p ${vtxt("p",r.p)} · trend ${tx(r.grupo)}`; }
-function casa(){ return D.casas[estado.casa]; }
+function casa(k = estado.casa){ return D.casas[k]; }
 function esRegla(){ return estado.sel.startsWith("R|") || estado.sel.startsWith("S|"); }
 function entidad(foto){
   if (esSel()) return entidadSel(foto);
@@ -1409,8 +1409,8 @@ function guardarAjustes(){
   try { localStorage.setItem("o10-ajustes", JSON.stringify({ignorar: [...AJ.ignorar], tol: AJ.tol, tolEan: AJ.tolEan})); } catch(e) {}
 }
 // datos precalculados de la combinación de tipos ignorados (solo One Shot y Local cambian los cálculos)
-function Vbase(){
-  const c = casa(), k = ["Local", "One Shot"].filter(t => AJ.ignorar.has(t)).join(",");
+function Vbase(cs = estado.casa){
+  const c = casa(cs), k = ["Local", "One Shot"].filter(t => AJ.ignorar.has(t)).join(",");
   return k && c.variantes && c.variantes[k] ? c.variantes[k] : c;
 }
 // ---- Rango de cálculo (barra fija de arriba) ----
@@ -1419,13 +1419,13 @@ function Vbase(){
 // muestran esas fotos. El detector sigue comparando el Consensus de la foto más reciente.
 let RANGO = null;
 const cacheRango = new Map();
-function V(){
-  const b = Vbase(), n = b.fotos.length;
+function V(cs = estado.casa){
+  const b = Vbase(cs), n = b.fotos.length;
   if (!RANGO || !b.rangos) return b;
   const ini = Math.max(0, Math.min(RANGO.ini, n - 1)), fin = Math.max(ini, Math.min(RANGO.fin, n - 1));
   const med = b.fotos.map((f, i) => f.hay_tramos_cerrados ? i : -1).filter(i => i >= 0);
   if (!med.length || (ini <= med[0] && fin >= med[med.length - 1])) return b;
-  const clave = estado.casa + "|" + [...AJ.ignorar].sort().join(",") + "|" + ini + "-" + fin;
+  const clave = cs + "|" + [...AJ.ignorar].sort().join(",") + "|" + ini + "-" + fin;
   if (cacheRango.has(clave)) return cacheRango.get(clave);
   const rg = b.rangos, fotos = b.fotos.slice(ini, fin + 1);
   const meds = fotos.filter(f => f.hay_tramos_cerrados).map(f => rg.medidas.indexOf(f.foto)).filter(i => i >= 0);
@@ -1473,8 +1473,10 @@ let M = {raiz: null, nodos: [], foco: null, sel: null, filtros: {scope: "todos",
 // fuera de scope con color propio: One Shot (Article Type) e innovaciones en sus meses 1-6
 const tipoHoja = i => i.scope ? null : (i.art === "One Shot" ? "os" : (i.edad === "A1 1-6" ? "in" : null));
 const colorTipo = t => t === "os" ? "var(--c-os)" : t === "in" ? "var(--c-in)" : null;
-function calcularHojas(){
-  const c = casa(), ini = c.inicio.codigos, det = V().detector;
+// el mapa reúne todas las casas: cada código se calcula con los datos (variante, rango, detector) de su casa
+function calcularHojas(){ return Object.keys(D.casas).flatMap(hojasCasa); }
+function hojasCasa(k){
+  const c = casa(k), ini = c.inicio.codigos, det = V(k).detector;
   const filas = {}; det.filas.forEach(r => filas[r.ean] = r);
   // los tipos ignorados no salen en el mapa (ni suman en los trends: lo resuelve la variante precalculada)
   return Object.keys(ini).filter(ean => cuenta(ini[ean])).map(ean => {
@@ -1488,7 +1490,7 @@ function calcularHojas(){
     } else if (i.scope) sinrec = true;
     // tamaño = Consensus de la foto más actual: 6 meses cerrados anteriores (= lo vendido) + 12 siguientes (lo planeado)
     const v6 = i.v6 ?? 0, p12 = i.p12 ?? 0, vol = Math.max(0, v6 + p12);
-    return {ean, desc: a.desc || ean, brand: a.brand || "(no brand)", pl: a.pl || "(no line)", seg: a.segmento || "", edad: i.edad,
+    return {ean, casa: k, desc: a.desc || ean, brand: a.brand || "(no brand)", pl: a.pl || "(no line)", seg: a.segmento || "", edad: i.edad,
             scope: i.scope, motivo: i.motivo, tipo: tipoHoja(i), vol12: i.vol12, cons9: i.cons9, v6, p12, vol, u, p, sR, sinrec, meses,
             fuera: u != null && u > 0.5};
   });
@@ -1496,18 +1498,23 @@ function calcularHojas(){
 
 function construirArbol(hojas){
   const minVis = Math.max(1, Math.max(0, ...hojas.map(h => h.vol)) * 0.0012);
-  const brands = new Map();
+  const casas = new Map();
   hojas.forEach(h => {
+    if (!casas.has(h.casa)) casas.set(h.casa, new Map());
+    const brands = casas.get(h.casa);
     if (!brands.has(h.brand)) brands.set(h.brand, new Map());
     const pls = brands.get(h.brand); if (!pls.has(h.pl)) pls.set(h.pl, []); pls.get(h.pl).push(h);
   });
-  // la casa es un círculo más (como las brands): la raíz, invisible, es el lugar donde convivirán las demás casas
-  const nc = {nombre: estado.casa, clave: "Casa: " + estado.casa, nivel: "casa", children: []};
-  const raiz = {nombre: "All houses", clave: "Todas", nivel: "todo", children: [nc]};
-  brands.forEach((pls, b) => {
-    const nb = {nombre: b, clave: "Brand: " + b, nivel: "brand", children: []};
-    pls.forEach((hs, pl) => nb.children.push({nombre: pl, clave: "PL: " + pl, nivel: "pl", children: hs.map(h => ({nombre: h.desc, nivel: "hoja", hoja: h, valor: Math.max(h.vol, minVis)}))}));
-    nc.children.push(nb);
+  // cada casa es un círculo (como las brands) dentro de la raíz invisible "Todas las casas"
+  const raiz = {nombre: "All houses", clave: "Todas", nivel: "todo", children: []};
+  casas.forEach((brands, k) => {
+    const nc = {nombre: k, clave: "Casa: " + k, nivel: "casa", children: []};
+    brands.forEach((pls, b) => {
+      const nb = {nombre: b, clave: "Brand: " + b, nivel: "brand", children: []};
+      pls.forEach((hs, pl) => nb.children.push({nombre: pl, clave: "PL: " + pl, nivel: "pl", children: hs.map(h => ({nombre: h.desc, nivel: "hoja", hoja: h, valor: Math.max(h.vol, minVis)}))}));
+      nc.children.push(nb);
+    });
+    raiz.children.push(nc);
   });
   return d3.hierarchy(raiz).sum(d => d.valor || 0).sort((a, b) => b.value - a.value);
 }
@@ -1576,13 +1583,14 @@ function dibujarMapa(){
   M.raiz = raiz; M.nodos = raiz.descendants();
   M.minR = Math.min(...raiz.leaves().map(l => l.r).filter(r => r > 0.6), 4);
   const clave = M.foco && M.foco.data.clave;
-  // M.casaN = el círculo de la casa abierta; se empieza enfocado en ella (con una sola casa, la raíz no aporta nada)
+  // M.casaN = el círculo de la casa activa; con una sola casa se empieza enfocado en ella (la raíz no aporta nada),
+  // con varias, en la raíz: todas las casas a la vista
   M.casaN = raiz.children.find(c => c.data.clave === "Casa: " + estado.casa) || raiz.children[0];
   M.foco = (clave && M.nodos.find(n => n.data.clave === clave)) || (raiz.children.length === 1 ? M.casaN : raiz);
   const svg = $("pack");
   svg.setAttribute("viewBox", `0 0 ${W} ${W}`);
   // índice de brand para la entrada en cascada
-  const iBrand = new Map(); M.casaN.children.forEach((b, i) => iBrand.set(b, i));
+  const iBrand = new Map(); raiz.children.flatMap(c => c.children || []).forEach((b, i) => iBrand.set(b, i));
   // grupos anidados (casa > brand > línea > código): cada grupo flota (con sus hijos dentro) sin romper el orden de M.nodos
   const pinta = (n) => {
     const i = M.nodos.indexOf(n), d = n.data;
@@ -1788,6 +1796,8 @@ function camara(t, animar){
 }
 function enfocar(n, animar = true, mover = true){
   M.foco = n;
+  const nc = n.ancestors().find(a => a.data.nivel === "casa");
+  if (nc) activarCasa(nc.data.nombre);
   if (mover) camara(transformDe(n), animar); else pintarEtiquetas();
   pintarMigas(); pintarPanel();
   if (animar) {
@@ -1987,8 +1997,11 @@ function pintarMigas(){
   if (M.sel && !(M.foco.children || []).some(l => l.data.hoja && l.data.hoja.ean === M.sel)) { M.sel = null; $("mundo").querySelectorAll("circle.activo").forEach(c => c.classList.remove("activo")); }
   pintarNivel();
   if (enMapa()) $("barraTitulo").textContent = corto(M.foco.data.nombre);
+  // el selector de casa sigue al mapa: "All houses" en la raíz, la casa del foco en cualquier nivel dentro de ella
+  const nc = M.foco.ancestors().find(a => a.data.nivel === "casa");
+  $("selCasa").value = nc ? nc.data.nombre : "";
   if (camino.length === 1) { $("migas").innerHTML = `<span>${M.raiz.children.length} house${M.raiz.children.length === 1 ? "" : "s"} · ${M.hojas.length} codes</span>`; pintarLado(); return; }
-  if (camino.length === 2) { $("migas").innerHTML = `<button type="button" data-clave="Todas">All houses</button><span class="sep">›</span><span>Snapshot ${casa().inicio.foto} · ${M.hojas.length} codes</span>`; pintarLado(); return; }
+  if (camino.length === 2) { $("migas").innerHTML = `<button type="button" data-clave="Todas">All houses</button><span class="sep">›</span><span>Snapshot ${casa().inicio.foto} · ${M.foco.leaves().length} codes</span>`; pintarLado(); return; }
   camino.pop();
   $("migas").innerHTML = camino.map((n, i) => `${i ? '<span class="sep">›</span>' : ""}<button type="button" data-clave="${esc(n.data.clave)}" >${esc(corto(n.data.nombre))}</button>`).join("");
   pintarLado();
@@ -2131,7 +2144,8 @@ const OK_SVG = `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2 5 
 function pintarListas(){
   const cont = $("fListas");
   cont.hidden = !LISTAS.size; if (!LISTAS.size) return;
-  const hay = new Set(M.hojas.map(h => h.ean)), deCasa = casa().inicio.codigos, nombreCasa = corto(estado.casa);
+  const ks = Object.keys(D.casas), deCasa = Object.assign({}, ...ks.map(k => casa(k).inicio.codigos));
+  const hay = new Set(M.hojas.map(h => h.ean)), nombreCasa = ks.length === 1 ? corto(ks[0]) : "these houses";
   // una lista elegida sigue elegida aunque el filtro de cálculo la deje sin códigos: entonces no se selecciona nada
   $("listasUl").innerHTML = [...LISTAS].map(([n, s]) => {
     const dentro = [...s].filter(e => hay.has(e)).length, enCasa = [...s].filter(e => deCasa[e]).length, on = M.filtros.lista.has(n);
@@ -2492,6 +2506,7 @@ $("pestanas").addEventListener("click", ev => {
 
 // ================= Navegación entre vistas =================
 function irA(vista, sel){
+  if (vista === "detalle" && sel) { const k = casaDeSel(sel); if (k) activarCasa(k); }
   const cambio = () => {
     const ini = vista === "inicio";
     // El mapa nunca se va: en Detalle queda de fondo, difuminado y quieto en su sitio (misma cámara), pero vivo:
@@ -3951,8 +3966,9 @@ $("fichaAbrir").addEventListener("click", () => { const e = FICHA && FICHA.ean; 
 // clases y transforms (sin layout), y el recálculo de toda la página espera a que arranque el muelle de encaje.
 const MESES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const etMes = (m, primero) => { const k = +m.slice(6) - 1; return MESES[k] + (k === 0 || primero ? " " + m.slice(2, 4) : ""); };
-function leerRango(){ try { const g = JSON.parse(localStorage.getItem("o10-rango") || "null"); if (g && g.casa === estado.casa) return {ini: g.ini, fin: g.fin}; } catch(e) {} return null; }
-function guardarRango(){ try { localStorage.setItem("o10-rango", JSON.stringify({casa: estado.casa, ...(RANGO || {})})); } catch(e) {} }
+// el rango es el mismo para todas las casas del mapa (índices sobre las fotos, que comparten)
+function leerRango(){ try { const g = JSON.parse(localStorage.getItem("o10-rango") || "null"); if (g && Number.isInteger(g.ini)) return {ini: g.ini, fin: g.fin}; } catch(e) {} return null; }
+function guardarRango(){ try { localStorage.setItem("o10-rango", JSON.stringify({...(RANGO || {})})); } catch(e) {} }
 const RG = {arrastre: null};
 const medidasIdx = () => Vbase().fotos.map((f, i) => f.hay_tramos_cerrados ? i : -1).filter(i => i >= 0);
 function rangoActual(){
@@ -4211,6 +4227,21 @@ document.addEventListener("click", ev => {
 });
 
 // ================= Arranque =================
+// casa activa = la del nivel que se mira (o la de la selección que se abre): el detalle, el inspector y la selección
+// acumulada trabajan con sus datos. En la raíz se queda la última.
+function activarCasa(k){
+  if (!D.casas[k] || k === estado.casa) return;
+  estado.casa = k;
+  leerSeleccion(); $("modoAcum").checked = SEL.modo;
+}
+function casaDeSel(sel){
+  const k = partirClave(sel.slice(sel.startsWith("R|") || sel.startsWith("S|") ? 2 : 0).split("¦")[0]).base;
+  const ks = Object.keys(D.casas);
+  if (k.startsWith("Casa: ")) return k.slice(6);
+  if (k.startsWith("Brand: ")) return ks.find(c => Object.values(casa(c).atributos).some(a => (a.brand || "(no brand)") === k.slice(7)));
+  if (k.startsWith("PL: ")) return ks.find(c => Object.values(casa(c).atributos).some(a => (a.pl || "(no line)") === k.slice(4)));
+  return ks.find(c => casa(c).inicio.codigos[k]);
+}
 function cargarCasa(){
   RANGO = leerRango(); cacheRango.clear();
   pintarAjustes();
@@ -4221,9 +4252,15 @@ function cargarCasa(){
   M.hojas = calcularHojas();
   pintarChips(); pintarLeyenda(); dibujarMapa();
 }
-$("selCasa").innerHTML = Object.keys(D.casas).map(k => `<option>${esc(k)}</option>`).join("");
-estado.casa = $("selCasa").value;
-$("selCasa").onchange = () => { estado.casa = $("selCasa").value; cargarCasa(); location.hash = "inicio"; };
+estado.casa = Object.keys(D.casas)[0];
+// selector de casa: "All houses" va primero y es con lo que se abre siempre la página (el mapa empieza en la raíz)
+$("selCasa").innerHTML = `<option value="">All houses</option>` + Object.keys(D.casas).map(k => `<option value="${esc(k)}">${esc(k)}</option>`).join("");
+$("selCasa").onchange = () => {
+  const v = $("selCasa").value, n = v ? M.raiz.children.find(c => c.data.nombre === v) : M.raiz;
+  if (!n) return;
+  if (!enMapa()) location.hash = "inicio";
+  enfocar(n);
+};
 cargarCasa();
 leerHash();
 requestAnimationFrame(() => { moverPulgar($("segVista")); moverPulgar($("segTema")); });

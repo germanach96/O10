@@ -296,7 +296,7 @@ El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versi
 - **Colores del sistema de Apple con un significado fijo:** azul = receta y acciones, gris discontinuo = Consensus, verde = meta. Fuente del sistema.
 - **Movimiento** según la skill de Emil Kowalski: muelles críticamente amortiguados para zoom y controles, curvas ease-out fuertes para pulsaciones y popovers, nada animado en acciones de teclado.
 
-Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
+Selector de casa y de código (desde el mapa, la barra lateral o el buscador). El selector de casa de la barra lateral empieza siempre en **"Todas las casas"** ("All houses", la primera opción): la página se abre con el mapa en la raíz y todas las casas a la vista. Elegir una casa enfoca su círculo; el selector sigue al mapa (la casa del nivel que se mira, o "All houses" en la raíz). Cada código se calcula con los datos de su casa; el rango de fotos es el mismo para todas.
 
 ### Barra de rango de cálculo (fija arriba, en el mapa y en el detalle)
 - Un punto por cada foto cargada de la casa y dos tiradores para elegir la primera y la última foto. **Solo se pueden elegir fotos medidas**: las fotos aún sin tramos cerrados van al final, huecas, sobre un tramo discontinuo con la etiqueta "Sin medir aún", y los tiradores no pasan de la última foto medida (tope duro, sin goma). Las fotos dentro del rango van en azul con la etiqueta en negrita. Atajos: Todo, Últimas 6, Últimas 3 (las últimas fotos medidas).
