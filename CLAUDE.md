@@ -168,7 +168,7 @@ Para un código, una foto F y una receta (s, e, h, w, m, N, c, p, grupo G). Hist
    - Los códigos que salieron del export siguen sumando en H_G, H_h y el EPOS del grupo con su historia (copiada de la última foto que los traía) y 0 desde que salieron. No cuentan en el nº de códigos del grupo, ni en el scope, el mapa o el detector.
    - T = (1 − m) · T_sellin + m · T_sellout, recortado a ±tope.
 4. **Forecast:** F(t) = Base(t) · (1 + w · T) + **DAs futuros**(t), donde DAs futuros = Total Demand Assumption de la foto F para el mes t (lo planificado se suma encima de la base). Los DAs se respetan siempre al 100%: no hay eje para ignorarlos (decisión del usuario).
-5. Forecast negativo → 0.
+5. Forecast negativo → 0. En los meses posteriores al mes de una Disco Date real (discontinuación o fin de licencia, por ejemplo Gucci el 21/06/2027), el forecast de la receta es 0. Solo `23/12/2030` (y las fechas de `fechas_disco_por_defecto`) cuenta como "sin fecha real", aunque una fecha la tengan casi todos los códigos.
 
 ### Casos límite (registrar, no romper)
 - Código sin 12 meses de historia: no hay año anterior. Las recetas con `s > 0` usan la media; marcar el código como "historia corta".
