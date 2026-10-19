@@ -176,29 +176,63 @@ def nuevas(T):
     return out
 
 
-def actuales(T):
+# tarjetas de antes que siguen en clase A (por ganancia): entran como una tarjeta más, sin distinguir su origen
+EVENTO_ESC = {"drop": ("muy_bajo", "vs expected"), "death": ("muy_bajo", "vs its pace"), "rise": ("muy_alto", "vs expected"),
+              "empty": ("muy_bajo", "next month vs its average")}
+ACCION_EVENTO = {"drop": "Lower the 3-month forecast to about half of expected (12-month level × brand seasonality).",
+                 "death": "Don't replenish: plan the phase-out and move the volume to a healthy sibling.",
+                 "rise": "Raise the 3-month forecast and secure supply.",
+                 "empty": "Plan next month close to zero: with no supply cuts, it is demand, not supply."}
+
+
+def aburrida_vieja(sid, esc):
+    """Las mismas explicaciones aburridas que a las tarjetas nuevas: si alguna la tumba, la tarjeta no entra."""
+    import numpy as np
+    from scripts import patrones_03_reglas as r3
+    if esc:   # tarjeta del motor, frente al Consensus
+        K, XK, _ = r3.cargar_tabla("K")
+        return bool(r3.aburridas(XK[sid].to_numpy(), K[f"Y_{esc}"].to_numpy(), K, np.ones(len(K), bool), 1, "K"))
+    Y = pd.read_parquet(CACHE / "casos_Y.parquet")
+    XY = pd.read_parquet(CACHE / "senales_Y.parquet").astype(bool)
+    sano = (Y.last3_vs_rate >= .6) & (Y.zeros3 == 0)
+    r = Y.A3 / Y.base_rob
+    ev = {"C": (sano & (Y.base_rob >= 30), r < .5), "M": (sano & Y.y6.notna(), Y.y6 < .2 * 6 * Y.mu12),
+          "U": (Y.base_rob >= 30, r > 1.5), "V": (Y.a1.notna(), Y.a1 < .25 * Y.mu12)}
+    pob, y = ev[sid[0]]
+    pob = pob.to_numpy()
+    return bool(r3.aburridas(XY[sid].to_numpy() & pob, y.fillna(False).to_numpy().astype(int), Y, pob, 1, "Y"))
+
+
+def viejas_a(T):
     df = pd.read_csv(RES / "tarjetas_actuales.csv", sep=";")
+    df = df[df.clase_ganancia == "A"].copy()
+    df["esc"] = [None if f.startswith("libro") else ESC_ES[e] for f, e in zip(df.fuente, df.escenario)]
+    # misma señal en «más» y «mucho más» (o «menos» y «mucho menos»): queda la extrema si gana casi lo mismo
+    pares = {"alto": "muy_alto", "bajo": "muy_bajo"}
+    quitar = set()
+    for i, r in df[df.esc.isin(pares)].iterrows():
+        j = df[(df.id == r.id) & (df.esc == pares[r.esc])]
+        if len(j):
+            quitar.add(i if j.ganancia_pts.iloc[0] >= r.ganancia_pts - 5 else j.index[0])
+    df = df.drop(index=list(quitar))
+    df = df[[not aburrida_vieja(r.id, r.esc if isinstance(r.esc, str) else None) for r in df.itertuples()]]
     out = []
     for i, r in df.reset_index(drop=True).iterrows():
         libro = r.fuente.startswith("libro")
         if libro:
-            ev = EVENTO[r.id[0]]
-            esc, ref, dir_ = ev[0], "Y", 1
-            says = f"Raises the chance of: {ev[2].lower()}"
+            esc = EVENTO[r.id[0]][0]
+            escF, refTxt = EVENTO_ESC[esc]
+            ref, dir_, action = "Y", 1, ACCION_EVENTO[esc]
         else:
-            esc, ref = ESC_ES[r.escenario], "K"
+            esc = escF = r.esc
+            refTxt, ref = None, "K"
             dir_ = 1 if r.direccion == "pasa" else -1
-            d = str(r.lo_que_dice)
-            if d.startswith("sin puntos"):
-                says = "No points in the model (its strongest link shown)"
-            elif d.startswith("puntos de signo"):
-                says = "Points of opposite sign depending on the house"
-            else:
-                says = ("Raises" if d.startswith("sube") else "Lowers") + " the chance of this scenario"
-        out.append(dict(id=f"c{i}", coll="current", src="book" if libro else "engine", code=r.id, ref=ref, esc=esc, dir=dir_,
-                        sig=[r.id], cond=[T.get(r.id, r.tarjeta)], group="", says=says,
-                        points="" if pd.isna(r.puntos_modelo) else str(r.puntos_modelo).replace("Kylie MU", "Kylie MU"),
-                        verdict=VEREDICTO[r.veredicto], n=int(r.n), ind=int(r.casos_independientes), cod=int(r.codigos),
+            v = {"bajo": "under 0.8×", "muy_bajo": "under half", "alto": "over 1.2×", "muy_alto": "over 1.5×"}[esc]
+            action = (f"{'Lower' if esc in ('bajo', 'muy_bajo') else 'Raise'} the 3-month forecast: "
+                      f"{r.probabilidad:.0%} of these codes sold {v} their Consensus.")
+        out.append(dict(id=f"v{i}", coll="new", ref=ref, refTxt=refTxt, esc=esc, escF=escF, dir=dir_,
+                        sig=[r.id], cond=[T.get(r.id, r.tarjeta)], group="", action=action,
+                        n=int(r.n), ind=int(r.casos_independientes), cod=int(r.codigos),
                         fotos=int(r.fotos), p=num(r.probabilidad), b=num(r.tasa_base), lift=num(r.lift, 2), pc=num(r.prob_tarjeta),
                         bc=num(r.base_tarjeta), lo=num(r.prob_prudente), estF=num(r.estabilidad_fotos, 2),
                         estC=num(r.estabilidad_casas, 2), score=num(r.puntuacion, 1), cls=r.clase, gain=num(r.ganancia_pts, 1),
@@ -240,7 +274,7 @@ HALLAZGOS = [
          action="Flag every Consensus outside 0.77–1.3× expected.",
          ex=[["4064941139454", "KJ MU POUT LIN PEN 356SUL", "2.1×"], ["3616304249716", "GUCCI BM EDPIN EDP 100 ML", "0.45× (above)"]]),
     dict(k=8, kind="card", cand="aplazado", title="Deferred Consensus: pushing volume to months 7–9 leaves months 1–3 short",
-         why="Your engine card K_tardio, confirmed and stronger in Kylie MU: with a rising 12-month slope, 85% sell over 1.5× (base 26%).",
+         why="Holds in every house and is stronger in Kylie MU: with a rising 12-month slope, 85% sell over 1.5× (26% without the signal).",
          action="Don't defer volume without a concrete supply reason; plan the near term at pace.",
          ex=[["4064941049104", "KJ MU CCLER PWR PLUSH 4.5C", "4.1×"], ["4064941155874", "KJ MU PLMP LIN 808 KYLIE", "2.8×"]]),
     dict(k=9, kind="card", cand="cortes_consensus_bajo_gucci", title="Gucci: after cuts, keep the Consensus at least at last year",
@@ -285,7 +319,7 @@ def main():
     T = textos_senal()
     datos = dict(version=(pl.RAIZ / "VERSION").read_text().strip(), through="2026.M10",
                  meta=dict(tested=635396, survived=637, casesK=2528, casesY=5346, photosK="2025.M09–2026.M06"),
-                 cards=hallazgos(T) + nuevas(T) + actuales(T))
+                 cards=hallazgos(T) + nuevas(T) + viejas_a(T))
     plantilla = (pl.RAIZ / "scripts" / "plantilla_tarjetas.html").read_text(encoding="utf-8")
     js = json.dumps(datos, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     salida = RES / "tarjetas_O10.html"

@@ -379,10 +379,6 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
     <div class="chips" id="casas" role="group" aria-labelledby="hCasa"></div>
     <h2 id="hCls">Class</h2>
     <div class="chips" id="clases" role="group" aria-labelledby="hCls"></div>
-    <div id="bloqueVer">
-      <h2 id="hVer">Verdict</h2>
-      <div class="chips" id="veredictos" role="group" aria-labelledby="hVer"></div>
-    </div>
   </div>
   <div class="lado-pie">
     <span class="pie-lbl" id="hPunt">Score</span>
@@ -422,7 +418,7 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
   <div class="clave" id="clave" aria-label="How to read the colours">
     <span><i class="si"></i><b>Blue border</b> it will happen</span><span><i class="no"></i><b>Gray border</b> it won't happen</span>
     <span class="sep" aria-hidden="true"></span>
-    <span><i class="k"></i><b>Blue card</b> vs the Consensus</span><span><i class="y"></i><b>Gray card</b> vs the same months last year</span>
+    <span><i class="k"></i><b>Blue card</b> vs the Consensus</span><span><i class="y"></i><b>Gray card</b> vs last year or its own pace</span>
   </div>
   <section class="rejilla" id="rejilla" aria-label="Cards"></section>
 </main>
@@ -456,12 +452,11 @@ const REF = {K:"its Consensus", Y:"the same months last year"};
 const REF_CORTO = {K:"vs Consensus", Y:"vs last year"};
 const COLS = [
   {k:"finding", t:"Findings", ico:'<path d="M12 3.5l2.4 5 5.4.6-4 3.7 1.1 5.3L12 15.4 7.1 18.1l1.1-5.3-4-3.7 5.4-.6z"/>'},
-  {k:"new", t:"New cards", ico:'<rect x="4" y="5" width="16" height="14" rx="3"/><path d="M12 9v6M9 12h6"/>'},
-  {k:"current", t:"Your cards", ico:'<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 4h8"/>'}];
+  {k:"new", t:"Cards", ico:'<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 4h8"/>'}];
 const LEER = {
   finding:'The ten findings of the pattern search, ordered by how surprising and actionable they are. Each one passed every check: old vs recent snapshots, every house, the dominant code, line, brand, snapshot and house removed, big references only, and the signal shuffled within each snapshot. <b>Open a card</b> to see all the numbers.',
-  new:'Cards found by the search that survive every check. The big number is how often the card was right; the tick on the meter is what happens <b>without the signal</b> (all cases). The further apart, the more the card tells you. <b>Gain</b> = how many points the prudent probability beats that.',
-  current:'Your cards: the engine scenario cards (vs the Consensus, 10 measured snapshots) and the signal book (each vs its own event, whole history). <b>Confirmed</b> = goes the way it says, in old and recent snapshots, 5+ points over what happens without the signal.'};
+  new:'Every card that survives every check, sorted by how much it tells you. The big number is how often the card was right; the tick on the meter is what happens <b>without the signal</b> (all cases). The further apart, the more the card tells you. <b>Gain</b> = how many points the prudent probability beats that.',
+};
 const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
 const pct1 = x => x == null ? "–" : (x * 100).toFixed(0) + "%";
 const veces = x => x == null ? "–" : x.toFixed(2) + "×";
@@ -485,6 +480,7 @@ const ALMACEN = "o10-tarjetas";
 const guardado = (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })();
 const S = Object.assign({col:"finding", esc:[], ref:"all", dir:"all", casa:"all", ver:[], cls:[], punt:"gain", tema:"auto", orden:"gain", q:""}, guardado);
 S.cls = [];
+if (S.col !== "finding" && S.col !== "new") S.col = "finding";
 S.q = "";
 function guardar(){ try { localStorage.setItem(ALMACEN, JSON.stringify({col:S.col, punt:S.punt, tema:S.tema, orden:S.orden})); } catch (e) {} }
 
@@ -493,7 +489,7 @@ const CASAS = ["Gucci", "Kylie MU", "Kylie Frag"];
 function pasa(c, ignorar){
   if (c.coll !== S.col) return false;
   if (c.kind === "metric") return !S.q || (c.title + " " + c.why).toLowerCase().includes(S.q);
-  if (ignorar !== "esc" && S.esc.length && !S.esc.includes(c.esc)) return false;
+  if (ignorar !== "esc" && S.esc.length && !S.esc.includes(c.escF || c.esc)) return false;
   if (S.ref !== "all" && c.ref !== S.ref) return false;
   if (S.dir !== "all" && String(c.dir) !== S.dir) return false;
   if (S.casa !== "all" && !(c.houses || []).some(h => h[0] === S.casa && h[1] >= 10)) return false;
@@ -533,9 +529,9 @@ function tarjetaHtml(c, i){
   const donde = c.group ? `In <b>${esc_(c.group)}</b>` : "All houses";
   const pie = c.coll === "current" ? `<span class="veredicto ${c.verdict}">${ICO_V[c.verdict]}${VER_T[c.verdict]}</span>` : "";
   const conds = (c.cond || []).map(minus).join(" and ");
-  const etiqueta = `${nombre(c)} ${REF_CORTO[c.ref]}: ${conds}${c.group ? ", in " + c.group : ""}. ${pct(c.pc)} ${lblProb(c)}, ${pct(c.bc)} without the signal, gain ${Math.round(c.gain)} points${c.coll === "current" ? ". " + VER_T[c.verdict] : ""}`;
+  const etiqueta = `${nombre(c)} ${c.refTxt || REF_CORTO[c.ref]}: ${conds}${c.group ? ", in " + c.group : ""}. ${pct(c.pc)} ${lblProb(c)}, ${pct(c.bc)} without the signal, gain ${Math.round(c.gain)} points${c.coll === "current" ? ". " + VER_T[c.verdict] : ""}`;
   return `<button class="tarjeta${codif(c)}" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="${esc_(etiqueta)}">
-    <span class="t-cab">${glifo(c.esc)}<span class="esc">${nombre(c)}</span><span class="ref">${REF_CORTO[c.ref]}</span>${claseHtml(c)}</span>
+    <span class="t-cab">${glifo(c.esc)}<span class="esc">${nombre(c)}</span><span class="ref">${c.refTxt || REF_CORTO[c.ref]}</span>${claseHtml(c)}</span>
     <span class="cond">${condHtml(c)}</span>
     <span class="donde">${donde}${pie}</span>
     <span class="prob">
@@ -622,12 +618,10 @@ function contadores(){
   const enFinding = S.col === "finding";
   document.querySelectorAll("#escenarios .fila").forEach(f => {
     f.setAttribute("aria-pressed", S.esc.includes(f.dataset.k));
-    f.querySelector(".badge").textContent = ent(D.cards.filter(c => pasa(c, "esc") && c.esc === f.dataset.k).length);
+    f.querySelector(".badge").textContent = ent(D.cards.filter(c => pasa(c, "esc") && (c.escF || c.esc) === f.dataset.k).length);
   });
   $("#hEsc").hidden = $("#escenarios").hidden = enFinding;
-  $("#bloqueVer").hidden = S.col !== "current";
   document.querySelectorAll("#casas .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === S.casa));
-  document.querySelectorAll("#veredictos .chip").forEach(b => b.setAttribute("aria-pressed", S.ver.includes(b.dataset.k)));
   $("#hCls").textContent = S.punt === "gain" ? "Class · gain over the signal-free rate" : "Class · your score";
   document.querySelectorAll("#clases .chip").forEach(b => {
     b.setAttribute("aria-pressed", S.cls.includes(b.dataset.k));
@@ -693,8 +687,6 @@ function montar(){
   $("#casas").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; S.casa = b.dataset.k; pintar(); });
   $("#clases").innerHTML = ["A", "B", "C"].map(k => `<button class="chip" data-k="${k}" aria-pressed="false"><b>${k}</b> <span class="num"></span></button>`).join("");
   $("#clases").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const k = b.dataset.k; S.cls = S.cls.includes(k) ? S.cls.filter(x => x !== k) : [...S.cls, k]; pintar(); });
-  $("#veredictos").innerHTML = ["confirmed", "weak", "contradicted"].map(k => `<button class="chip" data-k="${k}">${VER_T[k]}</button>`).join("");
-  $("#veredictos").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const k = b.dataset.k; S.ver = S.ver.includes(k) ? S.ver.filter(x => x !== k) : [...S.ver, k]; pintar(); });
   $("#orden").value = S.orden;
   $("#orden").addEventListener("change", e => { S.orden = e.target.value; guardar(); pintar(); });
   let t;
@@ -736,7 +728,7 @@ function abrir(id, desde){
   const c = D.cards.find(x => x.id === id); if (!c) return;
   origen = desde;
   $("#fCtx").innerHTML = c.coll === "finding" ? `<b>Finding ${c.k}</b>` :
-    `${glifo(c.esc)}<b>${nombre(c)}</b> · ${c.ref === "K" ? "vs its Consensus, 10 measured snapshots" : "vs last year, whole history"}${c.coll === "current" ? ` · ${c.src === "book" ? "signal book" : "engine card"} · ID <span class="ean">${esc_(c.code)}</span>` : ""}`;
+    `${glifo(c.esc)}<b>${nombre(c)}</b> · ${c.ref === "K" ? "vs its Consensus, 10 measured snapshots" : (c.refTxt ? esc_(c.refTxt) + ", whole history" : "vs last year, whole history")}`;
   $("#fCuerpo").innerHTML = c.kind === "metric" ? fichaMetrica(c) : fichaTarjeta(c);
   ficha.classList.remove("cerrando");
   ficha.showModal();
