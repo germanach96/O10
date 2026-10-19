@@ -363,6 +363,8 @@ def rangos(resultados: list[ResultadoFoto], cfg: dict, R: Rejilla) -> dict:
                                    float((res.act[a] * W[a]).sum()), res.valido[a],
                                    (absR[a] * W[a]).sum(1).astype(np.float32), (sgnR[a] * W[a]).sum(1).astype(np.float32))
         contrib.append(c)
+        del absR, sgnR
+        res.abs = res.sgn = None  # rangos es el último paso: con su contribución hecha, los errores de la foto sobran
     # grupos de la foto actual para las reglas (como en el detector)
     ult = resultados[-1]
     cod = ult.foto.codigos
@@ -577,6 +579,10 @@ def main(argv=None):
                       f"tramos cerrados {res.cerrado.any(0).tolist()} ({time.time()-t0:.1f}s)")
                 if base and not sin_cubo:
                     escribir_cubo(res, R, salida / "cubo")
+                if not res.cerrado.any():
+                    # sin tramos cerrados los errores son todo ceros: no se guardan (memoria en casas con muchos códigos)
+                    res.abs = np.broadcast_to(np.float32(0), res.abs.shape)
+                    res.sgn = np.broadcast_to(np.float32(0), res.sgn.shape)
                 if base:
                     (salida / "logs").mkdir(exist_ok=True)
                     (salida / "logs" / f"{casa}_{f.etiqueta}_invalidas.json").write_text(

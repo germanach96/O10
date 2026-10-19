@@ -79,6 +79,9 @@ class MotorFoto:
         tda_h = np.nan_to_num(tomar(foto.mat["Total Demand Assumption"], self.t_hist))
         self.tda_fut = np.nan_to_num(tomar(foto.mat["Total Demand Assumption"], self.t_fut))
         self.cons_fut = np.nan_to_num(tomar(foto.mat["Consensus - Final"], self.t_fut))
+        # meses posteriores al mes de la Disco Date real (fin de licencia, discontinuación): la receta prevé 0
+        disco = foto.codigos["disco_mes"].reindex(foto.eans).to_numpy(float)
+        self.tras_disco = self.t_fut[None, :] > disco[:, None]                # NaN (sin fecha) -> False
         epos = tomar(foto.mat["EPOS"], self.t_hist)
         if epos_externo is not None:
             epos = np.where(np.isnan(epos), epos_externo, epos)
@@ -224,6 +227,7 @@ class MotorFoto:
               * (1 + wv[None, None, None, :, None, None, None, None, None, None] * T[None, None, None, None, ..., None])
               + self.tda_fut[i])
         Fc = np.maximum(Fc, 0.0)
+        Fc = np.where(self.tras_disco[i], 0.0, Fc)
         valido = ok[None, None, None, None] | (wv[None, None, None, :, None, None, None, None, None] == 0)
         valido = np.broadcast_to(valido, self.R.forma)
         return Fc.reshape(self.R.n, self.hz), valido.reshape(-1).copy()

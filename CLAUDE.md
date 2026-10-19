@@ -168,7 +168,7 @@ Para un código, una foto F y una receta (s, e, h, w, m, N, c, p, grupo G). Hist
    - Los códigos que salieron del export siguen sumando en H_G, H_h y el EPOS del grupo con su historia (copiada de la última foto que los traía) y 0 desde que salieron. No cuentan en el nº de códigos del grupo, ni en el scope, el mapa o el detector.
    - T = (1 − m) · T_sellin + m · T_sellout, recortado a ±tope.
 4. **Forecast:** F(t) = Base(t) · (1 + w · T) + **DAs futuros**(t), donde DAs futuros = Total Demand Assumption de la foto F para el mes t (lo planificado se suma encima de la base). Los DAs se respetan siempre al 100%: no hay eje para ignorarlos (decisión del usuario).
-5. Forecast negativo → 0.
+5. Forecast negativo → 0. En los meses posteriores al mes de una Disco Date real (discontinuación o fin de licencia, por ejemplo Gucci el 21/06/2027), el forecast de la receta es 0. Solo `23/12/2030` (y las fechas de `fechas_disco_por_defecto`) cuenta como "sin fecha real", aunque una fecha la tengan casi todos los códigos.
 
 ### Casos límite (registrar, no romper)
 - Código sin 12 meses de historia: no hay año anterior. Las recetas con `s > 0` usan la media; marcar el código como "historia corta".
@@ -276,7 +276,7 @@ Responde a: **"¿qué posibilidad hay de que lo vendido en los próximos 3 meses
 
 ## 9. Interfaz
 
-El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.4`; cada versión aprobada sube la subversión: O10.0.4, O10.0.5…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
+El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versión:** el archivo `VERSION` de la raíz guarda el número (por ahora `O10.0.5`; cada versión aprobada sube la subversión: O10.0.5, O10.0.6…). La página lo muestra en la barra lateral y la versión oficial se guarda en la raíz del repo como `O10.0.X.html` (una sola, la vigente; las anteriores quedan en el historial de git). Estilo **iOS / iPadOS 26 (cristal líquido)**; el sistema completo está en `diseno/DESIGN.md` (la guía `diseno/referencia/DESIGN html.md` queda como referencia antigua, ya no se aplica). Modo claro, oscuro y automático con selector.
 
 ### Decisiones de diseño (fijadas por el usuario)
 - **Estructura tipo iPad, todo flotando:** el mapa ocupa toda la ventana y encima flotan piezas de cristal: barra lateral (casa, vistas inteligentes con contador, brands desplegables hasta product line, apariencia), cápsulas de control arriba (Mapa / Detalle, filtros en popover, buscador con ⌘K) e inspector a la derecha.
@@ -296,7 +296,7 @@ El programa se llama **O10**; la pestaña del navegador dice solo "O10". **Versi
 - **Colores del sistema de Apple con un significado fijo:** azul = receta y acciones, gris discontinuo = Consensus, verde = meta. Fuente del sistema.
 - **Movimiento** según la skill de Emil Kowalski: muelles críticamente amortiguados para zoom y controles, curvas ease-out fuertes para pulsaciones y popovers, nada animado en acciones de teclado.
 
-Selector de casa y de código (desde el mapa, la barra lateral o el buscador).
+Selector de casa y de código (desde el mapa, la barra lateral o el buscador). El selector de casa de la barra lateral empieza siempre en **"Todas las casas"** ("All houses", la primera opción): la página se abre con el mapa en la raíz y todas las casas a la vista. Elegir una casa enfoca su círculo; el selector sigue al mapa (la casa del nivel que se mira, o "All houses" en la raíz). Cada código se calcula con los datos de su casa; el rango de fotos es el mismo para todas.
 
 ### Barra de rango de cálculo (fija arriba, en el mapa y en el detalle)
 - Un punto por cada foto cargada de la casa y dos tiradores para elegir la primera y la última foto. **Solo se pueden elegir fotos medidas**: las fotos aún sin tramos cerrados van al final, huecas, sobre un tramo discontinuo con la etiqueta "Sin medir aún", y los tiradores no pasan de la última foto medida (tope duro, sin goma). Las fotos dentro del rango van en azul con la etiqueta en negrita. Atajos: Todo, Últimas 6, Últimas 3 (las últimas fotos medidas).

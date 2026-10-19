@@ -180,9 +180,9 @@ def _atributos(foto: Foto, cfg: dict) -> None:
     # --- Disco Date real o por defecto ---
     defecto = set(cfg.get("fechas_disco_por_defecto", []))
     frac = attrs["Disco Date"].value_counts(normalize=True)
-    umbral = cfg.get("disco_por_defecto_si_cubre_mas_de", 1.0)
+    umbral = cfg.get("disco_por_defecto_si_cubre_mas_de")  # None = solo las fechas de la lista
     for fecha, f in frac.items():
-        if f > umbral and fecha not in defecto:
+        if umbral is not None and f > umbral and fecha not in defecto:
             defecto.add(fecha)
             foto.avisos.append(f"Disco Date {fecha} is used by {f:.0%} of the codes: treated as the default value")
     def disco_mes(d):
