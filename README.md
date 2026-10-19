@@ -48,7 +48,7 @@ O10/
 │   └── Marc Jacobs MU/       ídem
 ├── analisis/                 informes de análisis de datos (señales de Gucci) y sus scripts
 ├── scripts/                  búsqueda de patrones señal → resultado (patrones_01…07, ver resultados/informe_patrones.md)
-├── resultados/               informe de patrones, tarjetas actuales y nuevas (CSV), gráficos; cache/ no se versiona
+├── resultados/               informe de patrones, tarjetas (CSV y tarjetas_O10.html, estilo O10), gráficos; cache/ no se versiona
 ├── tests/                    tests del lector, el motor, los KPIs y los escenarios
 └── salida/                   (no versionada) cubo Parquet, resúmenes JSON, logs
 ```

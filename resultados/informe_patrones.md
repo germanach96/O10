@@ -335,6 +335,7 @@ En Kylie MU, con la pendiente de 12 meses al alza: **85 %** (base 26 %), mediana
 | `tarjetas_nuevas_todas.csv` | las 923 validadas, incluidas las que tumba una explicación aburrida (y cuál) |
 | `perfil_datos.json` | perfil de los datos (paso 1) |
 | `graficos/` | los 4 gráficos de este informe |
+| `tarjetas_O10.html` | todas las tarjetas (hallazgos, nuevas y las tuyas) en una página del estilo de O10, con filtros, búsqueda y ficha de detalle; se abre sin servidor |
 
 Columnas de puntuación de los CSV:
 - `puntuacion` y `clase`: tu fórmula (probabilidad prudente × 100; A ≥ 70 y estable, B 55–70).
@@ -351,4 +352,5 @@ python -m scripts.patrones_04_epos
 python -m scripts.patrones_05_tarjetas
 python -m scripts.patrones_06_validar
 python -m scripts.patrones_07_graficos
+python -m scripts.patrones_08_html
 ```
