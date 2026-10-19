@@ -22,6 +22,8 @@
   --blue:#0071e3; --blue-txt:#0062c4; --on-blue:#ffffff;
   --green-txt:#1f7a35; --red-txt:#c9001a; --cons:#8e8e93;
   --pulgar-solido:#ffffff; --pozo:rgba(120,120,128,.14);
+  /* codificación de las tarjetas: fondo = referencia, borde = dirección */
+  --fondo-k:#e9f2fd; --fondo-y:#e6e6e9; --anillo-si:#0071e3; --anillo-no:rgba(142,142,147,.78);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
   --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
@@ -41,6 +43,7 @@
   --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
   --blue:#0a72e8; --blue-txt:#74b8ff; --green-txt:#30d158; --red-txt:#ff6961; --cons:#98989d;
   --pulgar-solido:#3a3a3c; --pozo:rgba(0,0,0,.28);
+  --fondo-k:#16253a; --fondo-y:#262628; --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
   color-scheme:dark;
 }
 @media (prefers-color-scheme:dark){
@@ -55,6 +58,7 @@
     --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
     --blue:#0a72e8; --blue-txt:#74b8ff; --green-txt:#30d158; --red-txt:#ff6961; --cons:#98989d;
     --pulgar-solido:#3a3a3c; --pozo:rgba(0,0,0,.28);
+    --fondo-k:#16253a; --fondo-y:#262628; --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
     color-scheme:dark;
   }
 }
@@ -157,15 +161,28 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .redondo:active{transform:scale(.93)}
 .redondo .cuenta{position:absolute;top:-3px;right:-3px;min-width:17px;height:17px;border-radius:999px;background:var(--blue);color:var(--on-blue);font-size:10.5px;font-weight:700;display:grid;place-items:center;padding:0 4px}
 .redondo .cuenta[hidden]{display:none}
-.leer{max-width:78ch;margin:2px 0 20px;color:var(--label-2);font-size:13px}
+.leer{max-width:78ch;margin:2px 0 12px;color:var(--label-2);font-size:13px}
+.clave{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:0 0 20px;font-size:12.5px;color:var(--label-2)}
+.clave span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.clave i{width:26px;height:16px;border-radius:6px;flex:none;background:var(--card);border:1.5px solid var(--borde-cristal)}
+.clave i.si{border-color:var(--anillo-si)}
+.clave i.no{border-color:var(--anillo-no)}
+.clave i.k{background:var(--fondo-k);border-color:transparent;box-shadow:inset 0 0 0 .5px var(--sep)}
+.clave i.y{background:var(--fondo-y);border-color:transparent;box-shadow:inset 0 0 0 .5px var(--sep)}
+.clave .sep{width:1px;height:16px;background:var(--sep-fuerte)}
+.clave b{color:var(--label);font-weight:600}
 .leer b{color:var(--label);font-weight:600}
 
 /* ============ rejilla de tarjetas (todas del mismo tamaño) ============ */
 .rejilla{display:grid;grid-template-columns:repeat(auto-fill,340px);gap:20px;align-items:start}
-.tarjeta{position:relative;width:340px;height:308px;display:flex;flex-direction:column;padding:16px;border-radius:var(--r-l);text-align:left;border:1px solid var(--borde-cristal);
+.tarjeta{position:relative;width:340px;height:308px;display:flex;flex-direction:column;padding:16px;border-radius:var(--r-l);text-align:left;border:1.5px solid var(--borde-cristal);
   background:var(--tarjeta);box-shadow:inset 0 1px 0 var(--brillo-cristal),var(--sombra-cristal);color:var(--label);cursor:pointer;
   transition:background-color 160ms ease,transform 160ms var(--ease-out),box-shadow 200ms var(--ease-out)}
-@media (hover:hover) and (pointer:fine){.tarjeta:hover{background:var(--tarjeta-hover)}}
+.tarjeta.ref-K{background:var(--fondo-k)}
+.tarjeta.ref-Y{background:var(--fondo-y)}
+.tarjeta.si{border-color:var(--anillo-si)}
+.tarjeta.no{border-color:var(--anillo-no)}
+@media (hover:hover) and (pointer:fine){.tarjeta:hover{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 14px 40px rgba(30,36,48,.16),0 2px 4px rgba(30,36,48,.08)}.tarjeta:not(.ref-K):not(.ref-Y):hover{background:var(--tarjeta-hover)}}
 .tarjeta:active{transform:scale(.985)}
 .tarjeta.entra{animation:entra 320ms var(--ease-out) both}
 @keyframes entra{from{opacity:0;transform:translateY(8px)}}
@@ -300,6 +317,7 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
   .buscador input{font-size:16px}
   .buscador kbd{display:none}
   .orden{display:none}
+  .clave .sep{display:none}
   .colecciones-movil{display:grid !important;width:100%;order:4}
   .rejilla,.rejilla.dobles{grid-template-columns:1fr}
   .tarjeta{width:100%;height:auto;min-height:290px}
@@ -330,12 +348,13 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
 }
 @media (prefers-reduced-transparency:reduce){
   .vidrio,dialog.ficha{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}
-  .tarjeta{background:var(--card)}
+  .tarjeta:not(.ref-K):not(.ref-Y){background:var(--card)}
   body::before{filter:none}
 }
 @media (prefers-contrast:more){
-  .vidrio,.tarjeta,dialog.ficha{border-color:var(--sep-fuerte)}
-  .tarjeta{background:var(--card)}
+  .vidrio,dialog.ficha{border-color:var(--sep-fuerte)}
+  .tarjeta:not(.si):not(.no){border-color:var(--sep-fuerte)}
+  .tarjeta.si,.tarjeta.no{border-width:2px}
 }
 </style>
 </head>
@@ -358,6 +377,8 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
     <div class="grupo-lado"><div class="seg pozo" id="segDir" role="radiogroup" aria-labelledby="hDir"></div></div>
     <h2 id="hCasa">House</h2>
     <div class="chips" id="casas" role="group" aria-labelledby="hCasa"></div>
+    <h2 id="hCls">Class</h2>
+    <div class="chips" id="clases" role="group" aria-labelledby="hCls"></div>
     <div id="bloqueVer">
       <h2 id="hVer">Verdict</h2>
       <div class="chips" id="veredictos" role="group" aria-labelledby="hVer"></div>
@@ -388,7 +409,7 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
       </label>
       <label class="orden vidrio">Sort
         <select id="orden">
-          <option value="gain">Gain over usual</option>
+          <option value="gain">Gain</option>
           <option value="score">Your score</option>
           <option value="lift">Lift</option>
           <option value="n">Cases</option>
@@ -398,6 +419,11 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
     <div class="seg vidrio colecciones-movil" id="segColMovil" role="radiogroup" aria-label="Collection" style="display:none"></div>
   </header>
   <p class="leer" id="leer"></p>
+  <div class="clave" id="clave" aria-label="How to read the colours">
+    <span><i class="si"></i><b>Blue border</b> it will happen</span><span><i class="no"></i><b>Gray border</b> it won't happen</span>
+    <span class="sep" aria-hidden="true"></span>
+    <span><i class="k"></i><b>Blue card</b> vs the Consensus</span><span><i class="y"></i><b>Gray card</b> vs the same months last year</span>
+  </div>
   <section class="rejilla" id="rejilla" aria-label="Cards"></section>
 </main>
 
@@ -414,6 +440,12 @@ const D = /*__DATOS__*/null;
 // ---------------------------------------------------------------- textos y formato (en-US)
 const ESC = {muy_bajo:"Sells much less", bajo:"Sells less", alto:"Sells more", muy_alto:"Sells much more",
   drop:"Drop", death:"Death", rise:"Strong rise", empty:"Empty month"};
+// nombre con la dirección de la tarjeta: lo que va a pasar o lo que no va a pasar
+const ESC_SI = {muy_bajo:"Will sell much less", bajo:"Will sell less", alto:"Will sell more", muy_alto:"Will sell much more",
+  drop:"Will drop", death:"Will stop selling", rise:"Will rise strongly", empty:"Empty month ahead"};
+const ESC_NO = {muy_bajo:"Won't sell much less", bajo:"Won't sell less", alto:"Won't sell more", muy_alto:"Won't sell much more"};
+const nombre = c => c.dir > 0 ? ESC_SI[c.esc] : (ESC_NO[c.esc] || ESC[c.esc]);
+const codif = c => c.kind === "metric" || !c.ref ? "" : ` ref-${c.ref} ${c.dir > 0 ? "si" : "no"}`;
 const UMB = {muy_bajo:"under 0.5×", bajo:"under 0.8×", alto:"over 1.2×", muy_alto:"over 1.5×"};
 const VERBO = {muy_bajo:"sold under half", bajo:"sold under 0.8×", alto:"sold over 1.2×", muy_alto:"sold over 1.5×"};
 const VERBO_NO = {muy_bajo:"did not sell under half", bajo:"did not sell under 0.8×", alto:"did not sell over 1.2×", muy_alto:"did not sell over 1.5×"};
@@ -428,8 +460,8 @@ const COLS = [
   {k:"current", t:"Your cards", ico:'<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 4h8"/>'}];
 const LEER = {
   finding:'The ten findings of the pattern search, ordered by how surprising and actionable they are. Each one passed every check: old vs recent snapshots, every house, the dominant code, line, brand, snapshot and house removed, big references only, and the signal shuffled within each snapshot. <b>Open a card</b> to see all the numbers.',
-  new:'Cards found by the search that survive every check. The big number is how often the card was right; the tick on the meter is what usually happens without looking at the signal. <b>Gain</b> = how many points the prudent probability beats the usual rate.',
-  current:'Your cards: the engine scenario cards (vs the Consensus, 10 measured snapshots) and the signal book (each vs its own event, whole history). <b>Confirmed</b> = goes the way it says, in old and recent snapshots, 5+ points over the usual rate.'};
+  new:'Cards found by the search that survive every check. The big number is how often the card was right; the tick on the meter is what happens <b>without the signal</b> (all cases). The further apart, the more the card tells you. <b>Gain</b> = how many points the prudent probability beats that.',
+  current:'Your cards: the engine scenario cards (vs the Consensus, 10 measured snapshots) and the signal book (each vs its own event, whole history). <b>Confirmed</b> = goes the way it says, in old and recent snapshots, 5+ points over what happens without the signal.'};
 const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
 const pct1 = x => x == null ? "–" : (x * 100).toFixed(0) + "%";
 const veces = x => x == null ? "–" : x.toFixed(2) + "×";
@@ -451,7 +483,8 @@ const ICO_OK = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8
 // ---------------------------------------------------------------- estado (lo que se recuerda va en el navegador del usuario)
 const ALMACEN = "o10-tarjetas";
 const guardado = (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })();
-const S = Object.assign({col:"finding", esc:[], ref:"all", dir:"all", casa:"all", ver:[], punt:"gain", tema:"auto", orden:"gain", q:""}, guardado);
+const S = Object.assign({col:"finding", esc:[], ref:"all", dir:"all", casa:"all", ver:[], cls:[], punt:"gain", tema:"auto", orden:"gain", q:""}, guardado);
+S.cls = [];
 S.q = "";
 function guardar(){ try { localStorage.setItem(ALMACEN, JSON.stringify({col:S.col, punt:S.punt, tema:S.tema, orden:S.orden})); } catch (e) {} }
 
@@ -465,6 +498,7 @@ function pasa(c, ignorar){
   if (S.dir !== "all" && String(c.dir) !== S.dir) return false;
   if (S.casa !== "all" && !(c.houses || []).some(h => h[0] === S.casa && h[1] >= 10)) return false;
   if (S.col === "current" && S.ver.length && !S.ver.includes(c.verdict)) return false;
+  if (ignorar !== "cls" && S.cls.length && !S.cls.includes(clase(c))) return false;
   if (S.q){
     const txt = [c.title, ...(c.cond || []), ...(c.sig || []), c.group, c.code, ...((c.ex || c.exf || []).map(e => e[0] + " " + e[1]))].join(" ").toLowerCase();
     if (!txt.includes(S.q)) return false;
@@ -477,14 +511,15 @@ function ordenar(a){
   const v = c => k === "gain" ? c.gain : k === "score" ? c.score : k === "lift" ? (c.dir > 0 ? c.lift : 1 / Math.max(c.lift, .01)) : c.n;
   return a.sort((x, y) => (v(y) ?? -1e9) - (v(x) ?? -1e9));
 }
-function filtrosActivos(){ return S.esc.length + (S.ref !== "all") + (S.dir !== "all") + (S.casa !== "all") + (S.col === "current" ? S.ver.length : 0); }
+function filtrosActivos(){ return S.esc.length + S.cls.length + (S.ref !== "all") + (S.dir !== "all") + (S.casa !== "all") + (S.col === "current" ? S.ver.length : 0); }
+const clase = c => S.punt === "gain" ? c.clsG : c.cls;
 
 // ---------------------------------------------------------------- tarjetas
 function claseHtml(c){
   const g = S.punt === "gain";
   const cl = g ? c.clsG : c.cls, v = g ? c.gain : c.score;
   const t = g ? `${v >= 0 ? "+" : ""}${Math.round(v)}` : `${Math.round(v)}`;
-  return `<span class="clase" title="${g ? "Gain over the usual rate (prudent probability)" : "Your score: prudent probability × 100"}">${t} · <b>${cl}</b></span>`;
+  return `<span class="clase" title="${g ? "Gain: points the prudent probability beats the rate without the signal" : "Your score: prudent probability × 100"}">${t} · <b>${cl}</b></span>`;
 }
 function medidor(v, u, crece){ return `<span class="medidor${crece ? " crece" : ""}" style="--v:${Math.max(0, Math.min(1, v))};--u:${Math.max(0, Math.min(1, u))}"><span class="lleno"></span><span class="usual"></span></span>`; }
 const minus = (t, i) => i && /^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t;
@@ -498,15 +533,15 @@ function tarjetaHtml(c, i){
   const donde = c.group ? `In <b>${esc_(c.group)}</b>` : "All houses";
   const pie = c.coll === "current" ? `<span class="veredicto ${c.verdict}">${ICO_V[c.verdict]}${VER_T[c.verdict]}</span>` : "";
   const conds = (c.cond || []).map(minus).join(" and ");
-  const etiqueta = `${ESC[c.esc]} ${REF_CORTO[c.ref]}: ${conds}${c.group ? ", in " + c.group : ""}. ${pct(c.pc)} ${lblProb(c)}, usual ${pct(c.bc)}, gain ${Math.round(c.gain)} points${c.coll === "current" ? ". " + VER_T[c.verdict] : ""}`;
-  return `<button class="tarjeta" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="${esc_(etiqueta)}">
-    <span class="t-cab">${glifo(c.esc)}<span class="esc">${ESC[c.esc]}</span><span class="ref">${REF_CORTO[c.ref]}</span>${claseHtml(c)}</span>
+  const etiqueta = `${nombre(c)} ${REF_CORTO[c.ref]}: ${conds}${c.group ? ", in " + c.group : ""}. ${pct(c.pc)} ${lblProb(c)}, ${pct(c.bc)} without the signal, gain ${Math.round(c.gain)} points${c.coll === "current" ? ". " + VER_T[c.verdict] : ""}`;
+  return `<button class="tarjeta${codif(c)}" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="${esc_(etiqueta)}">
+    <span class="t-cab">${glifo(c.esc)}<span class="esc">${nombre(c)}</span><span class="ref">${REF_CORTO[c.ref]}</span>${claseHtml(c)}</span>
     <span class="cond">${condHtml(c)}</span>
     <span class="donde">${donde}${pie}</span>
     <span class="prob">
       <span class="prob-fila"><span class="p">${pct(c.pc)}</span><span class="lbl">${lblProb(c)}</span></span>
       ${medidor(c.pc, c.bc)}
-      <span class="usual-txt num">usual ${pct(c.bc)}</span>
+      <span class="usual-txt num">without the signal ${pct(c.bc)}</span>
       <span class="kpis">
         <span class="kpi"><span>${c.dir > 0 ? "Lift" : "Risk"}</span><b>${veces(c.lift)}</b></span>
         <span class="kpi"><span>Cases</span><b>${ent(c.n)}</b></span>
@@ -523,14 +558,14 @@ function hallazgoHtml(c, i){
     const maxv = Math.max(...c.bars.map(b => b[1]));
     der = `<span class="h-num">${esc_(c.metric)}</span><span class="barras">${c.bars.map(b => `<span class="barra-m${b[1] === mejor ? " mejor" : ""}"><span>${esc_(b[0])}</span><span class="n">${pct1(b[1])}</span><span class="pista"><i style="--v:${b[1] / maxv}"></i></span></span>`).join("")}</span><span class="nota">${esc_(c.note)}</span>`;
   } else {
-    der = `<span class="h-num">${glifo(c.esc).replace('class="glifo"', 'class="glifo" style="vertical-align:-3px;margin-right:5px"')}${ESC[c.esc]} · ${REF_CORTO[c.ref]}</span>
+    der = `<span class="h-num">${glifo(c.esc).replace('class="glifo"', 'class="glifo" style="vertical-align:-3px;margin-right:5px"')}${nombre(c)} · ${REF_CORTO[c.ref]}</span>
       <span class="p-grande" style="margin-top:10px">${pct(c.pc)}</span>
       <span class="usual-txt">of ${ent(c.n)} cases ${c.dir > 0 ? VERBO[c.esc] : VERBO_NO[c.esc]} ${REF[c.ref]}</span>
       ${medidor(c.pc, c.bc)}
-      <span class="usual-txt num">usual ${pct(c.bc)} · lift ${veces(c.lift)}</span>
+      <span class="usual-txt num">without the signal ${pct(c.bc)} · lift ${veces(c.lift)}</span>
       <span class="nota">${ent(c.cod)} codes · old ${pct(c.old[0])} vs ${pct(c.old[1])} · recent ${pct(c.rec[0])} vs ${pct(c.rec[1])}${c.units ? ` · in units ${veces(c.units[0])} vs ${veces(c.units[1])}` : ""}</span>`;
   }
-  return `<button class="tarjeta hallazgo" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="Finding ${c.k}: ${esc_(c.title)}${c.pc != null ? ". " + pct(c.pc) + " " + lblProb(c) + ", usual " + pct(c.bc) : ""}">
+  return `<button class="tarjeta hallazgo${codif(c)}" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="Finding ${c.k}: ${esc_(c.title)}${c.pc != null ? ". " + pct(c.pc) + " " + lblProb(c) + ", " + pct(c.bc) + " without the signal" : ""}">
     <span class="h-izq"><h3><span class="num" style="color:var(--label-2)">${c.k}.</span> ${esc_(c.title)}</h3>${c.cond ? `<span class="why" style="-webkit-line-clamp:2;color:var(--label)"><b style="font-weight:600">If</b> ${condHtml(c)}${c.group ? ` · in ${esc_(c.group)}` : ""}</span>` : ""}<span class="why">${esc_(c.why)}</span><span class="accion"><b>Action ·</b> ${esc_(c.action)}</span></span>
     <span class="h-der">${der}</span></button>`;
 }
@@ -593,9 +628,16 @@ function contadores(){
   $("#bloqueVer").hidden = S.col !== "current";
   document.querySelectorAll("#casas .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === S.casa));
   document.querySelectorAll("#veredictos .chip").forEach(b => b.setAttribute("aria-pressed", S.ver.includes(b.dataset.k)));
+  $("#hCls").textContent = S.punt === "gain" ? "Class · gain over the signal-free rate" : "Class · your score";
+  document.querySelectorAll("#clases .chip").forEach(b => {
+    b.setAttribute("aria-pressed", S.cls.includes(b.dataset.k));
+    const n = D.cards.filter(c => pasa(c, "cls") && c.kind !== "metric" && clase(c) === b.dataset.k).length;
+    b.querySelector(".num").textContent = ent(n);
+    b.disabled = !n && !S.cls.includes(b.dataset.k);   // sin tarjetas de esa clase: apagada
+  });
   ["#segRef", "#segDir", "#segPunt", "#segTema", "#segColMovil"].forEach(s => colocarPulgar(document.querySelector(s)));
 }
-function limpiar(){ Object.assign(S, {esc:[], ref:"all", dir:"all", casa:"all", ver:[], q:""}); $("#busca").value = ""; pintar(); }
+function limpiar(){ Object.assign(S, {esc:[], ref:"all", dir:"all", casa:"all", ver:[], cls:[], q:""}); $("#busca").value = ""; pintar(); }
 
 function segmentado(el, opciones, clave, alCambiar){
   el.innerHTML = '<span class="pulgar" aria-hidden="true"></span>' + opciones.map(([v, t]) => `<button role="radio" data-v="${v}">${t}</button>`).join("");
@@ -643,12 +685,14 @@ function montar(){
     const k = f.dataset.k; S.esc = S.esc.includes(k) ? S.esc.filter(x => x !== k) : [...S.esc, k]; pintar();
   });
   segmentado($("#segRef"), [["all", "All"], ["K", "Consensus"], ["Y", "Last year"]], "ref", pintar);
-  segmentado($("#segDir"), [["all", "All"], ["1", "Happens"], ["-1", "Doesn't"]], "dir", pintar);
+  segmentado($("#segDir"), [["all", "All"], ["1", "Will happen"], ["-1", "Won't"]], "dir", pintar);
   segmentado($("#segPunt"), [["gain", "Gain"], ["score", "Your score"]], "punt", () => { if (S.orden === "gain" || S.orden === "score") { S.orden = S.punt; $("#orden").value = S.orden; } pintar(); });
   segmentado($("#segTema"), [["light", "Light"], ["dark", "Dark"], ["auto", "Auto"]], "tema", v => { aplicarTema(); contadores(); });
   segmentado($("#segColMovil"), COLS.map(c => [c.k, c.t.replace(" cards", "")]), "col", (v, antes) => cambiarColeccion(v, antes));
   $("#casas").innerHTML = [["all", "All"], ...CASAS.map(c => [c, c])].map(([k, t]) => `<button class="chip" data-k="${k}">${t}</button>`).join("");
   $("#casas").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; S.casa = b.dataset.k; pintar(); });
+  $("#clases").innerHTML = ["A", "B", "C"].map(k => `<button class="chip" data-k="${k}" aria-pressed="false"><b>${k}</b> <span class="num"></span></button>`).join("");
+  $("#clases").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const k = b.dataset.k; S.cls = S.cls.includes(k) ? S.cls.filter(x => x !== k) : [...S.cls, k]; pintar(); });
   $("#veredictos").innerHTML = ["confirmed", "weak", "contradicted"].map(k => `<button class="chip" data-k="${k}">${VER_T[k]}</button>`).join("");
   $("#veredictos").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; const k = b.dataset.k; S.ver = S.ver.includes(k) ? S.ver.filter(x => x !== k) : [...S.ver, k]; pintar(); });
   $("#orden").value = S.orden;
@@ -692,7 +736,7 @@ function abrir(id, desde){
   const c = D.cards.find(x => x.id === id); if (!c) return;
   origen = desde;
   $("#fCtx").innerHTML = c.coll === "finding" ? `<b>Finding ${c.k}</b>` :
-    `${glifo(c.esc)}<b>${ESC[c.esc]}</b> · ${c.ref === "K" ? "vs its Consensus, 10 measured snapshots" : "vs last year, whole history"}${c.coll === "current" ? ` · ${c.src === "book" ? "signal book" : "engine card"} · ID <span class="ean">${esc_(c.code)}</span>` : ""}`;
+    `${glifo(c.esc)}<b>${nombre(c)}</b> · ${c.ref === "K" ? "vs its Consensus, 10 measured snapshots" : "vs last year, whole history"}${c.coll === "current" ? ` · ${c.src === "book" ? "signal book" : "engine card"} · ID <span class="ean">${esc_(c.code)}</span>` : ""}`;
   $("#fCuerpo").innerHTML = c.kind === "metric" ? fichaMetrica(c) : fichaTarjeta(c);
   ficha.classList.remove("cerrando");
   ficha.showModal();
@@ -711,9 +755,9 @@ $("#fCerrar").onclick = cerrar;
 
 function frase(c){
   const si = `<b>If</b> ${(c.cond || []).map((t, i) => esc_(minus(t, 1))).join(" <b>and</b> ")}${c.group ? `, in <b>${esc_(c.group)}</b>` : ""}`;
-  if (["drop","death","rise","empty"].includes(c.esc)) return `${si}, then ${pct(c.p)} of the time ${EVENTO[c.esc]} (usual ${pct(c.b)}).`;
-  const resto = c.dir > 0 ? `there is a <b>${pct(c.p)}</b> chance that in the next 3 months it ${FUT[c.esc]} ${REF[c.ref]} (usual ${pct(c.b)})` :
-    `there is only a <b>${pct(c.p)}</b> chance that in the next 3 months it ${FUT[c.esc]} ${REF[c.ref]} (usual ${pct(c.b)})`;
+  if (["drop","death","rise","empty"].includes(c.esc)) return `${si}, then ${pct(c.p)} of the time ${EVENTO[c.esc]} (${pct(c.b)} without the signal).`;
+  const resto = c.dir > 0 ? `there is a <b>${pct(c.p)}</b> chance that in the next 3 months it ${FUT[c.esc]} ${REF[c.ref]} (${pct(c.b)} without the signal)` :
+    `there is only a <b>${pct(c.p)}</b> chance that in the next 3 months it ${FUT[c.esc]} ${REF[c.ref]} (${pct(c.b)} without the signal)`;
   return `${si}, ${resto}.`;
 }
 function filaM(t, p, b, n){
@@ -741,14 +785,14 @@ function fichaTarjeta(c){
     ${c.why ? `<p class="frase">${esc_(c.why)}</p>` : ""}
     <div class="f-resumen">
       <div class="panel"><h4>${c.dir > 0 ? "How often it happened" : "How often it did not happen"}</h4>
-        <div class="f-prob"><span class="p">${pct(c.pc)}</span><span class="lbl">with the signal · usual ${pct(c.bc)}</span></div>
+        <div class="f-prob"><span class="p">${pct(c.pc)}</span><span class="lbl">with the signal · without it ${pct(c.bc)}</span></div>
         ${medidor(c.pc, c.bc, true)}
-        <p class="usual-txt" style="margin:6px 0 14px">The tick is the usual rate: what happens without looking at the signal.</p>
+        <p class="usual-txt" style="margin:6px 0 14px">The tick is what happens without the signal: all cases, whether the signal fired or not.</p>
         <div class="filas-m">${o ? filaM("Old snapshots", o[0], o[1], c.old[2]) : ""}${r ? filaM("Recent snapshots", r[0], r[1], c.rec[2]) : ""}</div></div>
       <div class="panel"><div class="f-cifras">
         <div><span>${c.dir > 0 ? "Lift" : "Risk vs usual"}</span><b>${veces(c.lift)}</b><small>chance of the scenario with / without</small></div>
         <div><span>Prudent probability</span><b>${pct(c.lo)}</b><small>Wilson 90%, independent cases</small></div>
-        <div><span>Gain over usual</span><b>${c.gain >= 0 ? "+" : ""}${Math.round(c.gain)} pts · ${c.clsG}</b><small>proposed score</small></div>
+        <div><span>Gain over no signal</span><b>${c.gain >= 0 ? "+" : ""}${Math.round(c.gain)} pts · ${c.clsG}</b><small>proposed score</small></div>
         <div><span>Your score</span><b>${Math.round(c.score)} · ${c.cls}</b><small>prudent probability × 100</small></div>
         <div><span>Cases</span><b>${ent(c.n)}</b><small>${ent(c.ind)} independent · ${ent(c.cod)} codes · ${ent(c.fotos)} snapshots</small></div>
         <div><span>Stable</span><b>${c.estF == null ? "–" : pct(c.estF)}</b><small>of snapshots${c.estC != null ? ` · ${pct(c.estC)} of houses` : ""}</small></div>
