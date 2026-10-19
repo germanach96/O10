@@ -169,6 +169,12 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 .clave i.y{border-color:var(--anillo-no)}
 .clave .sep{width:1px;height:16px;background:var(--sep-fuerte)}
 .clave b{color:var(--label);font-weight:600}
+.glos{margin:-8px 0 20px}
+.glos summary{display:none}
+.glosario{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;max-width:1080px;font-size:12px;color:var(--label-2)}
+.glosario div{display:flex;gap:5px}
+.glosario dt{font-weight:600;color:var(--label)}
+.glosario dd{margin:0}
 .leer b{color:var(--label);font-weight:600}
 
 /* ============ rejilla de tarjetas (todas del mismo tamaño) ============ */
@@ -185,12 +191,14 @@ svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-wi
 @keyframes entra{from{opacity:0;transform:translateY(8px)}}
 .cond,.donde,.prob,.usual-txt,.kpi span,.kpi b,.why,.accion,.nota,.p-grande,.h-num{display:block}
 .t-cab{display:flex;align-items:center;gap:7px;min-height:20px}
-.t-cab .esc{font-size:12.5px;font-weight:600;white-space:nowrap}
+.t-cab .esc{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .t-cab .ref{font-size:12px;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}
 .t-cab .clase{margin-left:auto}
 .clase{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--label-2);background:var(--fill);border-radius:999px;padding:2px 8px 2px 7px}
 .clase b{font-size:12px;color:var(--label);font-weight:700}
-.cond{margin:10px 0 0;font-size:13.5px;font-weight:600;line-height:1.38;letter-spacing:-.006em;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty}
+.cond{margin:10px 0 0;font-size:13.5px;font-weight:600;line-height:1.35;letter-spacing:-.006em;display:flex !important;flex-direction:column;gap:5px}
+.cond .c{display:block;padding-left:14px;position:relative;text-wrap:pretty}
+.cond .c::before{content:"";position:absolute;left:2px;top:.55em;width:5px;height:5px;border-radius:50%;background:var(--label-2)}
 .cond .y{font-weight:500;color:var(--label-2)}
 .donde{margin-top:6px;font-size:12px;color:var(--label-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .donde b{font-weight:600;color:var(--label)}
@@ -316,6 +324,8 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
   .buscador kbd{display:none}
   .orden{display:none}
   .clave .sep{display:none}
+  .glos summary{display:list-item;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--label);padding:2px 0 8px}
+  .glosario{flex-direction:column;gap:4px}
   .colecciones-movil{display:grid !important;width:100%;order:4}
   .rejilla,.rejilla.dobles{grid-template-columns:minmax(0,1fr)}
   .tarjeta{width:100%;min-width:0;height:auto;min-height:290px}
@@ -416,6 +426,17 @@ dialog.ficha.cerrando::backdrop{animation:velo-out 200ms var(--ease-out) forward
   <div class="clave" id="clave" aria-label="How to read the colours">
     <span><i class="k"></i><b>Blue border</b> vs the Consensus</span><span><i class="y"></i><b>Gray border</b> vs last year or its own pace</span>
   </div>
+  <details class="glos" id="glos"><summary>Terms used on the cards</summary>
+  <dl class="glosario" aria-label="Terms used on the cards">
+    <div><dt>3M</dt><dd>last 3 closed months (next 3M = the 3 after the snapshot)</dd></div>
+    <div><dt>LY</dt><dd>the same months last year</dd></div>
+    <div><dt>Pace</dt><dd>sell-in of the last 12 months ÷ 4</dd></div>
+    <div><dt>Expected</dt><dd>12-month level × its brand's seasonality LY</dd></div>
+    <div><dt>Large order</dt><dd>a month ≥ 2× its 12-month median</dd></div>
+    <div><dt>Anomalous month</dt><dd>over 3 MAD from its 12-month median</dd></div>
+    <div><dt>CV</dt><dd>month-to-month variation (1 = very jumpy)</dd></div>
+    <div><dt>20 pts</dt><dd>one growth 1.2× the other</dd></div>
+  </dl></details>
   <section class="rejilla" id="rejilla" aria-label="Cards"></section>
 </main>
 
@@ -436,7 +457,12 @@ const ESC = {muy_bajo:"Sells much less", bajo:"Sells less", alto:"Sells more", m
 const ESC_SI = {muy_bajo:"Will sell much less", bajo:"Will sell less", alto:"Will sell more", muy_alto:"Will sell much more",
   drop:"Will drop", death:"Will stop selling", rise:"Will rise strongly", empty:"Empty month ahead"};
 const ESC_NO = {muy_bajo:"Won't sell much less", bajo:"Won't sell less", alto:"Won't sell more", muy_alto:"Won't sell much more"};
-const nombre = c => c.dir > 0 ? ESC_SI[c.esc] : (ESC_NO[c.esc] || ESC[c.esc]);
+// el resultado, con su número: qué se vende en los meses siguientes frente a qué
+const UMBRAL = {muy_bajo:"< 0.5×", bajo:"< 0.8×", alto:"> 1.2×", muy_alto:"> 1.5×"};
+const REFN = {K:"Consensus", Y:"last year"};
+const EV_T = {drop:"Next 3M sell-in < 0.5× expected", rise:"Next 3M sell-in > 1.5× expected",
+  empty:"Next month sell-in < 25% of 12M average", death:"Next 6M sell-in < 20% of pace"};
+const nombre = c => EV_T[c.esc] || `Next 3M sell-in ${UMBRAL[c.esc]} ${REFN[c.ref]}`;
 const codif = c => c.kind === "metric" || !c.ref ? "" : ` ref-${c.ref}`;
 const UMB = {muy_bajo:"under 0.5×", bajo:"under 0.8×", alto:"over 1.2×", muy_alto:"over 1.5×"};
 const VERBO = {muy_bajo:"sold under half", bajo:"sold under 0.8×", alto:"sold over 1.2×", muy_alto:"sold over 1.5×"};
@@ -451,7 +477,7 @@ const COLS = [
   {k:"new", t:"Cards", ico:'<rect x="5" y="7" width="14" height="12" rx="3"/><path d="M8 4h8"/>'}];
 const LEER = {
   finding:'The ten findings of the pattern search, ordered by how surprising and actionable they are. Each one passed every check: old vs recent snapshots, every house, the dominant code, line, brand, snapshot and house removed, big references only, and the signal shuffled within each snapshot. <b>Open a card</b> to see all the numbers.',
-  new:'Every card that survives every check, sorted by how much it tells you. The big number is how often the card was right; the tick on the meter is what happens <b>without the signal</b> (all cases). The further apart, the more the card tells you. <b>Gain</b> = how many points the prudent probability beats that.',
+  new:'Each card: the <b>signals</b> seen in the snapshot (all bullets must hold) and, on top, <b>what sold in the next months</b>. The big number is how often that happened; the tick, how often it happens <b>without the signals</b>. The further apart, the more the card tells you.',
 };
 const pct = x => x == null ? "–" : Math.round(x * 100) + "%";
 const pct1 = x => x == null ? "–" : (x * 100).toFixed(0) + "%";
@@ -514,11 +540,8 @@ function claseHtml(c){
 }
 function medidor(v, u, crece){ return `<span class="medidor${crece ? " crece" : ""}" style="--v:${Math.max(0, Math.min(1, v))};--u:${Math.max(0, Math.min(1, u))}"><span class="lleno"></span><span class="usual"></span></span>`; }
 const minus = (t, i) => i && /^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t;
-function condHtml(c){ return (c.cond || []).map((t, i) => esc_(minus(t, i))).join(' <span class="y">and</span> '); }
-function lblProb(c){
-  if (["drop","death","rise","empty"].includes(c.esc)) return `of the time: ${EVENTO[c.esc]}`;
-  return c.dir > 0 ? `${VERBO[c.esc]} ${REF[c.ref]}` : `${VERBO_NO[c.esc]} ${REF[c.ref]}`;
-}
+function condHtml(c){ return (c.cond || []).map(t => `<span class="c">${esc_(t)}</span>`).join(""); }
+function lblProb(c){ return `of ${ent(c.n)} cases with these signals`; }
 function tarjetaHtml(c, i){
   if (c.coll === "finding") return hallazgoHtml(c, i);
   const donde = c.group ? `In <b>${esc_(c.group)}</b>` : "All houses";
@@ -526,13 +549,13 @@ function tarjetaHtml(c, i){
   const conds = (c.cond || []).map(minus).join(" and ");
   const etiqueta = `${nombre(c)} ${c.refTxt || REF_CORTO[c.ref]}: ${conds}${c.group ? ", in " + c.group : ""}. ${pct(c.pc)} ${lblProb(c)}, ${pct(c.bc)} without the signal, gain ${Math.round(c.gain)} points${c.coll === "current" ? ". " + VER_T[c.verdict] : ""}`;
   return `<button class="tarjeta${codif(c)}" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="${esc_(etiqueta)}">
-    <span class="t-cab">${glifo(c.esc)}<span class="esc">${nombre(c)}</span><span class="ref">${c.refTxt || REF_CORTO[c.ref]}</span>${claseHtml(c)}</span>
+    <span class="t-cab">${glifo(c.esc)}<span class="esc">${nombre(c)}</span>${claseHtml(c)}</span>
     <span class="cond">${condHtml(c)}</span>
     <span class="donde">${donde}${pie}</span>
     <span class="prob">
       <span class="prob-fila"><span class="p">${pct(c.pc)}</span><span class="lbl">${lblProb(c)}</span></span>
       ${medidor(c.pc, c.bc)}
-      <span class="usual-txt num">without the signal ${pct(c.bc)}</span>
+      <span class="usual-txt num">without these signals ${pct(c.bc)}</span>
       <span class="kpis">
         <span class="kpi"><span>${c.dir > 0 ? "Lift" : "Risk"}</span><b>${veces(c.lift)}</b></span>
         <span class="kpi"><span>Cases</span><b>${ent(c.n)}</b></span>
@@ -551,13 +574,13 @@ function hallazgoHtml(c, i){
   } else {
     der = `<span class="h-num">${glifo(c.esc).replace('class="glifo"', 'class="glifo" style="vertical-align:-3px;margin-right:5px"')}${nombre(c)} · ${REF_CORTO[c.ref]}</span>
       <span class="p-grande" style="margin-top:10px">${pct(c.pc)}</span>
-      <span class="usual-txt">of ${ent(c.n)} cases ${c.dir > 0 ? VERBO[c.esc] : VERBO_NO[c.esc]} ${REF[c.ref]}</span>
+      <span class="usual-txt">of ${ent(c.n)} cases with these signals</span>
       ${medidor(c.pc, c.bc)}
-      <span class="usual-txt num">without the signal ${pct(c.bc)} · lift ${veces(c.lift)}</span>
+      <span class="usual-txt num">without these signals ${pct(c.bc)} · lift ${veces(c.lift)}</span>
       <span class="nota">${ent(c.cod)} codes · old ${pct(c.old[0])} vs ${pct(c.old[1])} · recent ${pct(c.rec[0])} vs ${pct(c.rec[1])}${c.units ? ` · in units ${veces(c.units[0])} vs ${veces(c.units[1])}` : ""}</span>`;
   }
   return `<button class="tarjeta hallazgo${codif(c)}" data-id="${c.id}" style="animation-delay:${Math.min(i, 10) * 30}ms" aria-label="Finding ${c.k}: ${esc_(c.title)}${c.pc != null ? ". " + pct(c.pc) + " " + lblProb(c) + ", " + pct(c.bc) + " without the signal" : ""}">
-    <span class="h-izq"><h3><span class="num" style="color:var(--label-2)">${c.k}.</span> ${esc_(c.title)}</h3>${c.cond ? `<span class="why" style="-webkit-line-clamp:2;color:var(--label)"><b style="font-weight:600">If</b> ${condHtml(c)}${c.group ? ` · in ${esc_(c.group)}` : ""}</span>` : ""}<span class="why">${esc_(c.why)}</span><span class="accion"><b>Action ·</b> ${esc_(c.action)}</span></span>
+    <span class="h-izq"><h3><span class="num" style="color:var(--label-2)">${c.k}.</span> ${esc_(c.title)}</h3>${c.cond ? `<span class="why" style="-webkit-line-clamp:2;color:var(--label)"><b style="font-weight:600">When</b> ${(c.cond || []).map(esc_).join(" · ")}${c.group ? ` · in ${esc_(c.group)}` : ""}</span>` : ""}<span class="why">${esc_(c.why)}</span><span class="accion"><b>Action ·</b> ${esc_(c.action)}</span></span>
     <span class="h-der">${der}</span></button>`;
 }
 
@@ -740,11 +763,8 @@ ficha.addEventListener("click", e => { if (e.target === ficha) cerrar(); });
 $("#fCerrar").onclick = cerrar;
 
 function frase(c){
-  const si = `<b>If</b> ${(c.cond || []).map((t, i) => esc_(minus(t, 1))).join(" <b>and</b> ")}${c.group ? `, in <b>${esc_(c.group)}</b>` : ""}`;
-  if (["drop","death","rise","empty"].includes(c.esc)) return `${si}, then ${pct(c.p)} of the time ${EVENTO[c.esc]} (${pct(c.b)} without the signal).`;
-  const resto = c.dir > 0 ? `there is a <b>${pct(c.p)}</b> chance that in the next 3 months it ${FUT[c.esc]} ${REF[c.ref]} (${pct(c.b)} without the signal)` :
-    `there is only a <b>${pct(c.p)}</b> chance that in the next 3 months it ${FUT[c.esc]} ${REF[c.ref]} (${pct(c.b)} without the signal)`;
-  return `${si}, ${resto}.`;
+  const si = (c.cond || []).map(t => `<b>${esc_(t)}</b>`).join(" and ");
+  return `When ${si}${c.group ? ` (in ${esc_(c.group)})` : ""}: <b>${nombre(c).replace("Next ", "next ")}</b> in <b>${pct(c.p)}</b> of ${ent(c.n)} cases, vs ${pct(c.b)} without the signals.`;
 }
 function filaM(t, p, b, n){
   if (p == null) return `<div class="fila-m"><span>${t}</span><span class="v">–</span></div>`;
@@ -771,9 +791,9 @@ function fichaTarjeta(c){
     ${c.why ? `<p class="frase">${esc_(c.why)}</p>` : ""}
     <div class="f-resumen">
       <div class="panel"><h4>${c.dir > 0 ? "How often it happened" : "How often it did not happen"}</h4>
-        <div class="f-prob"><span class="p">${pct(c.pc)}</span><span class="lbl">with the signal · without it ${pct(c.bc)}</span></div>
+        <div class="f-prob"><span class="p">${pct(c.pc)}</span><span class="lbl">with these signals · without them ${pct(c.bc)}</span></div>
         ${medidor(c.pc, c.bc, true)}
-        <p class="usual-txt" style="margin:6px 0 14px">The tick is what happens without the signal: all cases, whether the signal fired or not.</p>
+        <p class="usual-txt" style="margin:6px 0 14px">The tick is what happens without these signals: all cases, whether they fired or not.</p>
         <div class="filas-m">${o ? filaM("Old snapshots", o[0], o[1], c.old[2]) : ""}${r ? filaM("Recent snapshots", r[0], r[1], c.rec[2]) : ""}</div></div>
       <div class="panel"><div class="f-cifras">
         <div><span>${c.dir > 0 ? "Lift" : "Risk vs usual"}</span><b>${veces(c.lift)}</b><small>chance of the scenario with / without</small></div>
@@ -801,6 +821,7 @@ function fichaMetrica(c){
 
 // ---------------------------------------------------------------- arranque
 aplicarTema();
+if (matchMedia("(min-width: 901px)").matches) $("#glos").open = true;
 montar();
 pintar();
 requestAnimationFrame(contadores);

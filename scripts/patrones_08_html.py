@@ -79,6 +79,84 @@ EN = {
     "N_k_sys_alto": "System FC over 1.5× its pace",
     "N_k_cerca_sys": "Consensus within ±5% of System FC + DA: not adjusted by hand",
 }
+# textos de las condiciones en las tarjetas: cortos y con los valores explícitos (qué cifra, frente a qué, umbral).
+# Vocabulario (glosario de la página): 3M = 3 últimos meses cerrados · LY = mismos meses del año pasado ·
+# pace = 12M ÷ 4 · expected = nivel 12M × estacionalidad de la brand · large order = mes ≥ 2× su mediana de 12M ·
+# anomalous = mes a más de 3 MAD de su mediana · CV = variación mes a mes · «20 pts» = crecimiento 1,2× mayor
+CLARO = {
+    "K_3m_lo": "Consensus next 3M < 0.67 × sell-in last 3M", "K_3m_hi": "Consensus next 3M > 1.5 × sell-in last 3M",
+    "K_ritmo_lo": "Consensus next 3M < 0.67 × pace", "K_ritmo_LO": "Consensus next 3M < 0.4 × pace",
+    "K_ritmo_hi": "Consensus next 3M > 1.5 × pace", "K_ritmo_HI": "Consensus next 3M > 2.5 × pace",
+    "K_rev_dn": "Consensus next 3M < 0.7 × the same months 3 snapshots ago",
+    "N_k_rev1_dn": "Consensus next 3M < 0.85 × the previous snapshot",
+    "K_tardio": "Consensus months 7–9 > 2 × months 1–3", "K_frontal": "Consensus months 7–9 < 0.5 × months 1–3",
+    "K_ly_hi": "Consensus next 3M > 1.5 × sell-in LY", "K_ly_lo": "Consensus next 3M < 0.67 × sell-in LY",
+    "K_ep_lo": "Growth in the Consensus vs LY 20 pts below EPOS 3M vs LY",
+    "K_ep_hi": "Growth in the Consensus vs LY 50 pts above EPOS 3M vs LY",
+    "K_si_lo": "Growth in the Consensus vs LY 20 pts below sell-in 3M vs LY",
+    "K_si_hi": "Growth in the Consensus vs LY 50 pts above sell-in 3M vs LY",
+    "N_k_vs_esp_lo": "Consensus next 3M < 0.77 × expected", "N_k_vs_esp_hi": "Consensus next 3M > 1.3 × expected",
+    "N_k_sys_alto": "System FC next 3M > 1.5 × pace", "N_k_sys_bajo": "System FC next 3M < 0.6 × pace",
+    "K_man_dn": "Consensus next 3M < 0.8 × (System FC + DA)", "N_k_cerca_sys": "Consensus next 3M = System FC + DA (±5%)",
+    "K_pico_plan": "Some Consensus month in the next 3M ≥ 2 × the 12M median",
+    "K_ultimo_cero": "Last month < 0.15 × 12M average · Consensus next 3M > 0.8 × pace",
+    "N_k_sobre_rev_dn": "Consensus next 3M cut > 15% vs the previous snapshot · sell-in last 3M > pace",
+    "N_k_sube_ventas_dn": "Consensus next 3M raised > 15% vs the previous snapshot · sell-in last 3M < pace",
+    "N_k_ep_vs": "Consensus next 3M > 1.3 × pace · EPOS 3M vs LY < −10%",
+    "N_k_paso_alto": "Snapshot of 4 months ago: sold > 1.2 × its Consensus",
+    "SI_up3": "Sell-in 3M vs LY > +10%", "SI_UP3": "Sell-in 3M vs LY > +30%", "SI_dn12": "Sell-in 12M vs the 12M before < −10%",
+    "SI_3m_hi": "Sell-in last 3M > 1.3 × pace", "SI_3m_lo": "Sell-in last 3M < 0.6 × pace",
+    "SI_last_hi": "Sell-in last month > 1.5 × 12M average", "SI_last_lo": "Sell-in last month < 0.3 × 12M average",
+    "SI_max": "Sell-in last 3M ≥ 90% of its best 3M in 12M", "SI_suelo": "Sell-in last 3M < 25% of its best 3M in 12M",
+    "SI_racha_dn": "0 of the last 6 months above LY", "SI_racha_up": "5 or 6 of the last 6 months above LY",
+    "SI_giro_up": "Sell-in vs LY: 12M < −10% · 3M > +10%",
+    "SI_acel": "Sell-in vs LY: 3M growth 20 pts above 12M growth", "SI_frena": "Sell-in vs LY: 3M growth 20 pts below 12M growth",
+    "N_pend_up": "Sell-in 12M trend ≥ +3% a month", "N_pend_dn": "Sell-in 12M trend ≤ −3% a month",
+    "N_ceros3": "A month at 0 in the last 3M", "C_ceros": "2+ months at 0 in the last 12M",
+    "N_sin_anom": "No anomalous month in the last 12M", "N_anom_muchas": "3+ anomalous months in the last 12M",
+    "C_errático": "CV ≥ 1", "C_regular": "CV < 0.5",
+    "C_big_reciente": "Large order in the last 2 months", "C_big_lejos": "Last large order 9–12 months ago",
+    "C_sin_big": "No large order in the last 12M", "C_muchos_big": "3+ large orders in the last 12M",
+    "C_ly_big3": "Large order in the same 3 months LY", "C_ly_pico": "Sell-in of the same 3 months LY > 1.3 × pace",
+    "C_ly_valle": "Sell-in of the same 3 months LY < 0.7 × pace", "C_post_navidad": "Next 3M start in January or February",
+    "EP_up3": "EPOS 3M vs LY > +10%", "EP_DN3": "EPOS 3M vs LY < −30%",
+    "EP_last_lo": "EPOS last 3M < 0.7 × its 12M average", "N_ep_ult_lo": "EPOS last month < 0.6 × its 12M average",
+    "N_ep_parcial": "EPOS reported in only 1–9 of the last 12 months", "N_kap_alto": "EPOS 12M > 80% of sell-in 12M",
+    "X_ambos_DN": "Sell-in 3M vs LY < −30% · EPOS 3M vs LY < −30%",
+    "X_si_up_ep_dn": "Sell-in 3M vs LY > +10% · EPOS 3M vs LY < −10%",
+    "X_div_pos": "Sell-in 3M vs LY 30 pts above EPOS 3M vs LY", "X_div_neg": "Sell-in 3M vs LY 30 pts below EPOS 3M vs LY",
+    "X_stock_alto": "Sell-in − EPOS over the last 6M > 1 month of sales",
+    "X_stock_bajo": "EPOS − sell-in over the last 6M > 1 month of sales",
+    "N_stock3_alto": "Sell-in − EPOS over the last 3M > 1 month of sales",
+    "N_stock3_bajo": "EPOS − sell-in over the last 3M > 1 month of sales",
+    "X_st_alto": "EPOS ÷ sell-in last 3M > 1.3 × its 12M ratio", "X_st_bajo": "EPOS ÷ sell-in last 3M < 0.7 × its 12M ratio",
+    "N_st_empeora": "EPOS ÷ sell-in last 3M < 0.8 × last 6M",
+    "G_brand_up": "Brand sell-in 3M vs LY > +10%", "G_brand_dn": "Brand sell-in 3M vs LY < −10%",
+    "G_brand_DN": "Brand sell-in 3M vs LY < −30%", "G_linea_DN": "Line sell-in 3M vs LY < −30%",
+    "G_casa_up": "House sell-in 3M vs LY > +10%", "G_brand_ep_dn": "Brand EPOS 3M vs LY < −10%",
+    "G_brand_destock": "Brand sell-in 3M vs LY 20 pts below brand EPOS 3M vs LY",
+    "G_rs_brand_lo": "Sell-in 3M vs LY < 0.5 × its brand's", "G_rs_brand_hi": "Sell-in 3M vs LY > 2 × its brand's",
+    "G_rs_linea_lo": "Sell-in 3M vs LY < 0.5 × its line's", "G_rs_linea_hi": "Sell-in 3M vs LY > 2 × its line's",
+    "G_rezagado": "Sell-in 3M vs LY < −10% · brand > +10%", "G_contra_linea": "Sell-in 3M vs LY > +10% · line < −10%",
+    "G_contra_brand": "Sell-in 3M vs LY > +10% · brand < −10%",
+    "G_cuota_up": "Share of its line: last 3M > 1.2 × last 12M", "G_cuota_dn": "Share of its line: last 3M < 0.8 × last 12M",
+    "G_ep_brand_hi": "EPOS 3M vs LY 20 pts above its brand's EPOS",
+    "O_cortes": "Supply cuts last 3M > 0.5 months of sales", "O_cortes_altos": "Supply cuts last 3M > 2 months of sales",
+    "N_corte_reciente": "Supply cut last month", "N_corte_viejo": "Supply cuts 4–12 months ago, none in the last 3M",
+    "O_pequeño": "Sell-in 12M < 4,000 units", "O_joven": "13–24 months since its first sale",
+    "O_seg_Horses": "Segment: Horses", "O_seg_Rabbits": "Segment: Rabbits",
+    "O_os_crece": "Brand One Shots 3M > 2 × LY", "O_os_campaña": "Brand One Shots 3M ≥ 50% of its regulars",
+    "N_disco12": "Product discontinuation date in the next 12M", "N_linea_larga": "Its line has 8+ active codes",
+    "N_cola_linea": "Its share of the line's 12M sell-in < 5%", "N_hermano_nuevo": "Sibling (same line and size) launched in the last 6M",
+    "C1": "CV ≥ 0.9 · sell-in 12M < 4,000 units · last month < 0.3 × 12M average",
+    "C5": "CV ≥ 1.25 · sell-in 12M < 4,000 units",
+    "M1": "Sell-in 12M < 4,000 units · CV ≥ 1 · line 3M vs LY < −30%", "M5": "Sell-in 12M < 4,000 units · line 3M vs LY < −30%",
+    "M2": "Rabbit · EPOS 3M vs LY 25 pts below its brand's EPOS",
+    "U1": "3+ large orders in the last 12M · sell-in last 3M ≥ 1.5 × pace",
+    "U2": "A month at 0 in the last 12M · sell-in last 3M ≥ 1.2 × pace · no brand One Shots",
+    "V1": "Last month < 0.1 × 12M average · no supply cuts",
+    "V2": "Last month < 0.1 × 12M average · sell-in 12M trend down",
+}
 GRUPO_EN = {"casa": "House", "brand": "Brand", "linea": "Line", "tamano": "Size", "seg": "Segment", "tramo_edad": "Age",
             "tramo_vol": "Volume", "lista": "List"}
 VALOR_EN = {"13-24 meses": "13–24 months", "25-36 meses": "25–36 months", "37+ meses": "37+ months", "Pre-disco": "Pre-disco",
@@ -95,7 +173,7 @@ def textos_senal():
     t = {}
     for tabla in ("K", "Y"):
         for m in json.loads((CACHE / f"senales_{tabla}.json").read_text(encoding="utf-8")):
-            t[m["id"]] = EN.get(m["id"], m["txt"])
+            t[m["id"]] = CLARO.get(m["id"], EN.get(m["id"], m["txt"]))
     return t
 
 
