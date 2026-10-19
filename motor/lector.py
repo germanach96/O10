@@ -79,7 +79,7 @@ def leer_foto(ruta: str | Path, cfg: dict) -> Foto:
     m = re.fullmatch(r"(.+)_(\d{4})_(\d{2})\.csv", ruta.name)
     if not m:
         raise ErrorFoto(f"Nombre de archivo inesperado (Casa_AAAA_MM.csv): {ruta.name}")
-    casa = m.group(1)
+    casa = m.group(1).replace("_", " ")  # 'Kylie_MU_2026_04.csv' -> casa 'Kylie MU' (como su carpeta)
     mes_nombre = int(m.group(2)) * 12 + int(m.group(3)) - 1
 
     with open(ruta, encoding="utf-8-sig") as fh:
@@ -172,6 +172,10 @@ def _atributos(foto: Foto, cfg: dict) -> None:
     attrs["Final Responsibility"] = attrs["Final Responsibility"].fillna("")
     attrs["Ignore System Forecast Flag"] = attrs["Ignore System Forecast Flag"].fillna("")
     attrs["tamano"] = attrs["Planning Item Description"].map(extraer_tamano)
+    # Maquillaje: va por shade, no por tamaño; por ahora todos sus códigos en un solo grupo
+    tm = cfg.get("tamano_maquillaje", {})
+    if tm and foto.casa.endswith(tm.get("sufijo_casa", " MU")):
+        attrs["tamano"] = tm.get("etiqueta", "Make up")
 
     # --- Disco Date real o por defecto ---
     defecto = set(cfg.get("fechas_disco_por_defecto", []))

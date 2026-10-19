@@ -419,7 +419,10 @@ def senales(P: pd.DataFrame) -> list[dict]:
 # ------------------------------------------------------------------ tabla de casos (código × foto) con objetivos
 def casos(panel: Panel, cfg: dict) -> tuple[pd.DataFrame, pd.DataFrame, list[dict], dict]:
     ce = cfg["escenarios"]
-    k, kb, solo_nuevo, vieja = perimetro(panel, ce.get("ruptura_perimetro"))
+    rp = ce.get("ruptura_perimetro")
+    if isinstance(rp, dict):  # una ruptura por casa (sin entrada = sin ruptura)
+        rp = rp.get(panel.fotos[0].casa)
+    k, kb, solo_nuevo, vieja = perimetro(panel, rp)
     Z, _ = indicadores(panel, k, kb, vieja)
     mn = ce["minimos"]
     P = Z[(Z.os == 0) & (Z.s12 >= mn["vol12"]) & (Z.edad >= mn["edad_meses"])].copy().reset_index(drop=True)
