@@ -270,13 +270,14 @@ table.mx td.c[data-n="4"] span,table.mx td.c[data-n="5"] span{color:#fff;font-we
 .leyenda .pasos{display:inline-flex;gap:2px;vertical-align:middle;margin-right:6px}
 .leyenda .pasos i{width:14px;height:12px;border-radius:3px;display:inline-block}
 table.mx td.c::before{content:"";position:absolute;inset:3px;border-radius:7px;background:var(--tinte,transparent)}
-/* ganadores, de menos a más: número dorado (sección), borde dorado (columna), fondo dorado (tabla), brillo (las dos) */
+/* ganadores, de menos a más: borde dorado (sección en una base), número dorado (sección en todas las bases),
+   fondo dorado (tabla), brillo (las dos tablas) */
 :root{--oro:#a87400;--oro-claro:#ffe08a;--oro-borde:#d39b06;--oro-fondo:linear-gradient(180deg,#ffe58f 0%,#f5bf2a 100%);--oro-tinta:#3b2900;--oro-brillo:rgba(245,180,20,.7)}
 :root[data-theme="dark"]{--oro:#ffcf40;--oro-borde:#ffc61a;--oro-brillo:rgba(255,198,26,.6)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--oro:#ffcf40;--oro-borde:#ffc61a;--oro-brillo:rgba(255,198,26,.6)}}
-table.mx td.c.g-sec span{color:var(--oro);font-weight:800}
-table.mx td.c.g-sec[data-n="4"] span,table.mx td.c.g-sec[data-n="5"] span{color:var(--oro-claro)}
-table.mx td.c.g-col::after{content:"";position:absolute;inset:3px;border-radius:7px;box-shadow:inset 0 0 0 2px var(--oro-borde)}
+table.mx td.c.g-sec::after{content:"";position:absolute;inset:3px;border-radius:7px;box-shadow:inset 0 0 0 2px var(--oro-borde)}
+table.mx td.c.g-col span{color:var(--oro);font-weight:800}
+table.mx td.c.g-col[data-n="4"] span,table.mx td.c.g-col[data-n="5"] span{color:var(--oro-claro)}
 table.mx td.c.g-tab::before{background:var(--oro-fondo);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
 table.mx td.c.g-tab span,table.mx td.c.g-tab[data-n] span{color:var(--oro-tinta);font-weight:800}
 table.mx td.c.g-glob{z-index:2}
@@ -292,8 +293,8 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
 .leyenda .esc{display:inline-flex;align-items:center;gap:6px}
 .leyenda .esc i{display:inline-block;width:120px;height:10px;border-radius:5px}
 .leyenda .g{display:inline-grid;place-items:center;min-width:34px;height:18px;padding:0 5px;border-radius:5px;margin-right:6px;font-size:11px;font-weight:800;vertical-align:middle;font-variant-numeric:tabular-nums}
-.leyenda .g.sec{color:var(--oro)}
-.leyenda .g.col{box-shadow:inset 0 0 0 2px var(--oro-borde);color:var(--label)}
+.leyenda .g.sec{box-shadow:inset 0 0 0 2px var(--oro-borde);color:var(--label)}
+.leyenda .g.col{color:var(--oro)}
 .leyenda .g.tab{background:var(--oro-fondo);color:var(--oro-tinta)}
 .leyenda .g.glob{background:var(--oro-fondo);color:var(--oro-tinta);box-shadow:0 0 0 2px var(--oro-borde),0 0 10px 2px var(--oro-brillo)}
 /* tarjeta flotante de una celda */
@@ -404,8 +405,8 @@ function nivel(score){
 }
 // valor con el que se elige al ganador: Δ más negativo, % cumplido más alto o WAPE más bajo
 function rango(c){ return S.med === "d" ? (c.d == null ? null : -c.d) : S.med === "ok" ? c.ok1 : (c.w1 == null ? null : -c.w1); }
-// ganadores: de cada sección en cada base (bloque de filas × sus horizontes, recuadro rojo), de cada sección en
-// todas las bases (recuadro azul), de cada tabla y de las dos tablas. La columna 12M* (una sola foto) no compite
+// ganadores: de cada sección en cada base (bloque de filas × sus horizontes; borde dorado), de cada sección en
+// todas las bases (número dorado), de cada tabla y de las dos tablas. La columna 12M* (una sola foto) no compite
 function ganadores(){
   const G = {sec:new Set(), col:new Set(), tab:new Set(), glob:new Set()};
   const mejores = l => { const m = Math.max(...l.map(x => x[1])); return l.filter(x => x[1] >= m - 1e-12).map(x => x[0]); };
