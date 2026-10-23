@@ -65,13 +65,18 @@ def historia_12m(casa):
     return df[df.reg & (df.B12 > 0)].drop(columns="reg")
 
 
-def sesgo(g, col):
-    """Bias en el sentido del trend, en puntos de crecimiento ponderados por el volumen del año pasado."""
+def sesgo_partes(g, col):
+    """Numerador y denominador del bias: Σ signo(T)·(movimiento − anticipado) y Σ LY (casos con trend ≠ 0)."""
     T = np.clip(g[col], -TOPE, TOPE)
     z = g[(T != 0) & (g.b_ly > 0)]
     Tz = np.clip(z[col], -TOPE, TOPE)
-    den = z.b_ly.sum()
-    return float((np.sign(Tz) * ((z.A - z.b_ly) - z.b_ly * Tz)).sum() / den) if den > 0 else np.nan
+    return float((np.sign(Tz) * ((z.A - z.b_ly) - z.b_ly * Tz)).sum()), float(z.b_ly.sum())
+
+
+def sesgo(g, col):
+    """Bias en el sentido del trend, en puntos de crecimiento ponderados por el volumen del año pasado."""
+    num, den = sesgo_partes(g, col)
+    return num / den if den > 0 else np.nan
 
 
 def medir(x, col):
@@ -85,7 +90,11 @@ def medir(x, col):
         prev = g.b_ly * np.clip(g[col], -TOPE, TOPE)         # lo que anticipaba el trend
         den = np.abs(mov).sum()
         if den > 0:
-            por_foto.append((int_a_mes(int(F)), 1 - np.abs(mov - prev).sum() / den, sesgo(g, col), len(g)))
+            # además de las cifras, las sumas (para recalcular en Excel): Σ|mov − anticipado|, Σ|mov|, numerador y
+            # denominador del bias, y las unidades vendidas y del año pasado
+            bn, bd = sesgo_partes(g, col)
+            por_foto.append((int_a_mes(int(F)), 1 - np.abs(mov - prev).sum() / den, sesgo(g, col), len(g),
+                             float(np.abs(mov - prev).sum()), float(den), bn, bd, float(g.A.sum()), float(g.b_ly.sum())))
     if not por_foto:
         return {"n": int(len(y)), "fotos": 0}
     fi = np.array([p[1] for p in por_foto])
@@ -98,7 +107,7 @@ def medir(x, col):
             "fiab": float(np.median(fi)), "fiab_min": float(fi.min()), "fiab_max": float(fi.max()),
             "bias": float(np.median(bi)), "bias_min": float(bi.min()), "bias_max": float(bi.max()),
             "fiab_total": float(1 - np.abs(mov - prev).sum() / den), "bias_total": sesgo(y, col),
-            "detalle": [[p[0], round(p[1], 4), round(p[2], 4), p[3]] for p in por_foto]}
+            "detalle": [[p[0], round(p[1], 4), round(p[2], 4), p[3], *[round(v, 1) for v in p[4:]]] for p in por_foto]}
 
 
 def main():
