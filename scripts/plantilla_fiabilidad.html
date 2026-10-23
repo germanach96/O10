@@ -299,6 +299,8 @@ table.mx.fi{min-width:900px}
 table.mx.fi td.c{min-width:64px}
 table.mx.fi td.c small{position:relative;z-index:1;font-size:9.5px;font-weight:500;margin-left:3px;opacity:.62}
 table.mx.fi td.c.par{border-left:1px dashed var(--sep)}
+table.mx.fi td.c.pocos::after{content:"";position:absolute;inset:3px;border-radius:7px;border:1.5px dashed rgba(28,28,30,.55)}
+.leyenda .pocos-m{display:inline-block;width:26px;height:16px;border-radius:5px;border:1.5px dashed var(--label-2);vertical-align:middle;margin-right:6px}
 table.mx.fi th.sub{font-size:10.5px}
 table.mx.fi th.hist{color:var(--label-2)}
 .leyenda .fila-l{display:inline-flex;align-items:center;gap:8px}
@@ -324,7 +326,7 @@ table.mx.fi th.hist{color:var(--label-2)}
     <ul class="lista" id="casas" aria-labelledby="hCasa"></ul>
     <h2>How it is measured</h2>
     <p class="ayuda">For each code and snapshot: <b>moved</b> = sold − same months last year (units); <b>anticipated</b> = last year × trend (units, trend capped at ±50%). Summing in units, big codes weigh more.</p>
-    <p class="ayuda">Each figure is the median of the snapshots; the small number is how many snapshots. A snapshot needs all its months closed and at least 20 codes with the trend.</p>
+    <p class="ayuda">Each figure is the median of the snapshots; the small number is how many snapshots. A snapshot needs all its months closed and at least 5 codes with the trend; under 20 codes per snapshot the cell is dashed (indicative).</p>
     <p class="ayuda">Sold and last year come from the latest snapshot that has the code (same perimeter); the trend, from what each snapshot showed.</p>
   </div>
   <div class="lado-pie">
@@ -389,7 +391,7 @@ function celda(N, k, h, cual){
   if (!m || !m.fotos) return `<td class="c vacio${ini}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>–</span></td>`;
   const v = cual === "f" ? m.fiab : m.bias;
   const n = cual === "f" ? nivelF(v) : nivelB(v);
-  return `<td class="c${ini}" style="--tinte:${GAMA[n + 5]}" data-n="${Math.abs(n)}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>${cual === "f" ? pct(v) : pts(v)}</span><small>${m.fotos}</small></td>`;
+  return `<td class="c${ini}${m.pocos ? " pocos" : ""}" style="--tinte:${GAMA[n + 5]}" data-n="${Math.abs(n)}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>${cual === "f" ? pct(v) : pts(v)}</span><small>${m.fotos}</small></td>`;
 }
 function tabla(N){
   const cab1 = `<tr><th class="fija" rowspan="2">Trend</th>${H.map(h => `<th class="base${h === "12h" ? " hist" : ""}" colspan="2">${H_T[h]}${h === "12h" ? "†" : ""}<small>${H_S[h]}</small></th>`).join("")}</tr>`;
@@ -406,7 +408,7 @@ function tabla(N){
 function pintar(){
   $("#subtitulo").textContent = `Reliability of the trends by horizon · ${S.casa === "all" ? "All houses" : S.casa}`;
   const pasos = n => `<span class="pasos">${n.map(i => `<i style="background:${GAMA[i + 5]}"></i>`).join("")}</span>`;
-  $("#leyenda").innerHTML = `<span class="fila-l">${pasos([-5,-4,-3,-2,-1,0,1,2,3,4,5])}Reliability: −20% · 0% · 20% or more</span><span class="fila-l">${pasos([5,3,1,-1,-3,-5])}Bias: 0 · ±20 pts or more</span><span>Small number = snapshots</span><span>† sell-in only: every month of the latest file as a starting point (2024–25)</span><span>– no data</span>`;
+  $("#leyenda").innerHTML = `<span class="fila-l">${pasos([-5,-4,-3,-2,-1,0,1,2,3,4,5])}Reliability: −20% · 0% · 20% or more</span><span class="fila-l">${pasos([5,3,1,-1,-3,-5])}Bias: 0 · ±20 pts or more</span><span>Small number = snapshots</span><span><span class="pocos-m"></span>under 20 codes per snapshot: indicative</span><span>† sell-in only: every month of the latest file as a starting point (2024–25)</span><span>– no data</span>`;
   $("#m6").innerHTML = tabla(6);
   $("#m12").innerHTML = tabla(12);
   document.querySelectorAll("#casas .fila").forEach(x => x.setAttribute("aria-current", x.dataset.k === S.casa));
@@ -425,7 +427,7 @@ function mostrarTip(td){
     <dt>Reliability</dt><dd><b>${pct(m.fiab)}</b> (${pct(m.fiab_min)} to ${pct(m.fiab_max)})</dd>
     <dt>Bias</dt><dd><b>${pts(m.bias)} pts</b> (${pts(m.bias_min)} to ${pts(m.bias_max)})</dd>
     <dt>All snapshots pooled</dt><dd>${pct(m.fiab_total)} · ${pts(m.bias_total)} pts</dd>
-    <dt>Cases</dt><dd>${ent(m.n)} · ${ent(m.codigos)} codes</dd></dl>
+    <dt>Cases</dt><dd>${ent(m.n)} · ${ent(m.codigos)} codes${m.pocos ? " · few codes, indicative" : ""}</dd></dl>
     <div class="fotos"><span class="h">Snapshot</span><span class="h">Reliab.</span><span class="h">Bias pts</span><span class="h">Codes</span>${m.detalle.map(([F, f, b, n]) => `<span>${F}</span><span>${pct(f)}</span><span>${pts(b)}</span><span>${n}</span>`).join("")}</div>`;
   tip.innerHTML = html;
   const r = td.getBoundingClientRect();

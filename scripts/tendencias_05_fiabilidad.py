@@ -13,7 +13,8 @@ recortado a ±50%, como el motor). Lo que pasó es A − LY. Sumando en unidades
   (trend −5%, real −7% → +2; trend +15%, real +20% → +5); negativo = se quedó corta (trend −5%, real −4% → −1;
   trend +15%, real +10% → −5). Los casos con trend 0 no marcan sentido y no cuentan.
 
-Se calcula en cada foto y se da la mediana de las fotos (y su rango). Plazos acumulados desde la foto: 3M (meses
+Se calcula en cada foto (con al menos 5 códigos con ese trend) y se da la mediana de las fotos (y su rango). Si la
+mediana de códigos por foto es menor de 20 (Kylie Frag, una casa pequeña), la cifra se marca como orientativa. Plazos acumulados desde la foto: 3M (meses
 1–3), 6M, 9M y 12M, solo con fotos que tienen esos meses cerrados. A 12M solo hay una foto (2025.M09, sin EPOS); para
 el sell-in se añade la historia larga: cada mes de la última foto como punto de partida.
 """
@@ -34,7 +35,8 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 SALIDA = RAIZ / "resultados" / "cache" / "tendencias_fiabilidad.json"
 HORIZ = [3, 6, 9, 12]
 TOPE = 0.5
-MIN_CASOS = 20
+MIN_CASOS = 5          # códigos por foto; con menos de POCOS la celda se marca como orientativa
+POCOS = 20
 
 
 def historia_12m(casa):
@@ -92,6 +94,7 @@ def medir(x, col):
     prev = y.b_ly * np.clip(y[col], -TOPE, TOPE)
     den = np.abs(mov).sum()
     return {"n": int(len(y)), "codigos": int(y.ean.nunique()), "fotos": len(por_foto),
+            "pocos": bool(np.median([p[3] for p in por_foto]) < POCOS),
             "fiab": float(np.median(fi)), "fiab_min": float(fi.min()), "fiab_max": float(fi.max()),
             "bias": float(np.median(bi)), "bias_min": float(bi.min()), "bias_max": float(bi.max()),
             "fiab_total": float(1 - np.abs(mov - prev).sum() / den), "bias_total": sesgo(y, col),
