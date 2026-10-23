@@ -183,9 +183,24 @@ def main():
     pagina(res)
 
 
+def hasta():
+    """Último mes cerrado: el anterior a la foto más reciente de todas las casas."""
+    meses = [int(r.stem[-7:-3]) * 12 + int(r.stem[-2:]) - 1 for r in RAIZ.glob("data/*/Consensus/*.csv")]
+    return int_a_mes(max(meses) - 1)
+
+
+def redondear(o):
+    if isinstance(o, float):
+        return None if np.isnan(o) else round(o, 4)
+    if isinstance(o, dict):
+        return {k: redondear(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [redondear(v) for v in o]
+    return o
+
+
 def pagina(res):
     """Incrusta la matriz en scripts/plantilla_matriz.html (la página no calcula nada: solo dibuja)."""
-    from scripts.tendencias_03_html import hasta, redondear
     res = dict(res, hasta=hasta())
     html = (RAIZ / "scripts" / "plantilla_matriz.html").read_text(encoding="utf-8").replace(
         "/*__DATOS__*/null", json.dumps(redondear(res), ensure_ascii=False, separators=(",", ":")))

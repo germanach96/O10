@@ -263,6 +263,12 @@ table.mx tr.grupo th.fija{background:color-mix(in srgb,var(--card) 94%,transpare
 table.mx td.c{position:relative;height:30px;min-width:49px;border-bottom:1px solid var(--sep);cursor:default}
 table.mx td.c.ini{border-left:1px solid var(--sep-fuerte)}
 table.mx td.c span{position:relative;z-index:1}
+table.mx td.c[data-n="4"] span,table.mx td.c[data-n="5"] span{color:#fff;font-weight:600}
+:root{--azul-esc:#0a6cdf;--rojo-esc:#e0182d}
+:root[data-theme="dark"]{--azul-esc:#2f8cff;--rojo-esc:#ff4d4f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--azul-esc:#2f8cff;--rojo-esc:#ff4d4f}}
+.leyenda .pasos{display:inline-flex;gap:2px;vertical-align:middle;margin-right:6px}
+.leyenda .pasos i{width:14px;height:12px;border-radius:3px;display:inline-block}
 table.mx td.c::before{content:"";position:absolute;inset:3px;border-radius:7px;background:var(--tinte,transparent)}
 table.mx td.c.top span{font-weight:700}
 table.mx td.c.top::after{content:"";position:absolute;inset:3px;border-radius:7px;box-shadow:inset 0 0 0 1.5px var(--blue)}
@@ -372,17 +378,25 @@ function valor(c){
   if (S.med === "ok") return {txt:pct(c.ok1), score:c.ok1 - c.ok0};
   return {txt:pct(c.w1, 1), score:c.d == null ? null : -c.d};
 }
-function tinte(score, max){
-  if (score == null) return "transparent";
-  const a = Math.min(1, Math.abs(score) / max) * 34;
-  return `color-mix(in srgb,${score > 0 ? "var(--blue)" : "var(--red-txt)"} ${a.toFixed(1)}%,transparent)`;
+// escala divergente por escalones: 5 tonos de azul (mejor) y 5 de rojo (peor), para que se distingan bien
+// cortes de cada escalón: puntos de WAPE (Δ y WAPE) o puntos de % cumplido; por debajo del primero, sin tinte
+const CORTES = {d:[0.005, 0.02, 0.04, 0.07, 0.10], w:[0.005, 0.02, 0.04, 0.07, 0.10], ok:[0.005, 0.015, 0.03, 0.05, 0.07]};
+const ALFAS = [12, 26, 42, 60, 80];
+function nivel(score){
+  if (score == null) return 0;
+  const n = CORTES[S.med].filter(c => Math.abs(score) >= c).length;
+  return n ? (score > 0 ? n : -n) : 0;
+}
+function tinte(n){
+  if (!n) return "transparent";
+  return `color-mix(in srgb,${n > 0 ? "var(--azul-esc)" : "var(--rojo-esc)"} ${ALFAS[Math.abs(n) - 1]}%,transparent)`;
 }
 function tabla(N){
   const filasRef = [];
   const ref = h => D.ref[`${S.casa}|${h}`];
   const celda = (k, h) => D.t[`${S.casa}|${h}|${N}|${k}`];
   // mejor de cada columna (según la medida elegida)
-  const top = {}, maxAbs = {d:0.12, ok:0.08, w:0.12}[S.med];
+  const top = {};
   for (const b of BASES) for (const h of H){
     let best = null, kb = null;
     for (const [, fs] of grupos()) for (const f of fs){
@@ -411,7 +425,7 @@ function tabla(N){
         const c = celda(f.k, h);
         if (!c || !c[b]) return `<td class="c vacio${i === 0 ? " ini" : ""}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>–</span></td>`;
         const v = valor(c[b]);
-        return `<td class="c${i === 0 ? " ini" : ""}${top[`${b}|${h}`] === f.k ? " top" : ""}" style="--tinte:${tinte(v.score, maxAbs)}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>${v.txt}</span></td>`;
+        return `<td class="c${i === 0 ? " ini" : ""}${top[`${b}|${h}`] === f.k ? " top" : ""}" style="--tinte:${tinte(nivel(v.score))}" data-n="${Math.abs(nivel(v.score))}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>${v.txt}</span></td>`;
       }).join("")).join("") + "</tr>";
     }
   }
@@ -422,7 +436,9 @@ function pintar(){
   const f = H.map(h => `${h}M: ${(D.fotos[`${S.casa}|${h}`] || []).length}`).join(" · ");
   $("#subtitulo").textContent = `${S.casa === "all" ? "All houses" : S.casa} · ${ent(r3.n)} cases at 3M · snapshots per horizon ${f}`;
   $("#ayudaMed").textContent = AYUDA[S.med];
-  $("#leyenda").innerHTML = `<span class="esc"><i style="background:linear-gradient(90deg,color-mix(in srgb,var(--red-txt) 34%,transparent),transparent 50%,color-mix(in srgb,var(--blue) 34%,transparent))"></i>worse · better than no trend</span><span><span class="top"></span>best of the column</span><span>* only 1 snapshot (2025.M09): indicative</span><span>– no case has this trend</span>`;
+  $("#leyenda").innerHTML = `<span><span class="pasos">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(n => `<i style="background:${n ? tinte(n) : "var(--fill)"}"></i>`).join("")}</span>worse · better than no trend <span id="escCortes"></span></span><span><span class="top"></span>best of the column</span><span>* only 1 snapshot (2025.M09): indicative</span><span>– no case has this trend</span>`;
+  const c = CORTES[S.med];
+  $("#escCortes").textContent = `(steps at ${c.map(x => (x * 100).toFixed(1).replace(".0", "")).join(", ")} ${S.med === "ok" ? "pts of % met" : "WAPE pts"})`;
   $("#m6").innerHTML = tabla(6);
   $("#m12").innerHTML = tabla(12);
   document.querySelectorAll("#casas .fila").forEach(x => x.setAttribute("aria-current", x.dataset.k === S.casa));
