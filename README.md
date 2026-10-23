@@ -48,8 +48,10 @@ O10/
 │   └── Marc Jacobs MU/       ídem
 ├── analisis/                 informes de análisis de datos (señales de Gucci) y sus scripts
 ├── scripts/                  búsqueda de patrones señal → resultado (patrones_01…07, ver resultados/informe_patrones.md)
+│                             y relevancia de los trends (tendencias_01 casos, 02 métricas, 03 página)
 ├── resultados/               informe de patrones, tarjetas (CSV), gráficos; cache/ no se versiona
 ├── signals.html              tarjetas de señales en el estilo de O10 (la genera scripts/patrones_08_html.py; se abre sin servidor)
+├── trends.html               relevancia y fiabilidad de los trends de sell-in y EPOS (la genera scripts/tendencias_03_html.py)
 ├── tests/                    tests del lector, el motor, los KPIs y los escenarios
 └── salida/                   (no versionada) cubo Parquet, resúmenes JSON, logs
 ```
