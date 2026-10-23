@@ -48,10 +48,11 @@ O10/
 │   └── Marc Jacobs MU/       ídem
 ├── analisis/                 informes de análisis de datos (señales de Gucci) y sus scripts
 ├── scripts/                  búsqueda de patrones señal → resultado (patrones_01…07, ver resultados/informe_patrones.md)
-│                             y relevancia de los trends (tendencias_01 casos, 02 métricas, 04 matriz)
+│                             y relevancia de los trends (tendencias_01 casos, 02 métricas, 04 matriz, 05 fiabilidad)
 ├── resultados/               informe de patrones, tarjetas (CSV), gráficos; cache/ no se versiona
 ├── signals.html              tarjetas de señales en el estilo de O10 (la genera scripts/patrones_08_html.py; se abre sin servidor)
-├── trend_matrix.html         Trend analysis: trend × base (media 12M, LY, estacionalidad 50/100%) × horizonte (tendencias_04_matriz.py)
+├── trend_matrix.html         Trend analysis: trend × forma de aplicarlo (misma base) y LY × horizonte (tendencias_04_matriz.py)
+├── trend_reliability.html    Trend analysis: fiabilidad (como WAPE) y bias (como SPP) de cada trend por plazo (tendencias_05_fiabilidad.py)
 ├── tests/                    tests del lector, el motor, los KPIs y los escenarios
 └── salida/                   (no versionada) cubo Parquet, resúmenes JSON, logs
 ```

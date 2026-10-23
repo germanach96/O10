@@ -1,6 +1,7 @@
 """Fiabilidad de cada trend por plazo, en unidades (ponderada por volumen), foto a foto.
 
-Uso: python -m scripts.tendencias_05_fiabilidad   → resultados/cache/tendencias_fiabilidad.json (y tabla en pantalla)
+Uso: python -m scripts.tendencias_05_fiabilidad   → resultados/cache/tendencias_fiabilidad.json, trend_reliability.html
+(raíz) y la tabla en pantalla
 
 Para cada código y foto, lo que el trend anticipaba es el cambio frente al año pasado en unidades: LY × T (T
 recortado a ±50%, como el motor). Lo que pasó es A − LY. Sumando en unidades, los códigos grandes pesan más:
@@ -114,6 +115,16 @@ def main():
                 celdas.append(f"{m['fiab']*100:5.0f}% {m['bias']*100:+4.0f}% ({m['fotos']})" if m.get("fotos") else " " * 18)
             print(f"{nombre:18}", " | ".join(celdas))
     print(f"→ {SALIDA.relative_to(RAIZ)}")
+    pagina(res)
+
+
+def pagina(res):
+    """Incrusta los resultados en scripts/plantilla_fiabilidad.html (la página no calcula nada: solo dibuja)."""
+    from scripts.tendencias_04_matriz import hasta, redondear
+    html = (RAIZ / "scripts" / "plantilla_fiabilidad.html").read_text(encoding="utf-8").replace(
+        "/*__DATOS__*/null", json.dumps(redondear(dict(res, hasta=hasta())), ensure_ascii=False, separators=(",", ":")))
+    (RAIZ / "trend_reliability.html").write_text(html, encoding="utf-8")
+    print(f"→ trend_reliability.html ({len(html) / 1024:.0f} KB)")
 
 
 if __name__ == "__main__":
