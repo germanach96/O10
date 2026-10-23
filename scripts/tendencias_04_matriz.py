@@ -185,8 +185,8 @@ def main():
 
 def pagina(res):
     """Incrusta la matriz en scripts/plantilla_matriz.html (la página no calcula nada: solo dibuja)."""
-    from scripts.tendencias_03_html import redondear
-    res = dict(res, version=(RAIZ / "VERSION").read_text(encoding="utf-8").strip())
+    from scripts.tendencias_03_html import hasta, redondear
+    res = dict(res, hasta=hasta())
     html = (RAIZ / "scripts" / "plantilla_matriz.html").read_text(encoding="utf-8").replace(
         "/*__DATOS__*/null", json.dumps(redondear(res), ensure_ascii=False, separators=(",", ":")))
     (RAIZ / "trend_matrix.html").write_text(html, encoding="utf-8")

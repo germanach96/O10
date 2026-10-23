@@ -1,7 +1,7 @@
-"""Página HTML de la relevancia de los trends en el estilo de O10 (trends.html, en la raíz del repo).
+"""Página HTML de la relevancia de los trends (trends.html, en la raíz del repo), titulada «Trend analysis».
 
 Uso: python -m scripts.tendencias_03_html   (después de tendencias_01_calculo y tendencias_02_metricas)
-Lee resultados/tendencias.json, redacta los hallazgos (en inglés, como la página de O10) con las cifras medidas y lo
+Lee resultados/tendencias.json, redacta los hallazgos (en inglés) con las cifras medidas y lo
 incrusta todo en scripts/plantilla_tendencias.html. La página no calcula nada: solo filtra y dibuja.
 """
 from __future__ import annotations
@@ -16,6 +16,13 @@ PAGINA = RAIZ / "trends.html"
 
 NOMBRE = {"si": "Sell-in", "ep": "Sell-out", "cod": "Own code", "pl": "Product line", "brand": "Brand",
           "house": "House"}
+
+
+def hasta():
+    """Último mes cerrado: el anterior a la foto más reciente de todas las casas."""
+    from motor.lector import int_a_mes
+    meses = [int(r.stem[-7:-3]) * 12 + int(r.stem[-2:]) - 1 for r in RAIZ.glob("data/*/Consensus/*.csv")]
+    return int_a_mes(max(meses) - 1)
 
 
 def redondear(o):
@@ -173,7 +180,7 @@ def hallazgos(r):
 def main():
     r = json.loads(METRICAS.read_text(encoding="utf-8"))
     datos = redondear({"meta": r["meta"], "m": r["m"], "duelo": r["duelo"], "hall": hallazgos(r),
-                       "version": (RAIZ / "VERSION").read_text(encoding="utf-8").strip()})
+                       "hasta": hasta()})
     html = PLANTILLA.read_text(encoding="utf-8").replace(
         "/*__DATOS__*/null", json.dumps(datos, ensure_ascii=False, separators=(",", ":")))
     PAGINA.write_text(html, encoding="utf-8")

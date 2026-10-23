@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>O10 · Trend matrix</title>
+<title>Trend analysis · Matrix</title>
 <style>
-/* Matriz de trends en el mundo de O10 (diseno/DESIGN.md). La base (tokens, cristal, barra lateral y móvil) es la de
+/* Matriz de trends con el sistema de diseno/DESIGN.md. La base (tokens, cristal, barra lateral y móvil) es la de
    las tarjetas de señales (scripts/plantilla_tarjetas.html). */
 :root{
   --fondo:#e9ebee;
@@ -298,8 +298,8 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
 <a class="saltar" href="#t6">Skip to the tables</a>
 <aside class="lado vidrio" id="lado" aria-label="Filters">
   <div class="lado-cab">
-    <svg class="icono" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfdfd"/><stop offset="1" stop-color="#c3c7cd"/></linearGradient></defs><rect width="34" height="34" rx="8" fill="url(#gi)"/><rect x=".5" y=".5" width="33" height="33" rx="7.5" fill="none" stroke="#fff" stroke-opacity=".9"/><text x="17" y="22" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Helvetica,Arial" font-weight="800" font-size="13" letter-spacing="-.5" fill="#1d1d1f">O10</text></svg>
-    <div><b>Trend matrix</b><span id="cabVersion"></span></div>
+    <svg class="icono" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfdfd"/><stop offset="1" stop-color="#c3c7cd"/></linearGradient></defs><rect width="34" height="34" rx="8" fill="url(#gi)"/><rect x=".5" y=".5" width="33" height="33" rx="7.5" fill="none" stroke="#fff" stroke-opacity=".9"/><path d="M8 23l6-6 4 3.5 8-9" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.5 11.5H26V16" fill="none" stroke="#1d1d1f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>Trend analysis</b><span id="cabVersion"></span></div>
   </div>
   <div class="lado-scroll">
     <h2 id="hCasa">House</h2>
@@ -321,7 +321,7 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
 
 <main class="contenido">
   <header class="barra" id="barra">
-    <div class="titulo"><h1>Trend matrix</h1><p id="subtitulo" class="num" aria-live="polite"></p></div>
+    <div class="titulo"><h1>Trend analysis</h1><p id="subtitulo" class="num" aria-live="polite"></p></div>
     <button class="redondo vidrio" id="abrirFiltros" aria-label="Filters" aria-controls="lado" aria-expanded="false">
       <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
     </button>
@@ -354,7 +354,7 @@ const pct = (x, d = 0) => x == null ? "–" : (x * 100).toFixed(d) + "%";
 const ent = x => Number(x).toLocaleString("en-US");
 const pts = v => v == null ? "–" : (v < -0.0005 ? "−" : v > 0.0005 ? "+" : "±") + Math.abs(v * 100).toFixed(1);
 
-const ALMACEN = "o10-trend-matrix";
+const ALMACEN = "trend-analysis-matrix";
 const S = Object.assign({casa:"all", med:"d", tema:"auto"}, (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })());
 const guardar = () => { try { localStorage.setItem(ALMACEN, JSON.stringify(S)); } catch (e) {} };
 
@@ -488,7 +488,7 @@ function colocarPulgar(el){
 function aplicarTema(){ const r = document.documentElement; if (S.tema === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.tema); }
 
 function montar(){
-  $("#cabVersion").textContent = `${D.version} · Regular items`;
+  $("#cabVersion").textContent = `Regular items · data through ${D.hasta}`;
   $("#casas").innerHTML = ["all", ...D.casas].map(c => `<li><button class="fila" data-k="${c}"><span class="t">${c === "all" ? "All houses" : c}</span><span class="badge">${ent(D.ref[`${c}|3`].n)}</span></button></li>`).join("");
   $("#casas").addEventListener("click", e => { const f = e.target.closest(".fila"); if (!f) return; S.casa = f.dataset.k; guardar(); pintar(); });
   segmentado($("#segMed"), [["d", "WAPE Δ"], ["ok", "% met"], ["w", "WAPE"]], "med", pintar);
