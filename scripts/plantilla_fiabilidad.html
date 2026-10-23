@@ -304,7 +304,8 @@ table.mx.fi th.hist{color:var(--label-2)}
 .leyenda .fila-l{display:inline-flex;align-items:center;gap:8px}
 .claves{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:0 0 18px;max-width:1100px}
 .clave-m{padding:12px 14px;border-radius:var(--r-m);background:var(--tarjeta);border:1px solid var(--borde-cristal);font-size:12.5px;color:var(--label-2);line-height:1.45}
-.clave-m b{display:block;color:var(--label);font-size:13px;margin-bottom:3px}
+.clave-m b{color:var(--label);font-weight:600}
+.clave-m b:first-child{display:block;font-size:13px;margin-bottom:3px}
 .clave-m code{font-family:var(--font-code);font-size:11.5px;color:var(--label)}
 .tip .fotos{margin-top:8px;padding-top:8px;border-top:1px solid var(--sep);display:grid;grid-template-columns:auto 1fr 1fr auto;gap:2px 10px;font-variant-numeric:tabular-nums;font-size:11.5px}
 .tip .fotos span:nth-child(4n+2),.tip .fotos span:nth-child(4n+3),.tip .fotos span:nth-child(4n){text-align:right}
@@ -343,7 +344,7 @@ table.mx.fi th.hist{color:var(--label-2)}
   <p class="leer"><b>How reliable is each trend, and how far ahead?</b> Each trend is checked against what the codes really did against last year, at 3, 6, 9 and 12 months from the snapshot. Regular items only. <b>Hover a cell</b> for every snapshot.</p>
   <div class="claves">
     <div class="clave-m"><b>Reliability · like WAPE</b><code>1 − Σ|moved − anticipated| ÷ Σ|moved|</code><br>Share of what the codes moved that the trend saw coming. 100% = all of it · 0% = same as assuming no change · below 0 = misleads.</div>
-    <div class="clave-m"><b>Bias · like SPP</b><code>Σ(moved − anticipated) ÷ Σ|moved|</code><br>Errors offset. Negative = the trend promised more than happened (over-forecast) · positive = it fell short.</div>
+    <div class="clave-m"><b>Bias · in the trend’s direction</b><code>Σ sign(trend) × (real − trend) ÷ Σ last year</code><br>Growth points, weighted by volume; errors offset. <b>Positive</b> = reality went further than the trend said (−5% → −7% is +2; +15% → +20% is +5). <b>Negative</b> = it fell short (−5% → −4% is −1; +15% → +10% is −5).</div>
   </div>
   <div class="leyenda" id="leyenda"></div>
   <div class="seccion"><h2 id="t6">6-month trends</h2><p>Last 6 closed months against the same 6 a year earlier.</p></div>
@@ -369,8 +370,10 @@ const GLIFO = {
 const GAMA = ["#c8102e", "#e0452f", "#ee7a36", "#f6a73f", "#fbcf4f", "#fbe866", "#d8e86a", "#a6d667", "#71bf63", "#3fa35a", "#1b8048"];
 // fiabilidad: 0% = amarillo, cada 4 puntos un tono (20% o más = verde oscuro, −20% o menos = rojo)
 const nivelF = v => Math.max(-5, Math.min(5, Math.round(v * 100 / 4)));
-// bias: cuanto más cerca de 0, más verde; cada 8 puntos de |bias| un tono hacia el rojo
-const nivelB = v => 5 - Math.min(10, Math.round(Math.abs(v) * 100 / 8));
+// bias: cuanto más cerca de 0, más verde; cada 4 puntos de |bias| un tono hacia el rojo
+const nivelB = v => 5 - Math.min(10, Math.round(Math.abs(v) * 100 / 4));
+// bias en puntos de crecimiento, con signo
+const pts = x => x == null ? "–" : (x > 0.0005 ? "+" : x < -0.0005 ? "−" : "±") + Math.abs(x * 100).toFixed(1);
 const pct = (x, d = 0) => x == null ? "–" : (Math.abs(x * 100) < 0.5 ? 0 : x * 100).toFixed(d) + "%";
 const sg = x => x == null ? "–" : (x > 0.0005 ? "+" : x < -0.0005 ? "−" : "±") + Math.abs(x * 100).toFixed(0) + "%";
 const ent = x => Number(x).toLocaleString("en-US");
@@ -386,11 +389,11 @@ function celda(N, k, h, cual){
   if (!m || !m.fotos) return `<td class="c vacio${ini}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>–</span></td>`;
   const v = cual === "f" ? m.fiab : m.bias;
   const n = cual === "f" ? nivelF(v) : nivelB(v);
-  return `<td class="c${ini}" style="--tinte:${GAMA[n + 5]}" data-n="${Math.abs(n)}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>${cual === "f" ? pct(v) : sg(v)}</span><small>${m.fotos}</small></td>`;
+  return `<td class="c${ini}" style="--tinte:${GAMA[n + 5]}" data-n="${Math.abs(n)}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>${cual === "f" ? pct(v) : pts(v)}</span><small>${m.fotos}</small></td>`;
 }
 function tabla(N){
   const cab1 = `<tr><th class="fija" rowspan="2">Trend</th>${H.map(h => `<th class="base${h === "12h" ? " hist" : ""}" colspan="2">${H_T[h]}${h === "12h" ? "†" : ""}<small>${H_S[h]}</small></th>`).join("")}</tr>`;
-  const cab2 = `<tr>${H.map(() => `<th class="sub base">Reliability</th><th class="sub">Bias</th>`).join("")}</tr>`;
+  const cab2 = `<tr>${H.map(() => `<th class="sub base">Reliability</th><th class="sub">Bias (pts)</th>`).join("")}</tr>`;
   let cuerpo = "";
   for (const [g, fs] of FILAS){
     cuerpo += `<tr class="grupo"><th class="fija">${g}</th><th colspan="${H.length * 2}"></th></tr>`;
@@ -403,7 +406,7 @@ function tabla(N){
 function pintar(){
   $("#subtitulo").textContent = `Reliability of the trends by horizon · ${S.casa === "all" ? "All houses" : S.casa}`;
   const pasos = n => `<span class="pasos">${n.map(i => `<i style="background:${GAMA[i + 5]}"></i>`).join("")}</span>`;
-  $("#leyenda").innerHTML = `<span class="fila-l">${pasos([-5,-4,-3,-2,-1,0,1,2,3,4,5])}Reliability: −20% · 0% · 20% or more</span><span class="fila-l">${pasos([5,3,1,-1,-3,-5])}Bias: 0 · ±40% or more</span><span>Small number = snapshots</span><span>† sell-in only: every month of the latest file as a starting point (2024–25)</span><span>– no data</span>`;
+  $("#leyenda").innerHTML = `<span class="fila-l">${pasos([-5,-4,-3,-2,-1,0,1,2,3,4,5])}Reliability: −20% · 0% · 20% or more</span><span class="fila-l">${pasos([5,3,1,-1,-3,-5])}Bias: 0 · ±20 pts or more</span><span>Small number = snapshots</span><span>† sell-in only: every month of the latest file as a starting point (2024–25)</span><span>– no data</span>`;
   $("#m6").innerHTML = tabla(6);
   $("#m12").innerHTML = tabla(12);
   document.querySelectorAll("#casas .fila").forEach(x => x.setAttribute("aria-current", x.dataset.k === S.casa));
@@ -420,10 +423,10 @@ function mostrarTip(td){
   if (!m || !m.fotos) html = `<span class="t">${nombre} · ${td.dataset.tn}M trend · ${H_T[td.dataset.h]}</span>No snapshot has this trend with these months closed.`;
   else html = `<span class="t">${nombre} · ${td.dataset.tn}M trend · ${H_T[td.dataset.h]} (${H_S[td.dataset.h]})</span><dl>
     <dt>Reliability</dt><dd><b>${pct(m.fiab)}</b> (${pct(m.fiab_min)} to ${pct(m.fiab_max)})</dd>
-    <dt>Bias</dt><dd><b>${sg(m.bias)}</b> (${sg(m.bias_min)} to ${sg(m.bias_max)})</dd>
-    <dt>All snapshots pooled</dt><dd>${pct(m.fiab_total)} · ${sg(m.bias_total)}</dd>
+    <dt>Bias</dt><dd><b>${pts(m.bias)} pts</b> (${pts(m.bias_min)} to ${pts(m.bias_max)})</dd>
+    <dt>All snapshots pooled</dt><dd>${pct(m.fiab_total)} · ${pts(m.bias_total)} pts</dd>
     <dt>Cases</dt><dd>${ent(m.n)} · ${ent(m.codigos)} codes</dd></dl>
-    <div class="fotos"><span class="h">Snapshot</span><span class="h">Reliab.</span><span class="h">Bias</span><span class="h">Codes</span>${m.detalle.map(([F, f, b, n]) => `<span>${F}</span><span>${pct(f)}</span><span>${sg(b)}</span><span>${n}</span>`).join("")}</div>`;
+    <div class="fotos"><span class="h">Snapshot</span><span class="h">Reliab.</span><span class="h">Bias pts</span><span class="h">Codes</span>${m.detalle.map(([F, f, b, n]) => `<span>${F}</span><span>${pct(f)}</span><span>${pts(b)}</span><span>${n}</span>`).join("")}</div>`;
   tip.innerHTML = html;
   const r = td.getBoundingClientRect();
   const x = Math.min(innerWidth - 286, Math.max(8, r.left + r.width / 2 - 135));

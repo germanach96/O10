@@ -8,8 +8,10 @@ recortado a ±50%, como el motor). Lo que pasó es A − LY. Sumando en unidades
 
 - **Fiabilidad (como el WAPE, no compensa):** 1 − Σ|(A − LY) − LY·T| / Σ|A − LY|. 100% = anticipó exactamente lo
   que se movió cada código; 0% = igual que suponer que no cambia; negativo = despista más que no usarlo.
-- **Bias (como el SPP, compensa):** Σ((A − LY) − LY·T) / Σ|A − LY|. Negativo = el trend prometía más de lo que pasó
-  (sobre-forecast, la convención del equipo); positivo = se quedó corto.
+- **Bias (como el SPP, compensa) en el sentido del trend:** Σ signo(T) · ((A − LY) − LY·T) / Σ LY, en puntos de
+  crecimiento ponderados por volumen. Positivo = la realidad fue más lejos que el trend en el sentido que marcaba
+  (trend −5%, real −7% → +2; trend +15%, real +20% → +5); negativo = se quedó corta (trend −5%, real −4% → −1;
+  trend +15%, real +10% → −5). Los casos con trend 0 no marcan sentido y no cuentan.
 
 Se calcula en cada foto y se da la mediana de las fotos (y su rango). Plazos acumulados desde la foto: 3M (meses
 1–3), 6M, 9M y 12M, solo con fotos que tienen esos meses cerrados. A 12M solo hay una foto (2025.M09, sin EPOS); para
@@ -61,6 +63,15 @@ def historia_12m(casa):
     return df[df.reg & (df.B12 > 0)].drop(columns="reg")
 
 
+def sesgo(g, col):
+    """Bias en el sentido del trend, en puntos de crecimiento ponderados por el volumen del año pasado."""
+    T = np.clip(g[col], -TOPE, TOPE)
+    z = g[(T != 0) & (g.b_ly > 0)]
+    Tz = np.clip(z[col], -TOPE, TOPE)
+    den = z.b_ly.sum()
+    return float((np.sign(Tz) * ((z.A - z.b_ly) - z.b_ly * Tz)).sum() / den) if den > 0 else np.nan
+
+
 def medir(x, col):
     """Fiabilidad y bias en unidades, foto a foto (mediana y rango) y con todas las fotos juntas."""
     y = x[x[col].notna()]
@@ -72,7 +83,7 @@ def medir(x, col):
         prev = g.b_ly * np.clip(g[col], -TOPE, TOPE)         # lo que anticipaba el trend
         den = np.abs(mov).sum()
         if den > 0:
-            por_foto.append((int_a_mes(int(F)), 1 - np.abs(mov - prev).sum() / den, (mov - prev).sum() / den, len(g)))
+            por_foto.append((int_a_mes(int(F)), 1 - np.abs(mov - prev).sum() / den, sesgo(g, col), len(g)))
     if not por_foto:
         return {"n": int(len(y)), "fotos": 0}
     fi = np.array([p[1] for p in por_foto])
@@ -83,7 +94,7 @@ def medir(x, col):
     return {"n": int(len(y)), "codigos": int(y.ean.nunique()), "fotos": len(por_foto),
             "fiab": float(np.median(fi)), "fiab_min": float(fi.min()), "fiab_max": float(fi.max()),
             "bias": float(np.median(bi)), "bias_min": float(bi.min()), "bias_max": float(bi.max()),
-            "fiab_total": float(1 - np.abs(mov - prev).sum() / den), "bias_total": float((mov - prev).sum() / den),
+            "fiab_total": float(1 - np.abs(mov - prev).sum() / den), "bias_total": sesgo(y, col),
             "detalle": [[p[0], round(p[1], 4), round(p[2], 4), p[3]] for p in por_foto]}
 
 
@@ -112,7 +123,7 @@ def main():
             celdas = []
             for h in HORIZ + (["12h"] if clave.startswith("si") else []):
                 m = res["r"][f"all|{N}|{clave}|{h}"]
-                celdas.append(f"{m['fiab']*100:5.0f}% {m['bias']*100:+4.0f}% ({m['fotos']})" if m.get("fotos") else " " * 18)
+                celdas.append(f"{m['fiab']*100:5.0f}% {m['bias']*100:+5.1f}pt ({m['fotos']})" if m.get("fotos") else " " * 18)
             print(f"{nombre:18}", " | ".join(celdas))
     print(f"→ {SALIDA.relative_to(RAIZ)}")
     pagina(res)
