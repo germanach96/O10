@@ -338,7 +338,11 @@ table.mx.fi th.hist{color:var(--label-2)}
 .graf svg .rej{stroke:var(--sep);stroke-width:1}
 .graf svg .cero{stroke:var(--sep-fuerte);stroke-width:1.2}
 .graf svg .linea{fill:none;stroke:var(--serie);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
-.graf svg .linea.si{stroke-dasharray:7 5}
+.graf svg .linea.d12{stroke-dasharray:7 5}
+table.mx.fi .dur{display:inline-block;margin-left:7px;padding:0 6px;border-radius:999px;font-size:10px;font-weight:700;line-height:16px;letter-spacing:.02em}
+table.mx.fi .dur.d6{background:var(--fill);color:var(--label-2)}
+table.mx.fi .dur.d12{background:var(--label);color:var(--card)}
+table.mx.fi tr.dur-12 th.fija,table.mx.fi tr.dur-12 td{border-bottom-color:var(--sep-fuerte)}
 .graf svg .pt{fill:var(--serie);stroke:var(--card);stroke-width:2}
 .graf svg .pt.pocos{fill:var(--card);stroke:var(--serie);stroke-dasharray:2 2}
 .graf svg .val{font-size:12px;font-weight:700}
@@ -398,14 +402,12 @@ table.mx.fi th.hist{color:var(--label-2)}
   </div>
   <div id="vTablas">
   <div class="leyenda" id="leyenda"></div>
-  <div class="seccion"><h2 id="t6">6-month trends</h2><p>Last 6 closed months against the same 6 a year earlier.</p></div>
+  <div class="seccion"><h2 id="t6">All trends</h2><p><b>6M</b> = last 6 closed months against the same 6 a year earlier · <b>12M</b> = last 12 against the 12 before. Sell-out goes back to 2024.M07, so a 12-month sell-out trend only exists from 2026.M01 on.</p></div>
   <div class="marco" id="m6"></div>
-  <div class="seccion"><h2 id="t12">12-month trends</h2><p>Last 12 closed months against the 12 before. Sell-out goes back to 2024.M07, so a 12-month sell-out trend only exists from 2026.M01 on.</p></div>
-  <div class="marco" id="m12"></div>
   </div>
   <section id="vGrafica" hidden aria-label="Chart">
     <div class="controles">
-      <div class="control"><span id="hN">Trend length</span><div class="seg pozo" id="segN" role="radiogroup" aria-labelledby="hN"></div></div>
+      <div class="control"><span id="hN">Trend length</span><div class="chips-t" id="durs" role="group" aria-labelledby="hN"></div></div>
       <div class="control"><span id="hSeries">Trends <button class="mini-b" id="todas">All</button><button class="mini-b" id="ninguna">None</button></span><div class="chips-t" id="series" role="group" aria-labelledby="hSeries"></div></div>
     </div>
     <div class="graf-ley" id="gLey"></div>
@@ -440,8 +442,8 @@ const sg = x => x == null ? "–" : (x > 0.0005 ? "+" : x < -0.0005 ? "−" : "�
 const ent = x => Number(x).toLocaleString("en-US");
 
 const ALMACEN = "trend-analysis-reliability";
-const S = Object.assign({casa:"all", tema:"auto", vista:"tables", gN:"6"}, (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })());
-const guardar = () => { try { const {series, ...g} = S; localStorage.setItem(ALMACEN, JSON.stringify(g)); } catch (e) {} };
+const S = Object.assign({casa:"all", tema:"auto", vista:"tables"}, (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })());
+const guardar = () => { try { const {series, durs, ...g} = S; localStorage.setItem(ALMACEN, JSON.stringify(g)); } catch (e) {} };
 const dato = (N, k, h) => D.r[`${S.casa}|${N}|${k}|${h}`];
 
 function celda(N, k, h, cual){
@@ -452,24 +454,23 @@ function celda(N, k, h, cual){
   const n = cual === "f" ? nivelF(v) : nivelB(v);
   return `<td class="c${ini}${m.pocos ? " pocos" : ""}" style="--tinte:${GAMA[n + 5]}" data-n="${Math.abs(n)}" data-tn="${N}" data-k="${k}" data-h="${h}"><span>${cual === "f" ? pct(v) : pts(v)}</span><small>${m.fotos}</small></td>`;
 }
-function tabla(N){
+function tabla(){
   const cab1 = `<tr><th class="fija" rowspan="2">Trend</th>${H.map(h => `<th class="base${h === "12h" ? " hist" : ""}" colspan="2">${H_T[h]}${h === "12h" ? "†" : ""}<small>${H_S[h]}</small></th>`).join("")}</tr>`;
   const cab2 = `<tr>${H.map(() => `<th class="sub base">Reliability</th><th class="sub">Bias (pts)</th>`).join("")}</tr>`;
   let cuerpo = "";
   for (const [g, fs] of FILAS){
     cuerpo += `<tr class="grupo"><th class="fija">${g}</th><th colspan="${H.length * 2}"></th></tr>`;
-    for (const [k, l] of fs){
-      cuerpo += `<tr><th class="fija" scope="row"><span class="se">${GLIFO[k.slice(0, 2)]}${g} · ${l}</span></th>${H.map(h => celda(N, k, h, "f") + celda(N, k, h, "b")).join("")}</tr>`;
+    for (const [k, l] of fs) for (const N of ["6", "12"]){
+      cuerpo += `<tr class="dur-${N}"><th class="fija" scope="row"><span class="se">${GLIFO[k.slice(0, 2)]}${g} · ${l}<span class="dur d${N}">${N}M</span></span></th>${H.map(h => celda(N, k, h, "f") + celda(N, k, h, "b")).join("")}</tr>`;
     }
   }
-  return `<table class="mx fi" data-n="${N}"><caption class="oculto">Reliability and bias of the ${N}-month trends by horizon</caption><thead>${cab1}${cab2}</thead><tbody>${cuerpo}</tbody></table>`;
+  return `<table class="mx fi"><caption class="oculto">Reliability and bias of the 6- and 12-month trends by horizon</caption><thead>${cab1}${cab2}</thead><tbody>${cuerpo}</tbody></table>`;
 }
 function pintar(){
   $("#subtitulo").textContent = `Reliability of the trends by horizon · ${S.casa === "all" ? "All houses" : S.casa}`;
   const pasos = n => `<span class="pasos">${n.map(i => `<i style="background:${GAMA[i + 5]}"></i>`).join("")}</span>`;
   $("#leyenda").innerHTML = `<span class="fila-l">${pasos([-5,-4,-3,-2,-1,0,1,2,3,4,5])}Reliability: −20% · 0% · 20% or more</span><span class="fila-l">${pasos([5,3,1,-1,-3,-5])}Bias: 0 · ±20 pts or more</span><span>Small number = snapshots</span><span><span class="pocos-m"></span>under 20 codes per snapshot: indicative</span><span>† sell-in only: every month of the latest file as a starting point (2024–25)</span><span>– no data</span>`;
-  $("#m6").innerHTML = tabla(6);
-  $("#m12").innerHTML = tabla(12);
+  $("#m6").innerHTML = tabla();
   document.querySelectorAll("#casas .fila").forEach(x => x.setAttribute("aria-current", x.dataset.k === S.casa));
   document.querySelectorAll(".seg").forEach(colocarPulgar);
 }
@@ -479,7 +480,7 @@ const tip = $("#tip");
 let tipVisible = false;
 function mostrarTip(td){
   const m = dato(td.dataset.tn, td.dataset.k, td.dataset.h);
-  const nombre = td.closest("tr").querySelector("th").textContent.trim();
+  const nombre = td.closest("tr").querySelector("th").textContent.trim().replace(/(6|12)M$/, "");
   let html;
   if (!m || !m.fotos) html = `<span class="t">${nombre} · ${td.dataset.tn}M trend · ${H_T[td.dataset.h]}</span>No snapshot has this trend with these months closed.`;
   else html = `<span class="t">${nombre} · ${td.dataset.tn}M trend · ${H_T[td.dataset.h]} (${H_S[td.dataset.h]})</span><dl>
@@ -531,22 +532,26 @@ const ORDEN_SERIES = FILAS.flatMap(([, fs]) => fs.map(([k]) => k));
 const COLOR = {ep_cod:"#0a6cdf", ep_pl:"#5e5ce6", ep_brand:"#a550a7", ep_house:"#d4539a", ep_cas:"#0e8a8f",
   si_cod:"#e07b00", si_pl:"#a2552c", si_brand:"#6e6e74", si_house:"#4f72a8"};
 const HG = ["3", "6", "9", "12"];
-S.series = [...ORDEN_SERIES];                      // al entrar, todas
+S.series = [...ORDEN_SERIES];                      // al entrar, todas las tendencias y las dos duraciones
+S.durs = ["6", "12"];
+const DUR_T = {"6":"6M trends", "12":"12M trends"};
 let animarG = true;
 function chipsSeries(){
+  $("#durs").innerHTML = ["6", "12"].map(N => `<button class="chip-t" data-n="${N}" aria-pressed="${S.durs.includes(N)}" style="--serie:var(--label-2)"><svg viewBox="0 0 22 8" style="width:22px;height:8px"><path d="M1 4h20" stroke="currentColor" stroke-width="2"${N === "12" ? ' stroke-dasharray="4 3"' : ""}/>${N === "12" ? '<rect x="8" y="1" width="6" height="6" fill="currentColor"/>' : '<circle cx="11" cy="4" r="3" fill="currentColor"/>'}</svg>${DUR_T[N]}</button>`).join("");
   $("#series").innerHTML = ORDEN_SERIES.map(k => `<button class="chip-t" data-k="${k}" aria-pressed="${S.series.includes(k)}" style="--serie:${COLOR[k]}"><i></i>${GLIFO[k.slice(0, 2)]}${NOMBRE[k]}</button>`).join("");
 }
-// gráfica de línea genérica: una línea por trend sobre 3M, 6M, 9M y 12M
+// gráfica de línea genérica: una línea por trend y duración sobre 3M, 6M, 9M y 12M.
+// Color = trend; línea continua con círculos = trend de 6M; discontinua con cuadrados = trend de 12M
 function lineas(caja, campo, opc){
-  const N = S.gN, series = ORDEN_SERIES.filter(k => S.series.includes(k));
-  if (!series.length){ caja.innerHTML = `<p class="vacio-g">Pick one or more trends above.</p>`; return; }
+  const pares = ORDEN_SERIES.filter(k => S.series.includes(k)).flatMap(k => S.durs.map(N => [k, N]));
+  if (!pares.length){ caja.innerHTML = `<p class="vacio-g">Pick at least one trend and one trend length above.</p>`; return; }
   const vs = [];
-  series.forEach(k => HG.forEach(h => { const m = dato(N, k, h); if (m && m.fotos) vs.push(m[campo]); }));
-  if (!vs.length){ caja.innerHTML = `<p class="vacio-g">None of these trends has data for ${N}-month trends here.</p>`; return; }
-  const W = Math.max(320, caja.clientWidth || 900), Hh = W < 600 ? 300 : 340;
+  pares.forEach(([k, N]) => HG.forEach(h => { const m = dato(N, k, h); if (m && m.fotos) vs.push(m[campo]); }));
+  if (!vs.length){ caja.innerHTML = `<p class="vacio-g">None of these trends has data here.</p>`; return; }
+  const W = Math.max(320, caja.clientWidth || 900), Hh = W < 600 ? 320 : 360;
   const L = 46, R = 16, T = 18, B = 44, alto = Hh - T - B, paso = (W - L - R) / HG.length;
   const xc = i => L + paso * (i + 0.5);
-  // eje con marcas redondas (paso 1, 2 o 5 × 10ⁿ) que siempre incluyen el 0
+  // eje con marcas redondas (paso 1, 2, 2,5 o 5 × 10ⁿ) que siempre incluyen el 0
   let lo = Math.max(-opc.tope, Math.min(0, ...vs)), hi = Math.min(opc.tope, Math.max(0, ...vs));
   const bruto = (hi - lo) / 4, mag = Math.pow(10, Math.floor(Math.log10(bruto || 0.01)));
   const pasoE = [1, 2, 2.5, 5, 10].map(f => f * mag).find(st => st >= bruto * 0.999);
@@ -559,48 +564,51 @@ function lineas(caja, campo, opc){
   }
   svg += `<line class="cero" x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}"/>`;
   svg += `<g class="eje-x">${HG.map((h, i) => {
-    const nf = Math.max(0, ...series.map(k => (dato(N, k, h) || {}).fotos || 0));
-    const sub = paso < 130 ? (nf ? `${nf} snap.` : "") : `${H_S[h]}${nf ? ` · ${nf} snapshot${nf === 1 ? "" : "s"}` : ""}`;
+    const nf = Math.max(0, ...pares.map(([k, N]) => (dato(N, k, h) || {}).fotos || 0));
+    const sub = paso < 130 ? (nf ? `≤${nf} snap.` : "") : `${H_S[h]}${nf ? ` · up to ${nf} snapshot${nf === 1 ? "" : "s"}` : ""}`;
     return `<text class="h" x="${xc(i)}" y="${Hh - 22}" text-anchor="middle">${H_T[h]}</text><text x="${xc(i)}" y="${Hh - 7}" text-anchor="middle">${sub}</text>`;
   }).join("")}</g>`;
   // etiquetas de valor solo con pocas líneas (con muchas, al pasar el puntero), sin pisarse
-  const conEtq = series.length <= 4, etq = {};
+  const conEtq = pares.length <= 4, etq = {};
   if (conEtq) HG.forEach(h => {
-    const l = series.map(k => { const m = dato(N, k, h); return m && m.fotos ? {k, y:y(m[campo]) - 10} : null; }).filter(Boolean).sort((a, b) => a.y - b.y);
+    const l = pares.map(([k, N]) => { const m = dato(N, k, h); return m && m.fotos ? {id:`${k}|${N}`, y:y(m[campo]) - 10} : null; }).filter(Boolean).sort((a, b) => a.y - b.y);
     for (let j = 1; j < l.length; j++) if (l[j].y - l[j - 1].y < 15) l[j].y = l[j - 1].y + 15;
-    l.forEach(e => { etq[`${e.k}|${h}`] = e.y; });
+    l.forEach(e => { etq[`${e.id}|${h}`] = e.y; });
   });
-  series.forEach((k, si) => {
+  pares.forEach(([k, N], si) => {
     const p = HG.map((h, i) => { const m = dato(N, k, h); return m && m.fotos ? [xc(i), y(m[campo]), m, h] : null; }).filter(Boolean);
     if (!p.length) return;
     const d = p.map((q, j) => `${j ? "L" : "M"}${q[0].toFixed(1)},${q[1].toFixed(1)}`).join("");
     const largo = p.reduce((a, q, j) => j ? a + Math.hypot(q[0] - p[j - 1][0], q[1] - p[j - 1][1]) : 0, 0) + 1;
-    const dash = k.startsWith("si") ? "" : `stroke-dasharray:${largo};--largo:${largo};`;
-    svg += `<path class="linea ${k.slice(0, 2)}${animarG && !k.startsWith("si") ? " traza" : ""}${animarG && k.startsWith("si") ? " entra" : ""}" style="--serie:${COLOR[k]};${dash}animation-delay:${si * 30}ms" d="${d}"/>`;
+    const doce = N === "12";
+    const dash = doce ? "" : `stroke-dasharray:${largo};--largo:${largo};`;
+    svg += `<path class="linea${doce ? " d12" : ""}${animarG ? (doce ? " entra" : " traza") : ""}" style="--serie:${COLOR[k]};${dash}animation-delay:${si * 25}ms" d="${d}"/>`;
     p.forEach(([x, yy, m, h]) => {
       const v = m[campo], fuera = v > hi || v < lo;
-      svg += `<circle class="pt${m.pocos ? " pocos" : ""}${animarG ? " entra" : ""}" style="--serie:${COLOR[k]}" cx="${x}" cy="${yy}" r="4.5"/>`;
-      if (conEtq) svg += `<text class="val" style="fill:${COLOR[k]}" x="${x + 9}" y="${etq[`${k}|${h}`] + 4}">${fuera ? (v > hi ? "▲ " : "▼ ") : ""}${opc.fmt(v)}</text>`;
+      const cls = `pt${m.pocos ? " pocos" : ""}${animarG ? " entra" : ""}`;
+      svg += doce ? `<rect class="${cls}" style="--serie:${COLOR[k]}" x="${x - 4.5}" y="${yy - 4.5}" width="9" height="9" rx="1.5"/>`
+                  : `<circle class="${cls}" style="--serie:${COLOR[k]}" cx="${x}" cy="${yy}" r="4.5"/>`;
+      if (conEtq) svg += `<text class="val" style="fill:${COLOR[k]}" x="${x + 9}" y="${etq[`${k}|${N}|${h}`] + 4}">${fuera ? (v > hi ? "▲ " : "▼ ") : ""}${opc.fmt(v)}</text>`;
     });
   });
-  // zonas para la tarjeta flotante: una por trend y plazo
-  series.forEach(k => HG.forEach((h, i) => { const m = dato(N, k, h); if (m && m.fotos) svg += `<circle class="hit" data-k="${k}" data-h="${h}" cx="${xc(i)}" cy="${y(m[campo])}" r="11"/>`; }));
+  // zonas para la tarjeta flotante: una por trend, duración y plazo
+  pares.forEach(([k, N]) => HG.forEach((h, i) => { const m = dato(N, k, h); if (m && m.fotos) svg += `<circle class="hit" data-k="${k}" data-tn="${N}" data-h="${h}" cx="${xc(i)}" cy="${y(m[campo])}" r="11"/>`; }));
   caja.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" height="${Hh}" role="img" aria-label="${opc.nombre} of each trend at 3, 6, 9 and 12 months">${svg}</svg>`;
 }
 function grafica(){
   chipsSeries();
-  const sub = `${S.gN}-month trends · ${S.casa === "all" ? "All houses" : S.casa} · median of the snapshots`;
+  const sub = `${S.durs.map(N => DUR_T[N]).join(" and ") || "No trend length"} · ${S.casa === "all" ? "All houses" : S.casa} · median of the snapshots`;
   $("#gSubF").textContent = `${sub} · higher is better · 0% = same as assuming no change`;
   $("#gSubB").textContent = `${sub} · growth points · above 0 = reality went further than the trend, below 0 = it fell short`;
-  const vis = ORDEN_SERIES.filter(k => S.series.includes(k));
-  $("#gLey").innerHTML = vis.length ? `<span><span class="ln" style="--serie:var(--label-2)"></span>sell-out</span><span><span class="ln si" style="--serie:var(--label-2)"></span>sell-in</span><span>hollow dot = under 20 codes per snapshot</span>${vis.length > 4 ? "<span>values on the dots with 4 trends or fewer; hover a dot to see it</span>" : ""}` : "";
+  const n = S.series.length * S.durs.length;
+  $("#gLey").innerHTML = n ? `<span><svg viewBox="0 0 22 8" style="width:22px;height:8px"><path d="M1 4h20" stroke="var(--label-2)" stroke-width="2"/><circle cx="11" cy="4" r="3" fill="var(--label-2)"/></svg>6M trend</span><span><svg viewBox="0 0 22 8" style="width:22px;height:8px"><path d="M1 4h20" stroke="var(--label-2)" stroke-width="2" stroke-dasharray="4 3"/><rect x="8" y="1" width="6" height="6" fill="var(--label-2)"/></svg>12M trend</span><span>colour = trend · hollow = under 20 codes per snapshot</span>${n > 4 ? "<span>values on the dots with 4 lines or fewer; hover a dot to see it</span>" : ""}` : "";
   lineas($("#gCajaF"), "fiab", {tope:2, nombre:"Reliability", fmt:v => pct(v), fmtEje:v => pct(v)});
   lineas($("#gCajaB"), "bias", {tope:0.8, nombre:"Bias", fmt:v => pts(v), fmtEje:v => Math.abs(v) < 1e-9 ? "0" : (v > 0 ? "+" : "−") + Math.round(Math.abs(v) * 100)});
   animarG = false;
 }
 function tipGrafica(el){
-  const m = dato(S.gN, el.dataset.k, el.dataset.h); if (!m || !m.fotos) return;
-  tip.innerHTML = `<span class="t">${NOMBRE[el.dataset.k]} · ${S.gN}M trend · ${H_T[el.dataset.h]} (${H_S[el.dataset.h]})</span><dl>
+  const N = el.dataset.tn, m = dato(N, el.dataset.k, el.dataset.h); if (!m || !m.fotos) return;
+  tip.innerHTML = `<span class="t">${NOMBRE[el.dataset.k]} · ${N}M trend · ${H_T[el.dataset.h]} (${H_S[el.dataset.h]})</span><dl>
     <dt>Reliability</dt><dd><b>${pct(m.fiab)}</b> (${pct(m.fiab_min)} to ${pct(m.fiab_max)})</dd>
     <dt>Bias</dt><dd><b>${pts(m.bias)} pts</b> (${pts(m.bias_min)} to ${pts(m.bias_max)})</dd>
     <dt>Snapshots</dt><dd>${m.fotos}</dd><dt>Cases</dt><dd>${ent(m.n)} · ${ent(m.codigos)} codes${m.pocos ? " · few codes, indicative" : ""}</dd></dl>`;
@@ -623,7 +631,12 @@ function montar(){
   $("#casas").addEventListener("click", e => { const f = e.target.closest(".fila"); if (!f) return; S.casa = f.dataset.k; guardar(); pintar(); if (S.vista === "chart"){ animarG = true; grafica(); } });
   segmentado($("#segTema"), [["light", "Light"], ["dark", "Dark"], ["auto", "Auto"]], "tema", () => { aplicarTema(); document.querySelectorAll(".seg").forEach(colocarPulgar); });
   segmentado($("#segVista"), [["tables", "Tables"], ["chart", "Chart"]], "vista", cambiarVista);
-  segmentado($("#segN"), [["6", "6M trends"], ["12", "12M trends"]], "gN", () => { animarG = true; grafica(); document.querySelectorAll(".seg").forEach(colocarPulgar); });
+  $("#durs").addEventListener("click", e => {
+    const b = e.target.closest(".chip-t"); if (!b) return;
+    const N = b.dataset.n;
+    S.durs = S.durs.includes(N) ? S.durs.filter(x => x !== N) : ["6", "12"].filter(x => x === N || S.durs.includes(x));
+    animarG = true; grafica();
+  });
   $("#series").addEventListener("click", e => {
     const b = e.target.closest(".chip-t"); if (!b) return;
     const k = b.dataset.k;
