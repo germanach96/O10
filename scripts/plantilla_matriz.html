@@ -404,33 +404,37 @@ function nivel(score){
 }
 // valor con el que se elige al ganador: Δ más negativo, % cumplido más alto o WAPE más bajo
 function rango(c){ return S.med === "d" ? (c.d == null ? null : -c.d) : S.med === "ok" ? c.ok1 : (c.w1 == null ? null : -c.w1); }
-// ganadores: de cada sección (bloque de filas × columna), de cada columna, de cada tabla y de las dos tablas.
-// En la tabla y en las dos tablas no cuenta la columna 12M* (una sola foto)
+// ganadores: de cada sección en cada base (bloque de filas × sus horizontes, recuadro rojo), de cada sección en
+// todas las bases (recuadro azul), de cada tabla y de las dos tablas. La columna 12M* (una sola foto) no compite
 function ganadores(){
   const G = {sec:new Set(), col:new Set(), tab:new Set(), glob:new Set()};
   const mejores = l => { const m = Math.max(...l.map(x => x[1])); return l.filter(x => x[1] >= m - 1e-12).map(x => x[0]); };
+  const marcar = (l, set) => { if (l.length) mejores(l).forEach(id => set.add(id)); };
   const todas = [];
   for (const N of [6, 12]){
     const tabla = [];
-    for (const b of BASES) for (const h of H){
-      const col = [];
-      for (const [, fs] of grupos()){
-        const sec = [];
-        for (const f of fs){
-          const c = D.t[`${S.casa}|${h}|${N}|${f.k}`];
-          const r = c && c[b] ? rango(c[b]) : null;
-          if (r != null) sec.push([`${N}|${f.k}|${b}|${h}`, r]);
+    for (const [, fs] of grupos()){
+      const seccion = [];
+      for (const b of BASES){
+        const bloque = [];
+        for (const h of H){
+          if (h === 12) continue;
+          for (const f of fs){
+            const c = D.t[`${S.casa}|${h}|${N}|${f.k}`];
+            const r = c && c[b] ? rango(c[b]) : null;
+            if (r != null) bloque.push([`${N}|${f.k}|${b}|${h}`, r]);
+          }
         }
-        if (sec.length) mejores(sec).forEach(id => G.sec.add(id));
-        col.push(...sec);
+        marcar(bloque, G.sec);
+        seccion.push(...bloque);
       }
-      if (col.length) mejores(col).forEach(id => G.col.add(id));
-      if (h !== 12) tabla.push(...col);
+      marcar(seccion, G.col);
+      tabla.push(...seccion);
     }
-    if (tabla.length) mejores(tabla).forEach(id => G.tab.add(id));
+    marcar(tabla, G.tab);
     todas.push(...tabla);
   }
-  if (todas.length) mejores(todas).forEach(id => G.glob.add(id));
+  marcar(todas, G.glob);
   return G;
 }
 let GAN = null;
@@ -475,7 +479,7 @@ function pintar(){
   const f = H.map(h => `${h}M: ${(D.fotos[`${S.casa}|${h}`] || []).length}`).join(" · ");
   $("#subtitulo").textContent = `${S.casa === "all" ? "All houses" : S.casa} · ${ent(r3.n)} cases at 3M · snapshots per horizon ${f}`;
   $("#ayudaMed").textContent = AYUDA[S.med];
-  $("#leyenda").innerHTML = `<span><span class="pasos">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(n => `<i style="background:${n ? tinte(n) : "var(--fill)"}"></i>`).join("")}</span>worse · better than no trend <span id="escCortes"></span></span><span><span class="g sec">−7.9</span>best in its section</span><span><span class="g col">−7.9</span>best in its column</span><span><span class="g tab">−7.9</span>best in the table</span><span><span class="g glob">−7.9</span>best of both tables</span><span>* only 1 snapshot (2025.M09): indicative, left out of the table winners</span><span>– no case has this trend</span>`;
+  $("#leyenda").innerHTML = `<span><span class="pasos">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(n => `<i style="background:${n ? tinte(n) : "var(--fill)"}"></i>`).join("")}</span>worse · better than no trend <span id="escCortes"></span></span><span><span class="g sec">−7.9</span>best of its section in that base</span><span><span class="g col">−7.9</span>best of its section, all bases</span><span><span class="g tab">−7.9</span>best in the table</span><span><span class="g glob">−7.9</span>best of both tables</span><span>* only 1 snapshot (2025.M09): indicative, left out of the winners</span><span>– no case has this trend</span>`;
   const c = CORTES[S.med];
   $("#escCortes").textContent = `(steps at ${c.map(x => (x * 100).toFixed(1).replace(".0", "")).join(", ")} ${S.med === "ok" ? "pts of % met" : "WAPE pts"})`;
   GAN = ganadores();
@@ -519,7 +523,7 @@ function mostrarTip(td){
 }
 function premio(N, k, b, h){
   const id = `${N}|${k}|${b}|${h}`;
-  const t = GAN.glob.has(id) ? "best of both tables" : GAN.tab.has(id) ? "best in the table" : GAN.col.has(id) ? "best in its column" : GAN.sec.has(id) ? "best in its section" : "";
+  const t = GAN.glob.has(id) ? "best of both tables" : GAN.tab.has(id) ? "best in the table" : GAN.col.has(id) ? "best of its section, all bases" : GAN.sec.has(id) ? "best of its section in this base" : "";
   return t ? `<dt>Winner</dt><dd style="color:var(--oro);font-weight:700">${t}</dd>` : "";
 }
 function ocultarTip(){ tip.classList.remove("ver"); tipVisible = false; }
