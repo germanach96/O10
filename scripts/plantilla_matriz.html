@@ -263,27 +263,12 @@ table.mx tr.grupo th.fija{background:color-mix(in srgb,var(--card) 94%,transpare
 table.mx td.c{position:relative;height:30px;min-width:49px;border-bottom:1px solid var(--sep);cursor:default}
 table.mx td.c.ini{border-left:1px solid var(--sep-fuerte)}
 table.mx td.c span{position:relative;z-index:1}
+table.mx td.c[data-n] span{color:#1c1c1e}
+table.mx td.c.vacio span{color:var(--label-3)}
 table.mx td.c[data-n="4"] span,table.mx td.c[data-n="5"] span{color:#fff;font-weight:600}
-:root{--azul-esc:#0a6cdf;--rojo-esc:#e0182d}
-:root[data-theme="dark"]{--azul-esc:#2f8cff;--rojo-esc:#ff4d4f}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--azul-esc:#2f8cff;--rojo-esc:#ff4d4f}}
 .leyenda .pasos{display:inline-flex;gap:2px;vertical-align:middle;margin-right:6px}
 .leyenda .pasos i{width:14px;height:12px;border-radius:3px;display:inline-block}
 table.mx td.c::before{content:"";position:absolute;inset:3px;border-radius:7px;background:var(--tinte,transparent)}
-/* ganadores, de menos a más: borde dorado (sección en una base), número dorado (sección en todas las bases),
-   fondo dorado (tabla), brillo (las dos tablas) */
-:root{--oro:#a87400;--oro-claro:#ffe08a;--oro-borde:#d39b06;--oro-fondo:linear-gradient(180deg,#ffe58f 0%,#f5bf2a 100%);--oro-tinta:#3b2900;--oro-brillo:rgba(245,180,20,.7)}
-:root[data-theme="dark"]{--oro:#ffcf40;--oro-borde:#ffc61a;--oro-brillo:rgba(255,198,26,.6)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--oro:#ffcf40;--oro-borde:#ffc61a;--oro-brillo:rgba(255,198,26,.6)}}
-table.mx td.c.g-sec::after{content:"";position:absolute;inset:3px;border-radius:7px;box-shadow:inset 0 0 0 2px var(--oro-borde)}
-table.mx td.c.g-col span{color:var(--oro);font-weight:800}
-table.mx td.c.g-col[data-n="4"] span,table.mx td.c.g-col[data-n="5"] span{color:var(--oro-claro)}
-table.mx td.c.g-tab::before{background:var(--oro-fondo);box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
-table.mx td.c.g-tab span,table.mx td.c.g-tab[data-n] span{color:var(--oro-tinta);font-weight:800}
-table.mx td.c.g-glob{z-index:2}
-table.mx td.c.g-glob::before{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 0 2px var(--oro-borde),0 0 16px 4px var(--oro-brillo);animation:brillo 2.6s ease-in-out infinite}
-@keyframes brillo{50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 0 2px var(--oro-borde),0 0 8px 1px var(--oro-brillo)}}
-@media (prefers-reduced-motion:reduce){table.mx td.c.g-glob::before{animation:none}}
 table.mx td.c.vacio{color:var(--label-3)}
 table.mx tr.ref th.fija{font-weight:700}
 table.mx tr.ref td.c{font-weight:600}
@@ -292,11 +277,6 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
 .leyenda{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:0 0 14px;font-size:12px;color:var(--label-2)}
 .leyenda .esc{display:inline-flex;align-items:center;gap:6px}
 .leyenda .esc i{display:inline-block;width:120px;height:10px;border-radius:5px}
-.leyenda .g{display:inline-grid;place-items:center;min-width:34px;height:18px;padding:0 5px;border-radius:5px;margin-right:6px;font-size:11px;font-weight:800;vertical-align:middle;font-variant-numeric:tabular-nums}
-.leyenda .g.sec{box-shadow:inset 0 0 0 2px var(--oro-borde);color:var(--label)}
-.leyenda .g.col{color:var(--oro)}
-.leyenda .g.tab{background:var(--oro-fondo);color:var(--oro-tinta)}
-.leyenda .g.glob{background:var(--oro-fondo);color:var(--oro-tinta);box-shadow:0 0 0 2px var(--oro-borde),0 0 10px 2px var(--oro-brillo)}
 /* tarjeta flotante de una celda */
 .tip{position:fixed;z-index:70;pointer-events:none;width:270px;padding:12px 14px;border-radius:var(--r-m);font-size:12px;line-height:1.45;color:var(--label);
   background:var(--cristal-fuerte);-webkit-backdrop-filter:blur(30px) saturate(185%);backdrop-filter:blur(30px) saturate(185%);border:1px solid var(--borde-cristal);
@@ -397,58 +377,18 @@ function valor(c){
 // escala divergente por escalones: 5 tonos de azul (mejor) y 5 de rojo (peor), para que se distingan bien
 // cortes de cada escalón: puntos de WAPE (Δ y WAPE) o puntos de % cumplido; por debajo del primero, sin tinte
 const CORTES = {d:[0.005, 0.02, 0.04, 0.07, 0.10], w:[0.005, 0.02, 0.04, 0.07, 0.10], ok:[0.005, 0.015, 0.03, 0.05, 0.07]};
-const ALFAS = [12, 26, 42, 60, 80];
+// 11 tonos de rojo (peor) a verde (mejor) pasando por amarillo (sin cambio)
+const GAMA = ["#c8102e", "#e0452f", "#ee7a36", "#f6a73f", "#fbcf4f", "#fbe866", "#d8e86a", "#a6d667", "#71bf63", "#3fa35a", "#1b8048"];
 function nivel(score){
   if (score == null) return 0;
   const n = CORTES[S.med].filter(c => Math.abs(score) >= c).length;
   return n ? (score > 0 ? n : -n) : 0;
 }
-// valor con el que se elige al ganador: Δ más negativo, % cumplido más alto o WAPE más bajo
-function rango(c){ return S.med === "d" ? (c.d == null ? null : -c.d) : S.med === "ok" ? c.ok1 : (c.w1 == null ? null : -c.w1); }
-// ganadores: de cada sección en cada base (bloque de filas × sus horizontes; borde dorado), de cada sección en
-// todas las bases (número dorado), de cada tabla y de las dos tablas. La columna 12M* (una sola foto) no compite
-function ganadores(){
-  const G = {sec:new Set(), col:new Set(), tab:new Set(), glob:new Set()};
-  const mejores = l => { const m = Math.max(...l.map(x => x[1])); return l.filter(x => x[1] >= m - 1e-12).map(x => x[0]); };
-  const marcar = (l, set) => { if (l.length) mejores(l).forEach(id => set.add(id)); };
-  const todas = [];
-  for (const N of [6, 12]){
-    const tabla = [];
-    for (const [, fs] of grupos()){
-      const seccion = [];
-      for (const b of BASES){
-        const bloque = [];
-        for (const h of H){
-          if (h === 12) continue;
-          for (const f of fs){
-            const c = D.t[`${S.casa}|${h}|${N}|${f.k}`];
-            const r = c && c[b] ? rango(c[b]) : null;
-            if (r != null) bloque.push([`${N}|${f.k}|${b}|${h}`, r]);
-          }
-        }
-        marcar(bloque, G.sec);
-        seccion.push(...bloque);
-      }
-      marcar(seccion, G.col);
-      tabla.push(...seccion);
-    }
-    marcar(tabla, G.tab);
-    todas.push(...tabla);
-  }
-  marcar(todas, G.glob);
-  return G;
-}
-let GAN = null;
-function tinte(n){
-  if (!n) return "transparent";
-  return `color-mix(in srgb,${n > 0 ? "var(--azul-esc)" : "var(--rojo-esc)"} ${ALFAS[Math.abs(n) - 1]}%,transparent)`;
-}
+const tinte = n => GAMA[n + 5];
 function tabla(N){
   const filasRef = [];
   const ref = h => D.ref[`${S.casa}|${h}`];
   const celda = (k, h) => D.t[`${S.casa}|${h}|${N}|${k}`];
-  const oro = (k, b, h) => { const id = `${N}|${k}|${b}|${h}`;
-    return ["sec", "col", "tab", "glob"].filter(n => GAN[n].has(id)).map(n => " g-" + n).join(""); };
   const cab1 = `<tr><th class="fija" rowspan="2">Trend</th><th rowspan="2" style="padding:0 10px;font-size:11px;color:var(--label-2);font-weight:500">Cases<br>at 3M</th>${BASES.map(b => `<th class="base" colspan="4">${BASE_T[b]}<small>${BASE_S[b]}</small></th>`).join("")}</tr>`;
   const cab2 = `<tr>${BASES.map(() => H.map((h, i) => {
     const nf = (D.fotos[`${S.casa}|${h}`] || []).length;
@@ -469,7 +409,7 @@ function tabla(N){
         const c = celda(f.k, h);
         if (!c || !c[b]) return `<td class="c vacio${i === 0 ? " ini" : ""}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>–</span></td>`;
         const v = valor(c[b]);
-        return `<td class="c${i === 0 ? " ini" : ""}${oro(f.k, b, h)}" style="--tinte:${tinte(nivel(v.score))}" data-n="${Math.abs(nivel(v.score))}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>${v.txt}</span></td>`;
+        return `<td class="c${i === 0 ? " ini" : ""}" style="--tinte:${tinte(nivel(v.score))}" data-n="${Math.abs(nivel(v.score))}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>${v.txt}</span></td>`;
       }).join("")).join("") + "</tr>";
     }
   }
@@ -480,10 +420,9 @@ function pintar(){
   const f = H.map(h => `${h}M: ${(D.fotos[`${S.casa}|${h}`] || []).length}`).join(" · ");
   $("#subtitulo").textContent = `${S.casa === "all" ? "All houses" : S.casa} · ${ent(r3.n)} cases at 3M · snapshots per horizon ${f}`;
   $("#ayudaMed").textContent = AYUDA[S.med];
-  $("#leyenda").innerHTML = `<span><span class="pasos">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(n => `<i style="background:${n ? tinte(n) : "var(--fill)"}"></i>`).join("")}</span>worse · better than no trend <span id="escCortes"></span></span><span><span class="g sec">−7.9</span>best of its section in that base</span><span><span class="g col">−7.9</span>best of its section, all bases</span><span><span class="g tab">−7.9</span>best in the table</span><span><span class="g glob">−7.9</span>best of both tables</span><span>* only 1 snapshot (2025.M09): indicative, left out of the winners</span><span>– no case has this trend</span>`;
+  $("#leyenda").innerHTML = `<span><span class="pasos">${[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(n => `<i style="background:${tinte(n)}"></i>`).join("")}</span>worse · no change · better than no trend <span id="escCortes"></span></span><span>* only 1 snapshot (2025.M09): indicative</span><span>– no case has this trend</span>`;
   const c = CORTES[S.med];
   $("#escCortes").textContent = `(steps at ${c.map(x => (x * 100).toFixed(1).replace(".0", "")).join(", ")} ${S.med === "ok" ? "pts of % met" : "WAPE pts"})`;
-  GAN = ganadores();
   $("#m6").innerHTML = tabla(6);
   $("#m12").innerHTML = tabla(12);
   document.querySelectorAll("#casas .fila").forEach(x => x.setAttribute("aria-current", x.dataset.k === S.casa));
@@ -512,7 +451,7 @@ function mostrarTip(td){
         <dt>% met</dt><dd>${pct(m.ok0)} → <b>${pct(m.ok1)}</b></dd>
         <dt>Helps in</dt><dd>${m.ayuda} of ${m.fotos} snapshots</dd>
         <dt>Cases</dt><dd>${ent(c.n)} · ${ent(c.cod)} codes</dd>
-        <dt>Coverage</dt><dd>${pct(c.cov)} of cases, ${pct(c.cov_vol)} of volume</dd>${premio(N, td.dataset.k, b, h)}</dl>`; }
+        <dt>Coverage</dt><dd>${pct(c.cov)} of cases, ${pct(c.cov_vol)} of volume</dd></dl>`; }
   }
   tip.innerHTML = html;
   const r = td.getBoundingClientRect();
@@ -521,11 +460,6 @@ function mostrarTip(td){
   tip.style.left = x + "px"; tip.style.top = y + "px";
   tip.classList.toggle("ya", tipVisible);
   tip.classList.add("ver"); tipVisible = true;
-}
-function premio(N, k, b, h){
-  const id = `${N}|${k}|${b}|${h}`;
-  const t = GAN.glob.has(id) ? "best of both tables" : GAN.tab.has(id) ? "best in the table" : GAN.col.has(id) ? "best of its section, all bases" : GAN.sec.has(id) ? "best of its section in this base" : "";
-  return t ? `<dt>Winner</dt><dd style="color:var(--oro);font-weight:700">${t}</dd>` : "";
 }
 function ocultarTip(){ tip.classList.remove("ver"); tipVisible = false; }
 
