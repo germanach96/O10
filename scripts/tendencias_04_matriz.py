@@ -6,19 +6,23 @@ Uso: python -m scripts.tendencias_04_matriz   → resultados/cache/tendencias_ma
   (ídem), mezcla 50/50 de cada nivel de EPOS con cada nivel de sell-in, y EPOS en cascada (el del EAN; si no tiene,
   el de su PL, después el de la Brand y por último el de la House), puro y mezclado 50/50 con cada sell-in.
   Trend de la mezcla = 0,5 · sell-in + 0,5 · EPOS, recortado a ±50% (como el motor).
-- **Bases** (lo que multiplica (1 + trend)), todas con la historia de la foto verdad:
-  - Mean 12M: media de los 12 meses cerrados antes de la foto;
-  - LY: los mismos meses del año anterior;
-  - Mean 12M + Seas 100%: media × índice estacional de la House (Regular Items, sell-in), media de 2 años;
-  - Mean 12M + Seas 50%: media × (1 + índice) / 2.
-  Índice de un año: mes del año anterior ÷ media de los 12 meses que acaban antes de la foto; el de hace 2 años,
-  con la media de su propio año (como `e` = 2 en el motor). Sin 2 años de historia, solo el de un año.
+- **Base común** (la misma para las tres primeras formas de aplicar el trend): volumen de los últimos 12 meses
+  cerrados ÷ 12 × índice estacional de la House (Regular Items, sell-in, media de 2 años). Índice de un año: mes del
+  año anterior ÷ media de los 12 meses que acaban antes de la foto; el de hace 2 años, con la media de su propio año
+  (como `e` = 2 en el motor). Sin 2 años de historia, solo el de un año.
+- **Formas de aplicar el trend** (columnas):
+  - full: base × (1 + T);
+  - half: base × (1 + T/2), porque la media de 12 meses ya trae la mitad del crecimiento (su centro está a 6,5
+    meses de la foto);
+  - time: el mes h de la previsión × (1 + T)^((6,5 + h)/12), el crecimiento desde el centro de la media hasta ese
+    mes;
+  - ly (segunda comparación): los mismos meses del año anterior × (1 + T).
 - **Horizontes** acumulados desde la foto: 3M (meses 1–3), 6M, 9M y 12M. Solo las fotos con todos esos meses
   cerrados. En el mes 12 el año pasado es el propio mes de la foto (ya cerrado en la foto verdad).
 - **Medidas** en cada celda, sobre todos los casos en que existe ese trend (EAN × foto, Regular, con ventas en los
   12 meses anteriores):
-  - % cumplido: casos en que lo vendido quedó entre 0,8× y 1,2× de lo previsto (base × (1 + trend));
-  - mejora de WAPE frente a la misma base sin trend en esos mismos casos (en puntos; negativo = mejor);
+  - % cumplido: casos en que lo vendido quedó entre 0,8× y 1,2× de lo previsto;
+  - mejora de WAPE frente a la misma base sin trend (la común, o LY en la segunda comparación) en esos mismos casos (en puntos; negativo = mejor);
   - WAPE con trend; fotos en que mejora; nº de casos y parte del volumen.
 - **Perímetro:** lo vendido, la base y el año pasado salen de la última foto que trae el código (perímetro nuevo,
   después del salto de 2026.M02); el trend, de lo que traía cada foto (un cociente dentro del mismo archivo). El
@@ -41,7 +45,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 SALIDA = RAIZ / "resultados" / "cache" / "tendencias_matriz.json"
 NIV = ["cod", "pl", "brand", "house"]
 HORIZ = [3, 6, 9, 12]
-BASES = ["m", "ly", "s50", "s100"]
+BASES = ["full", "half", "time", "ly"]
 TOPE = 0.5
 BANDA = (0.8, 1.2)
 
@@ -116,9 +120,10 @@ def casos_casa(casa):
             ks = np.arange(kp + 1, kp + h + 1)
             d = {"casa": casa, "F": F, "h": h, "ean": f.eans, "reg": reg, "B12": B12,
                  "A": Hv[idx][:, ks].sum(1),
-                 "b_m": B12 / 12 * h, "b_ly": Hv[idx][:, ks - 12].sum(1),
-                 "b_s100": B12 / 12 * I[:h].sum(), "b_s50": B12 / 12 * ((1 + I[:h]) / 2).sum(),
+                 "b_s": B12 / 12 * I[:h].sum(), "b_ly": Hv[idx][:, ks - 12].sum(1),
                  "C": np.nansum(C[:, np.arange(k + 1, k + h + 1)], 1) * fac}
+            for j in range(1, h + 1):                               # base de cada mes, para la forma "time"
+                d[f"s{j}"] = B12 / 12 * I[j - 1]
             for N in (6, 12):
                 for nv in NIV + ["cas"]:
                     d[f"ep_{nv}_{N}"] = T[f"ep_{nv}_{N}"]
@@ -131,19 +136,33 @@ def casos_casa(casa):
     return df
 
 
-def medir(x, Tcol, b):
-    """Medidas de una celda: x = casos con el trend, Tcol = trend ya mezclado, b = columna de la base."""
+def prevision(x, Tc, modo):
+    """Base sin trend y previsión con el trend aplicado de la forma `modo` (Tc ya recortado)."""
+    if modo == "ly":
+        base = x.b_ly.to_numpy()
+        return base, base * (1 + Tc)
+    base = x.b_s.to_numpy()
+    if modo == "full":
+        return base, base * (1 + Tc)
+    if modo == "half":
+        return base, base * (1 + Tc / 2)
+    h = int(x.h.iloc[0])
+    return base, sum(x[f"s{j}"].to_numpy() * (1 + Tc) ** ((6.5 + j) / 12) for j in range(1, h + 1))
+
+
+def medir(x, Tcol, modo):
+    """Medidas de una celda: x = casos con el trend, Tcol = trend ya mezclado, modo = forma de aplicarlo."""
     A = x.A.to_numpy()
-    base = x[b].to_numpy()
-    Fc = np.maximum(base * (1 + np.clip(Tcol, -TOPE, TOPE)), 0)
+    base, Fc = prevision(x, np.clip(Tcol, -TOPE, TOPE) * np.ones(len(x)), modo)
+    Fc = np.maximum(Fc, 0)
     wape = lambda F: float(np.abs(F - A).sum() / A.sum()) if A.sum() > 0 else None
     ok = lambda F: float(((A >= BANDA[0] * F) & (A <= BANDA[1] * F) & (F > 0)).mean())
     w0, w1 = wape(base), wape(Fc)
     gan = []
-    for _, g in x.assign(_F=Fc).groupby("F"):
+    for _, g in x.assign(_F=Fc, _B=base).groupby("F"):
         a = g.A.to_numpy()
         if a.sum() > 0:
-            gan.append(np.abs(g._F - a).sum() / a.sum() < np.abs(g[b] - a).sum() / a.sum())
+            gan.append(np.abs(g._F - a).sum() < np.abs(g._B - a).sum())
     return {"w0": w0, "w1": w1, "d": None if w0 is None else (w1 - w0), "ok1": ok(Fc), "ok0": ok(base),
             "ayuda": int(sum(gan)), "fotos": len(gan)}
 
@@ -159,7 +178,7 @@ def main():
             # referencias: base sin trend sobre todos los casos, y el Consensus
             ref = {"n": len(x), "vol": float(x.A.sum())}
             for b in BASES:
-                ref[b] = medir(x, np.zeros(len(x)), f"b_{b}")
+                ref[b] = medir(x, np.zeros(len(x)), b)
             cx = x[x.C.notna()]
             if len(cx) and cx.A.sum() > 0:
                 Cc = cx.C.to_numpy()
@@ -176,7 +195,7 @@ def main():
                         T = (y[si].to_numpy() if si else 0) * (0.5 if si and ep else 1) + \
                             (y[ep].to_numpy() if ep else 0) * (0.5 if si and ep else 1)
                         for b in BASES:
-                            celda[b] = medir(y, T, f"b_{b}")
+                            celda[b] = medir(y, T, b)
                     res["t"][f"{casa}|{h}|{N}|{clave}"] = celda
     SALIDA.write_text(json.dumps(res, default=float).replace("NaN", "null"), encoding="utf-8")
     print(f"→ {SALIDA.relative_to(RAIZ)}")

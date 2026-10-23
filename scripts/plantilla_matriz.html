@@ -310,7 +310,9 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
     <div class="grupo-lado"><div class="seg pozo" id="segMed" role="radiogroup" aria-labelledby="hMed"></div></div>
     <p class="ayuda" id="ayudaMed"></p>
     <h2>How it is measured</h2>
-    <p class="ayuda">Forecast = base × (1 + trend), trend capped at ±50%. Each row uses every case where its trend exists, and is compared with the same base without trend on those same cases.</p>
+    <p class="ayuda">Common base = last 12 months’ volume ÷ 12 × the House seasonal index of each month. Trend capped at ±50%.</p>
+    <p class="ayuda"><b>Full</b>: base × (1 + T). <b>Half</b>: base × (1 + T/2), since the 12-month mean already carries half a year of growth. <b>Over time</b>: each month grows from the centre of the mean (6.5 months back) to that month. <b>Last year</b>: same months LY × (1 + T).</p>
+    <p class="ayuda">Each row uses every case where its trend exists; its four columns use the same cases.</p>
     <p class="ayuda">Sold, base and last year come from the latest snapshot that has the code (new perimeter after 2026.M02). The trend comes from what each snapshot showed. The Consensus of older snapshots is scaled to the new perimeter code by code.</p>
     <p class="ayuda">Seasonality: index of the House (Regular items, sell-in), mean of the last 2 years.</p>
   </div>
@@ -328,7 +330,7 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
       <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
     </button>
   </header>
-  <p class="leer">Rows: every trend (sell-in, sell-out and 50/50 mixes, by EAN, product line, brand and house; <b>cascade</b> = the EAN's sell-out, else its line's, else its brand's, else its house's). Columns: the base the trend multiplies and the horizon, counted from the snapshot (3M = months 1–3, as WAPE90). Regular items only. Only snapshots whose months have all closed. <b>Hover a cell</b> for every figure.</p>
+  <p class="leer">Rows: every trend (sell-in, sell-out and 50/50 mixes, by EAN, product line, brand and house; <b>cascade</b> = the EAN's sell-out, else its line's, else its brand's, else its house's). Columns: how the trend is applied and the horizon, counted from the snapshot (3M = months 1–3, as WAPE90). The first three use the <b>same base</b> (last 12 months’ volume × the House seasonality), so they compare like with like; the fourth is the second comparison, entirely on <b>last year</b>. Regular items only. Only snapshots whose months have all closed. <b>Hover a cell</b> for every figure.</p>
   <div class="leyenda" id="leyenda"></div>
   <div class="seccion"><h2 id="t6">6-month trends</h2><p>Last 6 closed months against the same 6 a year earlier.</p></div>
   <div class="marco" id="m6"></div>
@@ -341,12 +343,14 @@ table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-t
 const D = /*__DATOS__*/null;
 const $ = s => document.querySelector(s);
 const NIV = ["cod", "pl", "brand", "house"], NIV_T = {cod:"EAN", pl:"PL", brand:"Brand", house:"House", cas:"cascade"};
-const H = [3, 6, 9, 12], BASES = ["m", "ly", "s50", "s100"];
-const BASE_T = {m:"Mean 12M", ly:"Last year", s50:"Mean 12M + Seas 50%", s100:"Mean 12M + Seas 100%"};
-const BASE_S = {m:"flat", ly:"same months", s50:"half seasonal", s100:"House seasonality"};
+const H = [3, 6, 9, 12], BASES = ["full", "half", "time", "ly"];
+const BASE_T = {full:"Full trend", half:"Half trend", time:"Trend over time", ly:"Last year × full trend"};
+// base sin trend de cada columna (para la fila de referencia y la tarjeta flotante)
+const BASE_0 = {full:"Common base", half:"Common base", time:"Common base", ly:"Last year"};
+const BASE_S = {full:"base × (1 + T)", half:"base × (1 + T/2)", time:"base × (1 + T)^((6.5 + month)/12)", ly:"same months LY × (1 + T)"};
 const MED = {d:"WAPE change", ok:"% met", w:"WAPE"};
 const AYUDA = {
-  d:"WAPE with the trend minus WAPE of the same base without it, same cases, in points. Negative (blue) = the trend helps.",
+  d:"WAPE with the trend minus WAPE of the same base without it, same cases, in points. Negative (green) = the trend helps.",
   ok:"Cases where what sold landed between 0.8× and 1.2× of the forecast. Tint: how much better or worse than without the trend.",
   w:"WAPE with the trend: Σ|forecast − sold| ÷ Σ sold. Tint: change against no trend."};
 const GLIFO = {
@@ -439,14 +443,14 @@ function mostrarTip(td){
     const r = D.ref[`${S.casa}|${h}`]; if (!r) return;
     if (td.dataset.ref === "cons"){ if (!r.cons) return;
       html = `<span class="t">Consensus · ${h}M</span><dl><dt>WAPE</dt><dd>${pct(r.cons.w1, 1)}</dd><dt>% met</dt><dd>${pct(r.cons.ok1)}</dd><dt>Cases</dt><dd>${ent(r.n)}</dd></dl>`;
-    } else html = `<span class="t">${BASE_T[b]} without trend · ${h}M</span><dl><dt>WAPE</dt><dd>${pct(r[b].w1, 1)}</dd><dt>% met</dt><dd>${pct(r[b].ok1)}</dd><dt>Cases</dt><dd>${ent(r.n)}</dd><dt>Snapshots</dt><dd>${(D.fotos[`${S.casa}|${h}`] || []).join(", ")}</dd></dl>`;
+    } else html = `<span class="t">${BASE_0[b]} without trend · ${h}M</span><dl><dt>WAPE</dt><dd>${pct(r[b].w1, 1)}</dd><dt>% met</dt><dd>${pct(r[b].ok1)}</dd><dt>Cases</dt><dd>${ent(r.n)}</dd><dt>Snapshots</dt><dd>${(D.fotos[`${S.casa}|${h}`] || []).join(", ")}</dd></dl>`;
   } else {
     const c = D.t[`${S.casa}|${h}|${N}|${td.dataset.k}`];
     const nombre = td.closest("tr").querySelector("th").textContent.replace(/\s+/g, " ").trim();
     if (!c || !c[b]){ html = `<span class="t">${nombre} · ${N}M trend</span>No case has this trend with ${h} months closed (${c ? ent(c.n) : 0} cases).`; }
     else { const m = c[b];
       html = `<span class="t">${nombre} · ${N}M trend</span><dl>
-        <dt>Base</dt><dd>${BASE_T[b]}</dd><dt>Horizon</dt><dd>months 1–${h}</dd>
+        <dt>Applied as</dt><dd>${BASE_T[b]}</dd><dt>Horizon</dt><dd>months 1–${h}</dd>
         <dt>WAPE</dt><dd>${pct(m.w0, 1)} → <b>${pct(m.w1, 1)}</b> (${pts(m.d)} pts)</dd>
         <dt>% met</dt><dd>${pct(m.ok0)} → <b>${pct(m.ok1)}</b></dd>
         <dt>Helps in</dt><dd>${m.ayuda} of ${m.fotos} snapshots</dd>
