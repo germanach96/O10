@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>O10 · Trend matrix</title>
+<style>
+/* Matriz de trends en el mundo de O10 (diseno/DESIGN.md). La base (tokens, cristal, barra lateral y móvil) es la de
+   las tarjetas de señales (scripts/plantilla_tarjetas.html). */
+:root{
+  --fondo:#e9ebee;
+  --mancha-1:#ffffff; --mancha-2:#c6cad1; --mancha-3:#fafbfc; --mancha-4:#babfc7;
+  --cristal:rgba(255,255,255,.46); --cristal-fuerte:rgba(255,255,255,.72);
+  --borde-cristal:rgba(255,255,255,.66); --brillo-cristal:rgba(255,255,255,.9);
+  --sombra-cristal:0 10px 34px rgba(30,36,48,.12),0 1px 3px rgba(30,36,48,.08);
+  --blur:28px;
+  --card:#ffffff; --tarjeta:rgba(255,255,255,.62); --tarjeta-hover:rgba(255,255,255,.8);
+  --fill:rgba(120,120,128,.14); --fill-2:rgba(120,120,128,.24);
+  --sep:rgba(60,60,67,.14); --sep-fuerte:rgba(60,60,67,.26);
+  --label:#1c1c1e; --label-2:#5d5d63; --label-3:#6e6e74;
+  --blue:#0071e3; --blue-txt:#0062c4; --on-blue:#ffffff;
+  --green-txt:#1f7a35; --red-txt:#c9001a; --cons:#8e8e93;
+  --pulgar-solido:#ffffff; --pozo:rgba(120,120,128,.14);
+  /* borde de las tarjetas: azul = frente al Consensus, gris = frente al año pasado o su propio ritmo */
+  --anillo-si:#0071e3; --anillo-no:rgba(142,142,147,.78);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --font-code:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --muelle:linear(0, .0333, .1111, .2093, .3132, .4139, .5068, .5895, .6614, .7228, .7745, .8176, .8532, .8823, .9059, .9251, .9405, .9529, .9628, .9707, .9769, .9819, .9858, .9889, 1);
+  --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-drawer:cubic-bezier(0.32,0.72,0,1);
+  --r-s:10px; --r-row:12px; --r-m:14px; --r-l:22px; --r-xl:28px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
+  --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
+  --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
+  --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+  --card:#2c2c2e; --tarjeta:rgba(44,44,46,.62); --tarjeta-hover:rgba(54,54,56,.78);
+  --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
+  --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
+  --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+  --blue:#0a72e8; --blue-txt:#74b8ff; --green-txt:#30d158; --red-txt:#ff6961; --cons:#98989d;
+  --pulgar-solido:#3a3a3c; --pozo:rgba(0,0,0,.28);
+  --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --fondo:#0e0e0e; --mancha-1:#2f2f2f; --mancha-2:#151515; --mancha-3:#393939; --mancha-4:#1c1c1c;
+    --cristal:rgba(40,40,40,.46); --cristal-fuerte:rgba(46,46,46,.78);
+    --borde-cristal:rgba(255,255,255,.13); --brillo-cristal:rgba(255,255,255,.22);
+    --sombra-cristal:0 12px 40px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.4);
+    --card:#2c2c2e; --tarjeta:rgba(44,44,46,.62); --tarjeta-hover:rgba(54,54,56,.78);
+    --fill:rgba(118,118,128,.24); --fill-2:rgba(118,118,128,.36);
+    --sep:rgba(255,255,255,.1); --sep-fuerte:rgba(255,255,255,.2);
+    --label:#f5f5f7; --label-2:#b2b2b8; --label-3:#a1a1a6;
+    --blue:#0a72e8; --blue-txt:#74b8ff; --green-txt:#30d158; --red-txt:#ff6961; --cons:#98989d;
+    --pulgar-solido:#3a3a3c; --pozo:rgba(0,0,0,.28);
+    --anillo-si:#0a84ff; --anillo-no:rgba(152,152,157,.7);
+    color-scheme:dark;
+  }
+}
+
+/* ============ base y papel tapiz quieto ============ */
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--fondo);color:var(--label);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.003em;caret-color:var(--blue);-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:-12%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(38% 42% at 14% 18%,var(--mancha-1) 0,transparent 70%),
+    radial-gradient(34% 40% at 88% 12%,var(--mancha-2) 0,transparent 72%),
+    radial-gradient(40% 46% at 72% 88%,var(--mancha-3) 0,transparent 70%),
+    radial-gradient(36% 40% at 20% 92%,var(--mancha-4) 0,transparent 72%),
+    var(--fondo);
+  filter:blur(48px) saturate(110%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:color-mix(in srgb,var(--blue) 28%,transparent)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--blue) 55%,transparent);outline-offset:2px;border-radius:var(--r-s)}
+*{scrollbar-color:var(--fill-2) transparent;scrollbar-width:thin}
+button,input,select{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:default}
+.num{font-variant-numeric:tabular-nums}
+.ean{font-family:var(--font-code);font-size:11.5px;letter-spacing:0}
+.oculto{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.saltar{position:absolute;left:16px;top:-48px;background:var(--blue);color:var(--on-blue);padding:8px 12px;border-radius:var(--r-s);z-index:60}
+.saltar:focus{top:12px}
+svg.ico{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ material de cristal (solo lo que flota) ============ */
+.vidrio{position:relative;background:var(--cristal);-webkit-backdrop-filter:blur(var(--blur)) saturate(185%);backdrop-filter:blur(var(--blur)) saturate(185%);
+  border:1px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),inset 0 -1px 1px rgba(255,255,255,.08),var(--sombra-cristal)}
+.vidrio::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(160deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.12) 100%);mix-blend-mode:soft-light}
+
+/* ============ barra lateral ============ */
+.lado{position:fixed;z-index:20;top:12px;left:12px;bottom:12px;width:264px;border-radius:var(--r-xl);display:flex;flex-direction:column;min-height:0;padding:14px 10px 10px}
+.lado-cab{display:flex;align-items:center;gap:11px;padding:4px 8px 10px}
+.lado-cab .icono{width:34px;height:34px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.14))}
+.lado-cab b{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.02em;display:block;line-height:1.1}
+.lado-cab span{color:var(--label-2);font-size:11.5px}
+.lado-scroll{flex:1;overflow:auto;min-height:0;margin:0 -4px;padding:0 4px 8px}
+.lado h2{font-size:11px;font-weight:600;color:var(--label-2);margin:16px 10px 6px;letter-spacing:.01em}
+.lado h2:first-child{margin-top:6px}
+.lista{list-style:none;margin:0;padding:0}
+.fila{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:6px 10px;border-radius:var(--r-row);min-height:32px;color:var(--label);transition:background-color 140ms ease,transform 140ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.fila:hover{background:var(--fill)}}
+.fila:active{transform:scale(.98)}
+.fila[aria-current="true"],.fila[aria-pressed="true"]{background:color-mix(in srgb,var(--blue) 16%,transparent);color:var(--blue-txt);font-weight:600}
+.fila[aria-current="true"] .badge,.fila[aria-pressed="true"] .badge{color:var(--blue-txt);background:color-mix(in srgb,var(--blue) 14%,transparent)}
+.fila .ico{color:var(--blue)}
+.fila .glifo{color:var(--label)}
+.fila[aria-pressed="true"] .glifo{color:var(--blue-txt)}
+.fila .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-size:11px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--label-2);background:var(--fill);border-radius:999px;padding:1px 7px;min-width:22px;text-align:center}
+.grupo-lado{padding:0 4px}
+.lado-pie{padding:10px 4px 2px;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--sep);margin-top:4px}
+.lado-pie label,.pie-lbl{color:var(--label-2);font-size:11.5px;padding-left:4px}
+
+/* segmentado: pulgar de cristal si flota solo; pulgar sólido sobre pozo dentro de un panel de cristal */
+.seg{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border-radius:999px;padding:3px;isolation:isolate}
+.seg.pozo{background:var(--pozo)}
+.seg button{position:relative;z-index:1;border:0;background:transparent;padding:5px 10px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--label);white-space:nowrap;transition:color 160ms ease,transform 140ms var(--ease-out)}
+.seg button[aria-checked="false"]{color:var(--label-2)}
+.seg button:active{transform:scale(.97)}
+.seg .pulgar{position:absolute;z-index:0;top:3px;bottom:3px;left:0;width:0;border-radius:999px;background:var(--cristal-fuerte);box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 var(--brillo-cristal),0 0 0 .5px var(--borde-cristal);transition:transform 360ms var(--muelle),width 360ms var(--muelle)}
+.seg.pozo .pulgar{background:var(--pulgar-solido);box-shadow:0 2px 10px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.04)}
+:root[data-theme="dark"] .seg.pozo .pulgar{box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1),0 0 0 .5px var(--borde-cristal)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg.pozo .pulgar{box-shadow:0 2px 10px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1),0 0 0 .5px var(--borde-cristal)}}
+.seg.sin-anim .pulgar{transition:none}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 6px}
+.chip{border:0;background:var(--fill);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--label);transition:background-color 140ms ease,color 140ms ease,transform 140ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.chip:hover{background:var(--fill-2)}}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+.chip[disabled]{opacity:.4}
+
+/* ============ contenido ============ */
+.contenido{margin-left:288px;padding:0 24px 40px 12px;min-height:100vh}
+.barra{position:sticky;top:0;z-index:15;display:flex;align-items:flex-start;gap:10px;padding:18px 0 14px}
+.barra::before{content:"";position:absolute;inset:0 -24px -18px -12px;z-index:-1;pointer-events:none;
+  background:color-mix(in srgb,var(--fondo) 62%,transparent);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
+  -webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent);opacity:0;transition:opacity 200ms ease}
+.barra.velo::before{opacity:1}
+.titulo{min-width:0;flex:1;padding-top:2px}
+.titulo h1{font-family:var(--font-display);font-size:30px;font-weight:700;margin:0;letter-spacing:-.025em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.titulo p{margin:4px 0 0;color:var(--label-2);font-size:13px}
+.capsulas{display:flex;align-items:center;gap:10px;flex:none}
+.buscador{display:flex;align-items:center;gap:7px;border-radius:999px;padding:0 14px;width:250px;height:42px;color:var(--label-2);transition:box-shadow 160ms ease}
+.buscador:focus-within{box-shadow:inset 0 1px 0 var(--brillo-cristal),0 0 0 4px color-mix(in srgb,var(--blue) 35%,transparent),var(--sombra-cristal)}
+.buscador input{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:14px;color:var(--label)}
+.buscador input::placeholder{color:var(--label-2)}
+.buscador kbd{font:500 11px var(--font);color:var(--label-2);background:var(--fill);border-radius:6px;padding:1px 6px}
+.orden{display:flex;align-items:center;gap:6px;height:42px;border-radius:999px;padding:0 6px 0 14px;color:var(--label-2);font-size:12.5px;font-weight:500}
+.orden select{appearance:none;border:0;background:var(--fill);border-radius:999px;padding:6px 26px 6px 12px;font-size:13px;font-weight:600;color:var(--label);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='14' viewBox='0 0 10 14'%3E%3Cpath d='M2 5l3-3 3 3M2 9l3 3 3-3' fill='none' stroke='%238e8e93' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.redondo{display:none;place-items:center;width:42px;height:42px;border-radius:999px;color:var(--label);position:relative;border:1px solid var(--borde-cristal);transition:transform 140ms var(--ease-out)}
+.redondo:active{transform:scale(.93)}
+.redondo .cuenta{position:absolute;top:-3px;right:-3px;min-width:17px;height:17px;border-radius:999px;background:var(--blue);color:var(--on-blue);font-size:10.5px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.redondo .cuenta[hidden]{display:none}
+.leer{max-width:78ch;margin:2px 0 12px;color:var(--label-2);font-size:13px}
+.clave{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:0 0 20px;font-size:12.5px;color:var(--label-2)}
+.clave span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.clave i{width:28px;height:18px;border-radius:7px;flex:none;background:var(--tarjeta);border:2.5px solid var(--borde-cristal)}
+.clave i.k{border-color:var(--anillo-si)}
+.clave i.y{border-color:var(--anillo-no)}
+.clave .sep{width:1px;height:16px;background:var(--sep-fuerte)}
+.clave b{color:var(--label);font-weight:600}
+.glos{margin:-8px 0 20px}
+.glos summary{display:none}
+.glosario{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;max-width:1080px;font-size:12px;color:var(--label-2)}
+.glosario div{display:flex;gap:5px}
+.glosario dt{font-weight:600;color:var(--label)}
+.glosario dd{margin:0}
+.leer b{color:var(--label);font-weight:600}
+/* ============ iPhone ============ */
+@media (max-width:900px){
+  html,body{overflow-x:clip}
+  .lado{top:auto;bottom:0;left:0;right:0;width:auto;height:min(80dvh,640px);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:45;transform:translateY(102%);visibility:hidden;
+    transition:transform 420ms var(--ease-drawer),visibility 0s linear 420ms;padding-bottom:max(12px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);-webkit-backdrop-filter:blur(44px) saturate(185%);backdrop-filter:blur(44px) saturate(185%)}
+  .lado.abierta{transform:none;visibility:visible;transition:transform 420ms var(--ease-drawer),visibility 0s}
+  .lado::after{content:"";position:absolute;top:7px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--fill-2)}
+  .velo-hoja{position:fixed;inset:0;z-index:44;background:rgba(0,0,0,.22);opacity:0;visibility:hidden;transition:opacity 300ms var(--ease-out),visibility 0s linear 300ms}
+  .velo-hoja.ver{opacity:1;visibility:visible;transition:opacity 300ms var(--ease-out),visibility 0s}
+  .contenido{margin-left:0;padding:0 16px calc(32px + env(safe-area-inset-bottom)) 16px}
+  .barra{flex-wrap:wrap;padding-top:max(14px,env(safe-area-inset-top))}
+  .titulo h1{font-size:28px}
+  .redondo{display:inline-grid}
+  .capsulas{width:100%;order:3}
+  .buscador{flex:1;width:auto}
+  .buscador input{font-size:16px}
+  .buscador kbd{display:none}
+  .orden{display:none}
+  .clave .sep{display:none}
+  .glos summary{display:list-item;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--label);padding:2px 0 8px}
+  .glosario{flex-direction:column;gap:4px}
+  .colecciones-movil{display:grid !important;width:100%;order:4}
+  .rejilla,.rejilla.dobles{grid-template-columns:minmax(0,1fr)}
+  .tarjeta{width:100%;min-width:0;height:auto;min-height:290px}
+  .kpis{gap:5px}
+  .kpi{padding:6px 7px;min-width:0}
+  .hallazgo{width:100%;height:auto;flex-direction:column;gap:14px}
+  .h-der{width:auto;border-left:0;border-top:1px solid var(--sep);padding:14px 0 0}
+  .hallazgo .why,.hallazgo .accion{-webkit-line-clamp:unset}
+  dialog.ficha{width:100vw;max-height:94dvh;margin:auto 0 0;border-radius:var(--r-xl) var(--r-xl) 0 0}
+  dialog.ficha[open]{animation:hoja-in 420ms var(--ease-drawer) both}
+  dialog.ficha.cerrando{animation:hoja-out 240ms var(--ease-out) forwards}
+  @keyframes hoja-in{from{transform:translateY(100%)}}
+  @keyframes hoja-out{to{transform:translateY(100%)}}
+  .f-resumen{grid-template-columns:1fr}
+  .f-cuerpo{padding:18px 18px calc(24px + env(safe-area-inset-bottom))}
+  .f-cuerpo h2{font-size:21px}
+}
+@media (min-width:901px){.velo-hoja,.colecciones-movil{display:none !important}}
+
+/* ============ accesibilidad del movimiento y del cristal ============ */
+@media (prefers-reduced-motion:reduce){
+  .tarjeta.entra{animation:fundido 200ms ease both}
+  @keyframes fundido{from{opacity:0}}
+  .tarjeta:active,.fila:active,.chip:active,.seg button:active,.btn:active{transform:none}
+  .medidor.crece .lleno{animation:none}
+  .seg .pulgar{transition:none}
+  dialog.ficha[open]{animation:fundido 200ms ease both}
+  dialog.ficha.cerrando{animation:velo-out 160ms ease forwards}
+  .lado{transition:visibility 0s linear 200ms,opacity 200ms ease !important}
+}
+@media (prefers-reduced-transparency:reduce){
+  .vidrio,dialog.ficha{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .tarjeta{background:var(--card)}
+  body::before{filter:none}
+}
+@media (prefers-contrast:more){
+  .vidrio,dialog.ficha{border-color:var(--sep-fuerte)}
+  .tarjeta:not(.ref-K):not(.ref-Y){border-color:var(--sep-fuerte)}
+  .tarjeta{background:var(--card)}
+}
+
+/* ============ matriz: tablas de trend × base × horizonte ============ */
+.seccion{margin:30px 0 12px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.seccion h2{margin:0;font-family:var(--font-display);font-size:21px;font-weight:700;letter-spacing:-.02em}
+.seccion p{margin:0;color:var(--label-2);font-size:12.5px;max-width:86ch}
+.lado .ayuda{margin:6px 10px 0;font-size:11.5px;line-height:1.4;color:var(--label-2)}
+.marco{position:relative;border-radius:var(--r-l);background:var(--tarjeta);border:1.5px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),var(--sombra-cristal);overflow:auto;max-width:100%}
+table.mx{border-collapse:separate;border-spacing:0;font-size:12px;font-variant-numeric:tabular-nums;min-width:1040px;width:100%}
+table.mx th,table.mx td{padding:0;text-align:center;white-space:nowrap}
+table.mx thead th{position:sticky;z-index:2;background:color-mix(in srgb,var(--card) 88%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+table.mx thead tr:first-child th{top:0;height:34px;font-size:12.5px;font-weight:700;color:var(--label);border-bottom:1px solid var(--sep)}
+table.mx thead tr:nth-child(2) th{top:34px;height:26px;font-size:11px;font-weight:500;color:var(--label-2);border-bottom:1px solid var(--sep-fuerte)}
+table.mx th.base{border-left:1px solid var(--sep-fuerte)}
+table.mx th.base small{display:block;font-size:10.5px;font-weight:500;color:var(--label-2);margin-top:1px}
+table.mx .fija{position:sticky;left:0;z-index:1;text-align:left;background:color-mix(in srgb,var(--card) 94%,transparent);padding:0 10px 0 14px;min-width:196px;max-width:196px}
+table.mx thead .fija{z-index:3}
+table.mx td.cov{font-size:11px;color:var(--label-2);padding:0 8px;text-align:right;border-right:1px solid var(--sep-fuerte)}
+table.mx tbody th.fija{font-weight:500;font-size:12px;height:30px;border-bottom:1px solid var(--sep);overflow:hidden;text-overflow:ellipsis}
+table.mx tbody th.fija .se{display:inline-flex;align-items:center;gap:5px}
+table.mx tbody th.fija svg{width:12px;height:12px;flex:none;color:var(--label-2)}
+table.mx tbody th.fija .mas{color:var(--label-2);font-weight:400;margin:0 3px}
+table.mx tr.grupo th{height:30px;text-align:left;padding:10px 14px 4px;font-size:11px;font-weight:600;color:var(--label-2);background:transparent;border-bottom:1px solid var(--sep)}
+table.mx tr.grupo th.fija{background:color-mix(in srgb,var(--card) 94%,transparent)}
+table.mx td.c{position:relative;height:30px;min-width:49px;border-bottom:1px solid var(--sep);cursor:default}
+table.mx td.c.ini{border-left:1px solid var(--sep-fuerte)}
+table.mx td.c span{position:relative;z-index:1}
+table.mx td.c::before{content:"";position:absolute;inset:3px;border-radius:7px;background:var(--tinte,transparent)}
+table.mx td.c.top span{font-weight:700}
+table.mx td.c.top::after{content:"";position:absolute;inset:3px;border-radius:7px;box-shadow:inset 0 0 0 1.5px var(--blue)}
+table.mx td.c.vacio{color:var(--label-3)}
+table.mx tr.ref th.fija{font-weight:700}
+table.mx tr.ref td.c{font-weight:600}
+table.mx tr.ref.cons th.fija .se::before{content:"";width:16px;height:0;border-top:1.6px dashed var(--cons);margin-right:2px}
+@media (hover:hover) and (pointer:fine){table.mx tbody tr:not(.grupo):hover th.fija,table.mx tbody tr:not(.grupo):hover td{background-color:color-mix(in srgb,var(--blue) 5%,transparent)}}
+.leyenda{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:0 0 14px;font-size:12px;color:var(--label-2)}
+.leyenda .esc{display:inline-flex;align-items:center;gap:6px}
+.leyenda .esc i{display:inline-block;width:120px;height:10px;border-radius:5px}
+.leyenda .top{display:inline-block;width:22px;height:16px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--blue);vertical-align:middle;margin-right:6px}
+/* tarjeta flotante de una celda */
+.tip{position:fixed;z-index:70;pointer-events:none;width:270px;padding:12px 14px;border-radius:var(--r-m);font-size:12px;line-height:1.45;color:var(--label);
+  background:var(--cristal-fuerte);-webkit-backdrop-filter:blur(30px) saturate(185%);backdrop-filter:blur(30px) saturate(185%);border:1px solid var(--borde-cristal);
+  box-shadow:inset 0 1px 0 var(--brillo-cristal),0 14px 40px rgba(0,0,0,.18);opacity:0;transform:translateY(4px) scale(.98);transition:opacity 140ms var(--ease-out),transform 140ms var(--ease-out)}
+.tip.ver{opacity:1;transform:none}
+.tip.ya{transition:none}
+.tip b{font-weight:600}
+.tip .t{display:block;font-weight:700;font-size:12.5px;margin-bottom:6px;white-space:normal}
+.tip dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0}
+.tip dt{color:var(--label-2)}
+.tip dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .contenido{padding-bottom:40px}
+  table.mx .fija{min-width:168px;max-width:168px;padding:0 8px 0 10px}
+  .tip{display:none}
+}
+@media (prefers-reduced-motion:reduce){.tip{transition:opacity 120ms ease;transform:none}}
+</style>
+</head>
+<body>
+<a class="saltar" href="#t6">Skip to the tables</a>
+<aside class="lado vidrio" id="lado" aria-label="Filters">
+  <div class="lado-cab">
+    <svg class="icono" viewBox="0 0 34 34" aria-hidden="true"><defs><linearGradient id="gi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdfdfd"/><stop offset="1" stop-color="#c3c7cd"/></linearGradient></defs><rect width="34" height="34" rx="8" fill="url(#gi)"/><rect x=".5" y=".5" width="33" height="33" rx="7.5" fill="none" stroke="#fff" stroke-opacity=".9"/><text x="17" y="22" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Helvetica,Arial" font-weight="800" font-size="13" letter-spacing="-.5" fill="#1d1d1f">O10</text></svg>
+    <div><b>Trend matrix</b><span id="cabVersion"></span></div>
+  </div>
+  <div class="lado-scroll">
+    <h2 id="hCasa">House</h2>
+    <ul class="lista" id="casas" aria-labelledby="hCasa"></ul>
+    <h2 id="hMed">Measure in each cell</h2>
+    <div class="grupo-lado"><div class="seg pozo" id="segMed" role="radiogroup" aria-labelledby="hMed"></div></div>
+    <p class="ayuda" id="ayudaMed"></p>
+    <h2>How it is measured</h2>
+    <p class="ayuda">Forecast = base × (1 + trend), trend capped at ±50%. Each row uses every case where its trend exists, and is compared with the same base without trend on those same cases.</p>
+    <p class="ayuda">Sold, base and last year come from the latest snapshot that has the code (new perimeter after 2026.M02). The trend comes from what each snapshot showed. The Consensus of older snapshots is scaled to the new perimeter code by code.</p>
+    <p class="ayuda">Seasonality: index of the House (Regular items, sell-in), mean of the last 2 years.</p>
+  </div>
+  <div class="lado-pie">
+    <span class="pie-lbl" id="hApar">Appearance</span>
+    <div class="seg pozo" id="segTema" role="radiogroup" aria-labelledby="hApar"></div>
+  </div>
+</aside>
+<div class="velo-hoja" id="veloHoja"></div>
+
+<main class="contenido">
+  <header class="barra" id="barra">
+    <div class="titulo"><h1>Trend matrix</h1><p id="subtitulo" class="num" aria-live="polite"></p></div>
+    <button class="redondo vidrio" id="abrirFiltros" aria-label="Filters" aria-controls="lado" aria-expanded="false">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    </button>
+  </header>
+  <p class="leer">Rows: every trend (sell-in, sell-out and 50/50 mixes, by EAN, product line, brand and house; <b>cascade</b> = the EAN's sell-out, else its line's, else its brand's, else its house's). Columns: the base the trend multiplies and the horizon, counted from the snapshot (3M = months 1–3, as WAPE90). Regular items only. Only snapshots whose months have all closed. <b>Hover a cell</b> for every figure.</p>
+  <div class="leyenda" id="leyenda"></div>
+  <div class="seccion"><h2 id="t6">6-month trends</h2><p>Last 6 closed months against the same 6 a year earlier.</p></div>
+  <div class="marco" id="m6"></div>
+  <div class="seccion"><h2 id="t12">12-month trends</h2><p>Last 12 closed months against the 12 before. Sell-out goes back to 2024.M07, so a 12-month sell-out trend only exists from 2025.M07 on.</p></div>
+  <div class="marco" id="m12"></div>
+</main>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const D = /*__DATOS__*/null;
+const $ = s => document.querySelector(s);
+const NIV = ["cod", "pl", "brand", "house"], NIV_T = {cod:"EAN", pl:"PL", brand:"Brand", house:"House", cas:"cascade"};
+const H = [3, 6, 9, 12], BASES = ["m", "ly", "s50", "s100"];
+const BASE_T = {m:"Mean 12M", ly:"Last year", s50:"Mean 12M + Seas 50%", s100:"Mean 12M + Seas 100%"};
+const BASE_S = {m:"flat", ly:"same months", s50:"half seasonal", s100:"House seasonality"};
+const MED = {d:"WAPE change", ok:"% met", w:"WAPE"};
+const AYUDA = {
+  d:"WAPE with the trend minus WAPE of the same base without it, same cases, in points. Negative (blue) = the trend helps.",
+  ok:"Cases where what sold landed between 0.8× and 1.2× of the forecast. Tint: how much better or worse than without the trend.",
+  w:"WAPE with the trend: Σ|forecast − sold| ÷ Σ sold. Tint: change against no trend."};
+const GLIFO = {
+  si:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3.5" y="7" width="2.6" height="5.5" rx=".8" fill="currentColor"/><rect x="7" y="4" width="2.6" height="8.5" rx=".8" fill="currentColor"/><rect x="10.5" y="8.5" width="2.6" height="4" rx=".8" fill="currentColor"/></svg>',
+  ep:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 5.5h9.6l-.8 8H4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.8 5.5V4.6a2.2 2.2 0 014.4 0v.9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>'};
+const pct = (x, d = 0) => x == null ? "–" : (x * 100).toFixed(d) + "%";
+const ent = x => Number(x).toLocaleString("en-US");
+const pts = v => v == null ? "–" : (v < -0.0005 ? "−" : v > 0.0005 ? "+" : "±") + Math.abs(v * 100).toFixed(1);
+
+const ALMACEN = "o10-trend-matrix";
+const S = Object.assign({casa:"all", med:"d", tema:"auto"}, (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })());
+const guardar = () => { try { localStorage.setItem(ALMACEN, JSON.stringify(S)); } catch (e) {} };
+
+// filas de cada tabla, por grupos
+function grupos(){
+  return [
+    ["Sell-in", NIV.map(a => ({k:`si_${a}`, l:`${GLIFO.si}Sell-in · ${NIV_T[a]}`}))],
+    ["Sell-out", [...NIV, "cas"].map(a => ({k:`ep_${a}`, l:`${GLIFO.ep}Sell-out · ${NIV_T[a]}`}))],
+    ...[...NIV, "cas"].map(e => [`50/50 · sell-out ${NIV_T[e]} + sell-in`, NIV.map(s => ({k:`mx_${e}_${s}`,
+      l:`${GLIFO.ep}${NIV_T[e]}<span class="mas">+</span>${GLIFO.si}${NIV_T[s]}`}))])];
+}
+// valor y tinte de una celda según la medida
+function valor(c){
+  if (S.med === "d") return {txt:pts(c.d), score:c.d == null ? null : -c.d};
+  if (S.med === "ok") return {txt:pct(c.ok1), score:c.ok1 - c.ok0};
+  return {txt:pct(c.w1, 1), score:c.d == null ? null : -c.d};
+}
+function tinte(score, max){
+  if (score == null) return "transparent";
+  const a = Math.min(1, Math.abs(score) / max) * 34;
+  return `color-mix(in srgb,${score > 0 ? "var(--blue)" : "var(--red-txt)"} ${a.toFixed(1)}%,transparent)`;
+}
+function tabla(N){
+  const filasRef = [];
+  const ref = h => D.ref[`${S.casa}|${h}`];
+  const celda = (k, h) => D.t[`${S.casa}|${h}|${N}|${k}`];
+  // mejor de cada columna (según la medida elegida)
+  const top = {}, maxAbs = {d:0.12, ok:0.08, w:0.12}[S.med];
+  for (const b of BASES) for (const h of H){
+    let best = null, kb = null;
+    for (const [, fs] of grupos()) for (const f of fs){
+      const c = celda(f.k, h); if (!c || !c[b]) continue;
+      const s = valor(c[b]).score; if (s != null && (best == null || s > best)) { best = s; kb = f.k; }
+    }
+    top[`${b}|${h}`] = kb;
+  }
+  const cab1 = `<tr><th class="fija" rowspan="2">Trend</th><th rowspan="2" style="padding:0 10px;font-size:11px;color:var(--label-2);font-weight:500">Cases<br>at 3M</th>${BASES.map(b => `<th class="base" colspan="4">${BASE_T[b]}<small>${BASE_S[b]}</small></th>`).join("")}</tr>`;
+  const cab2 = `<tr>${BASES.map(() => H.map((h, i) => {
+    const nf = (D.fotos[`${S.casa}|${h}`] || []).length;
+    return `<th${i === 0 ? ' class="base"' : ""} title="${nf} snapshot${nf === 1 ? "" : "s"} with these months closed">${h}M${nf === 1 ? "*" : ""}</th>`; }).join("")).join("")}</tr>`;
+  // filas de referencia: base sin trend y Consensus
+  const refFila = (cls, l, fn) => `<tr class="ref ${cls}"><th class="fija" scope="row"><span class="se">${l}</span></th><td class="cov">${ent(ref(3)?.n || 0)}</td>${BASES.map(b => H.map((h, i) => {
+    const r = ref(h); const v = r ? fn(r, b) : null;
+    return `<td class="c${i === 0 ? " ini" : ""}${v == null ? " vacio" : ""}" data-ref="${cls}" data-b="${b}" data-h="${h}"><span>${v == null ? "–" : v}</span></td>`; }).join("")).join("")}</tr>`;
+  const sinTrend = refFila("sin", "No trend (base only)", (r, b) => S.med === "ok" ? pct(r[b].ok1) : S.med === "w" ? pct(r[b].w1, 1) : "0.0");
+  const cons = refFila("cons", "Consensus", r => !r.cons ? null : S.med === "ok" ? pct(r.cons.ok1) : S.med === "w" ? pct(r.cons.w1, 1) : null);
+  let cuerpo = sinTrend + (S.med === "d" ? "" : cons);
+  for (const [g, fs] of grupos()){
+    cuerpo += `<tr class="grupo"><th class="fija" colspan="2">${g}</th><th colspan="16"></th></tr>`;
+    for (const f of fs){
+      const c3 = celda(f.k, 3);
+      cuerpo += `<tr><th class="fija" scope="row"><span class="se">${f.l}</span></th><td class="cov" title="${c3 ? pct(c3.cov) + " of the cases, " + pct(c3.cov_vol) + " of the volume" : ""}">${c3 ? ent(c3.n) : "–"}</td>`;
+      cuerpo += BASES.map(b => H.map((h, i) => {
+        const c = celda(f.k, h);
+        if (!c || !c[b]) return `<td class="c vacio${i === 0 ? " ini" : ""}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>–</span></td>`;
+        const v = valor(c[b]);
+        return `<td class="c${i === 0 ? " ini" : ""}${top[`${b}|${h}`] === f.k ? " top" : ""}" style="--tinte:${tinte(v.score, maxAbs)}" data-k="${f.k}" data-b="${b}" data-h="${h}"><span>${v.txt}</span></td>`;
+      }).join("")).join("") + "</tr>";
+    }
+  }
+  return `<table class="mx" data-n="${N}"><caption class="oculto">${N}-month trends: ${MED[S.med]} by base and horizon</caption><thead>${cab1}${cab2}</thead><tbody>${cuerpo}</tbody></table>`;
+}
+function pintar(){
+  const r3 = D.ref[`${S.casa}|3`];
+  const f = H.map(h => `${h}M: ${(D.fotos[`${S.casa}|${h}`] || []).length}`).join(" · ");
+  $("#subtitulo").textContent = `${S.casa === "all" ? "All houses" : S.casa} · ${ent(r3.n)} cases at 3M · snapshots per horizon ${f}`;
+  $("#ayudaMed").textContent = AYUDA[S.med];
+  $("#leyenda").innerHTML = `<span class="esc"><i style="background:linear-gradient(90deg,color-mix(in srgb,var(--red-txt) 34%,transparent),transparent 50%,color-mix(in srgb,var(--blue) 34%,transparent))"></i>worse · better than no trend</span><span><span class="top"></span>best of the column</span><span>* only 1 snapshot (2025.M09): indicative</span><span>– no case has this trend</span>`;
+  $("#m6").innerHTML = tabla(6);
+  $("#m12").innerHTML = tabla(12);
+  document.querySelectorAll("#casas .fila").forEach(x => x.setAttribute("aria-current", x.dataset.k === S.casa));
+  document.querySelectorAll(".seg").forEach(colocarPulgar);
+}
+
+// tarjeta flotante con todas las cifras de la celda
+const tip = $("#tip");
+let tipVisible = false;
+function mostrarTip(td){
+  const N = td.closest("table").dataset.n, b = td.dataset.b, h = td.dataset.h;
+  let html;
+  if (td.dataset.ref){
+    const r = D.ref[`${S.casa}|${h}`]; if (!r) return;
+    if (td.dataset.ref === "cons"){ if (!r.cons) return;
+      html = `<span class="t">Consensus · ${h}M</span><dl><dt>WAPE</dt><dd>${pct(r.cons.w1, 1)}</dd><dt>% met</dt><dd>${pct(r.cons.ok1)}</dd><dt>Cases</dt><dd>${ent(r.n)}</dd></dl>`;
+    } else html = `<span class="t">${BASE_T[b]} without trend · ${h}M</span><dl><dt>WAPE</dt><dd>${pct(r[b].w1, 1)}</dd><dt>% met</dt><dd>${pct(r[b].ok1)}</dd><dt>Cases</dt><dd>${ent(r.n)}</dd><dt>Snapshots</dt><dd>${(D.fotos[`${S.casa}|${h}`] || []).join(", ")}</dd></dl>`;
+  } else {
+    const c = D.t[`${S.casa}|${h}|${N}|${td.dataset.k}`];
+    const nombre = td.closest("tr").querySelector("th").textContent.replace(/\s+/g, " ").trim();
+    if (!c || !c[b]){ html = `<span class="t">${nombre} · ${N}M trend</span>No case has this trend with ${h} months closed (${c ? ent(c.n) : 0} cases).`; }
+    else { const m = c[b];
+      html = `<span class="t">${nombre} · ${N}M trend</span><dl>
+        <dt>Base</dt><dd>${BASE_T[b]}</dd><dt>Horizon</dt><dd>months 1–${h}</dd>
+        <dt>WAPE</dt><dd>${pct(m.w0, 1)} → <b>${pct(m.w1, 1)}</b> (${pts(m.d)} pts)</dd>
+        <dt>% met</dt><dd>${pct(m.ok0)} → <b>${pct(m.ok1)}</b></dd>
+        <dt>Helps in</dt><dd>${m.ayuda} of ${m.fotos} snapshots</dd>
+        <dt>Cases</dt><dd>${ent(c.n)} · ${ent(c.cod)} codes</dd>
+        <dt>Coverage</dt><dd>${pct(c.cov)} of cases, ${pct(c.cov_vol)} of volume</dd></dl>`; }
+  }
+  tip.innerHTML = html;
+  const r = td.getBoundingClientRect();
+  const x = Math.min(innerWidth - 286, Math.max(8, r.left + r.width / 2 - 135));
+  const y = r.bottom + 8 + 220 > innerHeight ? r.top - tip.offsetHeight - 8 : r.bottom + 8;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+  tip.classList.toggle("ya", tipVisible);
+  tip.classList.add("ver"); tipVisible = true;
+}
+function ocultarTip(){ tip.classList.remove("ver"); tipVisible = false; }
+
+function segmentado(el, opciones, k, alCambiar){
+  el.innerHTML = '<span class="pulgar" aria-hidden="true"></span>' + opciones.map(([v, t]) => `<button role="radio" data-v="${v}">${t}</button>`).join("");
+  el.dataset.clave = k;
+  const elegir = (v, teclado) => { el.classList.toggle("sin-anim", teclado); S[k] = v; guardar(); alCambiar(v); };
+  el.addEventListener("click", e => { const b = e.target.closest("button"); if (b) elegir(b.dataset.v, false); });
+  el.addEventListener("keydown", e => {
+    const bs = [...el.querySelectorAll("button")];
+    const i = bs.findIndex(b => b.dataset.v === S[k]);
+    let j = {ArrowRight:i + 1, ArrowDown:i + 1, ArrowLeft:i - 1, ArrowUp:i - 1, Home:0, End:bs.length - 1}[e.key];
+    if (j == null) return;
+    e.preventDefault(); j = (j + bs.length) % bs.length;
+    elegir(bs[j].dataset.v, true); bs[j].focus();
+  });
+}
+function colocarPulgar(el){
+  const bs = [...el.querySelectorAll("button")];
+  const b = bs.find(x => x.dataset.v === S[el.dataset.clave]) || bs[0];
+  bs.forEach(x => { x.setAttribute("aria-checked", x === b); x.tabIndex = x === b ? 0 : -1; });
+  const p = el.querySelector(".pulgar");
+  if (!b.offsetWidth) return;
+  p.style.width = b.offsetWidth + "px"; p.style.transform = `translateX(${b.offsetLeft}px)`;
+}
+function aplicarTema(){ const r = document.documentElement; if (S.tema === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.tema); }
+
+function montar(){
+  $("#cabVersion").textContent = `${D.version} · Regular items`;
+  $("#casas").innerHTML = ["all", ...D.casas].map(c => `<li><button class="fila" data-k="${c}"><span class="t">${c === "all" ? "All houses" : c}</span><span class="badge">${ent(D.ref[`${c}|3`].n)}</span></button></li>`).join("");
+  $("#casas").addEventListener("click", e => { const f = e.target.closest(".fila"); if (!f) return; S.casa = f.dataset.k; guardar(); pintar(); });
+  segmentado($("#segMed"), [["d", "WAPE Δ"], ["ok", "% met"], ["w", "WAPE"]], "med", pintar);
+  segmentado($("#segTema"), [["light", "Light"], ["dark", "Dark"], ["auto", "Auto"]], "tema", () => { aplicarTema(); document.querySelectorAll(".seg").forEach(colocarPulgar); });
+  document.addEventListener("pointerover", e => { const td = e.target.closest("td.c"); if (td) mostrarTip(td); else if (!e.target.closest(".tip")) ocultarTip(); });
+  document.addEventListener("scroll", ocultarTip, {passive:true, capture:true});
+  const barra = $("#barra");
+  addEventListener("scroll", () => barra.classList.toggle("velo", scrollY > 4), {passive:true});
+  const lado = $("#lado"), velo = $("#veloHoja"), bf = $("#abrirFiltros");
+  const hoja = abre => {
+    lado.classList.toggle("abierta", abre); velo.classList.toggle("ver", abre); bf.setAttribute("aria-expanded", abre);
+    document.querySelector("main").inert = abre;
+    if (abre){ lado.setAttribute("role", "dialog"); lado.setAttribute("aria-modal", "true"); requestAnimationFrame(() => document.querySelectorAll(".seg").forEach(colocarPulgar)); }
+    else { lado.removeAttribute("role"); lado.removeAttribute("aria-modal"); bf.focus(); }
+  };
+  bf.onclick = () => hoja(!lado.classList.contains("abierta"));
+  velo.onclick = () => hoja(false);
+  addEventListener("keydown", e => { if (e.key === "Escape") { ocultarTip(); if (lado.classList.contains("abierta")) hoja(false); } });
+  addEventListener("resize", () => document.querySelectorAll(".seg").forEach(colocarPulgar));
+}
+aplicarTema();
+montar();
+pintar();
+requestAnimationFrame(() => document.querySelectorAll(".seg").forEach(colocarPulgar));
+</script>
+</body>
+</html>
