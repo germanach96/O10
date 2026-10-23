@@ -327,6 +327,27 @@ table.mx.fi th.hist{color:var(--label-2)}
 .chip-t[aria-pressed="true"] i{background:var(--serie)}
 .chip-t:active{transform:scale(.96)}
 @media (hover:hover) and (pointer:fine){.chip-t:hover{background:var(--fill-2)}}
+.graf + .graf{margin-top:16px}
+.mini-b{border:0;background:var(--fill);border-radius:999px;padding:1px 9px;margin-left:6px;font-size:11px;font-weight:600;color:var(--label);transition:transform 140ms var(--ease-out),background-color 140ms ease}
+.mini-b:active{transform:scale(.95)}
+@media (hover:hover) and (pointer:fine){.mini-b:hover{background:var(--fill-2)}}
+.graf-ley{max-width:1100px;margin:0 0 12px}
+.graf svg{width:100%;display:block;overflow:visible}
+.graf svg text{font:11px var(--font);fill:var(--label-2);font-variant-numeric:tabular-nums}
+.graf svg .eje-x text.h{font-size:13px;font-weight:700;fill:var(--label)}
+.graf svg .rej{stroke:var(--sep);stroke-width:1}
+.graf svg .cero{stroke:var(--sep-fuerte);stroke-width:1.2}
+.graf svg .linea{fill:none;stroke:var(--serie);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.graf svg .linea.si{stroke-dasharray:7 5}
+.graf svg .pt{fill:var(--serie);stroke:var(--card);stroke-width:2}
+.graf svg .pt.pocos{fill:var(--card);stroke:var(--serie);stroke-dasharray:2 2}
+.graf svg .val{font-size:12px;font-weight:700}
+.graf svg .hit{fill:transparent}
+.graf svg .traza{animation:traza 460ms var(--ease-out) both}
+.graf svg .entra{animation:entra-pt 300ms var(--ease-out) both}
+@keyframes entra-pt{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.graf svg .traza,.graf svg .entra{animation:none}}
+.graf-ley .ln.si{border-top-style:dashed}
 .graf{border-radius:var(--r-l);background:var(--tarjeta);border:1.5px solid var(--borde-cristal);box-shadow:inset 0 1px 0 var(--brillo-cristal),var(--sombra-cristal);padding:16px 18px 10px;max-width:1100px}
 .graf-cab{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
 .graf-cab h3{margin:0;font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:-.015em}
@@ -334,27 +355,9 @@ table.mx.fi th.hist{color:var(--label-2)}
 .graf-ley{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 0 4px;font-size:12px;color:var(--label-2)}
 .graf-ley span{display:inline-flex;align-items:center;gap:6px}
 .graf-ley .ln{width:20px;height:0;border-top:2.5px solid var(--serie)}
-.graf-ley .br{width:12px;height:12px;border-radius:3px;background:linear-gradient(90deg,#1b8048,#fbe866,#c8102e)}
-#lienzo{width:100%;display:block;overflow:visible}
-#lienzo text{font:11px var(--font);fill:var(--label-2);font-variant-numeric:tabular-nums}
-#lienzo .eje-x text.h{font-size:13px;font-weight:700;fill:var(--label)}
-#lienzo .rej{stroke:var(--sep);stroke-width:1}
-#lienzo .cero{stroke:var(--sep-fuerte);stroke-width:1.2}
-#lienzo .zona{font-size:11px;font-weight:600;fill:var(--label-2)}
-#lienzo .linea{fill:none;stroke:var(--serie);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
-#lienzo .pt{fill:var(--serie);stroke:var(--card);stroke-width:2}
-#lienzo .pt.pocos{fill:var(--card);stroke:var(--serie);stroke-width:2;stroke-dasharray:2 2}
-#lienzo .val{font-size:12px;font-weight:700;fill:var(--label)}
-#lienzo .val-b{font-size:11.5px;font-weight:700;fill:var(--label)}
-#lienzo .tapa{fill:var(--serie)}
-#lienzo .barra-b{transform-box:fill-box}
-#lienzo .crece{animation:crece-b 360ms var(--ease-out) both}
-#lienzo .traza{animation:traza 460ms var(--ease-out) both}
 @keyframes crece-b{from{transform:scaleY(0)}}
 @keyframes traza{from{stroke-dashoffset:var(--largo)}}
-#lienzo .hit{fill:transparent;cursor:default}
 .graf .vacio-g{padding:60px 0;text-align:center;color:var(--label-2)}
-@media (prefers-reduced-motion:reduce){#lienzo .crece,#lienzo .traza{animation:none}}
 @media (max-width:900px){.vista{margin-left:0;order:3}.graf{padding:12px 10px 6px}}
 </style>
 </head>
@@ -403,10 +406,11 @@ table.mx.fi th.hist{color:var(--label-2)}
   <section id="vGrafica" hidden aria-label="Chart">
     <div class="controles">
       <div class="control"><span id="hN">Trend length</span><div class="seg pozo" id="segN" role="radiogroup" aria-labelledby="hN"></div></div>
-      <div class="control"><span id="hLinea">Line</span><div class="seg pozo" id="segLinea" role="radiogroup" aria-labelledby="hLinea"></div></div>
-      <div class="control"><span id="hSeries">Trends (up to 4)</span><div class="chips-t" id="series" role="group" aria-labelledby="hSeries"></div></div>
+      <div class="control"><span id="hSeries">Trends <button class="mini-b" id="todas">All</button><button class="mini-b" id="ninguna">None</button></span><div class="chips-t" id="series" role="group" aria-labelledby="hSeries"></div></div>
     </div>
-    <div class="graf"><div class="graf-cab"><h3 id="gTitulo"></h3><p id="gSub"></p></div><div class="graf-ley" id="gLey"></div><div id="gCaja"></div></div>
+    <div class="graf-ley" id="gLey"></div>
+    <div class="graf"><div class="graf-cab"><h3>Reliability by horizon</h3><p id="gSubF"></p></div><div id="gCajaF"></div></div>
+    <div class="graf"><div class="graf-cab"><h3>Bias by horizon</h3><p id="gSubB"></p></div><div id="gCajaB"></div></div>
   </section>
 </main>
 <div class="tip" id="tip" role="tooltip"></div>
@@ -436,8 +440,8 @@ const sg = x => x == null ? "–" : (x > 0.0005 ? "+" : x < -0.0005 ? "−" : "�
 const ent = x => Number(x).toLocaleString("en-US");
 
 const ALMACEN = "trend-analysis-reliability";
-const S = Object.assign({casa:"all", tema:"auto", vista:"tables", gN:"6", linea:"w", series:["ep_cod", "ep_pl", "si_cod"]}, (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })());
-const guardar = () => { try { localStorage.setItem(ALMACEN, JSON.stringify(S)); } catch (e) {} };
+const S = Object.assign({casa:"all", tema:"auto", vista:"tables", gN:"6"}, (() => { try { return JSON.parse(localStorage.getItem(ALMACEN) || "{}"); } catch (e) { return {}; } })());
+const guardar = () => { try { const {series, ...g} = S; localStorage.setItem(ALMACEN, JSON.stringify(g)); } catch (e) {} };
 const dato = (N, k, h) => D.r[`${S.casa}|${N}|${k}|${h}`];
 
 function celda(N, k, h, cual){
@@ -519,108 +523,91 @@ function colocarPulgar(el){
 function aplicarTema(){ const r = document.documentElement; if (S.tema === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", S.tema); }
 
 
-// ---------------------------------------------------------------- pestaña Chart
+// ---------------------------------------------------------------- pestaña Chart: fiabilidad y bias, dos gráficas de línea
 const NOMBRE = {};
 FILAS.forEach(([g, fs]) => fs.forEach(([k, l]) => { NOMBRE[k] = `${g} · ${l}`; }));
 const ORDEN_SERIES = FILAS.flatMap(([, fs]) => fs.map(([k]) => k));
-const COLOR_SERIE = ["#0a6cdf", "#8e44ad", "#0e8a8f", "#d4539a"];
+// un color fijo por trend; el sell-in va además en línea discontinua
+const COLOR = {ep_cod:"#0a6cdf", ep_pl:"#5e5ce6", ep_brand:"#a550a7", ep_house:"#d4539a", ep_cas:"#0e8a8f",
+  si_cod:"#e07b00", si_pl:"#a2552c", si_brand:"#6e6e74", si_house:"#4f72a8"};
 const HG = ["3", "6", "9", "12"];
+S.series = [...ORDEN_SERIES];                      // al entrar, todas
 let animarG = true;
-function colorSerie(k){ return COLOR_SERIE[S.series.indexOf(k) % COLOR_SERIE.length]; }
 function chipsSeries(){
-  $("#series").innerHTML = ORDEN_SERIES.map(k => `<button class="chip-t" data-k="${k}" aria-pressed="${S.series.includes(k)}" style="--serie:${S.series.includes(k) ? colorSerie(k) : "var(--sep-fuerte)"}"><i></i>${GLIFO[k.slice(0, 2)]}${NOMBRE[k]}</button>`).join("");
+  $("#series").innerHTML = ORDEN_SERIES.map(k => `<button class="chip-t" data-k="${k}" aria-pressed="${S.series.includes(k)}" style="--serie:${COLOR[k]}"><i></i>${GLIFO[k.slice(0, 2)]}${NOMBRE[k]}</button>`).join("");
 }
-function grafica(){
-  chipsSeries();
-  const N = S.gN, linea = S.linea;
-  $("#gTitulo").textContent = `${linea === "w" ? "WAPE" : "Reliability"} and bias by horizon`;
-  $("#gSub").textContent = `${N}-month trends · ${S.casa === "all" ? "All houses" : S.casa} · median of the snapshots`;
-  $("#gLey").innerHTML = S.series.map(k => `<span style="--serie:${colorSerie(k)}"><span class="ln"></span>${NOMBRE[k]}</span>`).join("") +
-    `<span><span class="br"></span>bars = bias (green near 0, red far)</span><span>${linea === "w" ? "Line = WAPE, lower is better · dashed = 100%, same as assuming no change" : "Line = reliability, higher is better · dashed = 0%, same as assuming no change"}</span>`;
-  const caja = $("#gCaja");
-  if (!S.series.length){ caja.innerHTML = `<p class="vacio-g">Pick one or more trends above.</p>`; return; }
-  const W = Math.max(320, caja.clientWidth || 900), Hh = W < 600 ? 380 : 440;
-  const L = 46, R = 14, T = 26, B = 44, gap = 22;
-  const alto = Hh - T - B - gap, hL = alto * 0.55, hB = alto - hL;
-  const yL0 = T, yB0 = T + hL + gap;
-  const ancho = W - L - R, paso = ancho / HG.length;
+// gráfica de línea genérica: una línea por trend sobre 3M, 6M, 9M y 12M
+function lineas(caja, campo, opc){
+  const N = S.gN, series = ORDEN_SERIES.filter(k => S.series.includes(k));
+  if (!series.length){ caja.innerHTML = `<p class="vacio-g">Pick one or more trends above.</p>`; return; }
+  const vs = [];
+  series.forEach(k => HG.forEach(h => { const m = dato(N, k, h); if (m && m.fotos) vs.push(m[campo]); }));
+  if (!vs.length){ caja.innerHTML = `<p class="vacio-g">None of these trends has data for ${N}-month trends here.</p>`; return; }
+  const W = Math.max(320, caja.clientWidth || 900), Hh = W < 600 ? 300 : 340;
+  const L = 46, R = 16, T = 18, B = 44, alto = Hh - T - B, paso = (W - L - R) / HG.length;
   const xc = i => L + paso * (i + 0.5);
-  const val = m => linea === "w" ? 1 - m.fiab : m.fiab;
-  // escalas: línea entre su mínimo y su máximo (tope ±200%); barras simétricas (tope ±60 pts)
-  const vs = [], bs = [];
-  S.series.forEach(k => HG.forEach(h => { const m = dato(N, k, h); if (m && m.fotos){ vs.push(val(m)); bs.push(m.bias); } }));
-  if (!vs.length){ caja.innerHTML = `<p class="vacio-g">None of these trends has data for ${N}-month trends in this house.</p>`; return; }
-  const TOPEL = 2, TOPEB = 0.6;
-  // la línea usa su propio rango; incluye la referencia (WAPE 100% = como no usar trend; fiabilidad 0%)
-  const REF = linea === "w" ? 1 : 0;
-  let lo = Math.max(-TOPEL, Math.min(REF, ...vs)), hi = Math.min(TOPEL, Math.max(REF, ...vs));
-  const pad = Math.max(0.02, (hi - lo) * 0.14); hi += pad; lo -= pad;
-  const yL = v => yL0 + (hi - Math.max(lo, Math.min(hi, v))) / (hi - lo) * hL;
-  const bmax = Math.min(TOPEB, Math.max(0.1, ...bs.map(Math.abs))) * 1.15;
-  const yB = v => yB0 + hB / 2 - Math.max(-bmax, Math.min(bmax, v)) / bmax * (hB / 2);
-  const ticks = [lo + pad, (lo + hi) / 2, hi - pad].map(v => Math.round(v * 100) / 100);
+  // eje con marcas redondas (paso 1, 2 o 5 × 10ⁿ) que siempre incluyen el 0
+  let lo = Math.max(-opc.tope, Math.min(0, ...vs)), hi = Math.min(opc.tope, Math.max(0, ...vs));
+  const bruto = (hi - lo) / 4, mag = Math.pow(10, Math.floor(Math.log10(bruto || 0.01)));
+  const pasoE = [1, 2, 2.5, 5, 10].map(f => f * mag).find(st => st >= bruto * 0.999);
+  lo = Math.floor(lo / pasoE) * pasoE; hi = Math.ceil(hi / pasoE) * pasoE;
+  if (hi - Math.max(...vs) < pasoE * 0.25) hi += pasoE * 0.5;
+  const y = v => T + (hi - Math.max(lo, Math.min(hi, v))) / (hi - lo) * alto;
   let svg = "";
-  // rejilla y zonas
-  ticks.forEach(t => { svg += `<line class="rej" x1="${L}" x2="${W - R}" y1="${yL(t)}" y2="${yL(t)}"/><text x="${L - 6}" y="${yL(t) + 4}" text-anchor="end">${Math.round(t * 100)}%</text>`; });
-  svg += `<line class="cero" stroke-dasharray="4 4" x1="${L}" x2="${W - R}" y1="${yL(REF)}" y2="${yL(REF)}"/>`;
-  svg += `<text class="zona" x="${L}" y="${yL0 - 10}">${linea === "w" ? "WAPE" : "Reliability"}</text>`;
-  svg += `<text class="zona" x="${L}" y="${yB0 - 6}">Bias (pts)</text>`;
-  svg += `<line class="cero" x1="${L}" x2="${W - R}" y1="${yB(0)}" y2="${yB(0)}"/>`;
-  [bmax / 1.15, -bmax / 1.15].forEach(t => { svg += `<text x="${L - 6}" y="${yB(t) + 4}" text-anchor="end">${t > 0 ? "+" : "−"}${Math.round(Math.abs(t) * 100)}</text>`; });
-  // eje x
+  for (let t = lo; t <= hi + 1e-9; t += pasoE){
+    svg += `<line class="rej" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${opc.fmtEje(t)}</text>`;
+  }
+  svg += `<line class="cero" x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}"/>`;
   svg += `<g class="eje-x">${HG.map((h, i) => {
-    const nf = Math.max(0, ...S.series.map(k => (dato(N, k, h) || {}).fotos || 0));
+    const nf = Math.max(0, ...series.map(k => (dato(N, k, h) || {}).fotos || 0));
     const sub = paso < 130 ? (nf ? `${nf} snap.` : "") : `${H_S[h]}${nf ? ` · ${nf} snapshot${nf === 1 ? "" : "s"}` : ""}`;
     return `<text class="h" x="${xc(i)}" y="${Hh - 22}" text-anchor="middle">${H_T[h]}</text><text x="${xc(i)}" y="${Hh - 7}" text-anchor="middle">${sub}</text>`;
   }).join("")}</g>`;
-  // barras de bias, agrupadas por plazo
-  const nS = S.series.length, bw = Math.min(40, paso * 0.72 / nS);
-  let retraso = 0;
-  S.series.forEach((k, si) => HG.forEach((h, i) => {
-    const m = dato(N, k, h); if (!m || !m.fotos) return;
-    const x = xc(i) - (nS * bw) / 2 + si * bw + 2, w = bw - 4, y0 = yB(0), y1 = yB(m.bias);
-    const top = Math.min(y0, y1), alto = Math.max(1.5, Math.abs(y1 - y0));
-    const origen = m.bias >= 0 ? "bottom" : "top";
-    const anim = animarG ? ` crece" style="transform-origin:center ${origen};animation-delay:${(retraso += 35)}ms` : "";
-    svg += `<g class="barra-b${anim}"><rect x="${x}" y="${top}" width="${w}" height="${alto}" rx="3" fill="${GAMA[nivelB(m.bias) + 5]}"/>` +
-      `<rect class="tapa" style="--serie:${colorSerie(k)}" x="${x}" y="${m.bias >= 0 ? top : top + alto - 3}" width="${w}" height="3" rx="1.5"/></g>`;
-    if (bw >= 24) svg += `<text class="val-b" x="${x + w / 2}" y="${m.bias >= 0 ? top - 5 : top + alto + 13}" text-anchor="middle">${pts(m.bias)}</text>`;
-    svg += `<rect class="hit" data-k="${k}" data-h="${h}" x="${x}" y="${yB0}" width="${w}" height="${hB}"/>`;
-  }));
-  // etiquetas de la línea sin pisarse: en cada plazo, de arriba abajo, al menos 15 px entre ellas
-  const etq = {};
-  HG.forEach(h => {
-    const l = S.series.map(k => { const m = dato(N, k, h); return m && m.fotos ? {k, y:yL(val(m)) - 10} : null; }).filter(Boolean).sort((a, b) => a.y - b.y);
+  // etiquetas de valor solo con pocas líneas (con muchas, al pasar el puntero), sin pisarse
+  const conEtq = series.length <= 4, etq = {};
+  if (conEtq) HG.forEach(h => {
+    const l = series.map(k => { const m = dato(N, k, h); return m && m.fotos ? {k, y:y(m[campo]) - 10} : null; }).filter(Boolean).sort((a, b) => a.y - b.y);
     for (let j = 1; j < l.length; j++) if (l[j].y - l[j - 1].y < 15) l[j].y = l[j - 1].y + 15;
     l.forEach(e => { etq[`${e.k}|${h}`] = e.y; });
   });
-  // líneas
-  S.series.forEach(k => {
-    const ptsL = HG.map((h, i) => { const m = dato(N, k, h); return m && m.fotos ? [xc(i), yL(val(m)), m, h] : null; }).filter(Boolean);
-    if (!ptsL.length) return;
-    const d = ptsL.map((p, j) => `${j ? "L" : "M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join("");
-    const largo = ptsL.reduce((a, p, j) => j ? a + Math.hypot(p[0] - ptsL[j - 1][0], p[1] - ptsL[j - 1][1]) : 0, 0) + 1;
-    svg += `<path class="linea${animarG ? " traza" : ""}" style="--serie:${colorSerie(k)};stroke-dasharray:${largo};--largo:${largo}" d="${d}"/>`;
-    ptsL.forEach(([x, y, m, h]) => {
-      const v = val(m), fuera = v > hi || v < lo;
-      svg += `<circle class="pt${m.pocos ? " pocos" : ""}" style="--serie:${colorSerie(k)}" cx="${x}" cy="${y}" r="5"/>`;
-      svg += `<text class="val" style="fill:${colorSerie(k)}" x="${x + 9}" y="${etq[`${k}|${h}`] + 4}" text-anchor="start">${fuera ? (v > hi ? "▲ " : "▼ ") : ""}${pct(v)}</text>`;
-      svg += `<circle class="hit" data-k="${k}" data-h="${h}" cx="${x}" cy="${y}" r="12"/>`;
+  series.forEach((k, si) => {
+    const p = HG.map((h, i) => { const m = dato(N, k, h); return m && m.fotos ? [xc(i), y(m[campo]), m, h] : null; }).filter(Boolean);
+    if (!p.length) return;
+    const d = p.map((q, j) => `${j ? "L" : "M"}${q[0].toFixed(1)},${q[1].toFixed(1)}`).join("");
+    const largo = p.reduce((a, q, j) => j ? a + Math.hypot(q[0] - p[j - 1][0], q[1] - p[j - 1][1]) : 0, 0) + 1;
+    const dash = k.startsWith("si") ? "" : `stroke-dasharray:${largo};--largo:${largo};`;
+    svg += `<path class="linea ${k.slice(0, 2)}${animarG && !k.startsWith("si") ? " traza" : ""}${animarG && k.startsWith("si") ? " entra" : ""}" style="--serie:${COLOR[k]};${dash}animation-delay:${si * 30}ms" d="${d}"/>`;
+    p.forEach(([x, yy, m, h]) => {
+      const v = m[campo], fuera = v > hi || v < lo;
+      svg += `<circle class="pt${m.pocos ? " pocos" : ""}${animarG ? " entra" : ""}" style="--serie:${COLOR[k]}" cx="${x}" cy="${yy}" r="4.5"/>`;
+      if (conEtq) svg += `<text class="val" style="fill:${COLOR[k]}" x="${x + 9}" y="${etq[`${k}|${h}`] + 4}">${fuera ? (v > hi ? "▲ " : "▼ ") : ""}${opc.fmt(v)}</text>`;
     });
   });
-  caja.innerHTML = `<svg id="lienzo" viewBox="0 0 ${W} ${Hh}" width="${W}" height="${Hh}" role="img" aria-label="${linea === "w" ? "WAPE" : "Reliability"} line and bias bars at 3, 6, 9 and 12 months">${svg}</svg>`;
+  // zonas para la tarjeta flotante: una por trend y plazo
+  series.forEach(k => HG.forEach((h, i) => { const m = dato(N, k, h); if (m && m.fotos) svg += `<circle class="hit" data-k="${k}" data-h="${h}" cx="${xc(i)}" cy="${y(m[campo])}" r="11"/>`; }));
+  caja.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" height="${Hh}" role="img" aria-label="${opc.nombre} of each trend at 3, 6, 9 and 12 months">${svg}</svg>`;
+}
+function grafica(){
+  chipsSeries();
+  const sub = `${S.gN}-month trends · ${S.casa === "all" ? "All houses" : S.casa} · median of the snapshots`;
+  $("#gSubF").textContent = `${sub} · higher is better · 0% = same as assuming no change`;
+  $("#gSubB").textContent = `${sub} · growth points · above 0 = reality went further than the trend, below 0 = it fell short`;
+  const vis = ORDEN_SERIES.filter(k => S.series.includes(k));
+  $("#gLey").innerHTML = vis.length ? `<span><span class="ln" style="--serie:var(--label-2)"></span>sell-out</span><span><span class="ln si" style="--serie:var(--label-2)"></span>sell-in</span><span>hollow dot = under 20 codes per snapshot</span>${vis.length > 4 ? "<span>values on the dots with 4 trends or fewer; hover a dot to see it</span>" : ""}` : "";
+  lineas($("#gCajaF"), "fiab", {tope:2, nombre:"Reliability", fmt:v => pct(v), fmtEje:v => pct(v)});
+  lineas($("#gCajaB"), "bias", {tope:0.8, nombre:"Bias", fmt:v => pts(v), fmtEje:v => Math.abs(v) < 1e-9 ? "0" : (v > 0 ? "+" : "−") + Math.round(Math.abs(v) * 100)});
   animarG = false;
 }
 function tipGrafica(el){
   const m = dato(S.gN, el.dataset.k, el.dataset.h); if (!m || !m.fotos) return;
   tip.innerHTML = `<span class="t">${NOMBRE[el.dataset.k]} · ${S.gN}M trend · ${H_T[el.dataset.h]} (${H_S[el.dataset.h]})</span><dl>
-    <dt>WAPE</dt><dd><b>${pct(1 - m.fiab)}</b></dd><dt>Reliability</dt><dd><b>${pct(m.fiab)}</b> (${pct(m.fiab_min)} to ${pct(m.fiab_max)})</dd>
+    <dt>Reliability</dt><dd><b>${pct(m.fiab)}</b> (${pct(m.fiab_min)} to ${pct(m.fiab_max)})</dd>
     <dt>Bias</dt><dd><b>${pts(m.bias)} pts</b> (${pts(m.bias_min)} to ${pts(m.bias_max)})</dd>
     <dt>Snapshots</dt><dd>${m.fotos}</dd><dt>Cases</dt><dd>${ent(m.n)} · ${ent(m.codigos)} codes${m.pocos ? " · few codes, indicative" : ""}</dd></dl>`;
   const r = el.getBoundingClientRect();
   const x = Math.min(innerWidth - 286, Math.max(8, r.left + r.width / 2 - 135));
-  const y = r.bottom + 8 + tip.offsetHeight > innerHeight ? Math.max(8, r.top - tip.offsetHeight - 8) : r.bottom + 8;
-  tip.style.left = x + "px"; tip.style.top = y + "px";
+  const yy = r.bottom + 8 + tip.offsetHeight > innerHeight ? Math.max(8, r.top - tip.offsetHeight - 8) : r.bottom + 8;
+  tip.style.left = x + "px"; tip.style.top = yy + "px";
   tip.classList.toggle("ya", tipVisible); tip.classList.add("ver"); tipVisible = true;
 }
 function cambiarVista(){
@@ -637,16 +624,17 @@ function montar(){
   segmentado($("#segTema"), [["light", "Light"], ["dark", "Dark"], ["auto", "Auto"]], "tema", () => { aplicarTema(); document.querySelectorAll(".seg").forEach(colocarPulgar); });
   segmentado($("#segVista"), [["tables", "Tables"], ["chart", "Chart"]], "vista", cambiarVista);
   segmentado($("#segN"), [["6", "6M trends"], ["12", "12M trends"]], "gN", () => { animarG = true; grafica(); document.querySelectorAll(".seg").forEach(colocarPulgar); });
-  segmentado($("#segLinea"), [["w", "WAPE"], ["f", "Reliability"]], "linea", () => { animarG = true; grafica(); document.querySelectorAll(".seg").forEach(colocarPulgar); });
   $("#series").addEventListener("click", e => {
     const b = e.target.closest(".chip-t"); if (!b) return;
     const k = b.dataset.k;
-    S.series = S.series.includes(k) ? S.series.filter(x => x !== k) : [...S.series, k].slice(-4);
-    guardar(); animarG = true; grafica();
+    S.series = S.series.includes(k) ? S.series.filter(x => x !== k) : [...S.series, k];
+    animarG = true; grafica();
   });
+  $("#todas").onclick = () => { S.series = [...ORDEN_SERIES]; animarG = true; grafica(); };
+  $("#ninguna").onclick = () => { S.series = []; grafica(); };
   let tr; addEventListener("resize", () => { clearTimeout(tr); tr = setTimeout(() => { if (S.vista === "chart") grafica(); }, 120); });
   document.addEventListener("pointerover", e => {
-    const td = e.target.closest("td.c"), hit = e.target.closest("#lienzo .hit");
+    const td = e.target.closest("td.c"), hit = e.target.closest(".graf svg .hit");
     if (td) mostrarTip(td); else if (hit) tipGrafica(hit); else if (!e.target.closest(".tip")) ocultarTip(); });
   document.addEventListener("scroll", ocultarTip, {passive:true, capture:true});
   const barra = $("#barra");
